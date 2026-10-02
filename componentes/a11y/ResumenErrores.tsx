@@ -8,9 +8,11 @@ import { useEffect, useRef } from "react";
 
 export function ResumenErrores({ errores }: { errores: { campo: string; mensaje: string }[] }) {
   const ref = useRef<HTMLDivElement>(null);
+  // Solo cuando cambian los errores, no en cada render: si no, el foco saldría del campo al escribir.
+  const firma = errores.map(({ campo, mensaje }) => `${campo}:${mensaje}`).join("|");
   useEffect(() => {
-    if (errores.length) ref.current?.focus();
-  }, [errores]);
+    if (firma) ref.current?.focus();
+  }, [firma]);
   if (!errores.length) return null;
   return (
     <div
