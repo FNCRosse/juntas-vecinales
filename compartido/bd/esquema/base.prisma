@@ -1,0 +1,13 @@
+// Generador y origen de datos. Los modelos van en un archivo por módulo
+// (docs/DATOS.md §1); Prisma une todos los .prisma de esta carpeta.
+
+generator cliente {
+  provider            = "prisma-client"
+  output              = "../generado"
+  moduleFormat        = "cjs"
+  importFileExtension = ""
+}
+
+datasource bd {
+  provider = "postgresql"
+}

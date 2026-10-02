@@ -1,0 +1,9 @@
+compartido/bd/generado/
+compartido/bd/esquema/migrations/
+docs/
+graphify-out/
+dist/
+.next/
+coverage/
+pruebas/e2e/reportes/
+*.md

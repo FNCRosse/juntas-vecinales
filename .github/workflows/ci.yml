@@ -1,0 +1,128 @@
+# Circuito de calidad. Los nombres de los jobs (lint, tipos, pruebas, e2e) son los checks
+# obligatorios de la protección de main: si se cambian, hay que actualizar la protección.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Postgres del propio CI: nunca Neon, R2 ni Meta (docs/PRUEBAS.md §5).
+  DATABASE_URL: postgresql://postgres:pruebas@localhost:5432/jv_pruebas
+  DATABASE_URL_UNPOOLED: postgresql://postgres:pruebas@localhost:5432/jv_pruebas
+  WHATSAPP_MODO: simulador
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    env:
+      CYPRESS_INSTALL_BINARY: 0
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: ESLint (incluye la regla de arquitectura y la matriz de módulos)
+        run: npm run lint
+      - name: Formato (Prettier)
+        run: npx prettier --check .
+      - name: Expresión prohibida
+        run: "! git grep -inE 'claude[ -]?design'"
+
+  tipos:
+    name: tipos
+    runs-on: ubuntu-latest
+    env:
+      CYPRESS_INSTALL_BINARY: 0
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run tipos
+      - name: Tipos de los e2e
+        run: npx tsc -p pruebas/e2e/tsconfig.json
+      - name: Compilación del worker
+        run: npm run worker:construir
+
+  pruebas:
+    name: pruebas
+    runs-on: ubuntu-latest
+    env:
+      CYPRESS_INSTALL_BINARY: 0
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: pruebas
+          POSTGRES_DB: jv_pruebas
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Jest con cobertura (umbral de líneas ≥ 80 %, bloqueante)
+        run: npm test
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: cobertura
+          path: coverage/
+          if-no-files-found: ignore
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: pruebas
+          POSTGRES_DB: jv_pruebas
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npm ci
+      - name: Migraciones
+        run: npx prisma migrate deploy
+      - name: Build y Cypress + axe contra el build
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: reporte-axe
+          path: pruebas/e2e/reportes/axe/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: reporte-cypress
+          path: |
+            pruebas/e2e/screenshots/
+            pruebas/e2e/videos/
+          if-no-files-found: ignore

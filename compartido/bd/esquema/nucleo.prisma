@@ -1,0 +1,17 @@
+// Tablas del núcleo compartido (prefijo nucleo_).
+
+enum ResultadoEjecucion {
+  EXITOSA
+  FALLIDA
+}
+
+// Una fila por cada llamada a POST /tareas/ejecutar que obtuvo el cerrojo.
+model EjecucionWorker {
+  id          String             @id @default(uuid())
+  iniciadaEn  DateTime           @default(now())
+  terminadaEn DateTime?
+  resultado   ResultadoEjecucion
+  detalle     String?
+
+  @@map("nucleo_ejecuciones_worker")
+}
