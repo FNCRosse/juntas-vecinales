@@ -2,13 +2,7 @@
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { prisma } from "@/compartido/bd/cliente";
 import { cifrarClave, hashDeToken, nuevoToken } from "@/compartido/claves";
-import {
-  ErrorConflicto,
-  ErrorEnPausa,
-  ErrorNoEncontrado,
-  ErrorReglaNegocio,
-  ErrorValidacion,
-} from "@/compartido/errores";
+import { ErrorConflicto, ErrorValidacion } from "@/compartido/errores";
 import { primerNombre } from "@/compartido/fechas";
 import { encolarAviso } from "@/compartido/notificaciones/encolar";
 import { plantillaClaveCambiada } from "@/compartido/notificaciones/plantillas";
