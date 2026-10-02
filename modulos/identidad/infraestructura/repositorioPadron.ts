@@ -95,3 +95,20 @@ export async function manzanasDelPadron() {
 export async function buscarPredio(id: string) {
   return prisma.predio.findUnique({ where: { id }, include: { residencias: RESIDENCIAS_VIGENTES } });
 }
+
+/** La persona de ese DNI o el titular vigente de esa casa (HU-GAR-11 CA1), si está activa. */
+export async function buscarPorDniOCasa(identificador: { dni: string } | { manzana: string; lote: string }) {
+  if ("dni" in identificador) {
+    return prisma.usuario.findFirst({ where: { dni: identificador.dni, estado: "ACTIVA" } });
+  }
+  const residencia = await prisma.residencia.findFirst({
+    where: {
+      fechaFin: null,
+      relacion: "TITULAR",
+      predio: { manzana: identificador.manzana, lote: identificador.lote },
+      usuario: { estado: "ACTIVA" },
+    },
+    include: { usuario: true },
+  });
+  return residencia?.usuario ?? null;
+}

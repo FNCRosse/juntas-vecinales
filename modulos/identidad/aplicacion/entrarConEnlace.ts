@@ -4,7 +4,7 @@ import { hashDeToken, nuevoToken } from "@/compartido/claves";
 import { ErrorConflicto } from "@/compartido/errores";
 import { primerNombre } from "@/compartido/fechas";
 import { pasarPerfilALaCuenta } from "@/modulos/accesibilidad/aplicacion/pasarPerfilALaCuenta";
-import { type EstadoEnlace, estadoDelEnlace } from "@/modulos/identidad/dominio/magicLink";
+import { type EstadoEnlace, estadoDelEnlace, type PropositoEnlace } from "@/modulos/identidad/dominio/magicLink";
 import { direccion } from "@/modulos/identidad/dominio/predio";
 import {
   bloquearEnlace,
@@ -15,7 +15,7 @@ import { crearSesion } from "@/modulos/identidad/infraestructura/repositorioSesi
 import { aSesionDto, type SesionDto } from "./sesion";
 
 export const MENSAJE_ENLACE_NO_SIRVE =
-  "Este enlace ya no sirve: se usó, venció o le enviamos uno más nuevo. Pida un enlace nuevo a la administración.";
+  "Este enlace ya no sirve: se usó, venció o le enviamos uno más nuevo. Pida un enlace nuevo.";
 
 export type Bienvenida =
   | { estado: "VIGENTE"; nombre: string; direccion: string | null }
@@ -25,9 +25,13 @@ export type Bienvenida =
  * Lo que muestra la pantalla del enlace (VEC-ACC-01) sin gastarlo: abrir la página no inicia sesión,
  * porque las vistas previas de WhatsApp también la abren. Se entra con el botón (POST).
  */
-export async function consultarEnlace(token: string, ahora = new Date()): Promise<Bienvenida> {
+export async function consultarEnlace(
+  token: string,
+  ahora = new Date(),
+  proposito: PropositoEnlace = "ENTRADA",
+): Promise<Bienvenida> {
   const enlace = await buscarEnlacePorHash(hashDeToken(token));
-  if (!enlace || enlace.usuario.estado !== "ACTIVA") return { estado: "VENCIDO" };
+  if (!enlace || enlace.proposito !== proposito || enlace.usuario.estado !== "ACTIVA") return { estado: "VENCIDO" };
   const estado = estadoDelEnlace(enlace, ahora);
   if (estado !== "VIGENTE") return { estado };
   const residencia = enlace.usuario.residencias[0];

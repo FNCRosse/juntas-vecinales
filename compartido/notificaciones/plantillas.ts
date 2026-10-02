@@ -8,3 +8,19 @@
 export function plantillaEnlaceAcceso(nombre: string, enlace: string) {
   return { plantilla: "enlace_acceso", parametros: [nombre, enlace] };
 }
+
+/**
+ * Enlace para crear una clave nueva (HU-GAR-25). Texto en Meta: "Hola, {{1}}. Para crear su clave
+ * nueva de la Junta Vecinal, abra este enlace: {{2}}. Sirve una sola vez y vence en 15 minutos."
+ */
+export function plantillaClaveNueva(nombre: string, enlace: string) {
+  return { plantilla: "clave_nueva", parametros: [nombre, enlace] };
+}
+
+/**
+ * Aviso de clave cambiada (HU-GAR-25 CA3). Texto en Meta: "Hola, {{1}}. Su clave de respaldo de
+ * la Junta Vecinal cambió. Si no fue usted, avise a la administración."
+ */
+export function plantillaClaveCambiada(nombre: string) {
+  return { plantilla: "clave_cambiada", parametros: [nombre] };
+}

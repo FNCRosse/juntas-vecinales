@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { inicioSegunRoles, sesionActual } from "@/app/_sesion/sesion";
-import { FormularioEquipo } from "./_componentes/FormularioEquipo";
+import { FormularioEntradaClave } from "../../_componentes/FormularioEntradaClave";
 
 export const metadata: Metadata = { title: "Entrar como parte del equipo" };
 
@@ -20,7 +20,11 @@ export default async function EntradaEquipo() {
           entran con el enlace de WhatsApp.
         </p>
       </div>
-      <FormularioEquipo />
+      <FormularioEntradaClave
+        etiquetaClave="Clave de equipo"
+        ayudaClave="Puede pegarla o dejar que su gestor de contraseñas la complete."
+        siguePausa={<p>Si no recuerda la clave, pida una nueva a la administración.</p>}
+      />
       <p className="text-texto-secundario">
         ¿Olvidó su clave? Pida una nueva a la administración de la junta.
       </p>

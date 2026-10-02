@@ -1,11 +1,12 @@
 import { MessageCircleMore } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { OtrasFormasDeEntrar } from "../_componentes/Opciones";
 
 export const metadata: Metadata = { title: "Entrar" };
 
-// Entrada del vecino sin enlace. Pedir un enlace nuevo (HU-GAR-11) y entrar con la clave de
-// respaldo (HU-GAR-24) se suman aquí con sus HU.
+// Entrada del vecino sin enlace: pedir uno nuevo (HU-GAR-11) o entrar con la clave de respaldo
+// (HU-GAR-24 CA1).
 export default function Entrar() {
   return (
     <div className="flex flex-col gap-6">
@@ -14,7 +15,7 @@ export default function Entrar() {
         <MessageCircleMore aria-hidden className="size-icono shrink-0 text-accion-primaria" />
         <p>Para entrar, abra el enlace que le enviamos por WhatsApp. No necesita clave.</p>
       </div>
-      <p>Si no lo tiene o ya no sirve, pida uno nuevo a la administración de la junta.</p>
+      <OtrasFormasDeEntrar />
       <Link
         href="/entrar/equipo"
         className="inline-flex min-h-tactil items-center self-start font-bold text-texto-enlace"
