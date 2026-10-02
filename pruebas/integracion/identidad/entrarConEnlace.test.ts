@@ -260,6 +260,8 @@ describe("@HU-GAR-03 Sesión persistente desde el acceso directo", () => {
       `sesion=${sesion}; Max-Age=34560000; Path=/; HttpOnly; Secure; SameSite=Lax`,
     );
     expect((await pedirRenovar("sesion=otra")).status).toBe(401);
+  });
+});
 
 describe("@HU-GAR-02 Entrar sin script", () => {
   const enviarFormulario = (token: string) =>
