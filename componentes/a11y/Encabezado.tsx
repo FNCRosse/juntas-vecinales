@@ -1,6 +1,4 @@
-import { Phone } from "lucide-react";
-import Link from "next/link";
-import { clasesBotonBarra } from "./Boton";
+import { EnlaceAyuda } from "./EnlaceAyuda";
 import { InterruptorLetraGrande } from "./InterruptorLetraGrande";
 
 // Barra superior de todas las pantallas (prototipo C-09): nombre de la junta, "Letra grande" y
@@ -44,12 +42,7 @@ export function Encabezado({ modoSenior, rutaAyuda }: { modoSenior: boolean; rut
         </div>
         <div className={`grid gap-separacion md:flex ${rutaAyuda ? "grid-cols-2" : "grid-cols-1"}`}>
           <InterruptorLetraGrande activoAlInicio={modoSenior} />
-          {rutaAyuda && (
-            <Link href={rutaAyuda} className={clasesBotonBarra()}>
-              <Phone aria-hidden className="size-icono shrink-0" />
-              <span>Pedir ayuda</span>
-            </Link>
-          )}
+          {rutaAyuda && <EnlaceAyuda ruta={rutaAyuda} />}
         </div>
       </div>
     </header>

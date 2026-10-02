@@ -1,7 +1,7 @@
 "use client";
 
 import { AArrowUp, Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { clasesBotonBarra } from "./Boton";
 import { MensajeEstado } from "./MensajeEstado";
 import { COOKIE_MODO_DISPOSITIVO, RUTA_PERFIL } from "./modo";
@@ -16,13 +16,20 @@ function aplicarModo(senior: boolean) {
   else delete document.documentElement.dataset.mode;
 }
 
+/** El estado vive en <html data-mode>: todos los "Letra grande" de la página muestran lo mismo. */
+function suscribir(alCambiar: () => void) {
+  const observador = new MutationObserver(alCambiar);
+  observador.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] });
+  return () => observador.disconnect();
+}
+const enSenior = () => document.documentElement.dataset.mode === "senior";
+
 export function InterruptorLetraGrande({ activoAlInicio }: { activoAlInicio: boolean }) {
-  const [activo, setActivo] = useState(activoAlInicio);
+  const activo = useSyncExternalStore(suscribir, enSenior, () => activoAlInicio);
   const [noGuardado, setNoGuardado] = useState(false);
 
   async function alternar() {
     const nuevo = !activo;
-    setActivo(nuevo);
     aplicarModo(nuevo);
     let guardado = false;
     try {
