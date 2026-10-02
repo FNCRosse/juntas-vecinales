@@ -5,7 +5,7 @@ export {};
 
 const tab = () => cy.press(Cypress.Keyboard.Keys.TAB);
 
-type Foco = { fuera: boolean; texto: string; enDialogo: boolean };
+type Foco = { fuera: boolean; texto: string };
 
 /**
  * Qué tiene el foco; `fuera` cuando salió de la página. La aserción propia quita la exigencia por
@@ -17,8 +17,8 @@ const conFoco = () =>
     .should(() => {})
     .then(($el): Foco => {
       const el = $el?.[0];
-      if (!el || el.tagName === "BODY") return { fuera: true, texto: "", enDialogo: false };
-      return { fuera: false, texto: el.textContent ?? "", enDialogo: !!el.closest("[role=dialog]") };
+      if (!el || el.tagName === "BODY") return { fuera: true, texto: "" };
+      return { fuera: false, texto: el.textContent ?? "" };
     });
 
 /** Tabula como una persona hasta llegar al control que contiene el texto. */
@@ -97,14 +97,19 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
     // activa un <button> (sí un enlace); con Chromium y Playwright, Enter lo abre (evidencia F0b).
     cy.focused().should("have.prop", "tagName", "BUTTON").click();
     cy.get("[role=dialog]").should("be.visible").and("have.attr", "aria-labelledby");
-    conFoco().its("enDialogo").should("eq", true);
+    cy.focused().should(($el) =>
+      expect($el.closest("[role=dialog]"), "foco dentro del diálogo").to.have.length(1),
+    );
     for (let i = 0; i < 3; i++) {
       tab();
-      conFoco().its("enDialogo").should("eq", true);
+      cy.focused().should(($el) =>
+        expect($el.closest("[role=dialog]"), "foco dentro del diálogo").to.have.length(1),
+      );
     }
     cy.press(Cypress.Keyboard.Keys.ESC);
     cy.get("[role=dialog]").should("not.exist");
-    conFoco().its("texto").should("contain", "Ver cómo se calcula");
+    // Se vuelve a consultar el foco hasta que Radix lo devuelve al botón.
+    cy.focused().should("contain.text", "Ver cómo se calcula");
   });
 
   it("@HU-ACC-06 CA3 no hay trampas: tabulando se recorre la página entera y se sale de ella", () => {
