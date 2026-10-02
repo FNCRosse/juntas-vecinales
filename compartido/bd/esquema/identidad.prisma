@@ -32,6 +32,7 @@ model Usuario {
   residencias          Residencia[]
   enlaces              MagicLink[]
   perfilAccesibilidad  PerfilAccesibilidad?
+  solicitudesArco      SolicitudArco[]
 
   @@map("identidad_usuarios")
 }
@@ -239,4 +240,49 @@ model RegistroAcceso {
   @@unique([entradaId], map: "identidad_registros_acceso_una_salida")
   @@index([fecha])
   @@map("identidad_registros_acceso")
+}
+
+// Derechos ARCO de la Ley N.° 29733 (HU-GAR-12 a 16). El acceso y la oposición se resuelven solos;
+// la rectificación y la cancelación las resuelve el administrador dentro del plazo legal.
+enum TipoArco {
+  ACCESO
+  RECTIFICACION
+  CANCELACION
+  OPOSICION
+}
+
+enum EstadoArco {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+  RESUELTA_SOLA
+}
+
+enum CampoRectificable {
+  NOMBRE
+  DNI
+  DIRECCION
+}
+
+model SolicitudArco {
+  id               String             @id @default(uuid())
+  numero           Int                @unique @default(autoincrement())
+  usuarioId        String
+  usuario          Usuario            @relation(fields: [usuarioId], references: [id])
+  tipo             TipoArco
+  estado           EstadoArco         @default(PENDIENTE)
+  campo            CampoRectificable?
+  valorAnterior    String?
+  valorNuevo       String?
+  /// Lo que escribió el vecino: el sustento de la corrección o el motivo de la cancelación.
+  detalle          String?
+  creadaEn         DateTime           @default(now())
+  resueltaEn       DateTime?
+  resueltaPor      String?
+  /// Por qué se rechazó: se le envía al vecino.
+  motivoResolucion String?
+
+  @@index([estado, tipo])
+  @@index([usuarioId])
+  @@map("identidad_solicitudes_arco")
 }

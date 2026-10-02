@@ -89,3 +89,11 @@ export function plantillaVisitaLlego(nombre: string, visita: string, hora: strin
 export function plantillaVisitaEnPuerta(nombre: string, visita: string, enlace: string) {
   return { plantilla: "visita_en_puerta", parametros: [nombre, visita, enlace] };
 }
+
+/**
+ * Resultado de una solicitud de privacidad (HU-GAR-13 CA3, HU-GAR-16 CA3). Texto en Meta: "Hola,
+ * {{1}}. Su solicitud {{2}} a la Junta Vecinal fue {{3}}."
+ */
+export function plantillaSolicitudPrivacidad(nombre: string, numero: string, resultado: string) {
+  return { plantilla: "solicitud_privacidad", parametros: [nombre, numero, resultado] };
+}
