@@ -58,7 +58,7 @@ describe("@HU-GAR-21 Entrada del equipo", () => {
     cy.contains("button", "Entrar con mi clave").click();
 
     cy.location("pathname").should("eq", "/administracion");
-    cy.get("h1").should("match", /^(Buenos días|Buenas tardes|Buenas noches), Ana$/);
+    cy.get("h1").invoke("text").should("match", /^(Buenos días|Buenas tardes|Buenas noches), Ana$/);
     cy.revisarAccesibilidad("panel-administracion-normal");
 
     cy.visit("/administracion/mas");
