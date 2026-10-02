@@ -1,0 +1,35 @@
+# Dependencias
+node_modules/
+
+# Next.js y builds
+.next/
+out/
+build/
+dist/
+next-env.d.ts
+*.tsbuildinfo
+
+# Pruebas
+coverage/
+pruebas/e2e/reportes/
+pruebas/e2e/videos/
+pruebas/e2e/screenshots/
+
+# Entorno: nunca se suben valores
+.env*
+!.env.example
+
+# Vercel
+.vercel/
+
+# Grafo de graphify: se versiona el grafo, no la caché
+graphify-out/cache/
+
+# Instrucciones locales con rutas de esta máquina
+CLAUDE.local.md
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
