@@ -1,9 +1,10 @@
-// @HU-GAR-01
+// @HU-GAR-01 @HU-GAR-10
 import { ErrorNoEncontrado } from "@/compartido/errores";
 import { NOMBRE_RELACION } from "@/modulos/identidad/dominio/empadronamiento";
 import { CONCEPTOS, type Concepto, direccion, type UsoPredio } from "@/modulos/identidad/dominio/predio";
 import {
   buscarPredio,
+  historialDePredio,
   contarPadron,
   type FiltrosPadron,
   listarPredios,
@@ -59,6 +60,34 @@ function resumen(predio: Fila) {
   };
 }
 
+type Json = unknown;
+const etiquetaCampo = (campo: string) =>
+  campo === "uso" ? "uso" : (NOMBRE_CONCEPTO[campo as Concepto]?.[1] ?? campo);
+const valorCampo = (valor: unknown) =>
+  typeof valor === "string" && valor in NOMBRE_USO
+    ? NOMBRE_USO[valor as UsoPredio].toLowerCase()
+    : String(valor);
+
+/** El historial de la ficha (ADM-PAD-02) en palabras: qué se hizo, con los valores antes y después. */
+function describirAccion(accion: string, antes: Json, despues: Json) {
+  const a = (antes ?? {}) as Record<string, unknown>;
+  const d = (despues ?? {}) as Record<string, unknown>;
+  switch (accion) {
+    case "empadronar":
+      return "Empadronó la vivienda, con el DNI de cada residente verificado en físico";
+    case "actualizar_predio":
+      // jsonb no guarda el orden de las claves: se describen en el orden de la pantalla.
+      return `Actualizó los datos: ${["uso", ...CONCEPTOS]
+        .filter((campo) => campo in d)
+        .map((campo) => `${etiquetaCampo(campo)} ${valorCampo(a[campo])} → ${valorCampo(d[campo])}`)
+        .join("; ")}`;
+    case "dar_de_baja_residente":
+      return `Dio de baja a ${String(a.nombre)}: ${String(d.motivo).toLowerCase()}`;
+    default:
+      return accion.replace(/_/g, " ");
+  }
+}
+
 /** Padrón de viviendas para la administración (ADM-PAD-01), con búsqueda y filtro por manzana. */
 export async function listarPadron(sesion: SesionDto, filtros: FiltrosPadron) {
   exigirRol(sesion, "ADMINISTRADOR");
@@ -76,9 +105,20 @@ export async function verVivienda(sesion: SesionDto, predioId: string) {
   exigirRol(sesion, "ADMINISTRADOR");
   const predio = await buscarPredio(predioId);
   if (!predio) throw new ErrorNoEncontrado();
+  const historial = await historialDePredio(predioId);
   return {
     ...resumen(predio),
     residentes: residentes(predio),
+    ocupacion: {
+      uso: predio.uso,
+      ...(Object.fromEntries(CONCEPTOS.map((c) => [c, predio[c]])) as Record<Concepto, number>),
+    },
+    historial: historial.map((h) => ({
+      id: h.id,
+      fecha: h.fecha.toISOString(),
+      actor: h.actor,
+      texto: describirAccion(h.accion, h.antes, h.despues),
+    })),
     conceptos: CONCEPTOS.map((c) => ({
       concepto: NOMBRE_CONCEPTO[c][1].replace(/^./, (letra) => letra.toUpperCase()),
       cantidad: predio[c],

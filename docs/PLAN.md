@@ -68,8 +68,8 @@ Equipo interno:
 - [x] HU-GAR-23 Reasignar el rol de un miembro interno
 
 Padrón:
-- [ ] HU-GAR-10 Actualizar los datos del predio de un residente — `[~]` se cierra en M5, cuando el cálculo de la cuota usa la ocupación nueva
-- [ ] HU-GAR-09 Desvincular a un ex residente
+- [~] HU-GAR-10 Actualizar los datos del predio de un residente — `[~]` CA1 y CA3 hechos (ocupación e historial); se cierra en M5, cuando el cálculo de la cuota usa la ocupación nueva
+- [x] HU-GAR-09 Desvincular a un ex residente
 
 Punto de entrada del vecino:
 - [ ] HU-GAR-20 Centro de notificaciones unificado

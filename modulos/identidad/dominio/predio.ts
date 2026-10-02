@@ -1,4 +1,4 @@
-// @HU-GAR-01
+// @HU-GAR-01 @HU-GAR-10 @HU-GAR-09
 // Predio del diagrama 02a con su ocupación. M1 la guarda; el monto de la cuota lo calcula M5 con ella.
 
 export type UsoPredio = "VIVIENDA" | "NEGOCIO" | "VIVIENDA_Y_NEGOCIO";
@@ -38,3 +38,21 @@ export function normalizarPredio(datos: DatosPredio): {
   }
   return { predio, errores };
 }
+
+/** Los conceptos que cambian entre dos ocupaciones, con su valor antes y después (HU-GAR-10 CA3). */
+export function cambiosDeOcupacion(
+  antes: { uso: UsoPredio } & Ocupacion,
+  despues: { uso: UsoPredio } & Ocupacion,
+): { campo: "uso" | Concepto; antes: string | number; despues: string | number }[] {
+  const campos: ("uso" | Concepto)[] = ["uso", ...CONCEPTOS];
+  return campos
+    .filter((campo) => antes[campo] !== despues[campo])
+    .map((campo) => ({ campo, antes: antes[campo], despues: despues[campo] }));
+}
+
+export const MOTIVOS_BAJA_RESIDENTE = {
+  MUDANZA: "Se mudó del barrio",
+  FALLECIMIENTO: "Falleció",
+  OTRO: "Otro motivo",
+} as const;
+export type MotivoBajaResidente = keyof typeof MOTIVOS_BAJA_RESIDENTE;

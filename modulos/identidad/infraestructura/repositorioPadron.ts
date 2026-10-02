@@ -112,3 +112,33 @@ export async function buscarPorDniOCasa(identificador: { dni: string } | { manza
   });
   return residencia?.usuario ?? null;
 }
+
+export async function guardarOcupacion(
+  tx: Transaccion,
+  predioId: string,
+  datos: Omit<DatosPredio, "manzana" | "lote">,
+) {
+  await tx.predio.update({ where: { id: predioId }, data: datos });
+}
+
+export async function cerrarResidencia(tx: Transaccion, residenciaId: string, fecha: Date) {
+  await tx.residencia.update({ where: { id: residenciaId }, data: { fechaFin: fecha } });
+}
+
+/** Lo auditado sobre el predio y sus residencias, del más nuevo al más viejo, con quién lo hizo. */
+export async function historialDePredio(predioId: string) {
+  const residencias = await prisma.residencia.findMany({ where: { predioId }, select: { id: true } });
+  const registros = await prisma.registroAuditoria.findMany({
+    where: { entidadId: { in: [predioId, ...residencias.map((r) => r.id)] } },
+    orderBy: { fecha: "desc" },
+    take: 50,
+  });
+  const actores = await prisma.usuario.findMany({
+    where: { id: { in: registros.flatMap((r) => (r.actorId ? [r.actorId] : [])) } },
+    select: { id: true, nombreCompleto: true },
+  });
+  return registros.map((r) => ({
+    ...r,
+    actor: actores.find((a) => a.id === r.actorId)?.nombreCompleto ?? "El sistema",
+  }));
+}
