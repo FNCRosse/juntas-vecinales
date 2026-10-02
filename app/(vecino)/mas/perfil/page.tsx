@@ -1,4 +1,4 @@
-import { ChevronLeft, Pencil } from "lucide-react";
+import { ChevronLeft, Pencil, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
@@ -8,6 +8,7 @@ import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { miPerfil } from "@/modulos/identidad/aplicacion/arco";
 import { DescargarCopia } from "./DescargarCopia";
+import { OposicionUbicacion } from "./OposicionUbicacion";
 
 export const metadata: Metadata = { title: "Mi perfil y privacidad" };
 
@@ -20,8 +21,9 @@ function Dato({ termino, children }: { termino: string; children: string }) {
   );
 }
 
-// VEC-ACC-13 Mi perfil y privacidad: sus datos, la letra grande, la copia de sus datos (HU-GAR-12) y el
-// estado de sus solicitudes (HU-GAR-13 CA2).
+// VEC-ACC-13 Mi perfil y privacidad: sus datos, la letra grande, la oposición a mostrar su ubicación
+// exacta (HU-GAR-15), la copia de sus datos (HU-GAR-12), pedir la cancelación (HU-GAR-14) y el estado
+// de sus solicitudes (HU-GAR-13 CA2).
 export default async function MiPerfil({ searchParams }: { searchParams: Promise<{ aviso?: string }> }) {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
   const [perfil, senior, { aviso }] = await Promise.all([
@@ -39,6 +41,14 @@ export default async function MiPerfil({ searchParams }: { searchParams: Promise
         Volver a Más opciones
       </Link>
       <h1 className="text-titulo-1">Mi perfil y privacidad</h1>
+      {aviso === "cancelacion" && (
+        <MensajeEstado tipo="info" titulo="Recibimos su pedido de cancelación">
+          <p>
+            El administrador lo revisará dentro del plazo de ley y le avisará. Su cuenta sigue activa mientras
+            tanto.
+          </p>
+        </MensajeEstado>
+      )}
       {aviso === "correccion" && (
         <MensajeEstado tipo="exito" titulo="Solicitud enviada">
           <p>
@@ -70,11 +80,28 @@ export default async function MiPerfil({ searchParams }: { searchParams: Promise
       </Tarjeta>
 
       <Tarjeta titulo="Mi privacidad">
+        <OposicionUbicacion activaAlInicio={perfil.ocultaUbicacion} />
         <p>
           Puede bajar un archivo con todos los datos que la junta tiene de usted. No incluye datos de otros
           vecinos.
         </p>
         <DescargarCopia />
+        {perfil.cancelacionPendiente ? (
+          <MensajeEstado tipo="info" titulo="Pidió cancelar su cuenta">
+            <p>
+              La administración lo revisará dentro del plazo de ley y le avisará. Su cuenta sigue igual
+              mientras tanto.
+            </p>
+          </MensajeEstado>
+        ) : (
+          <Link
+            href="/mas/perfil/cancelar"
+            className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
+          >
+            <TriangleAlert aria-hidden className="size-icono" />
+            Pedir que cancelen mi cuenta
+          </Link>
+        )}
       </Tarjeta>
 
       {perfil.solicitudes.length > 0 && (

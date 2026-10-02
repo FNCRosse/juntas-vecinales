@@ -106,3 +106,11 @@ export function plantillaSolicitudPrivacidad(nombre: string, numero: string, res
 export function plantillaNumeroCambiado(nombre: string, terminaEn: string) {
   return { plantilla: "numero_cambiado", parametros: [nombre, terminaEn] };
 }
+
+/**
+ * Pedido de cancelación para la administración (HU-GAR-14 CA2). Texto en Meta: "{{1}} pidió cancelar
+ * su cuenta en la Junta Vecinal. Resuélvalo en Solicitudes de privacidad antes del {{2}}."
+ */
+export function plantillaCancelacionPedida(vecino: string, vence: string) {
+  return { plantilla: "cancelacion_pedida", parametros: [vecino, vence] };
+}

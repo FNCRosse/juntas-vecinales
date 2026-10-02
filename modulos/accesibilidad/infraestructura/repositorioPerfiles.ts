@@ -1,4 +1,4 @@
-import { prisma } from "@/compartido/bd/cliente";
+import { prisma, type Transaccion } from "@/compartido/bd/cliente";
 import { PerfilAccesibilidad } from "@/modulos/accesibilidad/dominio/perfilAccesibilidad";
 
 const columnas = {
@@ -37,4 +37,9 @@ export async function guardarPerfil(perfil: PerfilAccesibilidad) {
     ? await prisma.perfilAccesibilidad.update({ where: { id }, data: datos, select: columnas })
     : await prisma.perfilAccesibilidad.create({ data: datos, select: columnas });
   return PerfilAccesibilidad.reconstruir(fila);
+}
+
+/** Cancelación aprobada (HU-GAR-14 CA3): el perfil de la cuenta se borra. */
+export async function borrarPerfilDe(tx: Transaccion, usuarioId: string) {
+  await tx.perfilAccesibilidad.deleteMany({ where: { usuarioId } });
 }

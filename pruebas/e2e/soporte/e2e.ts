@@ -14,6 +14,11 @@ declare global {
       guardarModo(modo: "normal" | "senior"): Chainable<void>;
       /** Espera a que React haya hidratado el botón: antes, la página es solo HTML y no responde. */
       esperarHidratacion(textoDelBoton: string): Chainable<JQuery<HTMLButtonElement>>;
+      /**
+       * Empadrona a una vecina ficticia nueva y entra con su enlace: para las pruebas que cambian o
+       * borran los datos de la persona, sin tocar las semillas que usan las demás.
+       */
+      entrarComoVecinaNueva(nombre: string): Chainable<{ telefono: string; dni: string }>;
     }
   }
 }
@@ -55,3 +60,31 @@ Cypress.Commands.add("esperarHidratacion", (textoDelBoton: string) =>
     ).to.eq(true),
   ),
 );
+
+Cypress.Commands.add("entrarComoVecinaNueva", (nombre: string) => {
+  const sufijo = String(Date.now()).slice(-6);
+  const datos = { telefono: `9${sufijo}03`, dni: `7${sufijo}1` };
+  cy.clearCookies();
+  cy.request("POST", "/api/auth/clave", { dni: "40000001", clave: "clave-de-prueba" });
+  cy.request("POST", "/api/admin/padron/empadronar", {
+    vivienda: {
+      manzana: "F",
+      lote: sufijo.slice(-4),
+      uso: "VIVIENDA",
+      familias: 1,
+      inquilinos: 0,
+      autos: 0,
+      motos: 0,
+      triciclos: 0,
+      negocios: 0,
+    },
+    titular: { nombreCompleto: nombre, dni: datos.dni, dniVisto: true, telefono: datos.telefono },
+  });
+  cy.clearCookies();
+  cy.task<string>("enlaceEnCola", { telefono: `51${datos.telefono}` }).then((enlace) =>
+    cy.visit(new URL(enlace).pathname),
+  );
+  cy.location("pathname").should("eq", "/entrar/privacidad");
+  cy.request("POST", "/api/auth/politica", { acepto: true });
+  return cy.wrap(datos);
+});

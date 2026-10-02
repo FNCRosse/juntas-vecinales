@@ -28,3 +28,8 @@ export async function buscarSolicitud(id: string) {
 export async function guardarEstado(id: string, estado: EstadoApoyo, atendidaPor: string) {
   return prisma.solicitudApoyo.update({ where: { id }, data: { estado, atendidaPor } });
 }
+
+/** Cancelación aprobada (HU-GAR-14 CA3): los pedidos de ayuda quedan sin el nombre ni el detalle. */
+export async function anonimizarPedidos(tx: Transaccion, usuarioId: string, quien: string) {
+  await tx.solicitudApoyo.updateMany({ where: { usuarioId }, data: { quien, detalle: null } });
+}
