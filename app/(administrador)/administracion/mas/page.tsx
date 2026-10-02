@@ -12,6 +12,9 @@ export default function MasOpciones() {
       <TarjetaEnlace href="/administracion/privacidad" titulo="Solicitudes de privacidad">
         <span>Acceso, rectificación, cancelación y oposición de los vecinos.</span>
       </TarjetaEnlace>
+      <TarjetaEnlace href="/administracion/auditoria" titulo="Auditoría">
+        <span>Las acciones importantes de todo el sistema, de solo lectura.</span>
+      </TarjetaEnlace>
       <BotonCerrarSesion destino="/entrar/equipo" />
     </div>
   );

@@ -8,7 +8,7 @@ import { resumenArco } from "@/modulos/identidad/aplicacion/arco";
 export const metadata: Metadata = { title: "Panel de administración" };
 
 // ADM-INI-01 Panel de administración: las solicitudes de privacidad que esperan, con la alerta de las
-// que vencen pronto (HU-GAR-16 CA2).
+// que vencen pronto (HU-GAR-16 CA2), y la auditoría global (HU-GAR-26).
 export default async function PanelAdministracion() {
   const sesion = await exigirActor(["ADMINISTRADOR"], "/entrar/equipo");
   const ahora = new Date();
@@ -41,6 +41,9 @@ export default async function PanelAdministracion() {
               ? "1 solicitud por resolver."
               : `${pendientes} solicitudes por resolver.`}
         </span>
+      </TarjetaEnlace>
+      <TarjetaEnlace href="/administracion/auditoria" titulo="Auditoría">
+        <span>Las acciones importantes de todo el sistema, de la más reciente a la más antigua.</span>
       </TarjetaEnlace>
     </div>
   );

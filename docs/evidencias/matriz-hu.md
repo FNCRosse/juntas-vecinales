@@ -2,7 +2,7 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 27 · cerradas con e2e: 27 de 27 (100 %).
+- HU en el plan: 76 · cerradas: 28 · cerradas con e2e: 28 de 28 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
@@ -39,3 +39,4 @@ Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU
 | HU-GAR-14 Cancelación de la cuenta | En parte | `app/(administrador)/administracion/privacidad/[id]/ResolverSolicitud.tsx`<br>`app/(vecino)/mas/perfil/cancelar/CancelarCuenta.tsx`<br>`modulos/accesibilidad/aplicacion/datosPersonales.ts`<br>`modulos/identidad/aplicacion/arco.ts` | — | `pruebas/integracion/identidad/cancelacion.test.ts` | `pruebas/e2e/identidad/cancelacion.cy.ts` |
 | HU-GAR-15 Oposición a mostrar la ubicación exacta | En parte | `app/(vecino)/mas/perfil/OposicionUbicacion.tsx`<br>`modulos/identidad/aplicacion/arco.ts` | — | `pruebas/integracion/identidad/cancelacion.test.ts` | `pruebas/e2e/identidad/cancelacion.cy.ts` |
 | HU-GAR-17 Cambio de número de contacto verificado | Cerrada | `app/(administrador)/administracion/privacidad/[id]/ResolverSolicitud.tsx`<br>`app/(vecino)/mas/perfil/corregir/CorregirDato.tsx`<br>`modulos/identidad/aplicacion/arco.ts`<br>`modulos/identidad/dominio/arco.ts` | — | `pruebas/integracion/identidad/contacto.test.ts` | `pruebas/e2e/identidad/privacidad.cy.ts` |
+| HU-GAR-26 Log de auditoría global | Cerrada | `modulos/identidad/aplicacion/auditoria.ts` | — | `pruebas/integracion/identidad/auditoria.test.ts` | `pruebas/e2e/identidad/auditoria.cy.ts` |
