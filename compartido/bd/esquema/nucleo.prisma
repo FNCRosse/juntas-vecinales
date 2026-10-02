@@ -15,3 +15,20 @@ model EjecucionWorker {
 
   @@map("nucleo_ejecuciones_worker")
 }
+
+// Registro consolidado de acciones críticas (AC-6). Solo inserción: un trigger rechaza UPDATE y DELETE.
+// actorId es el id del usuario (null cuando actúa el sistema); la llave foránea llega con Usuario en M1.
+model RegistroAuditoria {
+  id        String   @id @default(uuid())
+  fecha     DateTime @default(now())
+  actorId   String?
+  accion    String
+  entidad   String
+  entidadId String
+  antes     Json?
+  despues   Json?
+
+  @@index([entidad, entidadId])
+  @@index([fecha])
+  @@map("nucleo_auditoria")
+}

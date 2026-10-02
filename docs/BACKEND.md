@@ -41,7 +41,7 @@ export const POST = manejar(async (req) => {
 ## 4. Validación y errores
 
 - **Frontera:** zod valida todo lo que entra por HTTP (cuerpo, parámetros, cabeceras). El esquema vive junto al route handler. Un `ZodError` se convierte en 400 con el mensaje de cada campo en lenguaje llano, para mostrarlo junto al campo (WCAG 3.3.1).
-- **Dominio:** errores tipados en `compartido/errores.ts`. `manejar()` (el envoltorio de todos los route handlers) los traduce:
+- **Dominio:** errores tipados en `compartido/errores.ts`. `manejar()` (`compartido/manejar.ts`, el envoltorio de todos los route handlers; `leerJson()` convierte un cuerpo ilegible en 400) los traduce:
 
 | Error | HTTP | Uso |
 | --- | --- | --- |
