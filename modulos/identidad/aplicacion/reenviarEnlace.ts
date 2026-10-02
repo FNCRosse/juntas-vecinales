@@ -9,13 +9,22 @@ import { MENSAJE_MUCHOS, MENSAJE_MUY_SEGUIDO, MENSAJE_SIN_WHATSAPP } from "./ent
 import { exigirRol, type SesionDto } from "./sesion";
 
 /** La administración reenvía el enlace de entrada desde la ficha de la vivienda (ADM-PAD-02). */
-export async function reenviarEnlace(sesion: SesionDto, usuarioId: string, origen: string, ahora = new Date()) {
+export async function reenviarEnlace(
+  sesion: SesionDto,
+  usuarioId: string,
+  origen: string,
+  ahora = new Date(),
+) {
   exigirRol(sesion, "ADMINISTRADOR");
   const usuario = await prisma.usuario.findFirst({ where: { id: usuarioId, estado: "ACTIVA" } });
   if (!usuario) throw new ErrorNoEncontrado();
   if (!usuario.telefonoWhatsApp) throw new ErrorReglaNegocio(MENSAJE_SIN_WHATSAPP);
-  const permiso = puedeEmitirOtro(await enlacesEmitidosDesde(usuario.id, new Date(ahora.getTime() - 3_600_000)), ahora);
-  if (permiso !== "SI") throw new ErrorEnPausa(permiso === "MUY_SEGUIDO" ? MENSAJE_MUY_SEGUIDO : MENSAJE_MUCHOS);
+  const permiso = puedeEmitirOtro(
+    await enlacesEmitidosDesde(usuario.id, new Date(ahora.getTime() - 3_600_000)),
+    ahora,
+  );
+  if (permiso !== "SI")
+    throw new ErrorEnPausa(permiso === "MUY_SEGUIDO" ? MENSAJE_MUY_SEGUIDO : MENSAJE_MUCHOS);
 
   await prisma.$transaction(async (tx) => {
     await emitirEnlace(tx, usuario, origen, ahora);

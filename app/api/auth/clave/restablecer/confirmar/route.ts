@@ -13,9 +13,17 @@ const esquema = z.object({
 /** Crear la clave nueva con el enlace del WhatsApp (HU-GAR-25 CA3) y entrar. */
 export const POST = manejar(async (peticion) => {
   const { token, clave } = esquema.parse(await leerJson(peticion));
-  const { token: sesion, destino } = await restablecerClave(token, clave, leerCookie(peticion, COOKIE_PERFIL));
+  const { token: sesion, destino } = await restablecerClave(
+    token,
+    clave,
+    leerCookie(peticion, COOKIE_PERFIL),
+  );
   return Response.json(
     { destino },
-    { headers: { "set-cookie": `${COOKIE_SESION}=${sesion}; Max-Age=${UN_ANIO_SEGUNDOS}; ${ATRIBUTOS_COOKIE}` } },
+    {
+      headers: {
+        "set-cookie": `${COOKIE_SESION}=${sesion}; Max-Age=${UN_ANIO_SEGUNDOS}; ${ATRIBUTOS_COOKIE}`,
+      },
+    },
   );
 });

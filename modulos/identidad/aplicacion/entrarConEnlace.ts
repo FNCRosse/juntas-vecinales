@@ -4,7 +4,11 @@ import { hashDeToken, nuevoToken } from "@/compartido/claves";
 import { ErrorConflicto } from "@/compartido/errores";
 import { primerNombre } from "@/compartido/fechas";
 import { pasarPerfilALaCuenta } from "@/modulos/accesibilidad/aplicacion/pasarPerfilALaCuenta";
-import { type EstadoEnlace, estadoDelEnlace, type PropositoEnlace } from "@/modulos/identidad/dominio/magicLink";
+import {
+  type EstadoEnlace,
+  estadoDelEnlace,
+  type PropositoEnlace,
+} from "@/modulos/identidad/dominio/magicLink";
 import { direccion } from "@/modulos/identidad/dominio/predio";
 import {
   bloquearEnlace,
@@ -31,7 +35,8 @@ export async function consultarEnlace(
   proposito: PropositoEnlace = "ENTRADA",
 ): Promise<Bienvenida> {
   const enlace = await buscarEnlacePorHash(hashDeToken(token));
-  if (!enlace || enlace.proposito !== proposito || enlace.usuario.estado !== "ACTIVA") return { estado: "VENCIDO" };
+  if (!enlace || enlace.proposito !== proposito || enlace.usuario.estado !== "ACTIVA")
+    return { estado: "VENCIDO" };
   const estado = estadoDelEnlace(enlace, ahora);
   if (estado !== "VIGENTE") return { estado };
   const residencia = enlace.usuario.residencias[0];
@@ -59,8 +64,10 @@ export async function canjearEnlace(
   const sesionNueva = nuevoToken();
   const usuario = await prisma.$transaction(async (tx) => {
     const enlace = await bloquearEnlace(tx, hashDeToken(token));
-    if (!enlace || estadoDelEnlace(enlace, ahora) !== "VIGENTE")
+    // Un enlace para crear la clave no sirve para entrar por aquí (HU-GAR-25).
+    if (!enlace || enlace.proposito !== "ENTRADA" || estadoDelEnlace(enlace, ahora) !== "VIGENTE") {
       throw new ErrorConflicto(MENSAJE_ENLACE_NO_SIRVE);
+    }
     const usuario = await tx.usuario.findUniqueOrThrow({ where: { id: enlace.usuarioId } });
     if (usuario.estado !== "ACTIVA") throw new ErrorConflicto(MENSAJE_ENLACE_NO_SIRVE);
     await marcarEnlaceUsado(tx, enlace.id, ahora);

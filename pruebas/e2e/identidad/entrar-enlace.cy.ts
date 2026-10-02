@@ -24,7 +24,9 @@ function empadronar(lote: string, dni: string, telefono: string) {
     titular: { nombreCompleto: "Sofía Castro Ríos", dni, dniVisto: true, telefono },
   });
   cy.clearCookies();
-  return cy.task<string>("enlaceEnCola", `51${telefono}`).then((enlace) => new URL(enlace).pathname);
+  return cy
+    .task<string>("enlaceEnCola", { telefono: `51${telefono}` })
+    .then((enlace) => new URL(enlace).pathname);
 }
 
 describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {

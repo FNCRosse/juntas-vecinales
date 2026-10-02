@@ -2,7 +2,13 @@
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { prisma } from "@/compartido/bd/cliente";
 import { cifrarClave, hashDeToken, nuevoToken } from "@/compartido/claves";
-import { ErrorConflicto, ErrorEnPausa, ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
+import {
+  ErrorConflicto,
+  ErrorEnPausa,
+  ErrorNoEncontrado,
+  ErrorReglaNegocio,
+  ErrorValidacion,
+} from "@/compartido/errores";
 import { primerNombre } from "@/compartido/fechas";
 import { encolarAviso } from "@/compartido/notificaciones/encolar";
 import { plantillaClaveCambiada } from "@/compartido/notificaciones/plantillas";
@@ -30,8 +36,10 @@ export const MENSAJE_NO_ENCONTRADO =
   "No encontramos ese DNI o casa en el padrón. Revíselo o pida ayuda a la administración.";
 export const MENSAJE_SIN_WHATSAPP =
   "Su cuenta no tiene un WhatsApp registrado. Pida su enlace a la administración de la junta.";
-export const MENSAJE_MUY_SEGUIDO = "Ya le enviamos uno hace un momento. Revise su WhatsApp antes de pedir otro.";
-export const MENSAJE_MUCHOS = "Ya pidió varios enlaces en la última hora. Espere un rato o pida ayuda a la administración.";
+export const MENSAJE_MUY_SEGUIDO =
+  "Ya le enviamos uno hace un momento. Revise su WhatsApp antes de pedir otro.";
+export const MENSAJE_MUCHOS =
+  "Ya pidió varios enlaces en la última hora. Espere un rato o pida ayuda a la administración.";
 
 /**
  * Envía un enlace nuevo de entrada (HU-GAR-11) o para crear una clave (HU-GAR-25), solo al WhatsApp
@@ -96,7 +104,10 @@ export async function restablecerClave(
         titulo: "Su clave de respaldo cambió",
         texto: "Si no fue usted, avise a la administración de la junta.",
         whatsapp: usuario.telefonoWhatsApp
-          ? { telefono: usuario.telefonoWhatsApp, ...plantillaClaveCambiada(primerNombre(usuario.nombreCompleto)) }
+          ? {
+              telefono: usuario.telefonoWhatsApp,
+              ...plantillaClaveCambiada(primerNombre(usuario.nombreCompleto)),
+            }
           : undefined,
       },
       tx,
