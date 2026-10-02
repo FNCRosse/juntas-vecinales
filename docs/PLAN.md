@@ -80,9 +80,9 @@ Punto de entrada del vecino:
 Garita:
 - [x] HU-GAR-04 Pre-registrar visitas
 - [x] HU-GAR-05 Anular visitas
-- [ ] HU-GAR-06 Consultar placa o DNI con semáforo (con la proyección de morosidad de M1 e instantánea sin conexión)
-- [ ] HU-GAR-07 Verificar visitantes contra la lista blanca
-- [ ] HU-GAR-08 Bitácora de entradas y salidas
+- [x] HU-GAR-06 Consultar placa o DNI con semáforo (con la proyección de morosidad de M1 e instantánea sin conexión)
+- [x] HU-GAR-07 Verificar visitantes contra la lista blanca
+- [x] HU-GAR-08 Bitácora de entradas y salidas
 
 Privacidad (ARCO) y contacto:
 - [ ] HU-GAR-16 Bandeja ARCO del administrador con plazos

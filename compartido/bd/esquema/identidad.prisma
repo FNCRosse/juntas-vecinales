@@ -72,6 +72,31 @@ enum EstadoVisita {
   PROGRAMADA
   ANULADA
   LLEGO
+  // Visita no anunciada (HU-GAR-07): espera la respuesta del vecino.
+  ESPERANDO_RESPUESTA
+  AUTORIZADA
+  NO_AUTORIZADA
+  NO_ENTRO
+}
+
+enum TipoVehiculo {
+  AUTO_O_CAMIONETA
+  MOTO
+  TRICICLO_O_CARRETA
+}
+
+enum TipoRegistroAcceso {
+  ENTRADA
+  SALIDA
+}
+
+// Cómo entró (o no): para la bitácora y su valor de prueba (HU-GAR-08).
+enum ModoAcceso {
+  VECINO_REJA
+  VECINO_A_MANO
+  EMERGENCIA
+  VISITA
+  NO_ENTRO
 }
 
 enum UsoPredio {
@@ -107,6 +132,7 @@ model Predio {
   estadoGarita EstadoGarita @default(VERDE)
   residencias  Residencia[]
   visitas      Visita[]
+  vehiculos    Vehiculo[]
 
   @@unique([manzana, lote], map: "identidad_predios_lote_unico")
   @@map("identidad_predios")
@@ -170,8 +196,47 @@ model Visita {
   creadaEn      DateTime     @default(now())
   anuladaEn     DateTime?
   llegoEn       DateTime?
+  /// No anunciada: la anotó el vigilante (HU-GAR-07 CA2).
+  anunciada     Boolean      @default(true)
+  motivo        String?
+  respondidaEn  DateTime?
+  /// "la app" o "por teléfono": por dónde respondió el vecino.
+  respondidaPor String?
 
   @@index([predioId, estado])
   @@index([estado, desde])
   @@map("identidad_visitas")
+}
+
+// Vehículo de un predio (diagrama 02a): la garita lo consulta por la placa (HU-GAR-06).
+model Vehiculo {
+  id       String       @id @default(uuid())
+  predioId String
+  predio   Predio       @relation(fields: [predioId], references: [id])
+  placa    String       @unique(map: "identidad_vehiculos_placa_unica")
+  tipo     TipoVehiculo
+
+  @@map("identidad_vehiculos")
+}
+
+// RegistroAcceso: la bitácora de la garita (HU-GAR-08). Solo inserción (trigger): la salida es una
+// fila nueva que apunta a su entrada. Sin llaves foráneas a propósito: guarda la vivienda como se
+// llamaba ese día y nunca se borra con el padrón.
+model RegistroAcceso {
+  id          String             @id @default(uuid())
+  fecha       DateTime           @default(now())
+  tipo        TipoRegistroAcceso
+  modo        ModoAcceso
+  quien       String
+  placa       String?
+  vivienda    String
+  predioId    String?
+  visitaId    String?
+  entradaId   String?
+  vigilanteId String
+  detalle     String?
+
+  @@unique([entradaId], map: "identidad_registros_acceso_una_salida")
+  @@index([fecha])
+  @@map("identidad_registros_acceso")
 }

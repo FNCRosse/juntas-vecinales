@@ -3,7 +3,7 @@
 const ZONA = "America/Lima";
 
 /** "3:00 p. m.", con espacios normales (Intl usa espacios que no se parten). */
-const horaCorta = (fecha: Date) =>
+export const horaCorta = (fecha: Date) =>
   new Intl.DateTimeFormat("es-PE", { timeZone: ZONA, timeStyle: "short", hour12: true })
     .format(fecha)
     .replace(/[\u00a0\u202f]/g, " ");
@@ -50,4 +50,10 @@ export function rangoHorario(desde: Date, hasta: Date) {
 /** Fecha y hora de un formulario (en Lima, UTC−5 todo el año) a un instante en UTC. */
 export function desdeHoraDeLima(fecha: string, hora: string) {
   return new Date(`${fecha}T${hora}:00-05:00`);
+}
+
+/** Las 0:00 de hoy en Lima, en UTC: desde ahí se cuentan "las entradas de hoy". */
+export function inicioDelDiaEnLima(ahora: Date) {
+  const dia = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA }).format(ahora);
+  return new Date(`${dia}T00:00:00-05:00`);
 }

@@ -56,3 +56,36 @@ export function plantillaBajaPadron(nombre: string, direccion: string) {
 export function plantillaPedidoAyuda(quien: string, pantalla: string, modo: string) {
   return { plantilla: "pedido_ayuda", parametros: [quien, pantalla, modo] };
 }
+
+/**
+ * La reja no se abre sola (HU-GAR-06 CA3). Texto en Meta: "Hola, {{1}}. Hoy a las {{2}} entró a
+ * {{3}} abriendo la reja a mano: por ahora no se abre sola para su casa. Cuando se ponga al día con
+ * su cuota, vuelve a abrirse sola."
+ */
+export function plantillaRejaManual(nombre: string, hora: string, vivienda: string) {
+  return { plantilla: "reja_manual", parametros: [nombre, hora, vivienda] };
+}
+
+/**
+ * Apertura por emergencia, para la directiva (HU-GAR-06). Texto en Meta: "La garita abrió la reja por
+ * una emergencia a las {{1}}: {{2}}, para {{3}}. Quedó en la bitácora."
+ */
+export function plantillaEmergenciaGarita(hora: string, motivo: string, vivienda: string) {
+  return { plantilla: "emergencia_garita", parametros: [hora, motivo, vivienda] };
+}
+
+/**
+ * Llegó una visita anunciada (HU-GAR-07 CA1). Texto en Meta: "Hola, {{1}}. Su visita {{2}} llegó a la
+ * garita a las {{3}} y ya pasó."
+ */
+export function plantillaVisitaLlego(nombre: string, visita: string, hora: string) {
+  return { plantilla: "visita_llego", parametros: [nombre, visita, hora] };
+}
+
+/**
+ * Visita no anunciada en la puerta (HU-GAR-07 CA2). Texto en Meta: "Hola, {{1}}. {{2}} está en la
+ * garita y pregunta por usted. Responda si la deja pasar aquí: {{3}} o llame a la garita."
+ */
+export function plantillaVisitaEnPuerta(nombre: string, visita: string, enlace: string) {
+  return { plantilla: "visita_en_puerta", parametros: [nombre, visita, enlace] };
+}
