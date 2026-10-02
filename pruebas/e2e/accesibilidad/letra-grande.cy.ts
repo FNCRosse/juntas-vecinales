@@ -9,7 +9,7 @@ describe("@HU-ACC-01 Letra grande persiste en el servidor", () => {
     cy.intercept("PUT", "/api/accesibilidad/perfil").as("guardar");
     cy.visit("/catalogo");
     cy.get("html").should("not.have.attr", "data-mode");
-    cy.contains("button", "Letra grande").should("have.attr", "aria-pressed", "false").click();
+    cy.esperarHidratacion("Letra grande").should("have.attr", "aria-pressed", "false").click();
 
     cy.get("html").should("have.attr", "data-mode", "senior");
     cy.wait("@guardar").its("response.statusCode").should("eq", 200);
@@ -34,7 +34,7 @@ describe("@HU-ACC-01 Letra grande persiste en el servidor", () => {
   it("@HU-ACC-01 si no se pudo guardar, el modo se mantiene en este teléfono y se avisa", () => {
     cy.intercept("PUT", "/api/accesibilidad/perfil", { statusCode: 500, body: {} });
     cy.visit("/catalogo");
-    cy.contains("button", "Letra grande").click();
+    cy.esperarHidratacion("Letra grande").click();
     cy.get("html").should("have.attr", "data-mode", "senior");
     cy.contains("[role=status]", "No pudimos guardar su preferencia. Se mantendrá en este teléfono.");
     cy.reload();

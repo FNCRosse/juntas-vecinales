@@ -113,6 +113,7 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
 
   it("@HU-ACC-06 CA3 el diálogo guarda el foco mientras está abierto, Escape sale y el foco vuelve", () => {
     cy.visit("/catalogo");
+    cy.esperarHidratacion("Ver cómo se calcula");
     tabularHasta("Ver cómo se calcula");
     pulsarEnter();
     cy.get("[role=dialog]").should("be.visible").and("have.attr", "aria-labelledby");
