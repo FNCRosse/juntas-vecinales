@@ -41,11 +41,21 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
     empadronar(`1${sufijo.slice(-3)}`, `6${sufijo}1`, `9${sufijo}01`).then((ruta) => {
       // Antes de entrar elige Letra grande en este dispositivo (HU-ACC-01).
       cy.guardarModo("senior");
+      // La página envía el enlace sola; el primer intento se simula fallido para ver la
+      // bienvenida y el botón de respaldo.
+      cy.intercept(
+        { method: "POST", url: "/api/auth/canjear", times: 1 },
+        {
+          statusCode: 503,
+          body: { error: "No pudimos conectarnos. Revise su internet y vuelva a intentarlo." },
+        },
+      );
       cy.visit(ruta);
       cy.get("h1").should("have.text", "Le damos la bienvenida, Sofía");
+      cy.contains('[role="alert"]', "No pudimos hacerle entrar").should("exist");
       cy.contains("p", `Mz. E, lote 1${sufijo.slice(-3)}`).should("exist");
       cy.revisarAccesibilidad("entrar-enlace-senior");
-      cy.esperarHidratacion("Entrar a mi cuenta").click();
+      cy.contains("button", "Entrar a mi cuenta").click();
 
       cy.location("pathname").should("eq", "/entrar/privacidad");
       cy.get("h1").should("have.text", "Cómo cuidamos sus datos");
@@ -101,8 +111,8 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
     empadronar(`2${sufijo.slice(-3)}`, `6${sufijo}2`, `9${sufijo}02`).then((ruta) => {
       cy.viewport(360, 800);
       cy.guardarModo("normal");
+      // Al abrir el enlace en el navegador, entra solo (HU-GAR-02 CA1).
       cy.visit(ruta);
-      cy.esperarHidratacion("Entrar a mi cuenta").click();
       cy.location("pathname").should("eq", "/entrar/privacidad");
       cy.revisarAccesibilidad("privacidad-normal-360");
       cy.visit("/");
