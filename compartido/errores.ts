@@ -1,3 +1,4 @@
+// @HU-ACC-08
 // Errores tipados del sistema (docs/BACKEND.md §4). Cada uno lleva el mensaje para la persona,
 // con trato de usted: qué pasó y cómo seguir, sin códigos técnicos ni culpa (HU-ACC-03 CA2, HU-ACC-08).
 

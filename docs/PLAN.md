@@ -56,6 +56,7 @@ Acceso y padrón:
 - [ ] HU-GAR-01 Empadronar residente y enviarle su acceso inicial
 - [ ] HU-GAR-02 Entrar con el enlace de acceso, aceptar la política y crear la clave de respaldo
 - [ ] HU-ACC-01 Modo Senior guardado en la cuenta (enlaza el perfil de la fase 0b con `Usuario`)
+  - Pendiente de enlazar desde la fase 0b: llave foránea `accesibilidad_perfiles.usuarioId → Usuario`; al autenticar, pasar el perfil de la cookie `perfil` al usuario (o tomar el de la cuenta si ya tiene uno) y leerlo por la sesión en `modoSeniorAlRenderizar()`; el mismo perfil desde otro dispositivo (CA1, R-10); el switch "Letra grande" también en Perfil; los layouts de los grupos exigen sesión y rol; "Pedir ayuda" lleva a la pantalla de HU-ACC-04 (`/mas/ayuda` y equivalentes por actor, hoy sin página).
 - [ ] HU-GAR-03 Abrir desde el ícono del teléfono sin volver a entrar (PWA)
 - [ ] HU-GAR-11 Pedir un enlace nuevo
 - [ ] HU-GAR-24 Entrar con la clave de respaldo

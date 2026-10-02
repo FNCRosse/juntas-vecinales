@@ -26,12 +26,15 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 - El panel de inicio del vecino (HU-GAR-19) se compone en `app/(vecino)/page.tsx` llamando a la `aplicacion` de cada módulo: así M1 no importa M3–M5 ([ARQUITECTURA.md §3](ARQUITECTURA.md#3-dependencias-permitidas-entre-módulos)).
 - Las páginas entregan HTML semántico completo: un `<h1>` por pantalla, `<main id="contenido">`, enlace "Saltar al contenido" como primer elemento, `<nav aria-label>` por barra.
 - Al cambiar de ruta en el cliente, el foco va al `<h1>` y una región `aria-live="polite"` anuncia el título.
+- Todo eso lo pinta `componentes/a11y/MarcoActor.tsx`, que usan los `layout.tsx` de los grupos: `Encabezado` ("Letra grande" y "Pedir ayuda"), `BarraNavegacion` (inferior en el teléfono, superior desde 768 px; en Senior las opciones marcadas `ocultaEnSenior` pasan a "Más"), `<main id="contenido">` y `AnunciadorRuta`. Los layouts todavía no exigen sesión ni rol: lo añade M1.
+- **Catálogo interno** (`/catalogo` y `/catalogo/[actor]`): muestra cada primitiva de `componentes/a11y` y el marco de cada actor. Responde 404 cuando `VERCEL_ENV=production`; existe en local, en el CI y en las previews. Lo recorren los e2e de `pruebas/e2e/accesibilidad/`.
 
 ## 3. Perfil de accesibilidad al renderizar (ADR-004)
 
 - El layout raíz lee la sesión y el `PerfilAccesibilidad` en el servidor y pinta `<html lang="es" data-mode="senior">` cuando corresponde. Sin parpadeo, porque el documento llega ya ajustado.
 - Sin sesión (pantallas de acceso) se usa el perfil por defecto (modo Normal).
-- El switch "Letra grande" (guía visual §5.8) cambia `document.documentElement.dataset.mode` al instante y guarda con `PUT /api/accesibilidad/perfil`. Si no se pudo guardar, el modo se mantiene en el dispositivo y aparece el aviso "No pudimos guardar su preferencia. Se mantendrá en este teléfono".
+- **Fase 0b (sin `Usuario` todavía):** el perfil se guarda igual en el servidor (`accesibilidad_perfiles`) y se identifica por la cookie `perfil` (HttpOnly, id del perfil) que deja el `PUT`. `modoSeniorAlRenderizar()` (`app/_accesibilidad/perfil.ts`) lo lee una vez por petición; si la BD no responde, la página sale en Normal. **M1** lo enlaza con la cuenta: al autenticar, el perfil del dispositivo pasa al `usuarioId` (o se toma el de la cuenta) y se busca por la sesión, no por la cookie.
+- El botón "Letra grande" de la barra superior (prototipo C-08, `aria-pressed`; `componentes/a11y/InterruptorLetraGrande.tsx`) cambia `document.documentElement.dataset.mode` al instante y guarda con `PUT /api/accesibilidad/perfil`. Si no se pudo guardar, el modo se mantiene en el dispositivo con la cookie `modo_dispositivo` (nunca `localStorage`), que el servidor respeta al renderizar hasta el siguiente guardado correcto, y aparece el aviso "No pudimos guardar su preferencia. Se mantendrá en este teléfono."
 - Componentes y pantallas leen siempre tokens; nunca valores fijos de color, tamaño o espaciado.
 
 ## 4. Estilos: tokens, Tailwind v4 y Radix

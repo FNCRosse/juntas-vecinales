@@ -1,0 +1,65 @@
+import { PUT } from "@/app/api/accesibilidad/perfil/route";
+import { prisma } from "@/compartido/bd/cliente";
+import { obtenerPerfil } from "@/modulos/accesibilidad/aplicacion/obtenerPerfil";
+
+const guardar = (cuerpo: unknown, cookie?: string) =>
+  PUT(
+    new Request("http://localhost/api/accesibilidad/perfil", {
+      method: "PUT",
+      headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}) },
+      body: typeof cuerpo === "string" ? cuerpo : JSON.stringify(cuerpo),
+    }),
+    undefined,
+  );
+
+const idDeLaCookie = (respuesta: Response) =>
+  respuesta.headers.get("set-cookie")?.match(/^perfil=([^;]+)/)?.[1];
+
+beforeEach(async () => {
+  await prisma.$executeRaw`TRUNCATE accesibilidad_perfiles`;
+});
+
+afterAll(async () => {
+  await prisma.$disconnect();
+});
+
+describe("@HU-ACC-01 Perfil de accesibilidad en el servidor (ADR-004)", () => {
+  it("@HU-ACC-01 sin perfil guardado se renderiza en modo Normal", async () => {
+    expect(await obtenerPerfil(undefined)).toMatchObject({ id: null, modoSeniorActivo: false });
+    expect(await obtenerPerfil("no-es-un-id")).toMatchObject({ id: null, modoSeniorActivo: false });
+    expect(await obtenerPerfil("6f1c2a3b-0000-4000-8000-000000000000")).toMatchObject({ id: null });
+  });
+
+  it("@HU-ACC-01 CA1 PUT guarda Letra grande en el servidor y deja la cookie del perfil", async () => {
+    const respuesta = await guardar({ modoSeniorActivo: true });
+    expect(respuesta.status).toBe(200);
+    const cuerpo = await respuesta.json();
+    expect(cuerpo).toMatchObject({ modoSeniorActivo: true, escalaTipografica: "GRANDE" });
+
+    const cookie = respuesta.headers.get("set-cookie") ?? "";
+    expect(cookie).toMatch(/HttpOnly/);
+    expect(cookie).toMatch(/SameSite=Lax/);
+    expect(idDeLaCookie(respuesta)).toBe(cuerpo.id);
+
+    // Al volver (recargar u otra visita con la misma cookie) el perfil sigue en Senior.
+    expect(await obtenerPerfil(cuerpo.id)).toMatchObject({ modoSeniorActivo: true });
+    expect(await prisma.perfilAccesibilidad.count()).toBe(1);
+  });
+
+  it("@HU-ACC-01 CA1 con la cookie se actualiza el mismo perfil, sin crear otro", async () => {
+    const id = idDeLaCookie(await guardar({ modoSeniorActivo: true }));
+    const respuesta = await guardar({ modoSeniorActivo: false }, `otra=1; perfil=${id}`);
+    expect(await respuesta.json()).toMatchObject({ id, modoSeniorActivo: false });
+    expect(await prisma.perfilAccesibilidad.count()).toBe(1);
+  });
+
+  it("@HU-ACC-03 CA2 un dato con forma incorrecta responde 400 con un mensaje en lenguaje llano", async () => {
+    const respuesta = await guardar({ modoSeniorActivo: "sí" });
+    expect(respuesta.status).toBe(400);
+    expect(await respuesta.json()).toEqual({
+      error: "Revise los datos marcados y corríjalos para continuar.",
+      campos: { modoSeniorActivo: "Indique si quiere la letra grande: sí o no." },
+    });
+    expect((await guardar("{roto")).status).toBe(400);
+  });
+});
