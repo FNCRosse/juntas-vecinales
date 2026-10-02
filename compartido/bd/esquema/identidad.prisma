@@ -262,6 +262,8 @@ enum CampoRectificable {
   NOMBRE
   DNI
   DIRECCION
+  // Cambio de número (HU-GAR-17): exige verificar la identidad antes de aprobar.
+  WHATSAPP
 }
 
 model SolicitudArco {
@@ -281,6 +283,8 @@ model SolicitudArco {
   resueltaPor      String?
   /// Por qué se rechazó: se le envía al vecino.
   motivoResolucion String?
+  /// Cómo se verificó la identidad antes de cambiar el número (HU-GAR-17 CA2).
+  verificacion     String?
 
   @@index([estado, tipo])
   @@index([usuarioId])

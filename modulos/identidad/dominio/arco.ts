@@ -1,9 +1,9 @@
-// @HU-GAR-12 @HU-GAR-13 @HU-GAR-16
+// @HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17
 // SolicitudARCO del diagrama 02a: plazos de la Ley N.° 29733 (D. S. 016-2024-JUS), contados en días
 // hábiles de lunes a viernes en Lima (docs/DATOS.md §6).
 
 export type TipoArco = "ACCESO" | "RECTIFICACION" | "CANCELACION" | "OPOSICION";
-export type CampoRectificable = "NOMBRE" | "DNI" | "DIRECCION";
+export type CampoRectificable = "NOMBRE" | "DNI" | "DIRECCION" | "WHATSAPP";
 
 export const PLAZO_DIAS_HABILES: Record<TipoArco, number> = {
   ACCESO: 20,
@@ -26,7 +26,25 @@ export const CAMPOS: Record<CampoRectificable, { opcion: string; nombre: string 
   NOMBRE: { opcion: "Mi nombre", nombre: "el nombre" },
   DNI: { opcion: "Mi DNI", nombre: "el DNI" },
   DIRECCION: { opcion: "Mi vivienda (manzana y lote)", nombre: "la vivienda" },
+  WHATSAPP: { opcion: "Mi número de WhatsApp", nombre: "el número de WhatsApp" },
 };
+
+/** Cómo se confirmó que es la persona antes de cambiar su número (HU-GAR-17 CA2, prototipo XAR02). */
+export const VERIFICACIONES = {
+  DIRECTIVA: "La directiva verificó su identidad en su casa",
+  PERSONA_CON_DNI: "En persona, con su DNI físico",
+} as const;
+export type Verificacion = keyof typeof VERIFICACIONES;
+
+/** "987 654 321" o "+51 987 654 321" → "51987654321", como lo guarda el padrón. Null si no es un celular. */
+export function leerCelular(texto: string) {
+  const cifras = texto.replace(/\D/g, "").replace(/^51(?=9\d{8}$)/, "");
+  return /^9\d{8}$/.test(cifras) ? `51${cifras}` : null;
+}
+
+/** "51987654321" → "987 654 321": así se lee un número en pantalla. */
+export const celularLegible = (numero: string | null) =>
+  numero?.replace(/^51(\d{3})(\d{3})(\d{3})$/, "$1 $2 $3") ?? null;
 
 /** "S-0031": así se nombra una solicitud de privacidad. */
 export const numeroDeSolicitud = (numero: number) => `S-${String(numero).padStart(4, "0")}`;
@@ -75,6 +93,7 @@ export function errorDeRectificacion(campo: CampoRectificable, valor: string, an
   if (campo === "DNI" && !/^\d{8}$/.test(limpio)) return "El DNI tiene 8 números.";
   if (campo === "DIRECCION" && !leerVivienda(limpio))
     return 'Escriba la manzana y el lote, por ejemplo "Mz. C, lote 8".';
+  if (campo === "WHATSAPP" && !leerCelular(limpio)) return "El celular tiene 9 números y empieza con 9.";
   if (limpio.toLowerCase() === anterior.toLowerCase()) return "Es igual al dato que ya tenemos.";
   return null;
 }

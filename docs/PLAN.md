@@ -90,7 +90,7 @@ Privacidad (ARCO) y contacto:
 - [x] HU-GAR-13 Rectificación de datos
 - [ ] HU-GAR-14 Cancelación de la cuenta — `[~]` se cierra en M5: cada módulo añade su anonimización
 - [ ] HU-GAR-15 Oposición a mostrar la ubicación exacta — `[~]` se cierra en M3, cuando el mapa la aplica
-- [ ] HU-GAR-17 Cambio de número de contacto verificado
+- [x] HU-GAR-17 Cambio de número de contacto verificado
 
 Trazabilidad:
 - [ ] HU-GAR-26 Log de auditoría global

@@ -1,5 +1,5 @@
 "use client";
-// @HU-GAR-13
+// @HU-GAR-13 @HU-GAR-17
 
 import { ChevronLeft, Send } from "lucide-react";
 import Link from "next/link";
@@ -20,6 +20,7 @@ const AYUDA: Record<CampoRectificable, { etiqueta: string; ayuda: string }> = {
     etiqueta: "Su vivienda correcta",
     ayuda: 'La manzana y el lote, por ejemplo "Mz. C, lote 8".',
   },
+  WHATSAPP: { etiqueta: "Su número nuevo", ayuda: "El celular de 9 números, por ejemplo 987 654 321." },
 };
 
 export function CorregirDato({ campos }: { campos: Record<CampoRectificable, { opcion: string }> }) {
@@ -36,16 +37,21 @@ export function CorregirDato({ campos }: { campos: Record<CampoRectificable, { o
     setFalla(null);
     if (!campo) return setErrores({ campo: "Elija qué dato quiere corregir." });
     setEnviando(true);
-    const r = await enviarJson("/api/arco/solicitudes", "POST", {
-      tipo: "RECTIFICACION",
-      campo,
-      valor,
-      detalle: detalle || undefined,
-    });
+    const r =
+      campo === "WHATSAPP"
+        ? await enviarJson("/api/perfil/contacto", "POST", { telefono: valor, detalle: detalle || undefined })
+        : await enviarJson("/api/arco/solicitudes", "POST", {
+            tipo: "RECTIFICACION",
+            campo,
+            valor,
+            detalle: detalle || undefined,
+          });
     if (r.ok) return router.push("/mas/perfil?aviso=correccion");
     setEnviando(false);
-    if (r.estado === 400) setErrores(r.campos);
-    else setFalla(r.error);
+    if (r.estado === 400) {
+      const { telefono, ...resto } = r.campos;
+      setErrores(telefono ? { ...resto, valor: telefono } : resto);
+    } else setFalla(r.error);
   }
 
   const listaErrores = Object.entries(errores).map(([c, mensaje]) => ({ campo: `campo-${c}`, mensaje }));
@@ -81,9 +87,9 @@ export function CorregirDato({ campos }: { campos: Record<CampoRectificable, { o
             name="valor"
             etiqueta={AYUDA[campo].etiqueta}
             ayuda={AYUDA[campo].ayuda}
-            autoComplete={campo === "NOMBRE" ? "name" : "off"}
-            inputMode={campo === "DNI" ? "numeric" : undefined}
-            maxLength={campo === "DNI" ? 8 : 120}
+            autoComplete={campo === "NOMBRE" ? "name" : campo === "WHATSAPP" ? "tel-national" : "off"}
+            inputMode={campo === "DNI" || campo === "WHATSAPP" ? "numeric" : undefined}
+            maxLength={campo === "DNI" ? 8 : campo === "WHATSAPP" ? 11 : 120}
             value={valor}
             error={errores.valor}
             onChange={(e) => setValor(campo === "DNI" ? e.target.value.replace(/\D/g, "") : e.target.value)}
@@ -99,7 +105,16 @@ export function CorregirDato({ campos }: { campos: Record<CampoRectificable, { o
           />
         </>
       )}
-      <p>La administración revisará su pedido en un plazo de 10 días hábiles y le avisará.</p>
+      {campo === "WHATSAPP" ? (
+        <MensajeEstado tipo="info" titulo="Primero confirmaremos que es usted">
+          <p>
+            Antes del cambio, la directiva confirmará que es usted, en persona o con su DNI. Luego le
+            avisaremos en su número anterior y en el nuevo.
+          </p>
+        </MensajeEstado>
+      ) : (
+        <p>La administración revisará su pedido en un plazo de 10 días hábiles y le avisará.</p>
+      )}
       {falla && (
         <MensajeEstado tipo="error" titulo="No se envió su solicitud">
           <p>{falla}</p>

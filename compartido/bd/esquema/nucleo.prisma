@@ -65,6 +65,9 @@ model AvisoEnCola {
   telefono        String?
   plantilla       String?
   parametros      String[]
+  // Falso solo para un segundo WhatsApp del mismo hecho (el número anterior, HU-GAR-17): su copia
+  // interna ya la lleva el primer aviso.
+  conCopiaInterna Boolean       @default(true)
   estado          EstadoEnvio   @default(PENDIENTE)
   intentos        Int           @default(0)
   reintentarDesde DateTime      @default(now())

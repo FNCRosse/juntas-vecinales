@@ -2,7 +2,7 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 26 · cerradas con e2e: 26 de 26 (100 %).
+- HU en el plan: 76 · cerradas: 27 · cerradas con e2e: 27 de 27 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
@@ -36,3 +36,4 @@ Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU
 | HU-GAR-16 Bandeja ARCO del administrador con plazos | Cerrada | `app/(administrador)/administracion/privacidad/[id]/ResolverSolicitud.tsx`<br>`modulos/identidad/aplicacion/arco.ts`<br>`modulos/identidad/dominio/arco.ts` | — | `pruebas/integracion/identidad/arco.test.ts` | `pruebas/e2e/identidad/privacidad.cy.ts` |
 | HU-GAR-12 Copia de mis datos personales | En parte | `app/(vecino)/mas/perfil/DescargarCopia.tsx`<br>`modulos/accesibilidad/aplicacion/datosPersonales.ts`<br>`modulos/identidad/aplicacion/arco.ts`<br>`modulos/identidad/dominio/arco.ts` | — | `pruebas/integracion/identidad/arco.test.ts` | `pruebas/e2e/identidad/privacidad.cy.ts` |
 | HU-GAR-13 Rectificación de datos | Cerrada | `app/(administrador)/administracion/privacidad/[id]/ResolverSolicitud.tsx`<br>`app/(vecino)/mas/perfil/corregir/CorregirDato.tsx`<br>`modulos/identidad/aplicacion/arco.ts`<br>`modulos/identidad/dominio/arco.ts` | — | `pruebas/integracion/identidad/arco.test.ts` | `pruebas/e2e/identidad/privacidad.cy.ts` |
+| HU-GAR-17 Cambio de número de contacto verificado | Cerrada | `app/(administrador)/administracion/privacidad/[id]/ResolverSolicitud.tsx`<br>`app/(vecino)/mas/perfil/corregir/CorregirDato.tsx`<br>`modulos/identidad/aplicacion/arco.ts`<br>`modulos/identidad/dominio/arco.ts` | — | `pruebas/integracion/identidad/contacto.test.ts` | `pruebas/e2e/identidad/privacidad.cy.ts` |

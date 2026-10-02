@@ -97,3 +97,12 @@ export function plantillaVisitaEnPuerta(nombre: string, visita: string, enlace: 
 export function plantillaSolicitudPrivacidad(nombre: string, numero: string, resultado: string) {
   return { plantilla: "solicitud_privacidad", parametros: [nombre, numero, resultado] };
 }
+
+/**
+ * Cambio de número (HU-GAR-17 CA3), al número nuevo y al anterior. Texto en Meta: "Hola, {{1}}. El
+ * WhatsApp de su cuenta en la Junta Vecinal cambió al número terminado en {{2}}. Si no lo pidió
+ * usted, avise a la administración."
+ */
+export function plantillaNumeroCambiado(nombre: string, terminaEn: string) {
+  return { plantilla: "numero_cambiado", parametros: [nombre, terminaEn] };
+}

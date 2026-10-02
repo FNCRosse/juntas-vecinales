@@ -48,7 +48,13 @@ export async function contarPendientes() {
 export async function cerrarSolicitud(
   tx: Transaccion,
   id: string,
-  datos: { estado: EstadoArco; resueltaEn: Date; resueltaPor: string; motivoResolucion: string | null },
+  datos: {
+    estado: EstadoArco;
+    resueltaEn: Date;
+    resueltaPor: string;
+    motivoResolucion: string | null;
+    verificacion: string | null;
+  },
 ) {
   const { count } = await tx.solicitudArco.updateMany({ where: { id, estado: "PENDIENTE" }, data: datos });
   return count === 1;
