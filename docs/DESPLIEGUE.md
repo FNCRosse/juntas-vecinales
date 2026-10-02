@@ -75,7 +75,9 @@ Para recrearla sin los conectores, en el panel de cada servicio.
 | Node.js | `22.x` |
 | Protección de despliegues | Vercel Authentication solo en previews (`ssoProtection: preview`); producción es pública |
 | Variables (no secretas) | `WHATSAPP_MODO=simulador` (prod, preview, dev) · `CYPRESS_INSTALL_BINARY=0` (prod, preview) · `R2_BUCKET=juntas-vecinales-archivos` (todas) · `NEXT_PUBLIC_MAPA_URL_TESELAS=https://tile.openstreetmap.org/{z}/{x}/{y}.png` (todas) · `URL_WORKER=https://juntas-vecinales-worker.onrender.com` (prod) |
-| Variables de la integración Neon | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` y las `PG*` (prod y preview) |
+| Variables de la integración Neon | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` y las que la integración agrega sola (`PG*`, `POSTGRES_*`, `NEON_*`, `VITE_NEON_AUTH_URL`), para prod y preview. Solo se usan las dos primeras |
+| Base de datos | Integración Neon del Marketplace, región Washington D. C. (`iad1`, AWS us-east-1), plan Free |
+| `R2_ID_CUENTA` | Account ID de Cloudflare (no secreto), en todos los entornos |
 
 El conector creó el proyecto con `create_project` y `gitRepository`: `create_git_project` exige `teamId` y el token del conector no tiene acceso explícito al ámbito del equipo (403), aunque sí al ámbito por defecto.
 
