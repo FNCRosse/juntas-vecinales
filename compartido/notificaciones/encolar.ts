@@ -11,6 +11,8 @@ export type AvisoNuevo = {
   texto: string;
   /** Canal externo, si su preferencia lo permite (HU-GAR-18). Sin él, solo copia interna. */
   whatsapp?: { telefono: string; plantilla: string; parametros: string[] };
+  /** Falso solo cuando otro aviso del mismo hecho ya deja la copia interna (el número anterior). */
+  conCopiaInterna?: boolean;
 };
 
 /**

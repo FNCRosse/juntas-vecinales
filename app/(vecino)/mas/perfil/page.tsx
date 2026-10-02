@@ -11,13 +11,6 @@ import { DescargarCopia } from "./DescargarCopia";
 
 export const metadata: Metadata = { title: "Mi perfil y privacidad" };
 
-const ESTADOS = {
-  PENDIENTE: "Pendiente de revisión",
-  APROBADA: "Aprobada",
-  RECHAZADA: "Rechazada",
-  RESUELTA_SOLA: "Lista",
-};
-
 function Dato({ termino, children }: { termino: string; children: string }) {
   return (
     <div className="flex flex-col">
@@ -48,7 +41,10 @@ export default async function MiPerfil({ searchParams }: { searchParams: Promise
       <h1 className="text-titulo-1">Mi perfil y privacidad</h1>
       {aviso === "correccion" && (
         <MensajeEstado tipo="exito" titulo="Solicitud enviada">
-          <p>Está pendiente de revisión. Le avisaremos cuando la administración la resuelva.</p>
+          <p>
+            Puede ver cómo va en «Mis solicitudes», más abajo. Le avisaremos cuando la administración la
+            resuelva.
+          </p>
         </MensajeEstado>
       )}
 
@@ -64,7 +60,7 @@ export default async function MiPerfil({ searchParams }: { searchParams: Promise
           className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
         >
           <Pencil aria-hidden className="size-icono" />
-          Corregir un dato
+          Corregir un dato o cambiar mi número
         </Link>
       </Tarjeta>
 
@@ -90,7 +86,7 @@ export default async function MiPerfil({ searchParams }: { searchParams: Promise
                   N.° {s.numero} · {s.fecha}
                 </span>
                 <strong>{s.titulo}</strong>
-                <span>{ESTADOS[s.estado]}</span>
+                <span>{s.estadoTexto}</span>
                 {s.motivo && <span className="text-texto-secundario">Motivo: {s.motivo}</span>}
               </li>
             ))}

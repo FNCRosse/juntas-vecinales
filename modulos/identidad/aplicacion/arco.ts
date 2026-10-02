@@ -1,21 +1,28 @@
-// @HU-GAR-12 @HU-GAR-13 @HU-GAR-16
+// @HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import type { SeccionPdf } from "@/compartido/archivos/pdf";
 import { prisma, type Transaccion } from "@/compartido/bd/cliente";
 import { ErrorConflicto, ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
 import { fechaLarga, fechaYHora, primerNombre } from "@/compartido/fechas";
 import { encolarAviso } from "@/compartido/notificaciones/encolar";
-import { plantillaSolicitudPrivacidad } from "@/compartido/notificaciones/plantillas";
+import {
+  plantillaNumeroCambiado,
+  plantillaSolicitudPrivacidad,
+} from "@/compartido/notificaciones/plantillas";
 import {
   CAMPOS,
   type CampoRectificable,
+  celularLegible,
   errorDeRectificacion,
   estadoDelPlazo,
   fechaLimite,
+  leerCelular,
   leerVivienda,
   numeroDeSolicitud,
   TIPOS_ARCO,
   type TipoArco,
+  type Verificacion,
+  VERIFICACIONES,
 } from "@/modulos/identidad/dominio/arco";
 import { NOMBRE_RELACION } from "@/modulos/identidad/dominio/empadronamiento";
 import { direccion } from "@/modulos/identidad/dominio/predio";
@@ -32,12 +39,13 @@ import {
 import { buscarPredioPorLote, cerrarResidencia } from "@/modulos/identidad/infraestructura/repositorioPadron";
 import { exigirRol, type SesionDto } from "./sesion";
 
-export { CAMPOS, TIPOS_ARCO };
-export type { CampoRectificable, TipoArco };
+export { CAMPOS, TIPOS_ARCO, VERIFICACIONES };
+export type { CampoRectificable, TipoArco, Verificacion };
 
 type Solicitud = NonNullable<Awaited<ReturnType<typeof solicitudConVecino>>>;
 
 function titulo(s: { tipo: TipoArco; campo: CampoRectificable | null }) {
+  if (s.campo === "WHATSAPP") return "Cambiar su número de WhatsApp";
   if (s.tipo === "RECTIFICACION" && s.campo) return `Corregir ${CAMPOS[s.campo].nombre}`;
   return {
     ACCESO: "Copia de sus datos personales",
@@ -76,6 +84,12 @@ export async function miPerfil(sesion: SesionDto) {
       numero: numeroDeSolicitud(s.numero),
       titulo: titulo(s),
       estado: s.estado,
+      estadoTexto: {
+        PENDIENTE: s.campo === "WHATSAPP" ? "Pendiente de verificación" : "Pendiente de revisión",
+        APROBADA: "Aprobada",
+        RECHAZADA: "Rechazada",
+        RESUELTA_SOLA: "Lista",
+      }[s.estado],
       fecha: fechaLarga(s.creadaEn),
       motivo: s.motivoResolucion,
     })),
@@ -170,8 +184,8 @@ export async function datosPersonales(usuarioId: string): Promise<SeccionPdf[]> 
 }
 
 /**
- * Pide corregir su nombre, su DNI o su vivienda (HU-GAR-13 CA1). Queda "Pendiente de revisión" hasta
- * que el administrador la resuelva (CA2).
+ * Pide corregir su nombre, su DNI o su vivienda (HU-GAR-13 CA1), o cambiar su número (HU-GAR-17
+ * CA1). Queda pendiente hasta que el administrador la resuelva (HU-GAR-13 CA2).
  */
 export async function solicitarRectificacion(
   sesion: SesionDto,
@@ -184,11 +198,16 @@ export async function solicitarRectificacion(
     NOMBRE: usuario.nombreCompleto,
     DNI: usuario.dni,
     DIRECCION: residencia ? direccion(residencia.predio) : "",
+    WHATSAPP: usuario.telefonoWhatsApp ?? "",
   }[datos.campo];
   if (datos.campo === "DIRECCION" && !residencia)
     throw new ErrorReglaNegocio("No tiene vivienda en el padrón. Pida ayuda a la administración.");
   const vivienda = datos.campo === "DIRECCION" ? leerVivienda(datos.valor) : null;
-  const nuevo = vivienda ? direccion(vivienda) : datos.valor.trim();
+  const nuevo = vivienda
+    ? direccion(vivienda)
+    : datos.campo === "WHATSAPP"
+      ? (leerCelular(datos.valor) ?? datos.valor.trim())
+      : datos.valor.trim();
   const error =
     errorDeRectificacion(datos.campo, datos.valor, anterior) ??
     (nuevo === anterior ? "Es igual al dato que ya tenemos." : null);
@@ -284,8 +303,11 @@ export async function verSolicitudArco(sesion: SesionDto, id: string, ahora = ne
     ...(await aFila(s, ahora)),
     nombre: s.usuario.nombreCompleto,
     campo: s.campo ? CAMPOS[s.campo].nombre : null,
-    antes: s.valorAnterior,
-    nuevo: s.valorNuevo,
+    antes: s.campo === "WHATSAPP" ? (celularLegible(s.valorAnterior) ?? "Sin número") : s.valorAnterior,
+    nuevo: s.campo === "WHATSAPP" ? celularLegible(s.valorNuevo) : s.valorNuevo,
+    /** El cambio de número exige decir cómo se verificó la identidad (HU-GAR-17 CA2). */
+    pideVerificacion: s.campo === "WHATSAPP",
+    verificacion: s.verificacion,
     detalle: s.detalle,
     vence: fechaLarga(fechaLimite(s.creadaEn, s.tipo)),
     motivoResolucion: s.motivoResolucion,
@@ -301,6 +323,8 @@ async function aplicarRectificacion(tx: Transaccion, s: Solicitud, ahora: Date) 
     if (otro && otro.id !== s.usuarioId)
       throw new ErrorConflicto("Ese DNI ya es de otra persona del padrón.");
     await tx.usuario.update({ where: { id: s.usuarioId }, data: { dni: valor } });
+  } else if (s.campo === "WHATSAPP") {
+    await tx.usuario.update({ where: { id: s.usuarioId }, data: { telefonoWhatsApp: valor } });
   } else if (s.campo === "DIRECCION") {
     const lote = leerVivienda(valor);
     const destino = lote && (await buscarPredioPorLote(lote.manzana, lote.lote));
@@ -327,7 +351,7 @@ async function aplicarRectificacion(tx: Transaccion, s: Solicitud, ahora: Date) 
 export async function resolverSolicitudArco(
   sesion: SesionDto,
   id: string,
-  decision: { aprobar: boolean; motivo?: string },
+  decision: { aprobar: boolean; motivo?: string; verificacion?: Verificacion },
   ahora = new Date(),
 ) {
   exigirAdministracion(sesion);
@@ -337,8 +361,14 @@ export async function resolverSolicitudArco(
   const motivo = decision.motivo?.trim() || null;
   if (!decision.aprobar && !motivo)
     throw new ErrorValidacion(undefined, { motivo: "Escriba el motivo: se lo enviaremos al vecino." });
+  const esNumero = s.campo === "WHATSAPP";
+  if (decision.aprobar && esNumero && !decision.verificacion)
+    throw new ErrorValidacion(undefined, {
+      verificacion: "Indique cómo se verificó su identidad antes de cambiar el número.",
+    });
+  const verificacion =
+    decision.aprobar && decision.verificacion ? VERIFICACIONES[decision.verificacion] : null;
   const estado = decision.aprobar ? "APROBADA" : "RECHAZADA";
-  const numero = numeroDeSolicitud(s.numero);
   await prisma.$transaction(async (tx) => {
     if (
       !(await cerrarSolicitud(tx, id, {
@@ -346,6 +376,7 @@ export async function resolverSolicitudArco(
         resueltaEn: ahora,
         resueltaPor: sesion.usuarioId,
         motivoResolucion: motivo,
+        verificacion,
       }))
     )
       throw new ErrorConflicto("Esta solicitud ya estaba resuelta.");
@@ -357,27 +388,79 @@ export async function resolverSolicitudArco(
         entidad: "SolicitudArco",
         entidadId: id,
         antes: { estado: "PENDIENTE", campo: s.campo, valor: s.valorAnterior },
-        despues: { estado, valor: decision.aprobar ? s.valorNuevo : s.valorAnterior, motivo },
+        despues: { estado, valor: decision.aprobar ? s.valorNuevo : s.valorAnterior, motivo, verificacion },
       },
       tx,
     );
-    const resultado = decision.aprobar
-      ? `aprobada: ${CAMPOS[s.campo ?? "NOMBRE"].nombre} ya está corregido`
-      : `rechazada. Motivo: ${motivo}`;
+    if (decision.aprobar && esNumero) await avisarCambioDeNumero(tx, s);
+    else await avisarResultado(tx, s, decision.aprobar, motivo);
+  });
+  return verSolicitudArco(sesion, id, ahora);
+}
+
+/** El cambio de número por su propia ruta (`PATCH /api/admin/contacto/{id}`): solo solicitudes de número. */
+export async function resolverCambioDeNumero(
+  sesion: SesionDto,
+  id: string,
+  decision: { aprobar: boolean; motivo?: string; verificacion?: Verificacion },
+  ahora = new Date(),
+) {
+  exigirAdministracion(sesion);
+  const s = await solicitudConVecino(id);
+  if (!s || s.campo !== "WHATSAPP") throw new ErrorNoEncontrado();
+  return resolverSolicitudArco(sesion, id, decision, ahora);
+}
+
+async function avisarResultado(tx: Transaccion, s: Solicitud, aprobada: boolean, motivo: string | null) {
+  const numero = numeroDeSolicitud(s.numero);
+  const resultado = aprobada
+    ? `aprobada: ${CAMPOS[s.campo ?? "NOMBRE"].nombre} ya está corregido`
+    : `rechazada. Motivo: ${motivo}`;
+  await encolarAviso(
+    {
+      destinatarioId: s.usuarioId,
+      titulo: aprobada ? "Corregimos su dato" : "No pudimos corregir su dato",
+      texto: `Su solicitud ${numero} fue ${resultado}.`,
+      whatsapp: s.usuario.telefonoWhatsApp
+        ? {
+            telefono: s.usuario.telefonoWhatsApp,
+            ...plantillaSolicitudPrivacidad(primerNombre(s.usuario.nombreCompleto), numero, resultado),
+          }
+        : undefined,
+    },
+    tx,
+  );
+}
+
+/**
+ * El número cambió (HU-GAR-17 CA3): la confirmación llega al número nuevo y también al anterior, por
+ * si no lo pidió la persona. Es de seguridad: sale siempre. Una sola copia en el centro de avisos.
+ */
+async function avisarCambioDeNumero(tx: Transaccion, s: Solicitud) {
+  const nombre = primerNombre(s.usuario.nombreCompleto);
+  const nuevo = s.valorNuevo ?? "";
+  const plantilla = plantillaNumeroCambiado(nombre, nuevo.slice(-3));
+  await encolarAviso(
+    {
+      destinatarioId: s.usuarioId,
+      tipo: "SEGURIDAD",
+      titulo: "Cambiamos su número de WhatsApp",
+      texto: `Desde ahora sus avisos llegan al ${celularLegible(nuevo)}. También avisamos a su número anterior.`,
+      whatsapp: { telefono: nuevo, ...plantilla },
+    },
+    tx,
+  );
+  if (s.valorAnterior) {
     await encolarAviso(
       {
         destinatarioId: s.usuarioId,
-        titulo: decision.aprobar ? "Corregimos su dato" : "No pudimos corregir su dato",
-        texto: `Su solicitud ${numero} fue ${resultado}.`,
-        whatsapp: s.usuario.telefonoWhatsApp
-          ? {
-              telefono: s.usuario.telefonoWhatsApp,
-              ...plantillaSolicitudPrivacidad(primerNombre(s.usuario.nombreCompleto), numero, resultado),
-            }
-          : undefined,
+        tipo: "SEGURIDAD",
+        titulo: "Cambiamos su número de WhatsApp",
+        texto: "Aviso al número anterior.",
+        whatsapp: { telefono: s.valorAnterior, ...plantilla },
+        conCopiaInterna: false,
       },
       tx,
     );
-  });
-  return verSolicitudArco(sesion, id, ahora);
+  }
 }

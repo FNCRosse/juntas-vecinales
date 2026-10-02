@@ -32,6 +32,7 @@ async function reclamarLote(ahora: Date): Promise<AvisoEnCola[]> {
 
 /** La copia interna se escribe antes de intentar WhatsApp y una sola vez por aviso. */
 async function escribirCopiaInterna(aviso: AvisoEnCola) {
+  if (!aviso.conCopiaInterna) return;
   await prisma.notificacion.upsert({
     where: { avisoId: aviso.id },
     create: {

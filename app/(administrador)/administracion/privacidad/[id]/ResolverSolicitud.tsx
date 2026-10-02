@@ -1,5 +1,5 @@
 "use client";
-// @HU-GAR-13 @HU-GAR-16
+// @HU-GAR-13 @HU-GAR-16 @HU-GAR-17
 
 import { ArrowRight, ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import { Boton } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
+import type { Verificacion } from "@/modulos/identidad/aplicacion/arco";
 
 type Solicitud = {
   id: string;
@@ -28,16 +29,25 @@ type Solicitud = {
   nuevo: string | null;
   detalle: string | null;
   motivoResolucion: string | null;
+  pideVerificacion: boolean;
+  verificacion: string | null;
 };
 
 const VOLVER = "/administracion/privacidad";
 
-export function ResolverSolicitud({ solicitud: s }: { solicitud: Solicitud }) {
+export function ResolverSolicitud({
+  solicitud: s,
+  verificaciones,
+}: {
+  solicitud: Solicitud;
+  verificaciones: Record<Verificacion, string>;
+}) {
   const router = useRouter();
   const [paso, setPaso] = useState<"decidir" | "confirmar">("decidir");
   const [aprobar, setAprobar] = useState<boolean | null>(null);
   const [motivo, setMotivo] = useState("");
-  const [errores, setErrores] = useState<{ decision?: string; motivo?: string }>({});
+  const [verificacion, setVerificacion] = useState<Verificacion | null>(null);
+  const [errores, setErrores] = useState<{ decision?: string; motivo?: string; verificacion?: string }>({});
   const [falla, setFalla] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const titulo = useRef<HTMLHeadingElement>(null);
@@ -54,10 +64,14 @@ export function ResolverSolicitud({ solicitud: s }: { solicitud: Solicitud }) {
   async function confirmar() {
     setEnviando(true);
     setFalla(null);
-    const r = await enviarJson(`/api/arco/solicitudes/${s.id}`, "PATCH", {
-      aprobar,
-      motivo: motivo || undefined,
-    });
+    // El cambio de número tiene su propia ruta, con la verificación de identidad (HU-GAR-17).
+    const r = s.pideVerificacion
+      ? await enviarJson(`/api/admin/contacto/${s.id}`, "PATCH", {
+          aprobar,
+          motivo: motivo || undefined,
+          verificacion: aprobar ? verificacion : undefined,
+        })
+      : await enviarJson(`/api/arco/solicitudes/${s.id}`, "PATCH", { aprobar, motivo: motivo || undefined });
     if (r.ok) return router.push(`${VOLVER}?${new URLSearchParams({ aviso: "resuelta", numero: s.numero })}`);
     setEnviando(false);
     setFalla(r.error);
@@ -65,12 +79,16 @@ export function ResolverSolicitud({ solicitud: s }: { solicitud: Solicitud }) {
 
   function revisar() {
     const faltan = {
+      verificacion:
+        s.pideVerificacion && aprobar && !verificacion
+          ? "Indique cómo se verificó su identidad antes de cambiar el número."
+          : undefined,
       decision: aprobar === null ? "Elija qué decide." : undefined,
       motivo:
         aprobar === false && !motivo.trim() ? "Escriba el motivo: se lo enviaremos al vecino." : undefined,
     };
     setErrores(faltan);
-    if (!faltan.decision && !faltan.motivo) setPaso("confirmar");
+    if (!faltan.decision && !faltan.motivo && !faltan.verificacion) setPaso("confirmar");
   }
 
   const volver = (
@@ -108,11 +126,16 @@ export function ResolverSolicitud({ solicitud: s }: { solicitud: Solicitud }) {
           ["Dato", s.campo ?? s.titulo],
           ["Antes", s.antes ?? "—"],
           ["Después", s.nuevo ?? "—"],
+          ...(aprobar && verificacion
+            ? [["Verificación", verificaciones[verificacion]] as [string, string]]
+            : []),
           ["Decisión", aprobar ? "Aprobar" : `Rechazar. Motivo: ${motivo.trim()}`],
         ]}
         efecto={
           aprobar
-            ? "Actualizaremos el dato en el padrón y le avisaremos al vecino."
+            ? s.pideVerificacion
+              ? "Actualizaremos el número en el padrón y enviaremos una confirmación al número anterior y al nuevo."
+              : "Actualizaremos el dato en el padrón y le avisaremos al vecino."
             : "El dato no cambia. Le enviaremos el motivo al vecino."
         }
         textoConfirmar={aprobar ? "Sí, aprobar la corrección" : "Sí, rechazar la corrección"}
@@ -156,6 +179,32 @@ export function ResolverSolicitud({ solicitud: s }: { solicitud: Solicitud }) {
           <dd>{s.detalle ?? "No escribió un sustento."}</dd>
         </div>
       </dl>
+      {s.pideVerificacion && (
+        <>
+          <MensajeEstado tipo="info" titulo="Primero hay que verificar que es la persona">
+            <p>
+              A este número le llega el enlace de entrada. Por eso se confirma su identidad en persona o con
+              su DNI.
+            </p>
+          </MensajeEstado>
+          <GrupoOpciones
+            id="campo-verificacion"
+            pregunta="¿Cómo se verificó su identidad?"
+            error={errores.verificacion}
+          >
+            {(Object.keys(verificaciones) as Verificacion[]).map((v) => (
+              <Opcion
+                key={v}
+                tipo="radio"
+                name="verificacion"
+                etiqueta={verificaciones[v]}
+                checked={verificacion === v}
+                onChange={() => setVerificacion(v)}
+              />
+            ))}
+          </GrupoOpciones>
+        </>
+      )}
       <GrupoOpciones id="campo-decision" pregunta="¿Qué decide?" error={errores.decision}>
         <Opcion
           tipo="radio"

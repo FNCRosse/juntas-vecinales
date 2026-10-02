@@ -12,7 +12,7 @@ function entrarComo(dni: string) {
   if (dni === "40000002") cy.request("POST", "/api/auth/politica", { acepto: true });
 }
 
-describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 Privacidad de la vecina y bandeja de la administración", () => {
+describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y bandeja de la administración", () => {
   it("@HU-GAR-12 CA1 CA2 baja la copia de sus datos en PDF y queda registrado", () => {
     entrarComo("40000002");
     cy.visit("/mas");
@@ -75,6 +75,62 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 Privacidad de la vecina y bandeja de 
     cy.contains("li", "Corregir el DNI")
       .should("contain.text", "Rechazada")
       .and("contain.text", "El DNI no coincide con su documento");
+  });
+
+  it("@HU-GAR-17 CA1 CA2 CA3 pide cambiar su número; la administración verifica su identidad y lo aprueba", () => {
+    // Una vecina nueva y ficticia, para no cambiar el número de las semillas que usan otras pruebas.
+    const sufijo = String(Date.now()).slice(-6);
+    const telefono = `9${sufijo}03`;
+    const nuevo = `9${sufijo}04`;
+    entrarComo("40000001");
+    cy.request("POST", "/api/admin/padron/empadronar", {
+      vivienda: {
+        manzana: "F",
+        lote: sufijo.slice(-4),
+        uso: "VIVIENDA",
+        familias: 1,
+        inquilinos: 0,
+        autos: 0,
+        motos: 0,
+        triciclos: 0,
+        negocios: 0,
+      },
+      titular: { nombreCompleto: "Lucía Paz Vera", dni: `7${sufijo}1`, dniVisto: true, telefono },
+    });
+    cy.clearCookies();
+    cy.task<string>("enlaceEnCola", { telefono: `51${telefono}` }).then((enlace) =>
+      cy.visit(new URL(enlace).pathname),
+    );
+    cy.location("pathname").should("eq", "/entrar/privacidad");
+    cy.request("POST", "/api/auth/politica", { acepto: true });
+
+    cy.visit("/mas/perfil/corregir");
+    cy.esperarHidratacion("Enviar mi solicitud");
+    cy.contains("label", "Mi número de WhatsApp").click();
+    cy.contains('[role="status"]', "Primero confirmaremos que es usted").should(
+      "contain.text",
+      "en su número anterior y en el nuevo",
+    );
+    cy.get("#campo-valor").type(nuevo);
+    cy.revisarAccesibilidad("cambiar-numero-normal");
+    cy.contains("button", "Enviar mi solicitud").click();
+    cy.contains("li", "Cambiar su número de WhatsApp").should("contain.text", "Pendiente de verificación");
+
+    entrarComo("40000001");
+    cy.visit("/administracion/privacidad?tipo=RECTIFICACION");
+    cy.contains("li", "Lucía Paz Vera").contains("a", "Resolver").click();
+    cy.get("h1").should("have.text", "Cambiar su número de WhatsApp de Lucía Paz Vera");
+    cy.contains("label", "Aprobar la corrección").click();
+    cy.esperarHidratacion("Revisar la decisión").click();
+    cy.contains("Indique cómo se verificó su identidad").should("exist");
+    cy.revisarAccesibilidad("verificar-identidad-normal");
+    cy.contains("label", "En persona, con su DNI físico").click();
+    cy.contains("button", "Revisar la decisión").click();
+    cy.contains("Enviaremos una confirmación al número anterior y al nuevo", { matchCase: false }).should(
+      "exist",
+    );
+    cy.contains("button", "Sí, aprobar la corrección").click();
+    cy.contains('[role="status"]', "Resolvimos la solicitud").should("exist");
   });
 
   it("@HU-GAR-16 en modo Senior la bandeja cumple WCAG 2.2 AA", () => {
