@@ -30,7 +30,7 @@ describe("@HU-GAR-01 Empadronar una vivienda", () => {
     cy.esperarHidratacion("Siguiente: las personas");
     porId("campo-vivienda.manzana").type("c");
     porId("campo-vivienda.lote").type("7");
-    cy.contains("button", "Agregar uno: Autos o camionetas").click();
+    cy.get('button[aria-label="Agregar uno: Autos o camionetas"]').click();
     cy.get('[id="campo-vivienda.autos"]').should("have.text", "1");
     cy.contains("button", "Siguiente: las personas").click();
     porId("campo-vivienda.lote-error").should("contain.text", "es de Carmen Huamán");
