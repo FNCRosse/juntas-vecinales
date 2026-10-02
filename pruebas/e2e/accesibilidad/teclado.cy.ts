@@ -93,7 +93,9 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
     cy.visit("/catalogo");
     cy.esperarHidratacion("Ver cómo se calcula");
     tabularHasta("Ver cómo se calcula");
-    cy.press(Cypress.Keyboard.Keys.ENTER);
+    // Se llega con Tab; se abre sobre el botón enfocado. En el Electron del CI, cy.press(Enter) no
+    // activa un <button> (sí un enlace); con Chromium y Playwright, Enter lo abre (evidencia F0b).
+    cy.focused().should("have.prop", "tagName", "BUTTON").click();
     cy.get("[role=dialog]").should("be.visible").and("have.attr", "aria-labelledby");
     conFoco().its("enDialogo").should("eq", true);
     for (let i = 0; i < 3; i++) {
