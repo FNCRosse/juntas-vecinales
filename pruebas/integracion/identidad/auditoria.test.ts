@@ -38,7 +38,10 @@ describe("@HU-GAR-26 Auditoría global", () => {
     await registrar(ana.usuarioId, "empadronar", minutos(1), { vivienda: "Mz. E, lote 4", familias: 1 });
     await registrar(ana.usuarioId, "abrir_por_emergencia", minutos(3), { motivo: "Una emergencia de salud" });
     await registrar(ana.usuarioId, "aprobar_arco", minutos(2), { estado: "APROBADA", verificacion: null });
-    await registrar(ana.usuarioId, "accion_de_un_modulo_futuro", minutos(4));
+    await registrar(ana.usuarioId, "accion_de_un_modulo_futuro", minutos(4), {
+      politicaVersion: "2026-10",
+      politicaAceptadaEn: "2026-10-05T15:00:00.000Z",
+    });
 
     const { filas } = await auditoriaGlobal(ana, { responsable: ana.usuarioId });
     expect(filas.slice(0, 4).map((f) => [f.modulo, f.texto, f.responsable])).toEqual([
@@ -49,8 +52,12 @@ describe("@HU-GAR-26 Auditoría global", () => {
     ]);
     expect(filas[3]).toMatchObject({
       fecha: "5 de octubre de 2026 a las 10:01 a. m.",
-      detalle: "familias: 1 · vivienda: Mz. E, lote 4",
+      detalle: "Familias: 1 · Vivienda: Mz. E, lote 4",
     });
+    // Los nombres de campo y las fechas se leen en lenguaje llano, no como los guarda la base.
+    expect(filas[0].detalle).toBe(
+      "Politica version: 2026-10 · Politica aceptada en: 5 de octubre de 2026 a las 10:00 a. m.",
+    );
   });
 
   it("@HU-GAR-26 CA2 filtra por módulo, por acción y por responsable, también lo que hizo el sistema", async () => {

@@ -139,6 +139,8 @@ describe("@HU-INFRA ADR-006 Cola de avisos con copia interna garantizada", () =>
     const ejecucion = await prisma.ejecucionWorker.findUniqueOrThrow({ where: { id: respuesta.body.id } });
     expect(JSON.parse(ejecucion.detalle ?? "{}")).toEqual({
       avisos: { enviados: 1, sinCanal: 0, reintentos: 0, fallidos: 0 },
+      // Y depura lo vencido (DATOS.md §6); lo prueba retencion.test.ts.
+      depurados: expect.objectContaining({ bitacora: expect.any(Number), sesiones: expect.any(Number) }),
     });
   });
 });
