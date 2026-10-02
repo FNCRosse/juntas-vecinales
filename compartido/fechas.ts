@@ -28,3 +28,12 @@ export function saludo(ahora: Date) {
 
 /** Primer nombre para el saludo: "Ana Flores" → "Ana". */
 export const primerNombre = (nombreCompleto: string) => nombreCompleto.trim().split(/\s+/)[0] ?? "";
+
+/** "5 de octubre de 2026 a las 11:10 a. m." */
+export function fechaYHora(fecha: Date) {
+  const dia = new Intl.DateTimeFormat("es-PE", { timeZone: ZONA, dateStyle: "long" }).format(fecha);
+  const hora = new Intl.DateTimeFormat("es-PE", { timeZone: ZONA, timeStyle: "short", hour12: true }).format(
+    fecha,
+  );
+  return `${dia} a las ${hora}`;
+}

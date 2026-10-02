@@ -56,14 +56,20 @@ async function intentarCanalExterno(aviso: AvisoEnCola, canal: CanalWhatsApp, ah
     });
     await prisma.avisoEnCola.update({
       where: { id: aviso.id },
-      data: { estado: "ENVIADA", canal: canal.nombre, enviadoEn: ahora, ultimoError: null },
+      // Los parámetros pueden llevar un enlace de entrada: no quedan guardados tras el envío.
+      data: { estado: "ENVIADA", canal: canal.nombre, enviadoEn: ahora, ultimoError: null, parametros: [] },
     });
     return "enviados" as const;
   } catch (error) {
     const agotado = aviso.intentos >= MAX_INTENTOS;
     await prisma.avisoEnCola.update({
       where: { id: aviso.id },
-      data: { estado: agotado ? "FALLIDA" : "PENDIENTE", canal: canal.nombre, ultimoError: String(error) },
+      data: {
+        estado: agotado ? "FALLIDA" : "PENDIENTE",
+        canal: canal.nombre,
+        ultimoError: String(error),
+        ...(agotado && { parametros: [] }),
+      },
     });
     return agotado ? ("fallidos" as const) : ("reintentos" as const);
   }
