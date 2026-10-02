@@ -260,5 +260,28 @@ describe("@HU-GAR-03 Sesión persistente desde el acceso directo", () => {
       `sesion=${sesion}; Max-Age=34560000; Path=/; HttpOnly; Secure; SameSite=Lax`,
     );
     expect((await pedirRenovar("sesion=otra")).status).toBe(401);
+
+describe("@HU-GAR-02 Entrar sin script", () => {
+  const enviarFormulario = (token: string) =>
+    canjearHttp(
+      new Request("http://localhost/api/auth/canjear", {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ token }).toString(),
+      }),
+      undefined,
+    );
+
+  it("@HU-GAR-02 CA1 el formulario de respaldo entra y redirige; si el enlace ya no sirve, vuelve a su página", async () => {
+    const token = await enlaceDeSofia();
+    const entrada = await enviarFormulario(token);
+    expect(entrada.status).toBe(303);
+    expect(entrada.headers.get("location")).toBe("/entrar/privacidad");
+    expect(entrada.headers.get("set-cookie")).toMatch(/^sesion=[\w-]{43};/);
+
+    const otraVez = await enviarFormulario(token);
+    expect(otraVez.status).toBe(303);
+    expect(otraVez.headers.get("location")).toBe(`/entrar/${token}`);
+    expect((await enviarFormulario("corto")).headers.get("location")).toBe("/entrar/corto");
   });
 });
