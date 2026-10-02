@@ -1,0 +1,188 @@
+{
+  "docs/guia-visual/generar-css.mjs": {
+    "mtime": 1790907426.294492,
+    "seen": 1790908577.4852934,
+    "ast_hash": "6250a0715bb2c77f547ee4e10b9ae55c",
+    "semantic_hash": "6250a0715bb2c77f547ee4e10b9ae55c"
+  },
+  "docs/guia-visual/verificar-contraste.mjs": {
+    "mtime": 1790907426.317541,
+    "seen": 1790908577.4852986,
+    "ast_hash": "b423916dc6eaadd0b3dccde2ddedb893",
+    "semantic_hash": "b423916dc6eaadd0b3dccde2ddedb893"
+  },
+  "docs/prototipo/pantallas-adm.js": {
+    "mtime": 1790907425.873204,
+    "seen": 1790908577.4853013,
+    "ast_hash": "31cf02faf546dea3e01c9076e3cbde7f",
+    "semantic_hash": "31cf02faf546dea3e01c9076e3cbde7f"
+  },
+  "docs/prototipo/pantallas-dir.js": {
+    "mtime": 1790907425.9065907,
+    "seen": 1790908577.4853027,
+    "ast_hash": "b5313e52b94be313d460721d2c9d3585",
+    "semantic_hash": "b5313e52b94be313d460721d2c9d3585"
+  },
+  "docs/prototipo/pantallas-vec.js": {
+    "mtime": 1790907425.9470384,
+    "seen": 1790908577.4853044,
+    "ast_hash": "57a1eace06aaf3ea33c09825ffe01b77",
+    "semantic_hash": "57a1eace06aaf3ea33c09825ffe01b77"
+  },
+  "docs/prototipo/pantallas-vig.js": {
+    "mtime": 1790907425.9724774,
+    "seen": 1790908577.4853055,
+    "ast_hash": "fb24879d24d10ef0fad01590e3653a7b",
+    "semantic_hash": "fb24879d24d10ef0fad01590e3653a7b"
+  },
+  "docs/prototipo/trazabilidad-adm.js": {
+    "mtime": 1790907425.9986875,
+    "seen": 1790908577.485307,
+    "ast_hash": "2f94a7c4fbb81ebc03e4a124d873dd70",
+    "semantic_hash": "2f94a7c4fbb81ebc03e4a124d873dd70"
+  },
+  "docs/prototipo/trazabilidad-dir.js": {
+    "mtime": 1790907426.0311544,
+    "seen": 1790908577.4853084,
+    "ast_hash": "96ae8386e592580181745a3c739c8bb7",
+    "semantic_hash": "96ae8386e592580181745a3c739c8bb7"
+  },
+  "docs/prototipo/trazabilidad-vec.js": {
+    "mtime": 1790907426.062941,
+    "seen": 1790908577.4853098,
+    "ast_hash": "ef93a01781a16a898215f863c0d2ba5f",
+    "semantic_hash": "ef93a01781a16a898215f863c0d2ba5f"
+  },
+  "docs/prototipo/trazabilidad-vig.js": {
+    "mtime": 1790907426.0824044,
+    "seen": 1790908577.4853113,
+    "ast_hash": "77e8ce98d7599bf21832dae1d087752b",
+    "semantic_hash": "77e8ce98d7599bf21832dae1d087752b"
+  },
+  ".github/pull_request_template.md": {
+    "mtime": 1790908146.789793,
+    "seen": 1790908577.4853127,
+    "ast_hash": "d528fa18b7114da316d02e97f8588e2b",
+    "semantic_hash": "d528fa18b7114da316d02e97f8588e2b"
+  },
+  "CLAUDE.md": {
+    "mtime": 1790908190.7319794,
+    "seen": 1790908577.4853144,
+    "ast_hash": "38b6ec1870baec8a5a7eb514e5e74be4",
+    "semantic_hash": "38b6ec1870baec8a5a7eb514e5e74be4"
+  },
+  "README.md": {
+    "mtime": 1790908182.726219,
+    "seen": 1790908577.4853158,
+    "ast_hash": "0460f39a774c06e834f05353f86612c9",
+    "semantic_hash": "0460f39a774c06e834f05353f86612c9"
+  },
+  "docs/ACCESIBILIDAD.md": {
+    "mtime": 1790907885.2042117,
+    "seen": 1790908577.4853172,
+    "ast_hash": "3985a7ae1c437026be11ffcf82387a4b",
+    "semantic_hash": "3985a7ae1c437026be11ffcf82387a4b"
+  },
+  "docs/ARQUITECTURA.md": {
+    "mtime": 1790907523.9191458,
+    "seen": 1790908577.4853187,
+    "ast_hash": "aebf0e94a5236e1866f686a2396c4628",
+    "semantic_hash": "aebf0e94a5236e1866f686a2396c4628"
+  },
+  "docs/BACKEND.md": {
+    "mtime": 1790907564.4181952,
+    "seen": 1790908577.4853199,
+    "ast_hash": "05c63f48fe861dbc42d8c38297291da0",
+    "semantic_hash": "05c63f48fe861dbc42d8c38297291da0"
+  },
+  "docs/DATOS.md": {
+    "mtime": 1790907633.2097857,
+    "seen": 1790908577.4853215,
+    "ast_hash": "7bbe194dbf4ca1ac23d6cd1b074569ac",
+    "semantic_hash": "7bbe194dbf4ca1ac23d6cd1b074569ac"
+  },
+  "docs/DESPLIEGUE.md": {
+    "mtime": 1790907754.681027,
+    "seen": 1790908577.4853227,
+    "ast_hash": "c4019d0bd850b210ad9019a6f564a614",
+    "semantic_hash": "c4019d0bd850b210ad9019a6f564a614"
+  },
+  "docs/FLUJO_TRABAJO.md": {
+    "mtime": 1790907773.771835,
+    "seen": 1790908577.4853241,
+    "ast_hash": "86a19946115a4aed7ce1ef774dd65dbf",
+    "semantic_hash": "86a19946115a4aed7ce1ef774dd65dbf"
+  },
+  "docs/FRONTEND.md": {
+    "mtime": 1790907605.161023,
+    "seen": 1790908577.4853253,
+    "ast_hash": "dbf6db5405e54c367d8929c8e0d07ff4",
+    "semantic_hash": "dbf6db5405e54c367d8929c8e0d07ff4"
+  },
+  "docs/PLAN.md": {
+    "mtime": 1790908089.5760045,
+    "seen": 1790908577.4853268,
+    "ast_hash": "b95a5b1e777b26f0759ae5071c6aee05",
+    "semantic_hash": "b95a5b1e777b26f0759ae5071c6aee05"
+  },
+  "docs/PRUEBAS.md": {
+    "mtime": 1790907674.735938,
+    "seen": 1790908577.4853282,
+    "ast_hash": "b7aff00a189c27b0228ae8b1bb2330ee",
+    "semantic_hash": "b7aff00a189c27b0228ae8b1bb2330ee"
+  },
+  "docs/evidencias/PLANTILLA.md": {
+    "mtime": 1790908146.7468421,
+    "seen": 1790908577.4853303,
+    "ast_hash": "50e432047a7137716c6f72fdc4201bc4",
+    "semantic_hash": "50e432047a7137716c6f72fdc4201bc4"
+  },
+  "docs/guia-visual/guia-visual.md": {
+    "mtime": 1790907426.2459617,
+    "seen": 1790908577.4853318,
+    "ast_hash": "2b3c5780b0bb101aacaf34c7e11bacb9",
+    "semantic_hash": "2b3c5780b0bb101aacaf34c7e11bacb9"
+  },
+  "docs/prototipo/LEEME.md": {
+    "mtime": 1790908123.1930394,
+    "seen": 1790908577.485333,
+    "ast_hash": "0536e587504f777d12e27f2a6e57fb45",
+    "semantic_hash": "0536e587504f777d12e27f2a6e57fb45"
+  },
+  "modulos/accesibilidad/CLAUDE.md": {
+    "mtime": 1790908074.4134662,
+    "seen": 1790908577.4853342,
+    "ast_hash": "7732c71a3710aada663c68f7fda39d7c",
+    "semantic_hash": "7732c71a3710aada663c68f7fda39d7c"
+  },
+  "modulos/aportes/CLAUDE.md": {
+    "mtime": 1790908074.411952,
+    "seen": 1790908577.4853358,
+    "ast_hash": "89d028661f9ed7afafd53ce0323dd25b",
+    "semantic_hash": "89d028661f9ed7afafd53ce0323dd25b"
+  },
+  "modulos/asambleas/CLAUDE.md": {
+    "mtime": 1790908074.4079509,
+    "seen": 1790908577.485337,
+    "ast_hash": "56f237148678c66e2454c02347c202c6",
+    "semantic_hash": "56f237148678c66e2454c02347c202c6"
+  },
+  "modulos/identidad/CLAUDE.md": {
+    "mtime": 1790908123.2312782,
+    "seen": 1790908577.4853382,
+    "ast_hash": "52f8022042ef465213c7cf446422d357",
+    "semantic_hash": "52f8022042ef465213c7cf446422d357"
+  },
+  "modulos/incidencias/CLAUDE.md": {
+    "mtime": 1790908074.406943,
+    "seen": 1790908577.4853394,
+    "ast_hash": "ee7d77202177cd84f19ff6387abbb542",
+    "semantic_hash": "ee7d77202177cd84f19ff6387abbb542"
+  },
+  "modulos/transparencia/CLAUDE.md": {
+    "mtime": 1790908074.4051466,
+    "seen": 1790908577.4853406,
+    "ast_hash": "c1b409699e7894cbc5f17be26bea2ac1",
+    "semantic_hash": "c1b409699e7894cbc5f17be26bea2ac1"
+  }
+}
