@@ -56,7 +56,7 @@ Acceso y padrón:
 - [x] HU-GAR-01 Empadronar residente y enviarle su acceso inicial
 - [x] HU-GAR-02 Entrar con el enlace de acceso, aceptar la política y crear la clave de respaldo
 - [x] HU-ACC-01 Modo Senior guardado en la cuenta (enlaza el perfil de la fase 0b con `Usuario`)
-  - Enlazado: llave foránea, el perfil del dispositivo pasa a la cuenta al entrar (con enlace o con clave) y se lee por la sesión. Queda para sus HU: el switch "Letra grande" también en Mi perfil (VEC-ACC-13, con HU-GAR-13) y "Pedir ayuda" (`/mas/ayuda`, HU-ACC-04).
+  - Enlazado: llave foránea, el perfil del dispositivo pasa a la cuenta al entrar (con enlace o con clave) y se lee por la sesión. Queda para sus HU: el switch "Letra grande" también en Mi perfil (VEC-ACC-13, con HU-GAR-13); "Pedir ayuda" ya lleva a `/mas/ayuda` (HU-ACC-04).
 - [x] HU-GAR-03 Abrir desde el ícono del teléfono sin volver a entrar (PWA)
 - [x] HU-GAR-11 Pedir un enlace nuevo
 - [x] HU-GAR-24 Entrar con la clave de respaldo
@@ -74,7 +74,7 @@ Padrón:
 Punto de entrada del vecino:
 - [x] HU-GAR-20 Centro de notificaciones unificado
 - [x] HU-GAR-18 Preferencias de notificación
-- [ ] HU-ACC-04 Pedir ayuda humana desde cualquier pantalla
+- [x] HU-ACC-04 Pedir ayuda humana desde cualquier pantalla
 - [ ] HU-GAR-19 Panel de inicio consolidado — `[~]` se cierra en M5: M1 deja el panel y el bloque de avisos; M3, M4 y M5 añaden los bloques de queja, evento y deuda
 
 Garita:

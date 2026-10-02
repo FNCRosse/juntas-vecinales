@@ -23,3 +23,36 @@ model PerfilAccesibilidad {
 
   @@map("accesibilidad_perfiles")
 }
+
+enum ModoApoyo {
+  LLAMADA
+  WHATSAPP
+  VISITA
+}
+
+enum EstadoApoyo {
+  PENDIENTE
+  EN_ATENCION
+  ATENDIDA
+}
+
+// Solicitud al CanalMediacionHumana (HU-ACC-04): quién pide, en qué pantalla se quedó y cómo
+// prefiere que le ayuden. El nombre y la vivienda se guardan como se veían al pedir (accesibilidad no
+// lee identidad, ARQUITECTURA §3).
+model SolicitudApoyo {
+  id          String      @id @default(uuid())
+  numero      Int         @unique @default(autoincrement())
+  usuarioId   String
+  quien       String
+  pantalla    String
+  modo        ModoApoyo
+  detalle     String?
+  estado      EstadoApoyo @default(PENDIENTE)
+  atendidaPor String?
+  creadaEn    DateTime    @default(now())
+  cambiadaEn  DateTime    @updatedAt
+
+  @@index([usuarioId])
+  @@index([estado, creadaEn])
+  @@map("accesibilidad_solicitudes_apoyo")
+}

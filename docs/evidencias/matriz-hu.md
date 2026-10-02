@@ -2,7 +2,7 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 18 · cerradas con e2e: 18 de 18 (100 %).
+- HU en el plan: 76 · cerradas: 19 · cerradas con e2e: 19 de 19 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
@@ -26,3 +26,4 @@ Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU
 | HU-GAR-09 Desvincular a un ex residente | Cerrada | `app/(administrador)/administracion/padron/[predioId]/baja/DarDeBaja.tsx`<br>`modulos/identidad/aplicacion/gestionarPadron.ts`<br>`modulos/identidad/dominio/predio.ts` | — | `pruebas/integracion/identidad/gestionarPadron.test.ts` | `pruebas/e2e/identidad/padron-gestion.cy.ts` |
 | HU-GAR-20 Centro de notificaciones unificado | Cerrada | `app/(vecino)/avisos/Marcar.tsx`<br>`modulos/identidad/aplicacion/avisos.ts` | — | `pruebas/integracion/identidad/avisos.test.ts` | `pruebas/e2e/identidad/avisos.cy.ts` |
 | HU-GAR-18 Preferencias de notificación | Cerrada | `app/(vecino)/avisos/preferencias/Preferencias.tsx`<br>`modulos/identidad/aplicacion/avisos.ts` | — | `pruebas/integracion/identidad/avisos.test.ts` | `pruebas/e2e/identidad/avisos.cy.ts` |
+| HU-ACC-04 Pedir ayuda humana desde cualquier pantalla | Cerrada | `app/(directiva)/directiva/pedidos-de-ayuda/CambiarEstado.tsx`<br>`app/(vecino)/mas/ayuda/PedirAyuda.tsx`<br>`componentes/a11y/EnlaceAyuda.tsx`<br>`modulos/accesibilidad/aplicacion/mediacion.ts`<br>`modulos/accesibilidad/dominio/canalMediacionHumana.ts`<br>`modulos/identidad/aplicacion/datosParaAyuda.ts` | — | `pruebas/integracion/accesibilidad/mediacion.test.ts` | `pruebas/e2e/accesibilidad/ayuda.cy.ts` |

@@ -48,3 +48,11 @@ export function plantillaRolCambiado(nombre: string, rol: string) {
 export function plantillaBajaPadron(nombre: string, direccion: string) {
   return { plantilla: "baja_padron", parametros: [nombre, direccion] };
 }
+
+/**
+ * Pedido de ayuda para el mediador (HU-ACC-04 CA2). Texto en Meta: "{{1}} pidió ayuda en la app de
+ * la Junta Vecinal. Se quedó en: {{2}}. Prefiere: {{3}}."
+ */
+export function plantillaPedidoAyuda(quien: string, pantalla: string, modo: string) {
+  return { plantilla: "pedido_ayuda", parametros: [quien, pantalla, modo] };
+}
