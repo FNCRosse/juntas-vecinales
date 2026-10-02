@@ -14,6 +14,9 @@ export default async function MasOpciones() {
     <div className="flex flex-col gap-8">
       <h1 className="text-titulo-1">Más opciones</h1>
       <div className="flex flex-col gap-separacion">
+        <TarjetaEnlace href="/visitas" titulo="Mis visitas">
+          <span>Anuncie a quien viene a su casa para que entre sin esperar.</span>
+        </TarjetaEnlace>
         <TarjetaEnlace href="/avisos" titulo="Avisos">
           <span>
             {sinLeer

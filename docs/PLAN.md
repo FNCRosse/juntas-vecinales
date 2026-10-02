@@ -78,8 +78,8 @@ Punto de entrada del vecino:
 - [~] HU-GAR-19 Panel de inicio consolidado — `[~]` M1 dejó el panel (saludo, vivienda) y el bloque de avisos; se cierra en M5: M1 deja el panel y el bloque de avisos; M3, M4 y M5 añaden los bloques de queja, evento y deuda
 
 Garita:
-- [ ] HU-GAR-04 Pre-registrar visitas
-- [ ] HU-GAR-05 Anular visitas
+- [x] HU-GAR-04 Pre-registrar visitas
+- [x] HU-GAR-05 Anular visitas
 - [ ] HU-GAR-06 Consultar placa o DNI con semáforo (con la proyección de morosidad de M1 e instantánea sin conexión)
 - [ ] HU-GAR-07 Verificar visitantes contra la lista blanca
 - [ ] HU-GAR-08 Bitácora de entradas y salidas

@@ -63,6 +63,17 @@ model CredencialRespaldo {
   @@map("identidad_credenciales")
 }
 
+enum EstadoGarita {
+  VERDE
+  ROJO
+}
+
+enum EstadoVisita {
+  PROGRAMADA
+  ANULADA
+  LLEGO
+}
+
 enum UsoPredio {
   VIVIENDA
   NEGOCIO
@@ -80,18 +91,22 @@ enum RelacionResidencia {
 
 // Predio con su ocupación: la guarda M1; el monto de la cuota lo calcula M5 con ella.
 model Predio {
-  id          String       @id @default(uuid())
-  manzana     String
-  lote        String
-  uso         UsoPredio
-  familias    Int          @default(1)
-  inquilinos  Int          @default(0)
-  autos       Int          @default(0)
-  motos       Int          @default(0)
-  triciclos   Int          @default(0)
-  negocios    Int          @default(0)
-  creadoEn    DateTime     @default(now())
-  residencias Residencia[]
+  id           String       @id @default(uuid())
+  manzana      String
+  lote         String
+  uso          UsoPredio
+  familias     Int          @default(1)
+  inquilinos   Int          @default(0)
+  autos        Int          @default(0)
+  motos        Int          @default(0)
+  triciclos    Int          @default(0)
+  negocios     Int          @default(0)
+  creadoEn     DateTime     @default(now())
+  /// Proyección del semáforo de la garita: VERDE por defecto; M5 la pasa a ROJO con
+  /// actualizarEstadoMorosidad cuando la deuda llega a 8 semanas (modulos/identidad/CLAUDE.md).
+  estadoGarita EstadoGarita @default(VERDE)
+  residencias  Residencia[]
+  visitas      Visita[]
 
   @@unique([manzana, lote], map: "identidad_predios_lote_unico")
   @@map("identidad_predios")
@@ -135,4 +150,28 @@ model MagicLink {
 
   @@index([usuarioId])
   @@map("identidad_enlaces_acceso")
+}
+
+// Visita a una vivienda (HU-GAR-04): el vecino la anuncia y entra a la lista blanca de la garita
+// durante 3 horas desde la hora indicada. Anularla la saca de la lista al instante (HU-GAR-05).
+model Visita {
+  id            String       @id @default(uuid())
+  numero        Int          @unique @default(autoincrement())
+  predioId      String
+  predio        Predio       @relation(fields: [predioId], references: [id])
+  registradaPor String
+  nombre        String
+  dni           String?
+  desde         DateTime
+  hasta         DateTime
+  conVehiculo   Boolean      @default(false)
+  placa         String?
+  estado        EstadoVisita @default(PROGRAMADA)
+  creadaEn      DateTime     @default(now())
+  anuladaEn     DateTime?
+  llegoEn       DateTime?
+
+  @@index([predioId, estado])
+  @@index([estado, desde])
+  @@map("identidad_visitas")
 }

@@ -2,7 +2,7 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 19 · cerradas con e2e: 19 de 19 (100 %).
+- HU en el plan: 76 · cerradas: 21 · cerradas con e2e: 21 de 21 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
@@ -28,3 +28,5 @@ Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU
 | HU-GAR-18 Preferencias de notificación | Cerrada | `app/(vecino)/avisos/preferencias/Preferencias.tsx`<br>`modulos/identidad/aplicacion/avisos.ts` | — | `pruebas/integracion/identidad/avisos.test.ts` | `pruebas/e2e/identidad/avisos.cy.ts` |
 | HU-ACC-04 Pedir ayuda humana desde cualquier pantalla | Cerrada | `app/(directiva)/directiva/pedidos-de-ayuda/CambiarEstado.tsx`<br>`app/(vecino)/mas/ayuda/PedirAyuda.tsx`<br>`componentes/a11y/EnlaceAyuda.tsx`<br>`modulos/accesibilidad/aplicacion/mediacion.ts`<br>`modulos/accesibilidad/dominio/canalMediacionHumana.ts`<br>`modulos/identidad/aplicacion/datosParaAyuda.ts` | — | `pruebas/integracion/accesibilidad/mediacion.test.ts` | `pruebas/e2e/accesibilidad/ayuda.cy.ts` |
 | HU-GAR-19 Panel de inicio consolidado | En parte | `modulos/identidad/aplicacion/panelInicio.ts` | — | `pruebas/integracion/identidad/panelInicio.test.ts` | `pruebas/e2e/identidad/inicio-vecino.cy.ts` |
+| HU-GAR-04 Pre-registrar visitas | Cerrada | `app/(vecino)/visitas/nueva/RegistrarVisita.tsx`<br>`modulos/identidad/aplicacion/visitas.ts`<br>`modulos/identidad/dominio/visita.ts` | — | `pruebas/integracion/identidad/visitas.test.ts` | `pruebas/e2e/identidad/visitas.cy.ts` |
+| HU-GAR-05 Anular visitas | Cerrada | `app/(vecino)/visitas/[id]/anular/AnularVisita.tsx`<br>`modulos/identidad/aplicacion/visitas.ts`<br>`modulos/identidad/dominio/visita.ts` | — | `pruebas/integracion/identidad/visitas.test.ts` | `pruebas/e2e/identidad/visitas.cy.ts` |
