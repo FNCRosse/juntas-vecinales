@@ -58,7 +58,7 @@ export const PERSONAS: Persona[] = [
     dni: "40000006",
     telefonoWhatsApp: "51900000006",
     roles: ["VECINO"],
-    predio: { manzana: "A", lote: "3", uso: "VIVIENDA", autos: 1 },
+    predio: { manzana: "A", lote: "3", uso: "VIVIENDA", autos: 1, estadoGarita: "ROJO" },
   },
   {
     nombreCompleto: "Rosa Díaz",

@@ -2,6 +2,12 @@
 
 const ZONA = "America/Lima";
 
+/** "3:00 p. m.", con espacios normales (Intl usa espacios que no se parten). */
+const horaCorta = (fecha: Date) =>
+  new Intl.DateTimeFormat("es-PE", { timeZone: ZONA, timeStyle: "short", hour12: true })
+    .format(fecha)
+    .replace(/[\u00a0\u202f]/g, " ");
+
 /** "Domingo 27 de setiembre de 2026" */
 export function fechaLarga(fecha: Date) {
   const texto = new Intl.DateTimeFormat("es-PE", {
@@ -32,8 +38,16 @@ export const primerNombre = (nombreCompleto: string) => nombreCompleto.trim().sp
 /** "5 de octubre de 2026 a las 11:10 a. m." */
 export function fechaYHora(fecha: Date) {
   const dia = new Intl.DateTimeFormat("es-PE", { timeZone: ZONA, dateStyle: "long" }).format(fecha);
-  const hora = new Intl.DateTimeFormat("es-PE", { timeZone: ZONA, timeStyle: "short", hour12: true }).format(
-    fecha,
-  );
-  return `${dia} a las ${hora}`;
+  return `${dia} a las ${horaCorta(fecha)}`;
+}
+
+/** "Sábado 3 de octubre, de 3:00 p. m. a 6:00 p. m.": el horario de una visita, en Lima. */
+export function rangoHorario(desde: Date, hasta: Date) {
+  const dia = fechaLarga(desde).replace(/ de \d{4}$/, "");
+  return `${dia}, de ${horaCorta(desde)} a ${horaCorta(hasta)}`;
+}
+
+/** Fecha y hora de un formulario (en Lima, UTC−5 todo el año) a un instante en UTC. */
+export function desdeHoraDeLima(fecha: string, hora: string) {
+  return new Date(`${fecha}T${hora}:00-05:00`);
 }
