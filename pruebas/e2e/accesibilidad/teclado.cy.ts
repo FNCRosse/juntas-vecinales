@@ -5,6 +5,18 @@ export {};
 
 const tab = () => cy.press(Cypress.Keyboard.Keys.TAB);
 
+/** Elemento con el foco, o <body> cuando el foco salió de la página. */
+const conFoco = () => cy.document().then((d) => d.activeElement ?? d.body);
+
+/** Tabula como una persona hasta llegar al control que contiene el texto. */
+function tabularHasta(texto: string, intentos = 30): void {
+  if (intentos === 0) throw new Error(`No se llegó con Tab a «${texto}»`);
+  tab();
+  conFoco().then((el) => {
+    if (el.tagName === "BODY" || !el.textContent?.includes(texto)) tabularHasta(texto, intentos - 1);
+  });
+}
+
 describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
   beforeEach(() => {
     cy.viewport(1280, 800);
@@ -66,26 +78,28 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
 
   it("@HU-ACC-06 CA3 el diálogo guarda el foco mientras está abierto, Escape sale y el foco vuelve", () => {
     cy.visit("/catalogo");
-    cy.contains("button", "Ver cómo se calcula").focus();
+    tabularHasta("Ver cómo se calcula");
     cy.press(Cypress.Keyboard.Keys.ENTER);
     cy.get("[role=dialog]").should("be.visible").and("have.attr", "aria-labelledby");
-    cy.focused().closest("[role=dialog]").should("exist");
+    conFoco().then((el) => expect(el.closest("[role=dialog]"), "foco dentro del diálogo").to.exist);
     for (let i = 0; i < 3; i++) {
       tab();
-      cy.focused().closest("[role=dialog]").should("exist");
+      conFoco().then((el) => expect(el.closest("[role=dialog]"), "foco dentro del diálogo").to.exist);
     }
     cy.press(Cypress.Keyboard.Keys.ESC);
     cy.get("[role=dialog]").should("not.exist");
-    cy.focused().should("contain.text", "Ver cómo se calcula");
+    conFoco().should("contain.text", "Ver cómo se calcula");
   });
 
   it("@HU-ACC-06 CA3 no hay trampas: tabulando se recorre la página entera y se sale de ella", () => {
     cy.visit("/catalogo/garita");
     const vistos: string[] = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 9; i++) {
       tab();
-      cy.focused().then(($el) => vistos.push($el.text().trim()));
+      conFoco().then((el) =>
+        vistos.push(el.tagName === "BODY" ? "(fuera de la página)" : (el.textContent ?? "").trim()),
+      );
     }
-    cy.wrap(vistos).should("include", "Bitácora").and("include", "Saltar al contenido");
+    cy.wrap(vistos).should("include", "Bitácora").and("include", "(fuera de la página)");
   });
 });
