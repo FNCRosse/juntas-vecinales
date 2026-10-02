@@ -17,15 +17,17 @@ enum NombreRol {
 
 // Usuario (Persona del diagrama aplanada): un usuario puede tener varios roles (la directiva también es vecina).
 model Usuario {
-  id                   String        @id @default(uuid())
+  id                   String              @id @default(uuid())
   nombreCompleto       String
-  dni                  String        @unique(map: "identidad_usuarios_dni_unico")
+  dni                  String              @unique(map: "identidad_usuarios_dni_unico")
   telefonoWhatsApp     String?
-  estado               EstadoUsuario @default(ACTIVA)
+  estado               EstadoUsuario       @default(ACTIVA)
   roles                NombreRol[]
-  fechaEmpadronamiento DateTime      @default(now())
+  fechaEmpadronamiento DateTime            @default(now())
   sesiones             Sesion[]
   credencial           CredencialRespaldo?
+  residencias          Residencia[]
+  enlaces              MagicLink[]
 
   @@map("identidad_usuarios")
 }
@@ -55,4 +57,69 @@ model CredencialRespaldo {
   actualizadaEn  DateTime  @updatedAt
 
   @@map("identidad_credenciales")
+}
+
+enum UsoPredio {
+  VIVIENDA
+  NEGOCIO
+  VIVIENDA_Y_NEGOCIO
+}
+
+// Qué es cada residente de la persona titular del predio (prototipo ADM-PAD-04).
+enum RelacionResidencia {
+  TITULAR
+  CONYUGE
+  HIJO
+  PADRE
+  OTRO
+}
+
+// Predio con su ocupación: la guarda M1; el monto de la cuota lo calcula M5 con ella.
+model Predio {
+  id          String       @id @default(uuid())
+  manzana     String
+  lote        String
+  uso         UsoPredio
+  familias    Int          @default(1)
+  inquilinos  Int          @default(0)
+  autos       Int          @default(0)
+  motos       Int          @default(0)
+  triciclos   Int          @default(0)
+  negocios    Int          @default(0)
+  creadoEn    DateTime     @default(now())
+  residencias Residencia[]
+
+  @@unique([manzana, lote], map: "identidad_predios_lote_unico")
+  @@map("identidad_predios")
+}
+
+// Residencia (clase asociativa Usuario–Predio): desvincular cierra la residencia (fechaFin).
+model Residencia {
+  id          String             @id @default(uuid())
+  usuarioId   String
+  usuario     Usuario            @relation(fields: [usuarioId], references: [id])
+  predioId    String
+  predio      Predio             @relation(fields: [predioId], references: [id])
+  relacion    RelacionResidencia
+  fechaInicio DateTime           @default(now())
+  fechaFin    DateTime?
+
+  @@index([predioId])
+  @@index([usuarioId])
+  @@map("identidad_residencias")
+}
+
+// Enlace de acceso de un solo uso (R-01): vence a los 15 min; se guarda solo el hash del token.
+model MagicLink {
+  id        String    @id @default(uuid())
+  usuarioId String
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
+  tokenHash String    @unique
+  emitidoEn DateTime  @default(now())
+  expiraEn  DateTime
+  usadoEn   DateTime?
+  anuladoEn DateTime?
+
+  @@index([usuarioId])
+  @@map("identidad_enlaces_acceso")
 }

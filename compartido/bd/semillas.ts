@@ -1,6 +1,6 @@
 import { cifrarClave } from "../claves";
 import { prisma } from "./cliente";
-import type { NombreRol } from "./generado/client";
+import type { NombreRol, Prisma } from "./generado/client";
 
 // Semillas ficticias (docs/DATOS.md §5): solo en local y en el CI. Nunca en Neon: las previews son
 // copias de producción y una clave conocida daría acceso a ellas.
@@ -11,6 +11,8 @@ type Persona = {
   telefonoWhatsApp: string;
   roles: NombreRol[];
   equipo?: boolean;
+  /** Predio donde es titular (docs/DATOS.md §5). */
+  predio?: Omit<Prisma.PredioCreateInput, "residencias">;
 };
 
 // DNI y teléfonos inventados.
@@ -28,6 +30,7 @@ export const PERSONAS: Persona[] = [
     telefonoWhatsApp: "51900000002",
     roles: ["DIRECTIVA", "VECINO"],
     equipo: true,
+    predio: { manzana: "A", lote: "12", uso: "VIVIENDA" },
   },
   {
     nombreCompleto: "Pedro Chávez",
@@ -48,11 +51,36 @@ export const PERSONAS: Persona[] = [
     dni: "08123478",
     telefonoWhatsApp: "51900000005",
     roles: ["VECINO_ADULTO_MAYOR"],
+    predio: { manzana: "C", lote: "7", uso: "VIVIENDA", inquilinos: 1 },
   },
-  { nombreCompleto: "Julio Mendoza", dni: "40000006", telefonoWhatsApp: "51900000006", roles: ["VECINO"] },
-  { nombreCompleto: "Rosa Díaz", dni: "40000007", telefonoWhatsApp: "51900000007", roles: ["VECINO"] },
-  { nombreCompleto: "Elena Soto", dni: "40000008", telefonoWhatsApp: "51900000008", roles: ["VECINO"] },
-  { nombreCompleto: "Víctor Salas", dni: "40000009", telefonoWhatsApp: "51900000009", roles: ["VECINO"] },
+  {
+    nombreCompleto: "Julio Mendoza",
+    dni: "40000006",
+    telefonoWhatsApp: "51900000006",
+    roles: ["VECINO"],
+    predio: { manzana: "A", lote: "3", uso: "VIVIENDA", autos: 1 },
+  },
+  {
+    nombreCompleto: "Rosa Díaz",
+    dni: "40000007",
+    telefonoWhatsApp: "51900000007",
+    roles: ["VECINO"],
+    predio: { manzana: "B", lote: "2", uso: "VIVIENDA", autos: 1 },
+  },
+  {
+    nombreCompleto: "Elena Soto",
+    dni: "40000008",
+    telefonoWhatsApp: "51900000008",
+    roles: ["VECINO"],
+    predio: { manzana: "D", lote: "9", uso: "VIVIENDA", autos: 1, motos: 1 },
+  },
+  {
+    nombreCompleto: "Víctor Salas",
+    dni: "40000009",
+    telefonoWhatsApp: "51900000009",
+    roles: ["VECINO"],
+    predio: { manzana: "B", lote: "11", uso: "VIVIENDA" },
+  },
 ];
 
 export function negarseEnNube(url = process.env.DATABASE_URL ?? "") {
@@ -64,7 +92,7 @@ export function negarseEnNube(url = process.env.DATABASE_URL ?? "") {
 export async function sembrar(claveEquipo = process.env.SEMILLA_CLAVE ?? "clave-de-prueba") {
   negarseEnNube();
   const credencial = await cifrarClave(claveEquipo);
-  for (const { equipo, ...persona } of PERSONAS) {
+  for (const { equipo, predio, ...persona } of PERSONAS) {
     const usuario = await prisma.usuario.upsert({
       where: { dni: persona.dni },
       create: persona,
@@ -76,6 +104,16 @@ export async function sembrar(claveEquipo = process.env.SEMILLA_CLAVE ?? "clave-
         create: { usuarioId: usuario.id, ...credencial },
         update: { ...credencial, fallosSeguidos: 0, bloqueadaHasta: null },
       });
+    }
+    if (predio) {
+      const { id: predioId } = await prisma.predio.upsert({
+        where: { manzana_lote: { manzana: predio.manzana, lote: predio.lote } },
+        create: predio,
+        update: predio,
+      });
+      const vive = await prisma.residencia.count({ where: { usuarioId: usuario.id, fechaFin: null } });
+      if (!vive)
+        await prisma.residencia.create({ data: { usuarioId: usuario.id, predioId, relacion: "TITULAR" } });
     }
   }
   return PERSONAS.length;
