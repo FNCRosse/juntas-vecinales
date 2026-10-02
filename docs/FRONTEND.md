@@ -36,8 +36,8 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 
 ## 4. Estilos: tokens, Tailwind v4 y Radix
 
-- Fuente única: [`docs/guia-visual/tokens.json`](guia-visual/tokens.json). En la fase 0b se copian `tokens.json` y sus guiones a `componentes/tokens/` y se genera `tokens.css`; `app/globals.css` lo importa como indica la [guía visual §0.4](guia-visual/guia-visual.md). El `tokens.css` de `docs/prototipo/` es una versión anterior y solo sirve al prototipo.
-- `--color-*: initial` borra la paleta de Tailwind: `bg-red-500` no genera CSS. Cero hexadecimales en `app/` y `componentes/` (lo verifica un grep en el CI).
+- Fuente única: [`docs/guia-visual/tokens.json`](guia-visual/tokens.json), copiado a `componentes/tokens/tokens.json` (una prueba de Jest exige que sean iguales). `node componentes/tokens/generar-css.mjs` genera `componentes/tokens/tokens.css`, que `app/globals.css` importa como indica la [guía visual §0.4](guia-visual/guia-visual.md). `verificar-contraste.mjs` se convirtió en la prueba `pruebas/unitarias/accesibilidad/tokens.test.ts` (`componentes/tokens/contraste.ts`): falla si un par baja de 4.5:1 en Normal o de 7:1 en Senior, o si `tokens.css` no está regenerado. Para cambiar un token: se edita en los dos `tokens.json`, se regenera y se corre la prueba. El `tokens.css` de `docs/prototipo/` es una versión anterior y solo sirve al prototipo.
+- `--color-*: initial` borra la paleta de Tailwind: `bg-red-500` no genera CSS. Cero hexadecimales, tamaños fijos (`text-[18px]`) y `outline-none` en `app/` y `componentes/`: lo verifica `npm run estilos` (`guiones/revisar-estilos.sh`) en el job `lint` del CI.
 - Tipografía Atkinson Hyperlegible con `next/font`. Íconos `lucide-react`, siempre acompañados de texto (guía §3).
 - Radix Primitives solo para lo que el HTML nativo no resuelve bien: diálogo y hoja de confirmación, menú "Más", pestañas. Sin temas de terceros: los estilos salen de los tokens.
 - Ningún elemento de gamificación (medallas, puntos, rachas, confeti, mascotas). El proyecto es de accesibilidad y diseño centrado en el usuario.

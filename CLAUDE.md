@@ -48,6 +48,7 @@ Se crean en la fase 0 (y `matriz` en la 0b). Si cambian, se actualiza esta lista
 | `npm run test:e2e` | Build, `next start` y Cypress + axe en headless contra el build (`guiones/e2e.mjs`; los argumentos tras `--` van a Cypress) |
 | `npm run lint` | ESLint, incluidas la regla de arquitectura y `jsx-a11y` |
 | `npm run tipos` | `tsc --noEmit` |
+| `npm run estilos` | Ningún hexadecimal, tamaño fijo ni `outline-none` fuera de `componentes/tokens/` (corre en el CI) |
 | `npm run worker:construir` / `npm run worker:iniciar` | Compila e inicia el worker (Render) |
 | `postinstall` | `prisma generate`: genera el cliente en `compartido/bd/generado/` (ignorado por git) al instalar |
 | `npm run matriz` | Genera `docs/evidencias/matriz-hu.md` desde las etiquetas `@HU` |
