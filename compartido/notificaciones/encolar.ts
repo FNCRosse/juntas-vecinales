@@ -1,8 +1,11 @@
 import type { Transaccion } from "../bd/cliente";
+import type { TipoAviso } from "../bd/generado/client";
 
 export type AvisoNuevo = {
   /** Id del usuario que recibe el aviso. */
   destinatarioId: string;
+  /** De qué trata; por defecto, de su cuenta (acceso y clave), que sale siempre. */
+  tipo?: TipoAviso;
   /** Lo que se ve en el centro de notificaciones, con trato de usted. */
   titulo: string;
   texto: string;

@@ -1,5 +1,6 @@
 import { prisma } from "../bd/cliente";
 import type { AvisoEnCola } from "../bd/generado/client";
+import { leerPreferencias, saleAlWhatsApp } from "./preferencias";
 import { type CanalWhatsApp, elegirCanal } from "./whatsapp";
 
 /** Espera antes de cada reintento, en minutos: tras el 1.er, 2.º y 3.er fallo (BACKEND.md §8). */
@@ -36,6 +37,7 @@ async function escribirCopiaInterna(aviso: AvisoEnCola) {
     create: {
       avisoId: aviso.id,
       destinatarioId: aviso.destinatarioId,
+      tipo: aviso.tipo,
       titulo: aviso.titulo,
       texto: aviso.texto,
     },
@@ -44,7 +46,12 @@ async function escribirCopiaInterna(aviso: AvisoEnCola) {
 }
 
 async function intentarCanalExterno(aviso: AvisoEnCola, canal: CanalWhatsApp, ahora: Date) {
-  if (!aviso.telefono || !aviso.plantilla) {
+  // Sin teléfono o si la persona no quiere ese tipo por WhatsApp (HU-GAR-18), queda solo la copia interna.
+  if (
+    !aviso.telefono ||
+    !aviso.plantilla ||
+    !saleAlWhatsApp(await leerPreferencias(aviso.destinatarioId), aviso.tipo)
+  ) {
     await prisma.avisoEnCola.update({ where: { id: aviso.id }, data: { estado: "SIN_CANAL_EXTERNO" } });
     return "sinCanal" as const;
   }
