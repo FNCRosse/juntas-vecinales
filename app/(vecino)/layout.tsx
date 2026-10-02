@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { MarcoActor } from "@/componentes/a11y/MarcoActor";
+import { RenovarSesion } from "@/app/_sesion/RenovarSesion";
 
 // Layout del actor vecino (FRONTEND.md §1): exige sesión, rol y la política aceptada; sin sesión, a /entrar.
 export default async function Layout({ children }: { children: ReactNode }) {
@@ -11,6 +12,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
   if (!sesion.politicaAceptada) redirect("/entrar/privacidad");
   return (
     <MarcoActor actor="vecino" modoSenior={await modoSeniorAlRenderizar()}>
+      <RenovarSesion />
       {children}
     </MarcoActor>
   );

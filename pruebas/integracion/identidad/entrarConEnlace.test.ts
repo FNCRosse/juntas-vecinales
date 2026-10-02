@@ -170,7 +170,7 @@ describe("@HU-GAR-02 Entrar con el enlace", () => {
     expect((await corta.json()).campos).toEqual({ clave: "La clave necesita al menos 6 números o letras." });
     const creada = await pedir(claveHttp, { clave: "mi-clave-1" }, cookie);
     expect(creada.status).toBe(201);
-    expect(await creada.json()).toEqual({ destino: "/" });
+    expect(await creada.json()).toEqual({ destino: "/guia" });
     await expect(iniciarSesionConClave({ dni: DNI_SOFIA, clave: "mi-clave-1" })).resolves.toMatchObject({
       sesion: { nombreCompleto: "Sofía Castro Ríos", politicaAceptada: true },
     });
@@ -241,6 +241,25 @@ describe("@HU-ACC-01 Modo Senior guardado en la cuenta", () => {
       id: enDispositivo.id,
       modoSeniorActivo: false,
     });
+  });
+});
+
+describe("@HU-GAR-03 Sesión persistente desde el acceso directo", () => {
+  it("@HU-GAR-03 CA2 con una sesión vigente se renueva la cookie; sin sesión, no", async () => {
+    const { PUT: renovar } = await import("@/app/api/auth/sesion/route");
+    const token = await enlaceDeSofia();
+    const { token: sesion } = await canjearEnlace(token, undefined, minutos(1));
+    const pedirRenovar = (cookie: string) =>
+      renovar(
+        new Request("http://localhost/api/auth/sesion", { method: "PUT", headers: { cookie } }),
+        undefined,
+      );
+    const renovada = await pedirRenovar(`sesion=${sesion}`);
+    expect(renovada.status).toBe(204);
+    expect(renovada.headers.get("set-cookie")).toBe(
+      `sesion=${sesion}; Max-Age=34560000; Path=/; HttpOnly; Secure; SameSite=Lax`,
+    );
+    expect((await pedirRenovar("sesion=otra")).status).toBe(401);
   });
 });
 

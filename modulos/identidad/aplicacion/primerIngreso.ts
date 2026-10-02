@@ -68,5 +68,6 @@ export async function crearClaveRespaldo(sesion: SesionDto, clave: string) {
       tx,
     );
   });
-  return { destino: "/" };
+  // Al terminar el primer ingreso se ofrece la guía opcional (HU-GAR-03 CA1).
+  return { destino: "/guia" };
 }

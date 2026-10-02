@@ -2,7 +2,7 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 8 · cerradas con e2e: 8 de 8 (100 %).
+- HU en el plan: 76 · cerradas: 9 · cerradas con e2e: 9 de 9 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
@@ -15,6 +15,6 @@ Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU
 | HU-GAR-01 Empadronar residente y enviarle su acceso inicial | Cerrada | `app/(administrador)/administracion/padron/empadronar/_componentes/AsistenteEmpadronar.tsx`<br>`modulos/identidad/aplicacion/consultarPadron.ts`<br>`modulos/identidad/aplicacion/emitirEnlace.ts`<br>`modulos/identidad/aplicacion/empadronar.ts`<br>`modulos/identidad/dominio/empadronamiento.ts`<br>`modulos/identidad/dominio/magicLink.ts`<br>`modulos/identidad/dominio/predio.ts` | `pruebas/unitarias/identidad/empadronamiento.test.ts` | `pruebas/integracion/identidad/empadronar.test.ts` | `pruebas/e2e/identidad/empadronar.cy.ts` |
 | HU-GAR-02 Entrar con el enlace de acceso, aceptar la política y crear la clave de respaldo | Cerrada | `modulos/identidad/aplicacion/entrarConEnlace.ts`<br>`modulos/identidad/aplicacion/primerIngreso.ts`<br>`modulos/identidad/dominio/magicLink.ts`<br>`modulos/identidad/dominio/politica.ts` | — | `pruebas/integracion/identidad/entrarConEnlace.test.ts` | `pruebas/e2e/identidad/entrar-enlace.cy.ts` |
 | HU-ACC-01 Modo Senior guardado en la cuenta (enlaza el perfil de la fase 0b con `Usuario`) | Cerrada | `modulos/accesibilidad/aplicacion/cambiarModoSenior.ts`<br>`modulos/accesibilidad/aplicacion/obtenerPerfil.ts`<br>`modulos/accesibilidad/aplicacion/pasarPerfilALaCuenta.ts` | `pruebas/unitarias/accesibilidad/perfilAccesibilidad.test.ts` | `pruebas/integracion/accesibilidad/perfil.test.ts`<br>`pruebas/integracion/identidad/entrarConEnlace.test.ts` | `pruebas/e2e/accesibilidad/letra-grande.cy.ts`<br>`pruebas/e2e/identidad/entrar-enlace.cy.ts` |
-| HU-GAR-03 Abrir desde el ícono del teléfono sin volver a entrar (PWA) | Pendiente | — | — | `pruebas/integracion/identidad/sesion.test.ts` | — |
+| HU-GAR-03 Abrir desde el ícono del teléfono sin volver a entrar (PWA) | Cerrada | `app/(vecino)/guia/_componentes/GuiaPrimerUso.tsx`<br>`app/_sesion/RenovarSesion.tsx`<br>`app/manifest.ts` | — | `pruebas/integracion/identidad/entrarConEnlace.test.ts`<br>`pruebas/integracion/identidad/sesion.test.ts` | `pruebas/e2e/identidad/entrar-enlace.cy.ts` |
 | HU-GAR-24 Entrar con la clave de respaldo | Pendiente | `modulos/identidad/aplicacion/iniciarSesionConClave.ts` | `pruebas/unitarias/identidad/credencialRespaldo.test.ts` | `pruebas/integracion/identidad/sesion.test.ts` | `pruebas/e2e/identidad/entrada-equipo.cy.ts` |
 | HU-GAR-21 Crear cuentas internas con rol | Pendiente | — | — | `pruebas/integracion/identidad/sesion.test.ts` | `pruebas/e2e/identidad/entrada-equipo.cy.ts` |
