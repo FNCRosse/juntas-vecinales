@@ -23,7 +23,7 @@ Un único PostgreSQL (Neon) con un único esquema Prisma y separación lógica p
 | Fechas | `DateTime` en UTC; se muestran en `America/Lima` | — |
 | Índice único de negocio | `@@unique` con nombre explícito | `@@unique([predioId, periodo], name: "cuota_por_predio_y_periodo")` |
 
-Prefijos de tabla: `identidad_`, `transparencia_`, `incidencias_`, `asambleas_`, `aportes_`, `accesibilidad_` y, para el núcleo, `nucleo_` (`nucleo_auditoria`, `nucleo_notificaciones`, `nucleo_archivos`, `nucleo_ejecuciones_worker`).
+Prefijos de tabla: `identidad_`, `transparencia_`, `incidencias_`, `asambleas_`, `aportes_`, `accesibilidad_` y, para el núcleo, `nucleo_` (`nucleo_auditoria`, `nucleo_cola_avisos`, `nucleo_notificaciones`, `nucleo_archivos`, `nucleo_ejecuciones_worker`).
 
 ## 3. Restricciones en la base, no en el código
 
