@@ -10,6 +10,8 @@ declare global {
     interface Chainable {
       /** Audita la pantalla con axe, guarda el reporte y falla si hay alguna violación. */
       revisarAccesibilidad(nombre: string): Chainable<void>;
+      /** Guarda "Letra grande" en el perfil del servidor, como lo hace el switch. */
+      guardarModo(modo: "normal" | "senior"): Chainable<void>;
     }
   }
 }
@@ -35,4 +37,10 @@ Cypress.Commands.add("revisarAccesibilidad", (nombre: string) => {
       }),
     );
   cy.checkA11y(undefined, { runOnly: { type: "tag", values: ETIQUETAS } });
+});
+
+Cypress.Commands.add("guardarModo", (modo: "normal" | "senior") => {
+  cy.request("PUT", "/api/accesibilidad/perfil", { modoSeniorActivo: modo === "senior" })
+    .its("status")
+    .should("eq", 200);
 });

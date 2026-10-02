@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Atkinson_Hyperlegible } from "next/font/google";
 import type { ReactNode } from "react";
+import { modoSeniorAlRenderizar } from "./_accesibilidad/perfil";
 import "./globals.css";
 
 // Tipografía única de la guía visual (§2), publicada en la variable que leen los tokens.
@@ -17,9 +18,12 @@ export const metadata: Metadata = {
   description: "Plataforma de la Junta Vecinal de Villa de Fátima",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+// El perfil de accesibilidad se aplica al renderizar en el servidor: el documento llega ya en
+// modo Senior, sin parpadeo (ADR-004).
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const modoSenior = await modoSeniorAlRenderizar();
   return (
-    <html lang="es">
+    <html lang="es" data-mode={modoSenior ? "senior" : undefined}>
       <body className={atkinson.variable}>
         <a
           href="#contenido"

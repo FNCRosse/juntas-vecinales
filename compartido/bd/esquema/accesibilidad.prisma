@@ -1,0 +1,24 @@
+// Tablas del módulo accesibilidad (M6, prefijo accesibilidad_).
+
+enum EscalaTipografica {
+  NORMAL
+  GRANDE
+  MUY_GRANDE
+}
+
+// PerfilAccesibilidad (ADR-004). Hasta M1, el perfil se identifica por la cookie "perfil" del
+// dispositivo; M1 lo enlaza con Usuario (usuarioId y su llave foránea) al autenticar.
+model PerfilAccesibilidad {
+  id                           String            @id @default(uuid())
+  usuarioId                    String?           @unique
+  modoSeniorActivo             Boolean           @default(false)
+  escalaTipografica            EscalaTipografica @default(NORMAL)
+  altoContrasteActivo          Boolean           @default(false)
+  sintesisVozActiva            Boolean           @default(false)
+  confirmacionEnDosPasosActiva Boolean           @default(true)
+  areaTactilAmpliada           Boolean           @default(false)
+  creadoEn                     DateTime          @default(now())
+  actualizadoEn                DateTime          @updatedAt
+
+  @@map("accesibilidad_perfiles")
+}
