@@ -1,17 +1,7 @@
 "use client";
 // @HU-GAR-01
 
-import {
-  ArrowRight,
-  Check,
-  ChevronLeft,
-  List,
-  Pencil,
-  Smartphone,
-  User,
-  UserPlus,
-  Users,
-} from "lucide-react";
+import { ArrowRight, Check, ChevronLeft, List, Smartphone, User, UserPlus, Users } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode, type RefObject, useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
@@ -21,6 +11,7 @@ import { Campo, MensajeDeCampo } from "@/componentes/a11y/Campo";
 import { Contador } from "@/componentes/a11y/Contador";
 import { Interruptor } from "@/componentes/a11y/Interruptor";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
@@ -250,44 +241,19 @@ export function AsistenteEmpadronar() {
       ],
     ];
     return (
-      <div className="flex flex-col gap-6">
-        <Volver alPulsar={() => setPaso("residentes")}>Volver y corregir</Volver>
-        <Titulo referencia={titulo} paso="Paso 3 de 3">
-          ¿Desea empadronar {direccion(vivienda)}?
-        </Titulo>
-        <dl className="flex flex-col gap-3 rounded-control bg-fondo-suave p-4 senior:p-6">
-          {filas.map(([etiqueta, valor]) => (
-            <div key={etiqueta} className="flex flex-col">
-              <dt className="text-pequeno text-texto-secundario">{etiqueta}</dt>
-              <dd className="font-bold">{valor}</dd>
-            </div>
-          ))}
-        </dl>
-        <p>
-          Quedará en el padrón y le enviaremos su enlace de entrada por WhatsApp a{" "}
-          {primerNombre(titular.nombreCompleto)}
-          {conCuenta.length > 0 && " y a las otras personas con cuenta propia"}.
-        </p>
-        {falla && (
-          <MensajeEstado tipo="error" titulo="No se guardó nada">
-            <p>{falla}</p>
-          </MensajeEstado>
-        )}
-        <div className="flex flex-col gap-separacion">
-          <Boton icono={Check} anchoCompleto cargando={enviando} onClick={empadronar}>
-            Sí, empadronar
-          </Boton>
-          <Boton variante="secundario" icono={Pencil} anchoCompleto onClick={() => setPaso("residentes")}>
-            Corregir algo
-          </Boton>
-          <Link
-            href="/administracion/padron"
-            className="inline-flex min-h-tactil items-center justify-center font-bold text-texto-enlace"
-          >
-            Cancelar, no guardar nada
-          </Link>
-        </div>
-      </div>
+      <PasoConfirmacion
+        referencia={titulo}
+        paso="Paso 3 de 3"
+        titulo={`¿Desea empadronar ${direccion(vivienda)}?`}
+        filas={filas}
+        efecto={`Quedará en el padrón y le enviaremos su enlace de entrada por WhatsApp a ${primerNombre(titular.nombreCompleto)}${conCuenta.length > 0 ? " y a las otras personas con cuenta propia" : ""}.`}
+        textoConfirmar="Sí, empadronar"
+        enviando={enviando}
+        error={falla}
+        alConfirmar={empadronar}
+        alCorregir={() => setPaso("residentes")}
+        hrefCancelar="/administracion/padron"
+      />
     );
   }
 

@@ -24,3 +24,19 @@ export function plantillaClaveNueva(nombre: string, enlace: string) {
 export function plantillaClaveCambiada(nombre: string) {
   return { plantilla: "clave_cambiada", parametros: [nombre] };
 }
+
+/**
+ * Invitación al equipo (HU-GAR-21 CA2). Texto en Meta: "Hola, {{1}}. La Junta Vecinal le dio acceso
+ * de equipo como {{2}}. Para crear su clave, abra este enlace: {{3}}. Vence en 48 horas."
+ */
+export function plantillaInvitacionEquipo(nombre: string, rol: string, enlace: string) {
+  return { plantilla: "invitacion_equipo", parametros: [nombre, rol, enlace] };
+}
+
+/**
+ * Cambio de rol (HU-GAR-23). Texto en Meta: "Hola, {{1}}. Su rol en el equipo de la Junta Vecinal
+ * ahora es {{2}}. Sus permisos ya cambiaron."
+ */
+export function plantillaRolCambiado(nombre: string, rol: string) {
+  return { plantilla: "rol_cambiado", parametros: [nombre, rol] };
+}

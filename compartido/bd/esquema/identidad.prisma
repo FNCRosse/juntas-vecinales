@@ -113,10 +113,12 @@ model Residencia {
   @@map("identidad_residencias")
 }
 
-// Para qué sirve el enlace: entrar (HU-GAR-01, 02, 11) o crear una clave nueva (HU-GAR-25).
+// Para qué sirve el enlace: entrar (HU-GAR-01, 02, 11), crear una clave nueva (HU-GAR-25) o crear
+// el acceso de equipo con la invitación (HU-GAR-21).
 enum PropositoEnlace {
   ENTRADA
   CLAVE
+  EQUIPO
 }
 
 // Enlace de acceso de un solo uso (R-01): vence a los 15 min; se guarda solo el hash del token.

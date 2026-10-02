@@ -1,10 +1,14 @@
 // @HU-GAR-01 @HU-GAR-02 @HU-GAR-11 @HU-GAR-25
+import { HORAS_INVITACION } from "./equipo";
+
 // MagicLink del diagrama 02a: acceso personal de un solo uso y vigencia limitada (R-01).
 
 export const MINUTOS_DE_VIGENCIA = 15;
 
-export function venceEn(emitidoEn: Date) {
-  return new Date(emitidoEn.getTime() + MINUTOS_DE_VIGENCIA * 60_000);
+/** 15 minutos; la invitación al equipo, 48 horas (HU-GAR-21). */
+export function venceEn(emitidoEn: Date, proposito: PropositoEnlace = "ENTRADA") {
+  const minutos = proposito === "EQUIPO" ? HORAS_INVITACION * 60 : MINUTOS_DE_VIGENCIA;
+  return new Date(emitidoEn.getTime() + minutos * 60_000);
 }
 
 export type EstadoEnlace = "VIGENTE" | "USADO" | "ANULADO" | "VENCIDO";
@@ -20,7 +24,7 @@ export function estadoDelEnlace(
   return "VIGENTE";
 }
 
-export type PropositoEnlace = "ENTRADA" | "CLAVE";
+export type PropositoEnlace = "ENTRADA" | "CLAVE" | "EQUIPO";
 
 /** Para no llenar de mensajes un WhatsApp: uno por minuto y cinco por hora (HU-GAR-11, HU-GAR-25). */
 export const SEGUNDOS_ENTRE_ENLACES = 60;
