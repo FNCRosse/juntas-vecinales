@@ -29,7 +29,7 @@ Prefijos de tabla (la primera del módulo M6 es `accesibilidad_perfiles`): `iden
 
 Se escriben como SQL dentro de la migración que crea la tabla:
 
-- **Solo inserción** (trigger que lanza error en UPDATE y DELETE): `nucleo_auditoria` (HU-GAR-26 CA3), bitácora de garita (HU-GAR-08 CA3), historial de tarifas (HU-COB-16 CA3), publicaciones de transparencia ya emitidas (`esInalterable`).
+- **Solo inserción** (trigger que lanza error en UPDATE y DELETE): `nucleo_auditoria` (HU-GAR-26 CA3), bitácora de garita (HU-GAR-08 CA3; admite borrar solo lo de más de un año, por la retención), historial de tarifas (HU-COB-16 CA3), publicaciones de transparencia ya emitidas (`esInalterable`).
 - **Idempotencia:** `UNIQUE` sobre `idOperacion` / `idOperacionLocal` y sobre `(predioId, periodo)` de la cuota.
 - **Unicidad del padrón:** `UNIQUE` sobre el DNI de la persona (HU-GAR-01 CA3).
 - **Un reclamo abierto por cuota:** índice único parcial (HU-COB-03 CA3).
@@ -80,5 +80,5 @@ Tarifa semanal de ejemplo, con la estructura que aprueba la asamblea (HU-COB-16)
 | Enlaces de acceso y sesiones vencidas | 30 días | Se borran |
 | Auditoría | Indefinida | — |
 
-  La depuración la hace una tarea del worker; se implementa con el primer módulo que guarde ese tipo de dato.
+  La depuración la hace el worker en cada ejecución con `depurarVencidos()` de `compartido/retencion.ts`; cada módulo agrega ahí su borrado cuando guarda un dato con plazo. Desde M1 se depuran la bitácora y las visitas (1 año) y los enlaces y sesiones vencidos (30 días; una sesión sin usar más de 400 días ya no tiene cookie). La bitácora sigue siendo de solo inserción: su trigger (`identidad_bitacora_solo_insercion`) solo deja borrar filas de más de 365 días.
 - **Minimización:** la instantánea de la garita guarda el DNI solo como hash; el mapa público generaliza las coordenadas; la identidad del denunciante anónimo se cifra en reposo (AES-256-GCM con `CLAVE_CIFRADO`).
