@@ -42,10 +42,23 @@ enum EstadoEnvio {
 
 // Cola de avisos (ADR-006). El emisor solo encola; el worker escribe primero la copia interna
 // y luego intenta WhatsApp con reintentos de espera creciente (1, 4 y 16 min).
+// De qué trata el aviso: el centro de notificaciones filtra por tipo y las preferencias deciden
+// qué tipos salen por WhatsApp (HU-GAR-18, HU-GAR-20). CUENTA y SEGURIDAD salen siempre.
+enum TipoAviso {
+  CUENTA
+  SEGURIDAD
+  PAGOS
+  ASAMBLEAS
+  REPORTES
+  GARITA
+  NOTICIAS
+}
+
 model AvisoEnCola {
   id              String        @id @default(uuid())
   creadoEn        DateTime      @default(now())
   destinatarioId  String
+  tipo            TipoAviso     @default(CUENTA)
   titulo          String
   texto           String
   // Canal externo: sin teléfono el aviso queda solo en el centro de notificaciones.
@@ -69,6 +82,7 @@ model Notificacion {
   id             String      @id @default(uuid())
   creadaEn       DateTime    @default(now())
   destinatarioId String
+  tipo           TipoAviso   @default(CUENTA)
   titulo         String
   texto          String
   leidaEn        DateTime?
@@ -77,4 +91,18 @@ model Notificacion {
 
   @@index([destinatarioId, creadaEn])
   @@map("nucleo_notificaciones")
+}
+
+// Qué avisos quiere recibir por WhatsApp cada persona (HU-GAR-18). Sin fila, los valores por defecto.
+model PreferenciaAviso {
+  usuarioId     String   @id
+  whatsapp      Boolean  @default(true)
+  pagos         Boolean  @default(true)
+  asambleas     Boolean  @default(true)
+  reportes      Boolean  @default(true)
+  garita        Boolean  @default(true)
+  noticias      Boolean  @default(false)
+  actualizadaEn DateTime @updatedAt
+
+  @@map("nucleo_preferencias_aviso")
 }

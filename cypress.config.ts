@@ -25,6 +25,40 @@ export default defineConfig({
         },
         // El enlace de entrada que se encoló hacia ese WhatsApp: en las pruebas no sale a Meta y el
         // worker no corre, así que sigue en la cola. Solo la BD de pruebas (DATABASE_URL del CI).
+        // Avisos ya despachados para una persona: en el CI el worker no corre y la copia interna la
+        // escribe él (ADR-006). Solo la BD de pruebas.
+        async avisosDePrueba({
+          dni,
+          avisos,
+        }: {
+          dni: string;
+          avisos: { tipo: string; titulo: string; texto: string }[];
+        }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            const { rows } = await cliente.query<{ id: string }>(
+              "SELECT id FROM identidad_usuarios WHERE dni = $1",
+              [dni],
+            );
+            for (const [i, aviso] of avisos.entries()) {
+              const cuando = new Date(Date.now() - (avisos.length - i) * 60_000);
+              const { rows: cola } = await cliente.query<{ id: string }>(
+                `INSERT INTO nucleo_cola_avisos (id, "destinatarioId", tipo, titulo, texto, parametros, estado, "creadoEn", "reintentarDesde")
+                 VALUES (gen_random_uuid(), $1, $2, $3, $4, '{}', 'SIN_CANAL_EXTERNO', $5, $5) RETURNING id`,
+                [rows[0].id, aviso.tipo, aviso.titulo, aviso.texto, cuando],
+              );
+              await cliente.query(
+                `INSERT INTO nucleo_notificaciones (id, "destinatarioId", tipo, titulo, texto, "avisoId", "creadaEn")
+                 VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6)`,
+                [rows[0].id, aviso.tipo, aviso.titulo, aviso.texto, cola[0].id, cuando],
+              );
+            }
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
         async enlaceEnCola({
           telefono,
           plantilla = "enlace_acceso",

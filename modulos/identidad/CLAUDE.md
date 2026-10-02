@@ -43,7 +43,7 @@ Enums: `EstadoUsuario` (ACTIVA, SUSPENDIDA, DESVINCULADA) · `NombreRol` (VECINO
 
 **Punto de entrada**
 - El panel de inicio se compone en `app/(vecino)/page.tsx`; M1 aporta el bloque de avisos y cada módulo posterior el suyo (AC-2: deuda, próximo evento y quejas visibles sin navegar).
-- El centro de notificaciones lee `compartido/notificaciones`. Las notificaciones críticas de seguridad (suspensión en garita) no se pueden desactivar; la copia interna siempre existe.
+- El centro de notificaciones lee `compartido/notificaciones` (`centro.ts`). Cada aviso tiene un `TipoAviso` (CUENTA, SEGURIDAD, PAGOS, ASAMBLEAS, REPORTES, GARITA, NOTICIAS) que fija su origen y su filtro. Las preferencias (`compartido/notificaciones/preferencias.ts`, tabla `nucleo_preferencias_aviso`) deciden qué tipos salen por WhatsApp; CUENTA y SEGURIDAD (por ejemplo, la suspensión en garita) salen siempre y la copia interna siempre existe.
 - El log de auditoría global es solo para el administrador, de solo lectura, filtrable por acción, módulo y responsable.
 
 ## Historias de usuario
