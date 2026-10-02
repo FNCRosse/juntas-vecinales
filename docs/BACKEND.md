@@ -60,7 +60,9 @@ export const POST = manejar(async (req) => {
 - Sesión propia, sin librerías de autenticación: tabla `Sesion` (id aleatorio de 32 bytes con `crypto.randomBytes`), cookie `sesion` `HttpOnly`, `Secure`, `SameSite=Lax`. Persistente para el vecino (HU-GAR-03): se renueva al usarla; solo termina si el vecino cierra sesión o el administrador la revoca.
 - `MagicLink`: token aleatorio, se guarda solo su hash SHA-256, vigencia 15 min, un solo uso; el canje lee la fila con `SELECT … FOR UPDATE` dentro de una transacción (figura H9).
 - Claves (respaldo del vecino y cuentas internas): `crypto.scrypt` con sal por usuario. Los campos de clave admiten pegar y autocompletar (WCAG 3.3.8). Cinco fallos seguidos bloquean temporalmente la entrada con clave (HU-GAR-24 CA3).
-- `middleware.ts` (o `proxy.ts`, si la versión de Next lo exige) solo redirige a `/entrar` cuando no hay cookie. **La autorización real se hace en `aplicacion/`** con `exigirRol(sesion, ...roles)`, porque el middleware no ve la BD.
+- En la BD se guarda solo el hash SHA-256 del token (`identidad_sesiones.tokenHash`); la sesión se renueva (`ultimoUsoEn`) como mucho una vez por hora. Puerto: `modulos/identidad/aplicacion/sesion.ts` (`obtenerSesion`, `exigirSesion(peticion)`, `exigirRol(sesion, ...roles)`).
+- No hay `proxy.ts` (el antiguo `middleware.ts`): los layouts de cada actor leen la sesión en el servidor con `exigirActor()` (`app/_sesion/sesion.ts`) y redirigen a la entrada que corresponde o al inicio del propio rol. **La autorización real se hace en `aplicacion/`** con `exigirRol(sesion, ...roles)`.
+- Entrar con DNI y clave: `POST /api/auth/clave` (equipo en `/entrar/equipo`; clave de respaldo del vecino en `/clave`, HU-GAR-24). Cerrar sesión: `DELETE /api/auth/sesion`.
 - Roles (diagrama 02a): `VECINO`, `VECINO_ADULTO_MAYOR`, `DIRECTIVA`, `DIRECTIVO_MEDIADOR`, `VIGILANTE`, `ADMINISTRADOR`. Un usuario puede tener varios (la directiva también es vecina).
 
 ## 6. Reglas transversales de calidad (Anexo H §3)

@@ -18,7 +18,7 @@ GitHub Actions cron (cada 10 min) ───────────────�
 | --- | --- | --- | --- | --- |
 | Local | `npm run dev` | Postgres en Docker o rama `dev` de Neon | `simulador` | R2 de desarrollo o almacén en memoria |
 | CI | build + `next start` en Actions | Servicio `postgres:16` de Actions | `simulador` | Almacén en memoria |
-| Preview (cada PR) | Vercel preview | Rama de Neon creada para esa preview, con semillas | `simulador` | R2 (prefijo `preview/`) |
+| Preview (cada PR) | Vercel preview | Rama de Neon creada para esa preview, copia de producción, **sin semillas** (una clave conocida daría acceso a la copia) | `simulador` | R2 (prefijo `preview/`) |
 | Producción | Vercel, rama `main` | Rama principal de Neon | `meta` | R2 |
 
 El worker solo existe en producción; las previews no despachan a WhatsApp (el simulador escribe la copia interna).
@@ -46,6 +46,8 @@ Sin valores en el repositorio. `.env.example` lista los nombres; los valores loc
 | `WHATSAPP_SIMULAR_FALLO` | No | Solo local y pruebas | — |
 | `CYPRESS_INSTALL_BINARY` | No | Vercel (prod y preview) y Render = `0`; jobs del CI sin e2e | Claude |
 | `NODE_VERSION` | No | Render = `22` | Claude |
+| `SEMILLA_CLAVE` | No (solo datos ficticios) | Local y CI; si falta, una clave de prueba | — |
+| `ADMIN_INICIAL_NOMBRE`, `ADMIN_INICIAL_DNI`, `ADMIN_INICIAL_CLAVE` | La clave sí | Solo en la terminal de la autora al correr `npm run administrador:crear` contra producción, una vez | La autora |
 
 ## 3. Pasos de la autora en cada panel
 

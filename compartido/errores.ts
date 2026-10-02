@@ -58,4 +58,9 @@ export class ErrorReglaNegocio extends ErrorDeAplicacion {
   readonly estadoHttp = 422;
 }
 
+/** Demasiados intentos: se pausa la operación un tiempo (entrada con clave, HU-GAR-24 CA3). */
+export class ErrorEnPausa extends ErrorDeAplicacion {
+  readonly estadoHttp = 429;
+}
+
 export const MENSAJE_ERROR_INESPERADO = "No pudimos completar la acción. Intente de nuevo en unos minutos.";
