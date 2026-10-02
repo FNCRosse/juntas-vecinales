@@ -1,4 +1,4 @@
-// @HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17
+// @HU-GAR-12 @HU-GAR-13 @HU-GAR-14 @HU-GAR-15 @HU-GAR-16 @HU-GAR-17
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import type { SeccionPdf } from "@/compartido/archivos/pdf";
 import { prisma, type Transaccion } from "@/compartido/bd/cliente";
@@ -6,6 +6,7 @@ import { ErrorConflicto, ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion }
 import { fechaLarga, fechaYHora, primerNombre } from "@/compartido/fechas";
 import { encolarAviso } from "@/compartido/notificaciones/encolar";
 import {
+  plantillaCancelacionPedida,
   plantillaNumeroCambiado,
   plantillaSolicitudPrivacidad,
 } from "@/compartido/notificaciones/plantillas";
@@ -13,12 +14,18 @@ import {
   CAMPOS,
   type CampoRectificable,
   celularLegible,
+  dniAnonimo,
+  EFECTO_CANCELACION,
   errorDeRectificacion,
   estadoDelPlazo,
   fechaLimite,
   leerCelular,
   leerVivienda,
+  MOTIVOS_CANCELACION,
+  type MotivoCancelacion,
+  NOMBRE_ANONIMO,
   numeroDeSolicitud,
+  type Oposicion,
   TIPOS_ARCO,
   type TipoArco,
   type Verificacion,
@@ -27,6 +34,9 @@ import {
 import { NOMBRE_RELACION } from "@/modulos/identidad/dominio/empadronamiento";
 import { direccion } from "@/modulos/identidad/dominio/predio";
 import {
+  administradoresActivos,
+  anonimizarIdentidad,
+  cancelacionPendiente,
   cerrarSolicitud,
   contarPendientes,
   crearSolicitud,
@@ -35,17 +45,19 @@ import {
   solicitudConVecino,
   solicitudesDelVecino,
   solicitudesParaLaBandeja,
+  ultimaOposicion,
 } from "@/modulos/identidad/infraestructura/repositorioArco";
 import { buscarPredioPorLote, cerrarResidencia } from "@/modulos/identidad/infraestructura/repositorioPadron";
 import { exigirRol, type SesionDto } from "./sesion";
 
-export { CAMPOS, TIPOS_ARCO, VERIFICACIONES };
-export type { CampoRectificable, TipoArco, Verificacion };
+export { CAMPOS, EFECTO_CANCELACION, MOTIVOS_CANCELACION, TIPOS_ARCO, VERIFICACIONES };
+export type { CampoRectificable, MotivoCancelacion, TipoArco, Verificacion };
 
 type Solicitud = NonNullable<Awaited<ReturnType<typeof solicitudConVecino>>>;
 
-function titulo(s: { tipo: TipoArco; campo: CampoRectificable | null }) {
+function titulo(s: { tipo: TipoArco; campo: CampoRectificable | null; valorNuevo: string | null }) {
   if (s.campo === "WHATSAPP") return "Cambiar su número de WhatsApp";
+  if (s.tipo === "OPOSICION" && s.valorNuevo === "RETIRADA") return "Volver a mostrar su ubicación exacta";
   if (s.tipo === "RECTIFICACION" && s.campo) return `Corregir ${CAMPOS[s.campo].nombre}`;
   return {
     ACCESO: "Copia de sus datos personales",
@@ -73,8 +85,13 @@ const terminaEn = (texto: string | null, cifras: number) =>
 export async function miPerfil(sesion: SesionDto) {
   const usuario = await cargarUsuario(sesion.usuarioId);
   const residencia = usuario.residencias[0];
-  const solicitudes = await solicitudesDelVecino(sesion.usuarioId);
+  const [solicitudes, oculta] = await Promise.all([
+    solicitudesDelVecino(sesion.usuarioId),
+    prefiereUbicacionGeneralizada(sesion.usuarioId),
+  ]);
   return {
+    ocultaUbicacion: oculta,
+    cancelacionPendiente: solicitudes.some((s) => s.tipo === "CANCELACION" && s.estado === "PENDIENTE"),
     nombre: usuario.nombreCompleto,
     dni: terminaEn(usuario.dni, 2),
     vivienda: residencia ? direccion(residencia.predio) : "Sin vivienda en el padrón",
@@ -228,6 +245,88 @@ export async function solicitarRectificacion(
   return { id: solicitud.id, numero: numeroDeSolicitud(solicitud.numero) };
 }
 
+/**
+ * Pide cancelar su cuenta y sus datos (HU-GAR-14 CA1). Su cuenta sigue igual mientras se revisa; la
+ * administración recibe el aviso con el plazo legal (CA2).
+ */
+export async function solicitarCancelacion(
+  sesion: SesionDto,
+  datos: { motivo: MotivoCancelacion; detalle?: string },
+  ahora = new Date(),
+) {
+  if (await cancelacionPendiente(sesion.usuarioId))
+    throw new ErrorConflicto("Ya pidió cancelar su cuenta. Espere la respuesta de la administración.");
+  const usuario = await cargarUsuario(sesion.usuarioId);
+  const residencia = usuario.residencias[0];
+  const quien = residencia
+    ? `${usuario.nombreCompleto} (${direccion(residencia.predio)})`
+    : usuario.nombreCompleto;
+  const vence = fechaLarga(fechaLimite(ahora, "CANCELACION"));
+  const administradores = await administradoresActivos();
+  const solicitud = await prisma.$transaction(async (tx) => {
+    const creada = await crearSolicitud(tx, {
+      usuarioId: sesion.usuarioId,
+      tipo: "CANCELACION",
+      detalle: [MOTIVOS_CANCELACION[datos.motivo], datos.detalle?.trim()].filter(Boolean).join(": "),
+      creadaEn: ahora,
+    });
+    for (const admin of administradores) {
+      await encolarAviso(
+        {
+          destinatarioId: admin.id,
+          titulo: `Pedido de cancelación ${numeroDeSolicitud(creada.numero)}`,
+          texto: `${quien} pidió cancelar su cuenta. Resuélvalo antes del ${vence}.`,
+          whatsapp: admin.telefonoWhatsApp
+            ? { telefono: admin.telefonoWhatsApp, ...plantillaCancelacionPedida(quien, vence) }
+            : undefined,
+        },
+        tx,
+      );
+    }
+    return creada;
+  });
+  return { id: solicitud.id, numero: numeroDeSolicitud(solicitud.numero), vence };
+}
+
+/** Si la persona se opuso a que el mapa muestre su ubicación exacta: lo consulta M3 (HU-GAR-15). */
+export async function prefiereUbicacionGeneralizada(usuarioId: string) {
+  return (await ultimaOposicion(usuarioId))?.valorNuevo === "ACTIVA";
+}
+
+/**
+ * Activa o retira la oposición (HU-GAR-15 CA1): se aplica sola y de inmediato, también a sus reportes
+ * anteriores (CA3), porque el mapa la consulta al construirse. Cada cambio queda como solicitud
+ * resuelta sola y en la auditoría.
+ */
+export async function cambiarOposicion(sesion: SesionDto, activa: boolean, ahora = new Date()) {
+  const antes: Oposicion = (await prefiereUbicacionGeneralizada(sesion.usuarioId)) ? "ACTIVA" : "RETIRADA";
+  const despues: Oposicion = activa ? "ACTIVA" : "RETIRADA";
+  if (antes === despues) return { ocultaUbicacion: activa };
+  await prisma.$transaction(async (tx) => {
+    const creada = await crearSolicitud(tx, {
+      usuarioId: sesion.usuarioId,
+      tipo: "OPOSICION",
+      estado: "RESUELTA_SOLA",
+      valorAnterior: antes,
+      valorNuevo: despues,
+      creadaEn: ahora,
+      resueltaEn: ahora,
+    });
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: activa ? "oponerse_ubicacion_exacta" : "retirar_oposicion_ubicacion",
+        entidad: "SolicitudArco",
+        entidadId: creada.id,
+        antes: { oposicion: antes },
+        despues: { oposicion: despues },
+      },
+      tx,
+    );
+  });
+  return { ocultaUbicacion: activa };
+}
+
 // ── Administración (HU-GAR-16) ─────────────────────────────────────────────────
 
 const exigirAdministracion = (sesion: SesionDto) => exigirRol(sesion, "ADMINISTRADOR");
@@ -264,7 +363,9 @@ async function aFila(s: Solicitud, ahora: Date) {
       s.estado === "RESUELTA_SOLA"
         ? s.tipo === "ACCESO"
           ? `Descargó su copia en PDF desde la app el ${fechaYHora(s.creadaEn)}. Solo tenía sus datos.`
-          : "Se aplicó sola, también a sus reportes anteriores."
+          : s.valorNuevo === "RETIRADA"
+            ? "Se aplicó sola: sus reportes vuelven a mostrarse en el punto exacto."
+            : "Se aplicó sola, también a sus reportes anteriores: se muestran solo por manzana."
         : s.estado === "PENDIENTE"
           ? `Van ${usados} de ${plazo} días hábiles`
           : `${s.estado === "APROBADA" ? "Aprobada" : "Rechazada"} el ${fechaLarga(s.resueltaEn ?? s.creadaEn)} por ${resolvio ?? "la administración"}`,
@@ -311,6 +412,8 @@ export async function verSolicitudArco(sesion: SesionDto, id: string, ahora = ne
     detalle: s.detalle,
     vence: fechaLarga(fechaLimite(s.creadaEn, s.tipo)),
     motivoResolucion: s.motivoResolucion,
+    /** Qué se borra y qué se conserva si se aprueba una cancelación (ADM-ARC-04). */
+    efecto: s.tipo === "CANCELACION" ? EFECTO_CANCELACION : null,
   };
 }
 
@@ -343,21 +446,27 @@ async function aplicarRectificacion(tx: Transaccion, s: Solicitud, ahora: Date) 
   }
 }
 
+/** Lo que otro módulo borra de la persona al aprobar su cancelación, en la misma transacción. */
+export type AnonimizarEnOtroModulo = (usuarioId: string, tx: Transaccion) => Promise<void>;
+
 /**
- * Resuelve una solicitud (HU-GAR-16 CA3): aprobar aplica el cambio en el padrón (HU-GAR-13 CA3);
- * rechazar exige el motivo. Queda en la auditoría con fecha, responsable y motivo, y el vecino recibe
- * el aviso.
+ * Resuelve una solicitud (HU-GAR-16 CA3): aprobar aplica la corrección en el padrón (HU-GAR-13 CA3)
+ * o anonimiza a la persona (HU-GAR-14 CA3, con lo que `app/` pase de los demás módulos); rechazar
+ * exige el motivo. Queda en la auditoría con fecha, responsable y motivo, y el vecino recibe el aviso.
  */
 export async function resolverSolicitudArco(
   sesion: SesionDto,
   id: string,
   decision: { aprobar: boolean; motivo?: string; verificacion?: Verificacion },
   ahora = new Date(),
+  otrosModulos: AnonimizarEnOtroModulo[] = [],
 ) {
   exigirAdministracion(sesion);
   const s = await solicitudConVecino(id);
   if (!s) throw new ErrorNoEncontrado();
-  if (s.tipo !== "RECTIFICACION") throw new ErrorReglaNegocio("Esta solicitud se resuelve sola.");
+  if (s.tipo !== "RECTIFICACION" && s.tipo !== "CANCELACION")
+    throw new ErrorReglaNegocio("Esta solicitud se resuelve sola.");
+  const cancela = decision.aprobar && s.tipo === "CANCELACION";
   const motivo = decision.motivo?.trim() || null;
   if (!decision.aprobar && !motivo)
     throw new ErrorValidacion(undefined, { motivo: "Escriba el motivo: se lo enviaremos al vecino." });
@@ -380,7 +489,15 @@ export async function resolverSolicitudArco(
       }))
     )
       throw new ErrorConflicto("Esta solicitud ya estaba resuelta.");
-    if (decision.aprobar) await aplicarRectificacion(tx, s, ahora);
+    if (cancela) {
+      await anonimizarIdentidad(
+        tx,
+        s.usuarioId,
+        { nombre: NOMBRE_ANONIMO, dni: dniAnonimo(s.usuarioId) },
+        ahora,
+      );
+      for (const anonimizar of otrosModulos) await anonimizar(s.usuarioId, tx);
+    } else if (decision.aprobar) await aplicarRectificacion(tx, s, ahora);
     await registrarAuditoria(
       {
         actorId: sesion.usuarioId,
@@ -393,7 +510,7 @@ export async function resolverSolicitudArco(
       tx,
     );
     if (decision.aprobar && esNumero) await avisarCambioDeNumero(tx, s);
-    else await avisarResultado(tx, s, decision.aprobar, motivo);
+    else await avisarResultado(tx, s, decision.aprobar, motivo, cancela);
   });
   return verSolicitudArco(sesion, id, ahora);
 }
@@ -411,15 +528,35 @@ export async function resolverCambioDeNumero(
   return resolverSolicitudArco(sesion, id, decision, ahora);
 }
 
-async function avisarResultado(tx: Transaccion, s: Solicitud, aprobada: boolean, motivo: string | null) {
+/**
+ * El resultado al vecino. Si se canceló su cuenta, ya no tiene centro de avisos: solo el WhatsApp a
+ * su número de antes, que el worker borra de la cola al enviarlo.
+ */
+async function avisarResultado(
+  tx: Transaccion,
+  s: Solicitud,
+  aprobada: boolean,
+  motivo: string | null,
+  cancelada = false,
+) {
   const numero = numeroDeSolicitud(s.numero);
-  const resultado = aprobada
-    ? `aprobada: ${CAMPOS[s.campo ?? "NOMBRE"].nombre} ya está corregido`
-    : `rechazada. Motivo: ${motivo}`;
+  const resultado = cancelada
+    ? "aprobada: borramos sus datos personales y su cuenta quedó cerrada"
+    : aprobada
+      ? `aprobada: ${CAMPOS[s.campo ?? "NOMBRE"].nombre} ya está corregido`
+      : `rechazada. Motivo: ${motivo}`;
   await encolarAviso(
     {
       destinatarioId: s.usuarioId,
-      titulo: aprobada ? "Corregimos su dato" : "No pudimos corregir su dato",
+      conCopiaInterna: !cancelada,
+      titulo:
+        s.tipo === "CANCELACION"
+          ? aprobada
+            ? "Cancelamos su cuenta"
+            : "No cancelamos su cuenta"
+          : aprobada
+            ? "Corregimos su dato"
+            : "No pudimos corregir su dato",
       texto: `Su solicitud ${numero} fue ${resultado}.`,
       whatsapp: s.usuario.telefonoWhatsApp
         ? {

@@ -1,8 +1,12 @@
-// @HU-GAR-12
+// @HU-GAR-12 @HU-GAR-14
 import type { SeccionPdf } from "@/compartido/archivos/pdf";
+import type { Transaccion } from "@/compartido/bd/cliente";
 import { fechaLarga } from "@/compartido/fechas";
-import { buscarPerfilPorUsuario } from "@/modulos/accesibilidad/infraestructura/repositorioPerfiles";
-import { solicitudesDe } from "@/modulos/accesibilidad/infraestructura/repositorioApoyo";
+import { anonimizarPedidos, solicitudesDe } from "@/modulos/accesibilidad/infraestructura/repositorioApoyo";
+import {
+  borrarPerfilDe,
+  buscarPerfilPorUsuario,
+} from "@/modulos/accesibilidad/infraestructura/repositorioPerfiles";
 
 const ESCALAS = { NORMAL: "Normal", GRANDE: "Grande", MUY_GRANDE: "Muy grande" };
 
@@ -25,4 +29,13 @@ export async function datosPersonales(usuarioId: string): Promise<SeccionPdf[]> 
       ],
     },
   ];
+}
+
+/**
+ * La parte de accesibilidad de una cancelación aprobada (HU-GAR-14 CA3): la llama `app/` dentro de la
+ * transacción de identidad, para que se borre todo o nada.
+ */
+export async function anonimizar(usuarioId: string, tx: Transaccion) {
+  await borrarPerfilDe(tx, usuarioId);
+  await anonimizarPedidos(tx, usuarioId, "Persona anonimizada");
 }

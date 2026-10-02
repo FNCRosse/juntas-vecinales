@@ -88,8 +88,8 @@ Privacidad (ARCO) y contacto:
 - [x] HU-GAR-16 Bandeja ARCO del administrador con plazos
 - [~] HU-GAR-12 Copia de mis datos personales — `[~]` M1 dejó el PDF con las secciones de identidad y accesibilidad; se cierra en M5: cada módulo añade su sección a la copia
 - [x] HU-GAR-13 Rectificación de datos
-- [ ] HU-GAR-14 Cancelación de la cuenta — `[~]` se cierra en M5: cada módulo añade su anonimización
-- [ ] HU-GAR-15 Oposición a mostrar la ubicación exacta — `[~]` se cierra en M3, cuando el mapa la aplica
+- [~] HU-GAR-14 Cancelación de la cuenta — `[~]` M1 anonimiza identidad y accesibilidad; se cierra en M5: cada módulo añade su anonimización
+- [~] HU-GAR-15 Oposición a mostrar la ubicación exacta — `[~]` M1 deja la opción y `prefiereUbicacionGeneralizada(usuarioId)`; se cierra en M3, cuando el mapa la aplica
 - [x] HU-GAR-17 Cambio de número de contacto verificado
 
 Trazabilidad:

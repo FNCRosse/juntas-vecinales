@@ -79,31 +79,8 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
 
   it("@HU-GAR-17 CA1 CA2 CA3 pide cambiar su número; la administración verifica su identidad y lo aprueba", () => {
     // Una vecina nueva y ficticia, para no cambiar el número de las semillas que usan otras pruebas.
-    const sufijo = String(Date.now()).slice(-6);
-    const telefono = `9${sufijo}03`;
-    const nuevo = `9${sufijo}04`;
-    entrarComo("40000001");
-    cy.request("POST", "/api/admin/padron/empadronar", {
-      vivienda: {
-        manzana: "F",
-        lote: sufijo.slice(-4),
-        uso: "VIVIENDA",
-        familias: 1,
-        inquilinos: 0,
-        autos: 0,
-        motos: 0,
-        triciclos: 0,
-        negocios: 0,
-      },
-      titular: { nombreCompleto: "Lucía Paz Vera", dni: `7${sufijo}1`, dniVisto: true, telefono },
-    });
-    cy.clearCookies();
-    cy.task<string>("enlaceEnCola", { telefono: `51${telefono}` }).then((enlace) =>
-      cy.visit(new URL(enlace).pathname),
-    );
-    cy.location("pathname").should("eq", "/entrar/privacidad");
-    cy.request("POST", "/api/auth/politica", { acepto: true });
-
+    const nuevo = `9${String(Date.now()).slice(-6)}04`;
+    cy.entrarComoVecinaNueva("Lucía Paz Vera");
     cy.visit("/mas/perfil/corregir");
     cy.esperarHidratacion("Enviar mi solicitud");
     cy.contains("label", "Mi número de WhatsApp").click();

@@ -27,6 +27,8 @@ model Usuario {
   /// Aceptación expresa de la política de privacidad y su versión (HU-GAR-02 CA2, Ley 29733).
   politicaAceptadaEn   DateTime?
   politicaVersion      String?
+  /// Cancelación aprobada (HU-GAR-14 CA3): sus datos personales se borraron o anonimizaron.
+  anonimizadaEn        DateTime?
   sesiones             Sesion[]
   credencial           CredencialRespaldo?
   residencias          Residencia[]

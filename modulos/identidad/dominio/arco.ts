@@ -97,3 +97,36 @@ export function errorDeRectificacion(campo: CampoRectificable, valor: string, an
   if (limpio.toLowerCase() === anterior.toLowerCase()) return "Es igual al dato que ya tenemos.";
   return null;
 }
+
+// ── Cancelación (HU-GAR-14) y oposición (HU-GAR-15) ────────────────────────────
+
+export const MOTIVOS_CANCELACION = {
+  MUDANZA: "Me mudé del barrio",
+  NO_DESEA: "Ya no quiero tener cuenta en la app",
+  OTRO: "Otro motivo",
+} as const;
+export type MotivoCancelacion = keyof typeof MOTIVOS_CANCELACION;
+
+/** Lo que se borra o anonimiza y lo que se conserva al aprobar (HU-GAR-14 CA3, prototipo XAR03). */
+export const EFECTO_CANCELACION = {
+  seBorra: [
+    "Nombre y apellidos",
+    "DNI",
+    "Número de WhatsApp",
+    "Su vivienda y su lugar en la lista de la garita",
+    "Su clave, sus avisos y su perfil de accesibilidad",
+    "Su acceso a la app (se cierra la sesión)",
+  ],
+  seConserva: [
+    "Recibos y pagos, sin su nombre (los exige la ley)",
+    "Las entradas de la bitácora de la garita, como prueba",
+    "El registro de esta solicitud en la auditoría",
+  ],
+};
+
+/** Cómo queda una persona tras la cancelación: sin nombre, sin DNI y sin teléfono. */
+export const NOMBRE_ANONIMO = "Persona anonimizada";
+export const dniAnonimo = (usuarioId: string) => `ANONIMO-${usuarioId}`;
+
+/** La oposición se activa o se retira: cada cambio deja su solicitud resuelta sola (traza). */
+export type Oposicion = "ACTIVA" | "RETIRADA";

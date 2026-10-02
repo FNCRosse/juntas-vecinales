@@ -64,8 +64,16 @@ async function intentarCanalExterno(aviso: AvisoEnCola, canal: CanalWhatsApp, ah
     });
     await prisma.avisoEnCola.update({
       where: { id: aviso.id },
-      // Los parámetros pueden llevar un enlace de entrada: no quedan guardados tras el envío.
-      data: { estado: "ENVIADA", canal: canal.nombre, enviadoEn: ahora, ultimoError: null, parametros: [] },
+      // Los parámetros pueden llevar un enlace de entrada, y el teléfono es un dato personal: no quedan
+      // guardados tras el envío (también protege a quien canceló su cuenta, HU-GAR-14 CA3).
+      data: {
+        estado: "ENVIADA",
+        canal: canal.nombre,
+        enviadoEn: ahora,
+        ultimoError: null,
+        parametros: [],
+        telefono: null,
+      },
     });
     return "enviados" as const;
   } catch (error) {
@@ -76,7 +84,7 @@ async function intentarCanalExterno(aviso: AvisoEnCola, canal: CanalWhatsApp, ah
         estado: agotado ? "FALLIDA" : "PENDIENTE",
         canal: canal.nombre,
         ultimoError: String(error),
-        ...(agotado && { parametros: [] }),
+        ...(agotado && { parametros: [], telefono: null }),
       },
     });
     return agotado ? ("fallidos" as const) : ("reintentos" as const);

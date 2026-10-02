@@ -1,5 +1,5 @@
 "use client";
-// @HU-GAR-13 @HU-GAR-16 @HU-GAR-17
+// @HU-GAR-13 @HU-GAR-14 @HU-GAR-16 @HU-GAR-17
 
 import { ArrowRight, ChevronLeft } from "lucide-react";
 import Link from "next/link";
@@ -31,6 +31,8 @@ type Solicitud = {
   motivoResolucion: string | null;
   pideVerificacion: boolean;
   verificacion: string | null;
+  tipo: string;
+  efecto: { seBorra: string[]; seConserva: string[] } | null;
 };
 
 const VOLVER = "/administracion/privacidad";
@@ -116,6 +118,43 @@ export function ResolverSolicitud({
     );
   }
 
+  const cancelacion = s.tipo === "CANCELACION";
+  const queSeResuelve = cancelacion ? "la cancelación" : "la corrección";
+
+  if (paso === "confirmar" && aprobar !== null && cancelacion) {
+    return (
+      <PasoConfirmacion
+        referencia={titulo}
+        titulo={`¿Desea ${aprobar ? "aprobar" : "rechazar"} la cancelación de ${s.nombre}?`}
+        filas={[
+          ["Solicitud", `N.° ${s.numero} · cancelación`],
+          ["Vecino", s.quien],
+          ["Decisión", aprobar ? "Aprobar" : `Rechazar. Motivo: ${motivo.trim()}`],
+        ]}
+        efecto={
+          aprobar
+            ? "Se conservan solo los registros que exige la ley, sin su nombre."
+            : "Su cuenta sigue activa. Le enviaremos el motivo."
+        }
+        peligro={
+          aprobar
+            ? {
+                titulo: "Esto no se puede deshacer",
+                texto:
+                  "Su nombre, DNI, WhatsApp y vivienda se borrarán o anonimizarán. Se cierra su sesión y sale de la lista de la garita.",
+              }
+            : undefined
+        }
+        textoConfirmar={aprobar ? "Sí, aprobar la cancelación" : "Sí, rechazar la cancelación"}
+        enviando={enviando}
+        error={falla}
+        alConfirmar={confirmar}
+        alCorregir={() => setPaso("decidir")}
+        hrefCancelar={VOLVER}
+      />
+    );
+  }
+
   if (paso === "confirmar" && aprobar !== null) {
     return (
       <PasoConfirmacion
@@ -156,29 +195,50 @@ export function ResolverSolicitud({
           Solicitud N.° {s.numero} · {s.tipoTexto.toLowerCase()} · Paso 1 de 2
         </p>
         <h1 ref={titulo} tabIndex={-1} className="text-titulo-1">
-          {s.titulo} de {s.nombre}
+          {cancelacion ? `Cancelar la cuenta de ${s.nombre}` : `${s.titulo} de ${s.nombre}`}
         </h1>
-        <p>{s.quien}</p>
+        <p>{cancelacion ? `${s.quien} · motivo: «${s.detalle ?? "no lo indicó"}»` : s.quien}</p>
       </div>
       <MensajeEstado tipo={s.insignia.tipo === "info" ? "info" : "aviso"} titulo={s.insignia.texto}>
         <p>
           {s.plazoTexto}. El plazo legal vence el {s.vence}.
         </p>
       </MensajeEstado>
-      <dl className="grid grid-cols-1 gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta sm:grid-cols-2 senior:p-6">
-        <div className="flex flex-col">
-          <dt className="text-pequeno text-texto-secundario">Dato actual</dt>
-          <dd className="font-bold">{s.antes}</dd>
+      {s.efecto ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <section className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6">
+            <h2 className="text-titulo-3">Se borra o se anonimiza</h2>
+            <ul className="flex list-disc flex-col gap-1 pl-6">
+              {s.efecto.seBorra.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+          </section>
+          <section className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6">
+            <h2 className="text-titulo-3">Se conserva, porque lo exige la ley</h2>
+            <ul className="flex list-disc flex-col gap-1 pl-6">
+              {s.efecto.seConserva.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+          </section>
         </div>
-        <div className="flex flex-col">
-          <dt className="text-pequeno text-texto-secundario">Dato nuevo</dt>
-          <dd className="font-bold">{s.nuevo}</dd>
-        </div>
-        <div className="flex flex-col sm:col-span-2">
-          <dt className="text-pequeno text-texto-secundario">Sustento</dt>
-          <dd>{s.detalle ?? "No escribió un sustento."}</dd>
-        </div>
-      </dl>
+      ) : (
+        <dl className="grid grid-cols-1 gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta sm:grid-cols-2 senior:p-6">
+          <div className="flex flex-col">
+            <dt className="text-pequeno text-texto-secundario">Dato actual</dt>
+            <dd className="font-bold">{s.antes}</dd>
+          </div>
+          <div className="flex flex-col">
+            <dt className="text-pequeno text-texto-secundario">Dato nuevo</dt>
+            <dd className="font-bold">{s.nuevo}</dd>
+          </div>
+          <div className="flex flex-col sm:col-span-2">
+            <dt className="text-pequeno text-texto-secundario">Sustento</dt>
+            <dd>{s.detalle ?? "No escribió un sustento."}</dd>
+          </div>
+        </dl>
+      )}
       {s.pideVerificacion && (
         <>
           <MensajeEstado tipo="info" titulo="Primero hay que verificar que es la persona">
@@ -209,14 +269,18 @@ export function ResolverSolicitud({
         <Opcion
           tipo="radio"
           name="decision"
-          etiqueta="Aprobar la corrección"
+          etiqueta={`Aprobar ${queSeResuelve}`}
           checked={aprobar === true}
           onChange={() => setAprobar(true)}
         />
         <Opcion
           tipo="radio"
           name="decision"
-          etiqueta="Rechazar (tendrá que explicar el motivo)"
+          etiqueta={
+            cancelacion
+              ? "Rechazar (solo si la ley lo permite; tendrá que explicar el motivo)"
+              : "Rechazar (tendrá que explicar el motivo)"
+          }
           checked={aprobar === false}
           onChange={() => setAprobar(false)}
         />
