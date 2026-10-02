@@ -16,7 +16,8 @@
     "lint": "eslint",
     "tipos": "tsc --noEmit",
     "worker:construir": "tsc -p worker/tsconfig.json",
-    "worker:iniciar": "node dist/worker/worker/servidor.js"
+    "worker:iniciar": "node dist/worker/worker/servidor.js",
+    "estilos": "bash guiones/revisar-estilos.sh"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",

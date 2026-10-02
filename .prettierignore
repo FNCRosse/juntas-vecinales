@@ -7,3 +7,8 @@ dist/
 coverage/
 pruebas/e2e/reportes/
 *.md
+
+# Copias de la guía visual y su salida generada: se mantienen idénticas al original.
+componentes/tokens/tokens.json
+componentes/tokens/tokens.css
+componentes/tokens/generar-css.mjs
