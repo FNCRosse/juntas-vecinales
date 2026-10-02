@@ -42,7 +42,7 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
     cy.get("#campo-detalle").type("Así figura en mi DNI");
     cy.revisarAccesibilidad("corregir-dato-normal");
     cy.contains("button", "Enviar mi solicitud").click();
-    cy.contains('[role="status"]', "Solicitud enviada").should("contain.text", "pendiente de revisión");
+    cy.contains('[role="status"]', "Solicitud enviada").should("contain.text", "Mis solicitudes");
     cy.contains("li", "Corregir el DNI").should("contain.text", "Pendiente de revisión");
 
     entrarComo("40000001");
