@@ -26,13 +26,32 @@ async function nombres(ids: string[]) {
   return new Map(usuarios.map((u) => [u.id, u.nombreCompleto]));
 }
 
+const FECHA_ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
+
+/** "politicaAceptadaEn" → "Politica aceptada en": el nombre del campo, leído como palabras. */
+const etiqueta = (campo: string) => {
+  const palabras = campo.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+  return palabras.charAt(0).toUpperCase() + palabras.slice(1);
+};
+
+const valorLegible = (valor: string | number | boolean) =>
+  typeof valor === "boolean"
+    ? valor
+      ? "sí"
+      : "no"
+    : typeof valor === "string" && FECHA_ISO.test(valor)
+      ? fechaYHora(new Date(valor))
+      : valor;
+
 /** Un resumen legible de lo que cambió: los datos sueltos de "después" (o de "antes", si se borró). */
 function resumen(valores: unknown) {
   if (!valores || typeof valores !== "object") return null;
   const partes = Object.entries(valores as Record<string, unknown>)
-    .filter(([, v]) => ["string", "number", "boolean"].includes(typeof v))
+    .filter((par): par is [string, string | number | boolean] =>
+      ["string", "number", "boolean"].includes(typeof par[1]),
+    )
     .slice(0, 4)
-    .map(([k, v]) => `${k}: ${typeof v === "boolean" ? (v ? "sí" : "no") : v}`);
+    .map(([k, v]) => `${etiqueta(k)}: ${valorLegible(v)}`);
   return partes.length ? partes.join(" · ") : null;
 }
 
