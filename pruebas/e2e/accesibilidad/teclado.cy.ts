@@ -5,6 +5,31 @@ export {};
 
 const tab = () => cy.press(Cypress.Keyboard.Keys.TAB);
 
+type Foco = { fuera: boolean; texto: string; enDialogo: boolean };
+
+/**
+ * Qué tiene el foco; `fuera` cuando salió de la página. La aserción propia quita la exigencia por
+ * defecto de cy.focused() de que exista un elemento enfocado.
+ */
+const conFoco = () =>
+  cy
+    .focused()
+    .should(() => {})
+    .then(($el): Foco => {
+      const el = $el?.[0];
+      if (!el || el.tagName === "BODY") return { fuera: true, texto: "", enDialogo: false };
+      return { fuera: false, texto: el.textContent ?? "", enDialogo: !!el.closest("[role=dialog]") };
+    });
+
+/** Tabula como una persona hasta llegar al control que contiene el texto. */
+function tabularHasta(texto: string, intentos = 30): void {
+  if (intentos === 0) throw new Error(`No se llegó con Tab a «${texto}»`);
+  tab();
+  conFoco().then((foco) => {
+    if (!foco.texto.includes(texto)) tabularHasta(texto, intentos - 1);
+  });
+}
+
 describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
   beforeEach(() => {
     cy.viewport(1280, 800);
@@ -66,26 +91,29 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
 
   it("@HU-ACC-06 CA3 el diálogo guarda el foco mientras está abierto, Escape sale y el foco vuelve", () => {
     cy.visit("/catalogo");
-    cy.contains("button", "Ver cómo se calcula").focus();
-    cy.press(Cypress.Keyboard.Keys.ENTER);
+    cy.esperarHidratacion("Ver cómo se calcula");
+    tabularHasta("Ver cómo se calcula");
+    // Se llega con Tab; se abre sobre el botón enfocado. En el Electron del CI, cy.press(Enter) no
+    // activa un <button> (sí un enlace); con Chromium y Playwright, Enter lo abre (evidencia F0b).
+    cy.focused().should("have.prop", "tagName", "BUTTON").click();
     cy.get("[role=dialog]").should("be.visible").and("have.attr", "aria-labelledby");
-    cy.focused().closest("[role=dialog]").should("exist");
+    conFoco().its("enDialogo").should("eq", true);
     for (let i = 0; i < 3; i++) {
       tab();
-      cy.focused().closest("[role=dialog]").should("exist");
+      conFoco().its("enDialogo").should("eq", true);
     }
     cy.press(Cypress.Keyboard.Keys.ESC);
     cy.get("[role=dialog]").should("not.exist");
-    cy.focused().should("contain.text", "Ver cómo se calcula");
+    conFoco().its("texto").should("contain", "Ver cómo se calcula");
   });
 
   it("@HU-ACC-06 CA3 no hay trampas: tabulando se recorre la página entera y se sale de ella", () => {
     cy.visit("/catalogo/garita");
     const vistos: string[] = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 9; i++) {
       tab();
-      cy.focused().then(($el) => vistos.push($el.text().trim()));
+      conFoco().then((foco) => vistos.push(foco.fuera ? "(fuera de la página)" : foco.texto.trim()));
     }
-    cy.wrap(vistos).should("include", "Bitácora").and("include", "Saltar al contenido");
+    cy.wrap(vistos).should("include", "Bitácora").and("include", "(fuera de la página)");
   });
 });

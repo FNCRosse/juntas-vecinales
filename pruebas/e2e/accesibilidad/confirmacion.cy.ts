@@ -8,6 +8,7 @@ describe("@HU-ACC-03 Confirmación en dos pasos", () => {
   it("@HU-ACC-03 CA1 muestra la acción, el monto y las opciones Confirmar y Cancelar antes de consumarse", () => {
     cy.viewport(360, 800);
     cy.visit("/catalogo");
+    cy.esperarHidratacion("Revisar y enviar mi comprobante");
     cy.get("#campo-monto").clear().type("12.50");
     cy.contains("button", "Revisar y enviar mi comprobante").click();
 
@@ -24,6 +25,7 @@ describe("@HU-ACC-03 Confirmación en dos pasos", () => {
 
   it("@HU-ACC-03 CA3 Cancelar sale sin perder lo que ya escribió", () => {
     cy.visit("/catalogo");
+    cy.esperarHidratacion("Revisar y enviar mi comprobante");
     cy.get("#campo-monto").clear().type("7.50");
     cy.contains("button", "Revisar y enviar mi comprobante").click();
     cy.get("[role=dialog]").contains("button", "Cancelar").click();
@@ -36,6 +38,7 @@ describe("@HU-ACC-03 Confirmación en dos pasos", () => {
     cy.viewport(360, 800);
     cy.guardarModo("senior");
     cy.visit("/catalogo");
+    cy.esperarHidratacion("Revisar y enviar mi comprobante");
     cy.contains("button", "Revisar y enviar mi comprobante").click();
     cy.revisarAccesibilidad("confirmacion-senior-telefono");
     cy.get("[role=dialog]").contains("button", "Enviar mi comprobante").click();
@@ -47,6 +50,7 @@ describe("@HU-ACC-03 Confirmación en dos pasos", () => {
 
   it("@HU-ACC-03 CA2 el error va junto al campo, dice cómo corregirlo y no culpa", () => {
     cy.visit("/catalogo");
+    cy.esperarHidratacion("Revisar y enviar mi comprobante");
     cy.get("#campo-telefono")
       .should("have.attr", "aria-invalid", "true")
       .and("have.value", "98765")
