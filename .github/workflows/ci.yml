@@ -80,6 +80,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Postgres de pruebas sin escritura forzada a disco
+        # BD desechable: sin fsync, TRUNCATE y las semillas no dependen de la carga del disco del runner.
+        run: >-
+          psql "$DATABASE_URL" -c "ALTER SYSTEM SET fsync = off" -c "ALTER SYSTEM SET synchronous_commit = off"
+          -c "ALTER SYSTEM SET full_page_writes = off" -c "SELECT pg_reload_conf()"
       - name: Jest con cobertura (umbral de líneas ≥ 80 %, bloqueante)
         run: npm test
       - uses: actions/upload-artifact@v7
@@ -112,6 +117,11 @@ jobs:
           path: ~/.cache/Cypress
           key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npm ci
+      - name: Postgres de pruebas sin escritura forzada a disco
+        # BD desechable: sin fsync, TRUNCATE y las semillas no dependen de la carga del disco del runner.
+        run: >-
+          psql "$DATABASE_URL" -c "ALTER SYSTEM SET fsync = off" -c "ALTER SYSTEM SET synchronous_commit = off"
+          -c "ALTER SYSTEM SET full_page_writes = off" -c "SELECT pg_reload_conf()"
       - name: Migraciones
         run: npx prisma migrate deploy
       - name: Semillas ficticias (docs/DATOS.md §5)
