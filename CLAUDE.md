@@ -33,6 +33,7 @@ Repo público: `github.com/FNCRosse/juntas-vecinales`. Todo lo que se escribe aq
 - **Nombre de la herramienta de diseño:** la herramienta con la que se generó el prototipo HTML no se nombra en ningún archivo, carpeta, texto visible ni documento. El prototipo se llama "prototipo en Figma (R2.3)" o "prototipo de referencia". Antes de cada PR, `git grep -iE "claude[ -]?design"` debe salir vacío.
 - Rutas de la carpeta de la tesis: solo en `CLAUDE.local.md` (ignorado por git), nunca en archivos versionados.
 - No desactivar pruebas, reglas de lint ni umbrales para que el CI pase.
+- **Límites gratuitos:** nunca pasarse de los límites de los planes gratuitos (Vercel Hobby, Neon Free, Render Free, Cloudflare R2, GitHub Actions, WhatsApp de prueba; tabla en `docs/DESPLIEGUE.md §6`) ni activar nada que genere un cobro. Si un cambio puede acercarse a un límite (más frecuencia del cron, más ramas, archivos grandes, otro servicio), **avisar a la autora antes** de hacerlo y esperar su respuesta. Si un límite ya se alcanzó o está por alcanzarse, avisar de inmediato en vez de resolverlo por cuenta propia (por ejemplo, pasando a un plan de pago).
 
 ## Comandos
 
