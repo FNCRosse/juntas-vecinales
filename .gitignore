@@ -35,3 +35,6 @@ CLAUDE.local.md
 Thumbs.db
 *.log
 npm-debug.log*
+
+# Cliente de Prisma generado (postinstall) y worker compilado
+compartido/bd/generado/

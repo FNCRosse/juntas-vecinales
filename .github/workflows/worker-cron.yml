@@ -1,0 +1,32 @@
+# Despierta el worker de Render y le pide ejecutar las tareas (docs/DESPLIEGUE.md §5).
+name: Cron del worker
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: worker-cron
+  cancel-in-progress: false
+
+jobs:
+  ejecutar:
+    name: ejecutar tareas
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: POST /tareas/ejecutar
+        env:
+          URL_WORKER: ${{ vars.URL_WORKER }}
+          SECRETO_WORKER: ${{ secrets.SECRETO_WORKER }}
+        run: |
+          if [ -z "$URL_WORKER" ] || [ -z "$SECRETO_WORKER" ]; then
+            echo "::error::Faltan la variable URL_WORKER o el secreto SECRETO_WORKER del repositorio"
+            exit 1
+          fi
+          # 120 s por intento para el arranque en frío de Render, y un reintento.
+          curl --fail-with-body --silent --show-error \
+            --max-time 120 --retry 1 --retry-all-errors --retry-delay 10 \
+            -X POST -H "x-secreto-worker: $SECRETO_WORKER" \
+            "$URL_WORKER/tareas/ejecutar"

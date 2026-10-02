@@ -1,0 +1,49 @@
+{
+  "name": "juntas-vecinales",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "postinstall": "prisma generate",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest",
+    "test:integracion": "jest --selectProjects integracion --coverage=false",
+    "test:e2e": "npm run build && node guiones/e2e.mjs",
+    "lint": "eslint",
+    "tipos": "tsc --noEmit",
+    "worker:construir": "tsc -p worker/tsconfig.json",
+    "worker:iniciar": "node dist/worker/worker/servidor.js"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "next": "16.3.8",
+    "pg": "8.23.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/jest": "30.0.0",
+    "@types/node": "22.20.5",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/supertest": "7.2.1",
+    "axe-core": "4.13.0",
+    "cypress": "15.21.1",
+    "cypress-axe": "1.7.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.8",
+    "jest": "30.5.2",
+    "prettier": "3.9.9",
+    "prisma": "7.10.0",
+    "supertest": "7.3.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
+  }
+}
