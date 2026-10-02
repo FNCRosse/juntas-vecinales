@@ -13,6 +13,7 @@ export default defineConfig({
     screenshotsFolder: "pruebas/e2e/screenshots",
     videosFolder: "pruebas/e2e/videos",
     video: false,
+    allowCypressEnv: false,
     setupNodeEvents(on) {
       on("task", {
         // Guarda el resultado de axe por pantalla: es la evidencia de cierre de cada módulo.
