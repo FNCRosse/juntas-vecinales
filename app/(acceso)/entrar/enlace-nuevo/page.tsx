@@ -19,8 +19,7 @@ export default function EnlaceNuevo() {
       <FormularioPedirEnlace
         ruta="/api/auth/magic-link/reenviar"
         textoBoton="Enviar un enlace nuevo"
-        tituloEnviado="Listo, le enviamos un enlace nuevo"
-        textoEnviado="Revise su WhatsApp terminado en {terminado}. El enlace anterior ya no sirve."
+        textoEnviado="Revise su WhatsApp. El enlace anterior ya no sirve."
       />
       <OpcionEntrada
         href="/clave"

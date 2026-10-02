@@ -5,13 +5,10 @@ import { POST as restablecerHttp } from "@/app/api/auth/clave/restablecer/route"
 import { POST as enlaceNuevoHttp } from "@/app/api/auth/magic-link/reenviar/route";
 import { prisma } from "@/compartido/bd/cliente";
 import { sembrar } from "@/compartido/bd/semillas";
-import { ErrorConflicto, ErrorEnPausa, ErrorNoAutorizado } from "@/compartido/errores";
+import { ErrorConflicto, ErrorNoAutorizado } from "@/compartido/errores";
 import { canjearEnlace, consultarEnlace } from "@/modulos/identidad/aplicacion/entrarConEnlace";
 import {
-  MENSAJE_MUCHOS,
   MENSAJE_MUY_SEGUIDO,
-  MENSAJE_NO_ENCONTRADO,
-  MENSAJE_SIN_WHATSAPP,
   pedirEnlace,
   restablecerClave,
 } from "@/modulos/identidad/aplicacion/entradaAlterna";
@@ -51,11 +48,9 @@ afterAll(async () => {
 
 describe("@HU-GAR-11 Pedir un enlace nuevo", () => {
   it("@HU-GAR-11 CA1 CA3 con el DNI o con la casa, el enlace va solo al WhatsApp del padrón", async () => {
-    expect(await pedirEnlace(CARMEN, "ENTRADA", ORIGEN, T0)).toEqual({ telefonoTerminadoEn: "005" });
+    await pedirEnlace(CARMEN, "ENTRADA", ORIGEN, T0);
     expect(await ultimoAviso()).toMatchObject({ telefono: "51900000005", plantilla: "enlace_acceso" });
-    expect(await pedirEnlace("Mz. A lote 3", "ENTRADA", ORIGEN, minutos(2))).toEqual({
-      telefonoTerminadoEn: "006",
-    });
+    await pedirEnlace("Mz. A lote 3", "ENTRADA", ORIGEN, minutos(2));
     expect(await ultimoAviso()).toMatchObject({ telefono: "51900000006" });
     await expect(canjearEnlace(await tokenDe("/entrar"), undefined, minutos(3))).resolves.toMatchObject({
       sesion: { nombreCompleto: "Julio Mendoza" },
@@ -70,31 +65,35 @@ describe("@HU-GAR-11 Pedir un enlace nuevo", () => {
     expect(await consultarEnlace(await tokenDe("/entrar"), minutos(3))).toMatchObject({ estado: "VIGENTE" });
   });
 
-  it("@HU-GAR-11 CA3 no envía a quien no está en el padrón ni a una cuenta sin WhatsApp, y no satura su teléfono", async () => {
-    await expect(pedirEnlace("99999999", "ENTRADA", ORIGEN, T0)).rejects.toThrow(MENSAJE_NO_ENCONTRADO);
-    await expect(pedirEnlace("Z 1", "ENTRADA", ORIGEN, T0)).rejects.toThrow(MENSAJE_NO_ENCONTRADO);
+  it("@HU-GAR-11 CA3 responde igual exista o no; solo envía al padrón, sin saturar el teléfono", async () => {
+    const enviados = () => prisma.avisoEnCola.count();
+    await pedirEnlace("99999999", "ENTRADA", ORIGEN, T0);
+    await pedirEnlace("Z 1", "ENTRADA", ORIGEN, T0);
     await prisma.usuario.update({ where: { dni: CARMEN }, data: { telefonoWhatsApp: null } });
-    await expect(pedirEnlace(CARMEN, "ENTRADA", ORIGEN, T0)).rejects.toThrow(MENSAJE_SIN_WHATSAPP);
+    await pedirEnlace(CARMEN, "ENTRADA", ORIGEN, T0);
+    expect(await enviados()).toBe(0);
 
     await pedirEnlace("40000006", "ENTRADA", ORIGEN, T0);
-    await expect(pedirEnlace("40000006", "ENTRADA", ORIGEN, minutos(0.5))).rejects.toEqual(
-      new ErrorEnPausa(MENSAJE_MUY_SEGUIDO),
-    );
+    await pedirEnlace("40000006", "ENTRADA", ORIGEN, minutos(0.5));
+    expect(await enviados()).toBe(1);
     for (let i = 1; i <= 4; i++) await pedirEnlace("40000006", "ENTRADA", ORIGEN, minutos(i * 2));
-    await expect(pedirEnlace("40000006", "ENTRADA", ORIGEN, minutos(12))).rejects.toThrow(MENSAJE_MUCHOS);
-    await expect(pedirEnlace("40000006", "ENTRADA", ORIGEN, minutos(61))).resolves.toBeDefined();
+    await pedirEnlace("40000006", "ENTRADA", ORIGEN, minutos(12));
+    expect(await enviados()).toBe(5);
+    await pedirEnlace("40000006", "ENTRADA", ORIGEN, minutos(61));
+    expect(await enviados()).toBe(6);
   });
 
-  it("@HU-GAR-11 por HTTP: 200 con el final del número, 400 si no se entiende y 404 si no está", async () => {
-    const enviado = await pedir(enlaceNuevoHttp, { identificador: " c-7 " });
-    expect(enviado.status).toBe(200);
-    expect(await enviado.json()).toEqual({ telefonoTerminadoEn: "005" });
+  it("@HU-GAR-11 por HTTP: siempre 202, salvo 400 si no se entiende lo escrito", async () => {
+    for (const identificador of [" c-7 ", "99999999"]) {
+      const respuesta = await pedir(enlaceNuevoHttp, { identificador });
+      expect(respuesta.status).toBe(202);
+      expect(await respuesta.text()).toBe("");
+    }
     const malo = await pedir(enlaceNuevoHttp, { identificador: "123" });
     expect(malo.status).toBe(400);
     expect((await malo.json()).campos).toEqual({
       identificador: "Escriba su DNI (8 números) o su casa, por ejemplo Mz. C lote 7.",
     });
-    expect((await pedir(enlaceNuevoHttp, { identificador: "99999999" })).status).toBe(404);
   });
 
   it("@HU-GAR-11 la administración reenvía el enlace desde la ficha y queda auditado", async () => {
@@ -140,14 +139,14 @@ describe("@HU-GAR-24 Entrar con la clave de respaldo", () => {
     expect(pausa.status).toBe(429);
     expect(await pausa.json()).toEqual({ error: MENSAJE_EN_PAUSA });
     // El enlace por WhatsApp sigue disponible durante la pausa.
-    await expect(pedirEnlace(CARMEN, "ENTRADA", ORIGEN, minutos(5))).resolves.toBeDefined();
+    await pedirEnlace(CARMEN, "ENTRADA", ORIGEN, minutos(5));
+    expect(await ultimoAviso()).toMatchObject({ telefono: "51900000005", plantilla: "enlace_acceso" });
   });
 });
 
 describe("@HU-GAR-25 Restablecer la clave de respaldo", () => {
   it("@HU-GAR-25 CA1 CA2 el enlace para la clave va solo al WhatsApp del padrón y no sirve para entrar", async () => {
-    const enviado = await pedir(restablecerHttp, { identificador: "Mz. C lote 7" });
-    expect(await enviado.json()).toEqual({ telefonoTerminadoEn: "005" });
+    expect((await pedir(restablecerHttp, { identificador: "Mz. C lote 7" })).status).toBe(202);
     expect(await ultimoAviso()).toMatchObject({ telefono: "51900000005", plantilla: "clave_nueva" });
     const token = (await ultimoAviso()).parametros[1].replace("http://localhost/clave/nueva/", "");
     expect(await consultarEnlace(token, new Date(), "CLAVE")).toMatchObject({

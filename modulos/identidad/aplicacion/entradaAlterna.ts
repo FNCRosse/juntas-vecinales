@@ -32,8 +32,6 @@ import { emitirEnlace } from "./emitirEnlace";
 import { MENSAJE_ENLACE_NO_SIRVE, siguientePaso } from "./entrarConEnlace";
 import { aSesionDto, type SesionDto } from "./sesion";
 
-export const MENSAJE_NO_ENCONTRADO =
-  "No encontramos ese DNI o casa en el padrón. Revíselo o pida ayuda a la administración.";
 export const MENSAJE_SIN_WHATSAPP =
   "Su cuenta no tiene un WhatsApp registrado. Pida su enlace a la administración de la junta.";
 export const MENSAJE_MUY_SEGUIDO =
@@ -43,15 +41,17 @@ export const MENSAJE_MUCHOS =
 
 /**
  * Envía un enlace nuevo de entrada (HU-GAR-11) o para crear una clave (HU-GAR-25), solo al WhatsApp
- * del padrón (R-01). El anterior del mismo tipo deja de servir (CA2). Devuelve los tres últimos
- * números del WhatsApp, para que la persona sepa dónde mirarlo.
+ * del padrón (R-01); el anterior del mismo tipo deja de servir (CA2). La respuesta es siempre la
+ * misma, se haya enviado o no: no revela si un DNI o una casa están en el padrón
+ * (modulos/identidad/CLAUDE.md). Tampoco envía a quien ya recibió uno hace menos de un minuto o
+ * cinco en la última hora.
  */
 export async function pedirEnlace(
   identificador: string,
   proposito: PropositoEnlace,
   origen: string,
   ahora = new Date(),
-) {
+): Promise<void> {
   const interpretado = interpretarIdentificador(identificador);
   if (!interpretado) {
     throw new ErrorValidacion(undefined, {
@@ -59,16 +59,10 @@ export async function pedirEnlace(
     });
   }
   const usuario = await buscarPorDniOCasa(interpretado);
-  if (!usuario) throw new ErrorNoEncontrado(MENSAJE_NO_ENCONTRADO);
-  if (!usuario.telefonoWhatsApp) throw new ErrorReglaNegocio(MENSAJE_SIN_WHATSAPP);
-
+  if (!usuario?.telefonoWhatsApp) return;
   const recientes = await enlacesEmitidosDesde(usuario.id, new Date(ahora.getTime() - 60 * 60_000));
-  const permiso = puedeEmitirOtro(recientes, ahora);
-  if (permiso === "MUY_SEGUIDO") throw new ErrorEnPausa(MENSAJE_MUY_SEGUIDO);
-  if (permiso === "EN_PAUSA") throw new ErrorEnPausa(MENSAJE_MUCHOS);
-
+  if (puedeEmitirOtro(recientes, ahora) !== "SI") return;
   await prisma.$transaction((tx) => emitirEnlace(tx, usuario, origen, ahora, proposito));
-  return { telefonoTerminadoEn: usuario.telefonoWhatsApp.slice(-3) };
 }
 
 /**

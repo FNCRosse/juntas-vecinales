@@ -19,8 +19,7 @@ export default function ClaveNueva() {
       <FormularioPedirEnlace
         ruta="/api/auth/clave/restablecer"
         textoBoton="Enviarme el enlace"
-        tituloEnviado="Revise su WhatsApp"
-        textoEnviado="Le enviamos el enlace al WhatsApp terminado en {terminado}. Cuando cree su clave, le avisaremos del cambio."
+        textoEnviado="Revise su WhatsApp. Cuando cree su clave, le avisaremos del cambio."
       />
     </div>
   );

@@ -13,18 +13,15 @@ import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 export function FormularioPedirEnlace({
   ruta,
   textoBoton,
-  tituloEnviado,
   textoEnviado,
 }: {
   ruta: string;
   textoBoton: string;
-  tituloEnviado: string;
-  /** Recibe los tres últimos números del WhatsApp. */
   textoEnviado: string;
 }) {
   const [error, setError] = useState<string | undefined>();
   const [aviso, setAviso] = useState<string | null>(null);
-  const [terminadoEn, setTerminadoEn] = useState<string | null>(null);
+  const [enviado, setEnviado] = useState(false);
   const [enviando, setEnviando] = useState(false);
 
   async function pedir(evento: FormEvent<HTMLFormElement>) {
@@ -33,11 +30,11 @@ export function FormularioPedirEnlace({
     setEnviando(true);
     setError(undefined);
     setAviso(null);
-    const r = await enviarJson<{ telefonoTerminadoEn: string }>(ruta, "POST", { identificador });
+    const r = await enviarJson<null>(ruta, "POST", { identificador });
     setEnviando(false);
-    if (r.ok) return setTerminadoEn(r.datos.telefonoTerminadoEn);
-    setTerminadoEn(null);
-    if (r.estado === 400 || r.estado === 404) {
+    setEnviado(r.ok);
+    if (r.ok) return;
+    if (r.estado === 400) {
       setError(r.campos.identificador ?? r.error);
       document.getElementById("campo-identificador")?.focus();
     } else setAviso(r.error);
@@ -45,13 +42,14 @@ export function FormularioPedirEnlace({
 
   return (
     <form noValidate onSubmit={pedir} className="flex flex-col gap-6">
-      {terminadoEn && (
-        <MensajeEstado tipo="exito" titulo={tituloEnviado}>
-          <p>{textoEnviado.replace("{terminado}", terminadoEn)}</p>
+      {enviado && (
+        <MensajeEstado tipo="exito" titulo="Si sus datos están en el padrón, le enviamos un enlace">
+          <p>{textoEnviado}</p>
+          <p>Si no le llega en unos minutos, pida ayuda a la administración de la junta.</p>
         </MensajeEstado>
       )}
       {aviso && (
-        <MensajeEstado tipo="aviso" titulo="Todavía no le enviamos otro">
+        <MensajeEstado tipo="error" titulo="No pudimos enviar su pedido">
           <p>{aviso}</p>
         </MensajeEstado>
       )}

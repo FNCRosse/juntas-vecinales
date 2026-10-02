@@ -18,19 +18,19 @@ describe("@HU-GAR-11 @HU-GAR-24 @HU-GAR-25 Entrada alterna del vecino", () => {
     cy.esperarHidratacion("Enviar un enlace nuevo").click();
     cy.get("#campo-identificador-error").should("contain.text", "Escriba su DNI (8 números) o su casa");
     cy.focused().should("have.id", "campo-identificador");
+    cy.revisarAccesibilidad("enlace-nuevo-error-normal");
+    // La respuesta es la misma esté o no en el padrón: no revela quién vive dónde.
     cy.get("#campo-identificador").type("99999999");
     cy.contains("button", "Enviar un enlace nuevo").click();
-    cy.get("#campo-identificador-error").should("contain.text", "No encontramos ese DNI o casa en el padrón");
-    cy.revisarAccesibilidad("enlace-nuevo-error-normal");
+    cy.contains('[role="status"]', "Si sus datos están en el padrón, le enviamos un enlace").should("exist");
     cy.get("#campo-identificador").clear().type("Mz. D lote 9");
     cy.contains("button", "Enviar un enlace nuevo").click();
-    cy.contains('[role="status"]', "Revise su WhatsApp terminado en 008").should("exist");
+    cy.contains('[role="status"]', "Revise su WhatsApp. El enlace anterior ya no sirve.").should("exist");
     cy.revisarAccesibilidad("enlace-nuevo-enviado-normal");
 
     enlaceDe("51900000008").then((ruta) => {
       cy.visit(ruta);
-      cy.get("h1").should("have.text", "Le damos la bienvenida, Elena");
-      cy.esperarHidratacion("Entrar a mi cuenta").click();
+      // El enlace entra solo al abrirse.
       cy.location("pathname").should("eq", "/entrar/privacidad");
     });
   });
@@ -46,7 +46,7 @@ describe("@HU-GAR-11 @HU-GAR-24 @HU-GAR-25 Entrada alterna del vecino", () => {
     cy.esperarHidratacion("Enviarme el enlace");
     cy.get("#campo-identificador").type("40000007");
     cy.contains("button", "Enviarme el enlace").click();
-    cy.contains('[role="status"]', "terminado en 007").should("exist");
+    cy.contains('[role="status"]', "Si sus datos están en el padrón, le enviamos un enlace").should("exist");
     cy.revisarAccesibilidad("clave-nueva-enviado-senior");
 
     enlaceDe("51900000007", "clave_nueva").then((ruta) => {

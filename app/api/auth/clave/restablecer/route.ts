@@ -10,7 +10,8 @@ const esquema = z.object({ identificador: z.string().max(40) });
 export const POST = manejar(async (peticion) => {
   const { identificador } = esquema.parse(await leerJson(peticion));
   const origen = process.env.URL_PUBLICA || new URL(peticion.url).origin;
-  const enviado = await pedirEnlace(identificador, "CLAVE", origen);
+  await pedirEnlace(identificador, "CLAVE", origen);
   after(despertarWorker);
-  return Response.json(enviado);
+  // Siempre la misma respuesta: no dice si el DNI o la casa están en el padrón.
+  return new Response(null, { status: 202 });
 });
