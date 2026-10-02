@@ -65,7 +65,7 @@ El Anexo H §6 y §8 nombra ESLint como la herramienta de la regla de dependenci
 | Accesibilidad estática | `jsx-a11y` (incluido en `eslint-config-next`) con `alt-text` como error | una imagen sin alternativa |
 | Accesibilidad en ejecución | Cypress + axe-core (ver [PRUEBAS.md](PRUEBAS.md)) | una pantalla tiene una violación WCAG 2.2 AA |
 
-La fase 0 incluye una prueba que demuestra que la regla falla: un archivo de ejemplo en `pruebas/unitarias/arquitectura/` que importa el `dominio` de otro módulo y se lintea con la API de ESLint esperando el error.
+La fase 0 incluye una prueba que demuestra que la regla falla: `pruebas/unitarias/arquitectura/reglas.test.ts` lintea con la API de ESLint código de ejemplo (un módulo que importa el `dominio` de otro, una `aplicacion` fuera de la matriz, un dominio que importa Prisma, una ruta `../../`, una página que importa un `dominio`…) como si viviera en `modulos/…`, `app/…` o `worker/…`, y espera el error; también comprueba que lo permitido pasa. ESLint corre en un proceso aparte (`lintear.mjs`) porque carga `eslint.config.mjs` con `import()`, que el entorno de Jest no admite.
 
 ## 5. Resumen de los ADR del Anexo H
 

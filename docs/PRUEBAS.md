@@ -57,7 +57,10 @@ Para una sola HU: `npx jest -t "@HU-GAR-01"` o `npx cypress run --spec pruebas/e
   ```
 
   y en `.env.test.local` la `DATABASE_URL` apuntando a `localhost:5433`.
-- Antes de la suite: `prisma migrate deploy` sobre la BD de pruebas. Entre pruebas de integración: `TRUNCATE` de las tablas tocadas; nunca depender del orden.
+- Antes de la suite: `prisma migrate deploy` sobre la BD de pruebas (lo hace el `globalSetup` del proyecto `integracion`, `pruebas/integracion/preparar.ts`). Entre pruebas de integración: `TRUNCATE` de las tablas tocadas; nunca depender del orden.
+- Jest usa la transformación de Next (`next/jest`), que carga `.env.test.local` (no `.env.local`).
+- Supertest contra Next: la prueba levanta `next dev` en un proceso hijo y le hace las peticiones. El código que corre dentro de Next no entra en la cobertura de Jest, así que la misma prueba llama además al route handler directamente.
+- Cypress descarga su binario al instalar; donde no hace falta (Vercel, Render, los jobs del CI sin e2e) se instala con `CYPRESS_INSTALL_BINARY=0`.
 - Fechas: el dominio recibe `hoy` como parámetro; las pruebas de las tareas del worker llaman a la `aplicacion` con una fecha fija.
 
 ## 6. Simuladores

@@ -6,7 +6,8 @@ Un único PostgreSQL (Neon) con un único esquema Prisma y separación lógica p
 
 - Ubicación: `compartido/bd/esquema/`, un archivo por módulo (`identidad.prisma`, `aportes.prisma`, …) más `base.prisma` con el `generator` y el `datasource`. Prisma los une en un solo esquema; las migraciones viven en `compartido/bd/esquema/migrations/`.
 - El cliente se instancia una sola vez en `compartido/bd/cliente.ts`. Solo lo importan los `infraestructura/` de los módulos, `compartido/*` y los guiones de semillas.
-- Conexión: la app y el worker usan la URL con pooling (`DATABASE_URL`); las migraciones, la directa (`DATABASE_URL_UNPOOLED`). Configúralo según lo que pida la versión de Prisma instalada.
+- Conexión: la app y el worker usan la URL con pooling (`DATABASE_URL`); las migraciones, la directa (`DATABASE_URL_UNPOOLED`).
+- Prisma 7: la URL de las migraciones va en `prisma.config.ts` (que en local lee `.env.local`, porque Prisma ya no carga `.env`), no en el esquema. El generador es `prisma-client` y escribe el cliente en `compartido/bd/generado/` (CommonJS, sin extensión en las importaciones, ignorado por git); se genera en `postinstall`. En ejecución el cliente usa el adaptador `@prisma/adapter-pg` con `DATABASE_URL`.
 - Cada módulo es dueño de sus tablas. Un repositorio solo lee y escribe las tablas de su módulo; los datos de otro módulo se piden a su `aplicacion`. Las llaves foráneas entre módulos sí se declaran: la integridad referencial es la razón de tener un solo almacén.
 
 ## 2. Convenciones de nombres

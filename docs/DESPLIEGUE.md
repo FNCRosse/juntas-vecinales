@@ -34,7 +34,7 @@ Sin valores en el repositorio. `.env.example` lista los nombres; los valores loc
 | `URL_PUBLICA` | No | Vercel (prod), Render | Claude con el conector |
 | `URL_WORKER` | No | Vercel; variable de repositorio en GitHub Actions | Claude |
 | `SECRETO_WORKER` | Sí | Render, Vercel, secreto de GitHub Actions | La autora (`gh secret set SECRETO_WORKER`) |
-| `WHATSAPP_MODO` | No | Vercel (`simulador` en preview, `meta` en prod), Render (`meta`) | Claude |
+| `WHATSAPP_MODO` | No | Vercel (`simulador` en preview, `meta` en prod), Render (`meta`). Hasta configurar Meta (antes de M1) vale `simulador` en todas partes | Claude |
 | `WHATSAPP_ID_NUMERO` | No | Render | La autora da el dato; Claude lo fija con el conector |
 | `WHATSAPP_TOKEN` | Sí | Render | La autora |
 | `R2_ID_CUENTA` | No | Vercel | Claude |
@@ -44,6 +44,8 @@ Sin valores en el repositorio. `.env.example` lista los nombres; los valores loc
 | `CLAVE_CIFRADO` | Sí | Vercel, Render (32 bytes en base64, AES-256-GCM) | La autora |
 | `NEXT_PUBLIC_MAPA_URL_TESELAS` | No | Vercel | Claude |
 | `WHATSAPP_SIMULAR_FALLO` | No | Solo local y pruebas | — |
+| `CYPRESS_INSTALL_BINARY` | No | Vercel (prod y preview) y Render = `0`; jobs del CI sin e2e | Claude |
+| `NODE_VERSION` | No | Render = `22` | Claude |
 
 ## 3. Pasos de la autora en cada panel
 
@@ -57,6 +59,39 @@ Claude los pide en el momento en que hacen falta (fase 0, P2) y espera la confir
 6. **Meta (WhatsApp Cloud API, antes de M1).** App de tipo Business con el producto WhatsApp y su número de prueba. Hasta 5 destinatarios verificados (los teléfonos de las personas de la validación). Token permanente de un usuario del sistema (el token temporal caduca en 24 h). Plantillas con los nombres de `compartido/notificaciones/plantillas.ts`, enviadas a aprobación.
 
 Después de cada cambio hecho con un conector, Claude anota aquí la configuración exacta (servicio, plan, región, comandos y nombres de variables) para poder recrearla sin el conector.
+
+## 3b. Configuración creada con los conectores (fase 0)
+
+Para recrearla sin los conectores, en el panel de cada servicio.
+
+**Vercel** — proyecto `juntas-vecinales` (`prj_tjJi3y2nCyvC6quFDu3taUwJSfKO`), cuenta Hobby `rosita4407-2852` (ámbito `team_oBeJgxLcYVwDlTXrb5NPZBZY`).
+
+| Ajuste | Valor |
+| --- | --- |
+| Repositorio | `FNCRosse/juntas-vecinales`, rama de producción `main`; cada PR crea una preview |
+| Framework | Next.js |
+| Comando de build | `prisma migrate deploy && next build` (el `postinstall` ya corrió `prisma generate`) |
+| Instalación y salida | Las de Next por defecto (`npm install`, `.next`) |
+| Node.js | `22.x` |
+| Protección de despliegues | Vercel Authentication solo en previews (`ssoProtection: preview`); producción es pública |
+| Variables (no secretas) | `WHATSAPP_MODO=simulador` (prod, preview, dev) · `CYPRESS_INSTALL_BINARY=0` (prod, preview) · `R2_BUCKET=juntas-vecinales-archivos` (todas) · `NEXT_PUBLIC_MAPA_URL_TESELAS=https://tile.openstreetmap.org/{z}/{x}/{y}.png` (todas) · `URL_WORKER=https://juntas-vecinales-worker.onrender.com` (prod) |
+| Variables de la integración Neon | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` y las `PG*` (prod y preview) |
+
+El conector creó el proyecto con `create_project` y `gitRepository`: `create_git_project` exige `teamId` y el token del conector no tiene acceso explícito al ámbito del equipo (403), aunque sí al ámbito por defecto.
+
+**Render** — web service `juntas-vecinales-worker` (`srv-davi9v67bikc73e60oig`), workspace "My Workspace" (`tea-d2cdvf15pdvs73dj8b70`).
+
+| Ajuste | Valor |
+| --- | --- |
+| Plan / región / runtime | `free` / `virginia` / `node` |
+| Repositorio y rama | `FNCRosse/juntas-vecinales`, `main`, auto-deploy en cada commit |
+| Build | `npm ci && npm run worker:construir` |
+| Inicio | `npm run worker:iniciar` (escucha en `PORT`, que pone Render) |
+| URL | `https://juntas-vecinales-worker.onrender.com` |
+| Variables (no secretas) | `WHATSAPP_MODO=simulador`, `CYPRESS_INSTALL_BINARY=0`, `NODE_VERSION=22` |
+| Secretos (la autora) | `DATABASE_URL` (Neon, rama principal, con pooling), `SECRETO_WORKER` |
+
+**GitHub** — variable de Actions `URL_WORKER` y secreto `SECRETO_WORKER` (la autora). Protección de `main`: PR obligatorio y checks obligatorios `lint`, `tipos`, `pruebas` y `e2e` (los nombres de los jobs de `ci.yml`).
 
 ## 4. Rollback
 
