@@ -126,7 +126,7 @@ export function QuitarAcceso({
         onClick={() => {
           if (!motivo) {
             setError("Elija por qué se le quita el acceso.");
-            document.getElementById("campo-motivo")?.focus();
+            document.querySelector<HTMLInputElement>("#campo-motivo input")?.focus();
           } else setPaso("confirmar");
         }}
       >

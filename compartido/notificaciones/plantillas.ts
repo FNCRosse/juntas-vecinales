@@ -40,3 +40,11 @@ export function plantillaInvitacionEquipo(nombre: string, rol: string, enlace: s
 export function plantillaRolCambiado(nombre: string, rol: string) {
   return { plantilla: "rol_cambiado", parametros: [nombre, rol] };
 }
+
+/**
+ * Baja del padrón (HU-GAR-09 CA3). Texto en Meta: "Hola, {{1}}. La Junta Vecinal registró que ya no
+ * vive en {{2}}. Sus accesos a la plataforma y a la garita quedaron cancelados."
+ */
+export function plantillaBajaPadron(nombre: string, direccion: string) {
+  return { plantilla: "baja_padron", parametros: [nombre, direccion] };
+}

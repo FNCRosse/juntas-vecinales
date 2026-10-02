@@ -2,7 +2,7 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 15 · cerradas con e2e: 15 de 15 (100 %).
+- HU en el plan: 76 · cerradas: 16 · cerradas con e2e: 16 de 16 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
@@ -22,3 +22,5 @@ Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU
 | HU-GAR-21 Crear cuentas internas con rol | Cerrada | `app/(administrador)/administracion/equipo/agregar/AgregarAlEquipo.tsx`<br>`modulos/identidad/aplicacion/equipo.ts`<br>`modulos/identidad/dominio/equipo.ts` | — | `pruebas/integracion/identidad/equipo.test.ts`<br>`pruebas/integracion/identidad/sesion.test.ts` | `pruebas/e2e/identidad/entrada-equipo.cy.ts`<br>`pruebas/e2e/identidad/equipo.cy.ts` |
 | HU-GAR-22 Revocar el acceso de un miembro interno | Cerrada | `app/(administrador)/administracion/equipo/[usuarioId]/quitar/QuitarAcceso.tsx`<br>`modulos/identidad/aplicacion/equipo.ts`<br>`modulos/identidad/dominio/equipo.ts` | — | `pruebas/integracion/identidad/equipo.test.ts` | `pruebas/e2e/identidad/equipo.cy.ts` |
 | HU-GAR-23 Reasignar el rol de un miembro interno | Cerrada | `app/(administrador)/administracion/equipo/[usuarioId]/rol/CambiarRol.tsx`<br>`modulos/identidad/aplicacion/equipo.ts`<br>`modulos/identidad/dominio/equipo.ts` | — | `pruebas/integracion/identidad/equipo.test.ts` | `pruebas/e2e/identidad/equipo.cy.ts` |
+| HU-GAR-10 Actualizar los datos del predio de un residente | En parte | `app/(administrador)/administracion/padron/[predioId]/actualizar/ActualizarPredio.tsx`<br>`modulos/identidad/aplicacion/consultarPadron.ts`<br>`modulos/identidad/aplicacion/gestionarPadron.ts`<br>`modulos/identidad/dominio/predio.ts` | — | `pruebas/integracion/identidad/gestionarPadron.test.ts` | `pruebas/e2e/identidad/padron-gestion.cy.ts` |
+| HU-GAR-09 Desvincular a un ex residente | Cerrada | `app/(administrador)/administracion/padron/[predioId]/baja/DarDeBaja.tsx`<br>`modulos/identidad/aplicacion/gestionarPadron.ts`<br>`modulos/identidad/dominio/predio.ts` | — | `pruebas/integracion/identidad/gestionarPadron.test.ts` | `pruebas/e2e/identidad/padron-gestion.cy.ts` |
