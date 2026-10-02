@@ -17,17 +17,21 @@ enum NombreRol {
 
 // Usuario (Persona del diagrama aplanada): un usuario puede tener varios roles (la directiva también es vecina).
 model Usuario {
-  id                   String              @id @default(uuid())
+  id                   String               @id @default(uuid())
   nombreCompleto       String
-  dni                  String              @unique(map: "identidad_usuarios_dni_unico")
+  dni                  String               @unique(map: "identidad_usuarios_dni_unico")
   telefonoWhatsApp     String?
-  estado               EstadoUsuario       @default(ACTIVA)
+  estado               EstadoUsuario        @default(ACTIVA)
   roles                NombreRol[]
-  fechaEmpadronamiento DateTime            @default(now())
+  fechaEmpadronamiento DateTime             @default(now())
+  /// Aceptación expresa de la política de privacidad y su versión (HU-GAR-02 CA2, Ley 29733).
+  politicaAceptadaEn   DateTime?
+  politicaVersion      String?
   sesiones             Sesion[]
   credencial           CredencialRespaldo?
   residencias          Residencia[]
   enlaces              MagicLink[]
+  perfilAccesibilidad  PerfilAccesibilidad?
 
   @@map("identidad_usuarios")
 }

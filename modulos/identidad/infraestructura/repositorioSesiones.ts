@@ -1,14 +1,16 @@
-import { prisma } from "@/compartido/bd/cliente";
+import { prisma, type Transaccion } from "@/compartido/bd/cliente";
 
-export async function crearSesion(usuarioId: string, tokenHash: string) {
-  await prisma.sesion.create({ data: { usuarioId, tokenHash } });
+export async function crearSesion(usuarioId: string, tokenHash: string, tx: Transaccion = prisma) {
+  await tx.sesion.create({ data: { usuarioId, tokenHash } });
 }
 
 /** Sesión vigente: no revocada y de un usuario activo. */
 export async function buscarSesionVigente(tokenHash: string) {
   return prisma.sesion.findFirst({
     where: { tokenHash, revocadaEn: null, usuario: { estado: "ACTIVA" } },
-    include: { usuario: { select: { id: true, nombreCompleto: true, roles: true } } },
+    include: {
+      usuario: { select: { id: true, nombreCompleto: true, roles: true, politicaVersion: true } },
+    },
   });
 }
 

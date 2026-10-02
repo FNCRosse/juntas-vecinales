@@ -21,7 +21,7 @@ describe("@HU-ACC-01 Letra grande persiste en el servidor", () => {
     // El texto de cuerpo sube a 22 px por token (HU-ACC-01 CA2).
     cy.get("main p").first().should("have.css", "font-size", "22px");
 
-    cy.visit("/");
+    cy.visit("/entrar");
     cy.get("html").should("have.attr", "data-mode", "senior");
 
     cy.contains("button", "Letra grande").click();

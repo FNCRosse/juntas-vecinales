@@ -6,8 +6,9 @@ import {
   buscarUsuarioConCredencialPorDni,
   guardarEstadoCredencial,
 } from "@/modulos/identidad/infraestructura/repositorioUsuarios";
+import { pasarPerfilALaCuenta } from "@/modulos/accesibilidad/aplicacion/pasarPerfilALaCuenta";
 import { crearSesion } from "@/modulos/identidad/infraestructura/repositorioSesiones";
-import type { SesionDto } from "./sesion";
+import { aSesionDto, type SesionDto } from "./sesion";
 
 export const MENSAJE_NO_COINCIDE = "El DNI o la clave no coinciden. Revíselos y vuelva a intentarlo.";
 export const MENSAJE_EN_PAUSA = `La clave no coincidió ${MAX_FALLOS} veces seguidas. Para cuidar su cuenta, la entrada con clave queda en pausa por ${MINUTOS_DE_PAUSA} minutos.`;
@@ -22,6 +23,7 @@ const CREDENCIAL_FICTICIA = { sal: "sal-ficticia", hash: "AAAA" };
 export async function iniciarSesionConClave(
   datos: { dni: string; clave: string },
   ahora = new Date(),
+  perfilDispositivo?: string,
 ): Promise<{ token: string; sesion: SesionDto }> {
   const encontrado = await buscarUsuarioConCredencialPorDni(datos.dni);
   if (!encontrado || !encontrado.credencial || encontrado.usuario.estado !== "ACTIVA") {
@@ -42,8 +44,9 @@ export async function iniciarSesionConClave(
   await guardarEstadoCredencial(usuario.id, credencial.dominio);
   const { token, hash } = nuevoToken();
   await crearSesion(usuario.id, hash);
+  await pasarPerfilALaCuenta(usuario.id, perfilDispositivo);
   return {
     token,
-    sesion: { usuarioId: usuario.id, nombreCompleto: usuario.nombreCompleto, roles: usuario.roles },
+    sesion: aSesionDto(usuario),
   };
 }

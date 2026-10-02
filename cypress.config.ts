@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { defineConfig } from "cypress";
+import { Client } from "pg";
 
 const CARPETA_AXE = "pruebas/e2e/reportes/axe";
 
@@ -21,6 +22,22 @@ export default defineConfig({
           mkdirSync(CARPETA_AXE, { recursive: true });
           writeFileSync(path.join(CARPETA_AXE, `${nombre}.json`), JSON.stringify(resultado, null, 2));
           return null;
+        },
+        // El enlace de entrada que se encoló hacia ese WhatsApp: en las pruebas no sale a Meta y el
+        // worker no corre, así que sigue en la cola. Solo la BD de pruebas (DATABASE_URL del CI).
+        async enlaceEnCola(telefono: string) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            const { rows } = await cliente.query<{ parametros: string[] }>(
+              `SELECT parametros FROM nucleo_cola_avisos WHERE telefono = $1 AND plantilla = 'enlace_acceso'
+               ORDER BY "creadoEn" DESC LIMIT 1`,
+              [telefono],
+            );
+            return rows[0]?.parametros[1] ?? null;
+          } finally {
+            await cliente.end();
+          }
         },
       });
     },

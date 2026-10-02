@@ -14,7 +14,8 @@ const PAGINAS = [
   { ruta: "/catalogo/administrador", nombre: "catalogo-administrador", h1: "Marco del administrador" },
   { ruta: "/catalogo/garita", nombre: "catalogo-garita", h1: "Marco de la garita" },
   { ruta: "/catalogo/acceso", nombre: "catalogo-acceso", h1: "Marco de las pantallas de acceso" },
-  { ruta: "/", nombre: "inicio", h1: "Junta Vecinal de Villa de Fátima" },
+  { ruta: "/entrar", nombre: "entrar", h1: "Entrar a su cuenta" },
+  { ruta: "/privacidad", nombre: "politica-privacidad", h1: "Política de privacidad" },
 ];
 
 describe("@HU-ACC-05 Catálogo de componentes sin violaciones WCAG 2.2 AA", () => {

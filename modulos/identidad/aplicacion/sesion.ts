@@ -1,4 +1,5 @@
 import { hashDeToken } from "@/compartido/claves";
+import { faltaAceptarPolitica } from "@/modulos/identidad/dominio/politica";
 import { ErrorNoAutenticado, ErrorNoAutorizado } from "@/compartido/errores";
 import { buscarSesionVigente, marcarUso } from "@/modulos/identidad/infraestructura/repositorioSesiones";
 
@@ -7,7 +8,13 @@ import { buscarSesionVigente, marcarUso } from "@/modulos/identidad/infraestruct
 export type NombreRol =
   "VECINO" | "VECINO_ADULTO_MAYOR" | "DIRECTIVA" | "DIRECTIVO_MEDIADOR" | "VIGILANTE" | "ADMINISTRADOR";
 
-export type SesionDto = { usuarioId: string; nombreCompleto: string; roles: NombreRol[] };
+export type SesionDto = {
+  usuarioId: string;
+  nombreCompleto: string;
+  roles: NombreRol[];
+  /** Si ya aceptó la versión vigente de la política de privacidad (HU-GAR-02 CA2): sin ella, el vecino no sigue. */
+  politicaAceptada: boolean;
+};
 
 /** Cookie HttpOnly con el token de sesión; en la BD solo está su hash. */
 export const COOKIE_SESION = "sesion";
@@ -23,8 +30,7 @@ export async function obtenerSesion(
   const sesion = await buscarSesionVigente(hashDeToken(token));
   if (!sesion) return null;
   if (ahora.getTime() - sesion.ultimoUsoEn.getTime() > RENOVAR_CADA_MS) await marcarUso(sesion.id, ahora);
-  const { id: usuarioId, nombreCompleto, roles } = sesion.usuario;
-  return { usuarioId, nombreCompleto, roles };
+  return aSesionDto(sesion.usuario);
 }
 
 export function leerCookie(peticion: Request, nombre: string) {
@@ -47,4 +53,14 @@ export async function exigirSesion(peticion: Request) {
 export function exigirRol(sesion: SesionDto, ...roles: NombreRol[]) {
   if (!sesion.roles.some((rol) => roles.includes(rol))) throw new ErrorNoAutorizado();
   return sesion;
+}
+
+export function aSesionDto(usuario: {
+  id: string;
+  nombreCompleto: string;
+  roles: NombreRol[];
+  politicaVersion: string | null;
+}): SesionDto {
+  const { id: usuarioId, nombreCompleto, roles, politicaVersion } = usuario;
+  return { usuarioId, nombreCompleto, roles, politicaAceptada: !faltaAceptarPolitica(politicaVersion) };
 }
