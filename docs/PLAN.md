@@ -75,7 +75,7 @@ Punto de entrada del vecino:
 - [x] HU-GAR-20 Centro de notificaciones unificado
 - [x] HU-GAR-18 Preferencias de notificación
 - [x] HU-ACC-04 Pedir ayuda humana desde cualquier pantalla
-- [ ] HU-GAR-19 Panel de inicio consolidado — `[~]` se cierra en M5: M1 deja el panel y el bloque de avisos; M3, M4 y M5 añaden los bloques de queja, evento y deuda
+- [~] HU-GAR-19 Panel de inicio consolidado — `[~]` M1 dejó el panel (saludo, vivienda) y el bloque de avisos; se cierra en M5: M1 deja el panel y el bloque de avisos; M3, M4 y M5 añaden los bloques de queja, evento y deuda
 
 Garita:
 - [ ] HU-GAR-04 Pre-registrar visitas
