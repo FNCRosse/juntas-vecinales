@@ -1,3 +1,45 @@
 @import "tailwindcss";
+/* Generado desde componentes/tokens/tokens.json: única fuente de colores, tamaños y modo Senior. */
+@import "../componentes/tokens/tokens.css";
 
-/* Los tokens de la guía visual (colores, tipografía, modo Senior) llegan en la fase 0b. */
+html {
+  /* El foco no queda tapado por la barra superior fija (WCAG 2.4.11). */
+  scroll-padding-top: calc(var(--spacing-control) * 2);
+}
+
+body {
+  @apply bg-fondo-pagina text-texto-principal text-base leading-texto font-regular;
+  font-family: var(--font-texto);
+}
+
+h1,
+h2,
+h3 {
+  @apply font-bold leading-titulo;
+}
+
+a {
+  @apply text-texto-enlace underline underline-offset-4;
+}
+
+/* Foco visible único para toda la app (WCAG 2.4.7, HU-ACC-06). Nunca se quita el contorno. */
+:focus-visible {
+  outline: var(--foco-ancho) solid var(--color-foco-anillo);
+  outline-offset: var(--foco-offset);
+}
+
+svg.lucide {
+  stroke-width: var(--icono-trazo);
+}
+
+/* Sin animaciones para quien pidió reducir el movimiento (WCAG 2.3.3). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

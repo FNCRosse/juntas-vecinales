@@ -48,6 +48,7 @@ Se crean en la fase 0 (y `matriz` en la 0b). Si cambian, se actualiza esta lista
 | `npm run test:e2e` | Build, `next start` y Cypress + axe en headless contra el build (`guiones/e2e.mjs`; los argumentos tras `--` van a Cypress) |
 | `npm run lint` | ESLint, incluidas la regla de arquitectura y `jsx-a11y` |
 | `npm run tipos` | `tsc --noEmit` |
+| `npm run estilos` | Ningún hexadecimal, tamaño fijo ni `outline-none` fuera de `componentes/tokens/` (corre en el CI) |
 | `npm run worker:construir` / `npm run worker:iniciar` | Compila e inicia el worker (Render) |
 | `postinstall` | `prisma generate`: genera el cliente en `compartido/bd/generado/` (ignorado por git) al instalar |
 | `npm run matriz` | Genera `docs/evidencias/matriz-hu.md` desde las etiquetas `@HU` |
@@ -100,3 +101,13 @@ El repo tiene su propio grafo en `graphify-out/` (separado del de la tesis).
 1. Lee este archivo, `docs/PLAN.md` (dónde va el proyecto) y el `CLAUDE.md` del módulo en curso.
 2. `graphify query` sobre lo que vas a tocar.
 3. Sigue `docs/FLUJO_TRABAJO.md`. Al cerrar un módulo, detente y espera el "aprobado" de la autora.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
