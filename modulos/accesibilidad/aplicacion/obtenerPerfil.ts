@@ -1,10 +1,10 @@
 // @HU-ACC-01
-import { cargarPerfil, aDto, type PerfilAccesibilidadDto } from "./perfilDto";
+import { aDto, cargarPerfil, type DuenoPerfil, type PerfilAccesibilidadDto } from "./perfilDto";
 
 /**
- * Perfil con el que se renderiza la página (ADR-004). Sin perfil guardado, el de por defecto (Normal).
- * Hasta M1 se identifica por la cookie del dispositivo; M1 lo buscará por el usuario de la sesión.
+ * Perfil con el que se renderiza la página (ADR-004): el de la cuenta si hay sesión, así se conserva
+ * desde otro dispositivo (CA1, R-10); si no, el del dispositivo. Sin perfil guardado, el de por defecto.
  */
-export async function obtenerPerfil(perfilId: string | undefined): Promise<PerfilAccesibilidadDto> {
-  return aDto(await cargarPerfil(perfilId));
+export async function obtenerPerfil(dueno: DuenoPerfil): Promise<PerfilAccesibilidadDto> {
+  return aDto(await cargarPerfil(dueno));
 }

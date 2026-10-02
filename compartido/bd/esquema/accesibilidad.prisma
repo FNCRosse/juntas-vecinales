@@ -6,11 +6,12 @@ enum EscalaTipografica {
   MUY_GRANDE
 }
 
-// PerfilAccesibilidad (ADR-004). Hasta M1, el perfil se identifica por la cookie "perfil" del
-// dispositivo; M1 lo enlaza con Usuario (usuarioId y su llave foránea) al autenticar.
+// PerfilAccesibilidad (ADR-004). Sin sesión, se identifica por la cookie "perfil" del dispositivo;
+// al entrar, pasa a la cuenta (usuarioId) y se lee por la sesión desde cualquier dispositivo (R-10).
 model PerfilAccesibilidad {
   id                           String            @id @default(uuid())
   usuarioId                    String?           @unique
+  usuario                      Usuario?          @relation(fields: [usuarioId], references: [id])
   modoSeniorActivo             Boolean           @default(false)
   escalaTipografica            EscalaTipografica @default(NORMAL)
   altoContrasteActivo          Boolean           @default(false)

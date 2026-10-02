@@ -25,9 +25,14 @@ afterAll(async () => {
 
 describe("@HU-ACC-01 Perfil de accesibilidad en el servidor (ADR-004)", () => {
   it("@HU-ACC-01 sin perfil guardado se renderiza en modo Normal", async () => {
-    expect(await obtenerPerfil(undefined)).toMatchObject({ id: null, modoSeniorActivo: false });
-    expect(await obtenerPerfil("no-es-un-id")).toMatchObject({ id: null, modoSeniorActivo: false });
-    expect(await obtenerPerfil("6f1c2a3b-0000-4000-8000-000000000000")).toMatchObject({ id: null });
+    expect(await obtenerPerfil({ perfilId: undefined })).toMatchObject({ id: null, modoSeniorActivo: false });
+    expect(await obtenerPerfil({ perfilId: "no-es-un-id" })).toMatchObject({
+      id: null,
+      modoSeniorActivo: false,
+    });
+    expect(await obtenerPerfil({ perfilId: "6f1c2a3b-0000-4000-8000-000000000000" })).toMatchObject({
+      id: null,
+    });
   });
 
   it("@HU-ACC-01 CA1 PUT guarda Letra grande en el servidor y deja la cookie del perfil", async () => {
@@ -42,7 +47,7 @@ describe("@HU-ACC-01 Perfil de accesibilidad en el servidor (ADR-004)", () => {
     expect(idDeLaCookie(respuesta)).toBe(cuerpo.id);
 
     // Al volver (recargar u otra visita con la misma cookie) el perfil sigue en Senior.
-    expect(await obtenerPerfil(cuerpo.id)).toMatchObject({ modoSeniorActivo: true });
+    expect(await obtenerPerfil({ perfilId: cuerpo.id })).toMatchObject({ modoSeniorActivo: true });
     expect(await prisma.perfilAccesibilidad.count()).toBe(1);
   });
 

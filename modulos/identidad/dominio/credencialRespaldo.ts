@@ -3,6 +3,8 @@
 
 export const MAX_FALLOS = 5;
 export const MINUTOS_DE_PAUSA = 15;
+/** Al menos 6 números o letras (prototipo VEC-ACC-03, HU-GAR-02 CA3). */
+export const LARGO_MINIMO_CLAVE = 6;
 
 export type DatosCredencial = { fallosSeguidos: number; bloqueadaHasta: Date | null };
 

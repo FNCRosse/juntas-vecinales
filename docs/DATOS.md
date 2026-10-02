@@ -67,7 +67,7 @@ Tarifa semanal de ejemplo, con la estructura que aprueba la asamblea (HU-COB-16)
 
 ## 6. Ley N.° 29733 (protección de datos personales)
 
-- **Finalidad y consentimiento:** la política de privacidad se acepta al primer ingreso (HU-GAR-02 CA2) y al registrar una queja (HU-QUE-01 CA1); se guarda la versión aceptada y la fecha.
+- **Finalidad y consentimiento:** la política de privacidad se acepta al primer ingreso (HU-GAR-02 CA2) y al registrar una queja (HU-QUE-01 CA1); se guarda la versión aceptada y la fecha (`Usuario.politicaVersion` y `politicaAceptadaEn`; la versión vigente es `VERSION_POLITICA` en `modulos/identidad/dominio/politica.ts` y, si sube, se vuelve a pedir).
 - **Derechos ARCO** (M1, HU-GAR-12 a 16): plazos del reglamento (D. S. 016-2024-JUS) mostrados al vecino y vigilados en la bandeja del administrador: **20 días hábiles para acceso** y **10 días hábiles para rectificación, cancelación y oposición**.
 - **Cancelación:** se anonimizan los datos personales (nombre, DNI, teléfono, coordenadas exactas) y se conservan solo los registros contables exigidos por ley (cuotas, pagos, recibos), enlazados a un titular anonimizado.
 - **Retención** (decisión abierta en el Anexo H §11; valores propuestos hasta que la directiva acuerde otros, y se cambian en un solo lugar: `compartido/retencion.ts`):

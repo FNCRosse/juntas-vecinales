@@ -8,13 +8,14 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 
 | Grupo | URL | Actor y dispositivo | Barra de navegación (Anexo M, Tabla M2) |
 | --- | --- | --- | --- |
-| `app/(acceso)/` | `/entrar`, `/entrar/[token]`, `/clave`, `/clave/nueva`, `/seguimiento` | Sin sesión | — |
+| `app/(acceso)/` | `/entrar`, `/entrar/[token]`, `/entrar/equipo`, `/entrar/privacidad`, `/entrar/clave-respaldo`, `/privacidad`, `/clave`, `/clave/nueva`, `/seguimiento` | Sin sesión (la política y la clave de respaldo, recién entrado) | — |
 | `app/(vecino)/` | `/`, `/cuota`, `/asambleas`, `/incidentes`, `/mas/...` | Vecino (incluye adulto mayor y denunciante), teléfono | Inicio · Mi cuota · Asambleas · Incidentes · Más |
 | `app/(directiva)/directiva/` | `/directiva/...` | Directiva y directivo mediador, teléfono y escritorio | Resumen · Cobros · Incidentes · Asambleas · Más |
 | `app/(administrador)/administracion/` | `/administracion/...` | Administrador, escritorio | Inicio · Padrón · Equipo · Privacidad · Más |
 | `app/(garita)/garita/` | `/garita/...` | Vigilante, tablet de garita | Inicio · Consultar · Visitas · Bitácora |
 | `app/api/` | `/api/...` | Route handlers (ver [BACKEND.md](BACKEND.md)) | — |
 
+- El layout del vecino exige además la política de privacidad vigente aceptada (HU-GAR-02 CA2); si falta, lleva a `/entrar/privacidad`.
 - La directiva y el administrador también son vecinos: el selector "Mi casa / Directiva" (pantalla `DIR-INI-03`) lleva a `/` sin cerrar sesión.
 - En modo Senior la barra del vecino muestra Inicio · Mi cuota · Asambleas · Más (Incidentes pasa a "Más").
 - Dos niveles como máximo bajo el inicio (AC-2). Los pasos de un trámite ("paso 1 de 2") no cuentan como nivel.

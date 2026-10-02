@@ -17,6 +17,19 @@ export async function buscarPerfilPorId(id: string) {
   return fila && PerfilAccesibilidad.reconstruir(fila);
 }
 
+export async function buscarPerfilPorUsuario(usuarioId: string) {
+  const fila = await prisma.perfilAccesibilidad.findUnique({ where: { usuarioId }, select: columnas });
+  return fila && PerfilAccesibilidad.reconstruir(fila);
+}
+
+/** Pasa a la cuenta un perfil del dispositivo que todavía no es de nadie. */
+export async function asignarPerfilSinDueno(perfilId: string, usuarioId: string) {
+  await prisma.perfilAccesibilidad.updateMany({
+    where: { id: perfilId, usuarioId: null },
+    data: { usuarioId },
+  });
+}
+
 /** Inserta el perfil si no tiene id; si lo tiene, lo actualiza. Devuelve el perfil guardado. */
 export async function guardarPerfil(perfil: PerfilAccesibilidad) {
   const { id, ...datos } = perfil.aDatos();

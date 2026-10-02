@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { leerJson, manejar } from "@/compartido/manejar";
 import { iniciarSesionConClave } from "@/modulos/identidad/aplicacion/iniciarSesionConClave";
-import { COOKIE_SESION } from "@/modulos/identidad/aplicacion/sesion";
+import { COOKIE_SESION, leerCookie } from "@/modulos/identidad/aplicacion/sesion";
+import { COOKIE_PERFIL } from "@/componentes/a11y/modo";
 import { ATRIBUTOS_COOKIE, inicioSegunRoles, UN_ANIO_SEGUNDOS } from "@/app/_sesion/sesion";
 
 const esquema = z.object({
@@ -14,7 +15,12 @@ const esquema = z.object({
 
 /** Entrar con DNI y clave (equipo y clave de respaldo del vecino). La sesión queda en una cookie. */
 export const POST = manejar(async (peticion) => {
-  const { token, sesion } = await iniciarSesionConClave(esquema.parse(await leerJson(peticion)));
+  const datos = esquema.parse(await leerJson(peticion));
+  const { token, sesion } = await iniciarSesionConClave(
+    datos,
+    undefined,
+    leerCookie(peticion, COOKIE_PERFIL),
+  );
   return Response.json(
     { destino: inicioSegunRoles(sesion.roles) },
     {
