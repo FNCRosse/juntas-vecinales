@@ -2,14 +2,14 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 0 · cerradas con e2e: 0 de 0 (100 %).
+- HU en el plan: 76 · cerradas: 5 · cerradas con e2e: 5 de 5 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
 | --- | --- | --- | --- | --- | --- |
-| HU-ACC-03 Retroalimentación no punitiva y confirmación en dos pasos (`Confirmacion`) | Pendiente | `componentes/a11y/Confirmacion.tsx` | `pruebas/unitarias/accesibilidad/perfilAccesibilidad.test.ts`<br>`pruebas/unitarias/nucleo/manejar.test.ts` | `pruebas/integracion/accesibilidad/perfil.test.ts` | `pruebas/e2e/accesibilidad/confirmacion.cy.ts` |
-| HU-ACC-05 Conformidad WCAG 2.2 AA con auditoría axe bloqueante en el CI | Pendiente | `app/catalogo/layout.tsx`<br>`componentes/tokens/contraste.ts` | `pruebas/unitarias/accesibilidad/catalogo.test.ts`<br>`pruebas/unitarias/accesibilidad/tokens.test.ts` | — | `pruebas/e2e/accesibilidad/catalogo.cy.ts` |
-| HU-ACC-06 Operación completa con teclado y lector de pantalla | Pendiente | `componentes/a11y/Dialogo.tsx`<br>`componentes/a11y/MarcoActor.tsx` | — | — | `pruebas/e2e/accesibilidad/teclado.cy.ts` |
-| HU-ACC-08 Lenguaje llano en componentes y mensajes de error | Pendiente | `compartido/errores.ts` | `pruebas/unitarias/accesibilidad/lenguajeLlano.test.ts` | — | `pruebas/e2e/accesibilidad/lenguaje.cy.ts` |
-| HU-ACC-09 Área táctil de 48 px (56 en Senior) y separación | Pendiente | `componentes/a11y/Boton.tsx`<br>`componentes/a11y/Opcion.tsx` | `pruebas/unitarias/accesibilidad/tokens.test.ts` | — | `pruebas/e2e/accesibilidad/area-tactil.cy.ts` |
+| HU-ACC-03 Retroalimentación no punitiva y confirmación en dos pasos (`Confirmacion`) | Cerrada | `componentes/a11y/Confirmacion.tsx` | `pruebas/unitarias/accesibilidad/perfilAccesibilidad.test.ts`<br>`pruebas/unitarias/nucleo/manejar.test.ts` | `pruebas/integracion/accesibilidad/perfil.test.ts` | `pruebas/e2e/accesibilidad/confirmacion.cy.ts` |
+| HU-ACC-05 Conformidad WCAG 2.2 AA con auditoría axe bloqueante en el CI | Cerrada | `app/catalogo/layout.tsx`<br>`componentes/tokens/contraste.ts` | `pruebas/unitarias/accesibilidad/catalogo.test.ts`<br>`pruebas/unitarias/accesibilidad/tokens.test.ts` | — | `pruebas/e2e/accesibilidad/catalogo.cy.ts` |
+| HU-ACC-06 Operación completa con teclado y lector de pantalla | Cerrada | `componentes/a11y/Dialogo.tsx`<br>`componentes/a11y/MarcoActor.tsx` | — | — | `pruebas/e2e/accesibilidad/teclado.cy.ts` |
+| HU-ACC-08 Lenguaje llano en componentes y mensajes de error | Cerrada | `compartido/errores.ts` | `pruebas/unitarias/accesibilidad/lenguajeLlano.test.ts` | — | `pruebas/e2e/accesibilidad/lenguaje.cy.ts` |
+| HU-ACC-09 Área táctil de 48 px (56 en Senior) y separación | Cerrada | `componentes/a11y/Boton.tsx`<br>`componentes/a11y/Opcion.tsx` | `pruebas/unitarias/accesibilidad/tokens.test.ts` | — | `pruebas/e2e/accesibilidad/area-tactil.cy.ts` |
 | HU-ACC-01 Modo Senior guardado en la cuenta (enlaza el perfil de la fase 0b con `Usuario`) | Pendiente | `modulos/accesibilidad/aplicacion/cambiarModoSenior.ts`<br>`modulos/accesibilidad/aplicacion/obtenerPerfil.ts` | `pruebas/unitarias/accesibilidad/perfilAccesibilidad.test.ts` | `pruebas/integracion/accesibilidad/perfil.test.ts` | `pruebas/e2e/accesibilidad/letra-grande.cy.ts` |

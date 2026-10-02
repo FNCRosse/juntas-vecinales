@@ -133,7 +133,7 @@ Valores de referencia al momento de escribir; Claude los confirma en cada panel 
 | Servicio | Límite que importa | Qué vigilar |
 | --- | --- | --- |
 | Vercel Hobby | Uso no comercial; duración máxima por función; cuota mensual de transferencia y de ejecuciones | Ninguna tarea larga en route handlers (para eso está el worker) |
-| Neon Free | 0.5 GB por proyecto; horas de cómputo mensuales; suspensión tras 5 min sin uso; número máximo de ramas | El cron despierta la BD cada 10 min: si el cómputo pasa del 70 % del mes, bajar el cron a cada 30 min. Borrar ramas de previews cerradas |
+| Neon Free | 0.5 GB por proyecto; horas de cómputo mensuales; suspensión tras 5 min sin uso; número máximo de ramas | El cron despierta la BD cada 10 min: si el cómputo pasa del 70 % del mes, bajar el cron a cada 30 min. La integración de Vercel **no borra** la rama de una preview al fusionar: borrar las de PR cerrados (con el visto bueno de la autora) o activar el borrado automático en la integración |
 | Render Free | 750 horas de instancia al mes por cuenta; duerme tras 15 min sin tráfico; arranque en frío de ~1 min; disco efímero | Con el cron cada 10 min el worker queda despierto casi todo el mes (~730 h): no crear otro servicio gratuito en la misma cuenta |
 | Cloudflare R2 | 10 GB almacenados; 1 M de operaciones de clase A y 10 M de clase B al mes; salida sin costo | Tamaño de evidencias y la retención de [DATOS.md §6](DATOS.md#6-ley-n-29733-protección-de-datos-personales) |
 | GitHub Actions | Gratis en repos públicos; cron mínimo cada 5 min y con retrasos | Duración del job de Cypress |

@@ -32,20 +32,20 @@ Leyenda de la casilla: `[ ]` pendiente · `[x]` cerrada (anotar el número de PR
 ## Fase 0b · Base de accesibilidad (M6) y núcleo compartido
 
 Tareas de base:
-- [ ] Tokens desde `docs/guia-visual/` a `componentes/tokens/`, modos Normal y Senior, Atkinson Hyperlegible; prueba de Jest de contraste; grep de hexadecimales en el CI.
-- [ ] `PerfilAccesibilidad` (dominio, persistencia y aplicación al renderizar) con un perfil por defecto. **Pendiente de enlazar en M1:** asociar el perfil a `Usuario` al autenticar.
-- [ ] `componentes/a11y`: botón, campo con error, opción, diálogo y hoja (Radix), mensaje de estado, tarjeta, encabezado, barra por actor con "Letra grande" y "Pedir ayuda".
-- [ ] Layouts de los grupos de rutas con salto al contenido y anuncio de cambio de ruta.
-- [ ] Núcleo: `compartido/auditoria` (tabla solo inserción), `compartido/notificaciones` (cola, despacho en el worker, adaptador Meta + simulador), `compartido/archivos` (R2 firmado, validación, PDF etiquetado), `compartido/errores` y `manejar()`.
-- [ ] `guiones/matriz-hu.mjs` (`npm run matriz`) en el CI.
-- [ ] Catálogo interno de componentes (no se publica en producción) recorrido por Cypress + axe en ambos modos y tamaños.
+- [x] Tokens desde `docs/guia-visual/` a `componentes/tokens/`, modos Normal y Senior, Atkinson Hyperlegible; prueba de Jest de contraste; grep de hexadecimales en el CI (`npm run estilos`). PR [#5](https://github.com/FNCRosse/juntas-vecinales/pull/5).
+- [x] `PerfilAccesibilidad` (dominio, persistencia y aplicación al renderizar) con un perfil por defecto. **Pendiente de enlazar en M1:** asociar el perfil a `Usuario` al autenticar (detalle en HU-ACC-01). PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9).
+- [x] `componentes/a11y`: botón, campo con error, opción, diálogo y hoja (Radix), mensaje de estado, tarjeta, encabezado, barra por actor con "Letra grande" y "Pedir ayuda". PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9).
+- [x] Layouts de los grupos de rutas con salto al contenido y anuncio de cambio de ruta (sin exigir sesión todavía: M1). PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9).
+- [x] Núcleo: `compartido/auditoria` (tabla solo inserción) y `compartido/errores` con `manejar()` (PR [#6](https://github.com/FNCRosse/juntas-vecinales/pull/6)), `compartido/notificaciones` (cola, despacho en el worker, adaptador Meta + simulador; PR [#7](https://github.com/FNCRosse/juntas-vecinales/pull/7)), `compartido/archivos` (R2 firmado y validación; PR [#8](https://github.com/FNCRosse/juntas-vecinales/pull/8)). El PDF etiquetado (`pdf.ts`) y la tabla `nucleo_archivos` se crean con su primer uso (actas en M2, comprobantes en M5).
+- [x] `guiones/matriz-hu.mjs` (`npm run matriz`) en el CI. PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9).
+- [x] Catálogo interno de componentes (no se publica en producción) recorrido por Cypress + axe en ambos modos y tamaños. PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9). Evidencia: [F0b.md](evidencias/F0b.md).
 
 HU que se cierran:
-- [ ] HU-ACC-03 Retroalimentación no punitiva y confirmación en dos pasos (`Confirmacion`)
-- [ ] HU-ACC-05 Conformidad WCAG 2.2 AA con auditoría axe bloqueante en el CI
-- [ ] HU-ACC-06 Operación completa con teclado y lector de pantalla
-- [ ] HU-ACC-08 Lenguaje llano en componentes y mensajes de error
-- [ ] HU-ACC-09 Área táctil de 48 px (56 en Senior) y separación
+- [x] HU-ACC-03 Retroalimentación no punitiva y confirmación en dos pasos (`Confirmacion`) — PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9)
+- [x] HU-ACC-05 Conformidad WCAG 2.2 AA con auditoría axe bloqueante en el CI — PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9)
+- [x] HU-ACC-06 Operación completa con teclado y lector de pantalla — PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9)
+- [x] HU-ACC-08 Lenguaje llano en componentes y mensajes de error — PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9)
+- [x] HU-ACC-09 Área táctil de 48 px (56 en Senior) y separación — PR [#9](https://github.com/FNCRosse/juntas-vecinales/pull/9)
 
 **Pantallas:** ninguna de negocio; el catálogo interno. Estas RNF se verifican después en cada pantalla de M1–M5.
 **Riesgos:** crear componentes que ninguna pantalla de M1 usa (no hacerlo); que el modo Senior parpadee si el perfil se lee en el cliente.
