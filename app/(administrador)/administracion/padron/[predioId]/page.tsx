@@ -6,11 +6,13 @@ import { exigirActor } from "@/app/_sesion/sesion";
 import { ErrorNoEncontrado } from "@/compartido/errores";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { verVivienda } from "@/modulos/identidad/aplicacion/consultarPadron";
+import { primerNombre } from "@/compartido/fechas";
+import { BotonReenviar } from "./_componentes/BotonReenviar";
 
 export const metadata: Metadata = { title: "Ficha de la vivienda" };
 
-// ADM-PAD-02 Ficha de la vivienda. Las acciones (actualizar el predio, dar de baja, reenviar el
-// enlace) y el historial llegan con sus HU.
+// ADM-PAD-02 Ficha de la vivienda, con el reenvío del enlace (HU-GAR-11). Actualizar el predio, dar
+// de baja y el historial llegan con sus HU.
 export default async function FichaVivienda({ params }: { params: Promise<{ predioId: string }> }) {
   const sesion = await exigirActor(["ADMINISTRADOR"], "/entrar/equipo");
   const vivienda = await verVivienda(sesion, (await params).predioId).catch((error) => {
@@ -36,7 +38,10 @@ export default async function FichaVivienda({ params }: { params: Promise<{ pred
       <Tarjeta titulo="Quiénes viven aquí">
         <ul className="flex flex-col gap-3">
           {vivienda.residentes.map((r) => (
-            <li key={r.usuarioId} className="flex flex-col border-b border-borde-sutil pb-3 last:border-b-0">
+            <li
+              key={r.usuarioId}
+              className="flex flex-col gap-1 border-b border-borde-sutil pb-3 last:border-b-0"
+            >
               <strong>{r.nombre}</strong>
               <span>
                 {r.relacion} · DNI {r.dni}
@@ -46,6 +51,7 @@ export default async function FichaVivienda({ params }: { params: Promise<{ pred
                   ? `WhatsApp ${r.whatsapp}`
                   : "Sin cuenta propia: los avisos le llegan a la persona titular"}
               </span>
+              {r.whatsapp && <BotonReenviar usuarioId={r.usuarioId} nombre={primerNombre(r.nombre)} />}
             </li>
           ))}
         </ul>

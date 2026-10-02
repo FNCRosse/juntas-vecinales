@@ -1,7 +1,7 @@
 "use client";
 
 import { LogIn } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, type ReactNode, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { Boton } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
@@ -10,7 +10,19 @@ import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 
 type Errores = { dni?: string; clave?: string; general?: string; pausa?: string };
 
-export function FormularioEquipo() {
+// Entrada con DNI y clave: la del equipo (ADM-ENT-01, VIG-ENT-01) y la de respaldo del vecino
+// (VEC-ACC-05, HU-GAR-24). Tras cinco fallos, la pausa dice cómo seguir (VEC-ACC-06).
+
+export function FormularioEntradaClave({
+  etiquetaClave,
+  ayudaClave,
+  siguePausa,
+}: {
+  etiquetaClave: string;
+  ayudaClave: string;
+  /** Qué hacer mientras la entrada con clave está en pausa. */
+  siguePausa: ReactNode;
+}) {
   const [errores, setErrores] = useState<Errores>({});
   const [enviando, setEnviando] = useState(false);
 
@@ -37,7 +49,7 @@ export function FormularioEquipo() {
       {errores.pausa && (
         <MensajeEstado tipo="aviso" titulo="Su cuenta está bien">
           <p>{errores.pausa}</p>
-          <p>Si no recuerda la clave, pida una nueva a la administración.</p>
+          {siguePausa}
         </MensajeEstado>
       )}
       <Campo
@@ -50,8 +62,8 @@ export function FormularioEquipo() {
       />
       <CampoClave
         name="clave"
-        etiqueta="Clave de equipo"
-        ayuda="Puede pegarla o dejar que su gestor de contraseñas la complete."
+        etiqueta={etiquetaClave}
+        ayuda={ayudaClave}
         autoComplete="current-password"
         error={errores.clave}
       />

@@ -58,9 +58,9 @@ Acceso y padrón:
 - [x] HU-ACC-01 Modo Senior guardado en la cuenta (enlaza el perfil de la fase 0b con `Usuario`)
   - Enlazado: llave foránea, el perfil del dispositivo pasa a la cuenta al entrar (con enlace o con clave) y se lee por la sesión. Queda para sus HU: el switch "Letra grande" también en Mi perfil (VEC-ACC-13, con HU-GAR-13) y "Pedir ayuda" (`/mas/ayuda`, HU-ACC-04).
 - [x] HU-GAR-03 Abrir desde el ícono del teléfono sin volver a entrar (PWA)
-- [ ] HU-GAR-11 Pedir un enlace nuevo
-- [ ] HU-GAR-24 Entrar con la clave de respaldo
-- [ ] HU-GAR-25 Restablecer la clave de respaldo
+- [x] HU-GAR-11 Pedir un enlace nuevo
+- [x] HU-GAR-24 Entrar con la clave de respaldo
+- [x] HU-GAR-25 Restablecer la clave de respaldo
 
 Equipo interno:
 - [ ] HU-GAR-21 Crear cuentas internas con rol

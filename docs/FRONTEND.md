@@ -8,7 +8,7 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 
 | Grupo | URL | Actor y dispositivo | Barra de navegación (Anexo M, Tabla M2) |
 | --- | --- | --- | --- |
-| `app/(acceso)/` | `/entrar`, `/entrar/[token]`, `/entrar/equipo`, `/entrar/privacidad`, `/entrar/clave-respaldo`, `/privacidad`, `/clave`, `/clave/nueva`, `/seguimiento` | Sin sesión (la política y la clave de respaldo, recién entrado) | — |
+| `app/(acceso)/` | `/entrar`, `/entrar/[token]`, `/entrar/equipo`, `/entrar/privacidad`, `/entrar/clave-respaldo`, `/entrar/enlace-nuevo`, `/privacidad`, `/clave`, `/clave/nueva`, `/clave/nueva/[token]`, `/seguimiento` | Sin sesión (la política y la clave de respaldo, recién entrado) | — |
 | `app/(vecino)/` | `/`, `/cuota`, `/asambleas`, `/incidentes`, `/mas/...` | Vecino (incluye adulto mayor y denunciante), teléfono | Inicio · Mi cuota · Asambleas · Incidentes · Más |
 | `app/(directiva)/directiva/` | `/directiva/...` | Directiva y directivo mediador, teléfono y escritorio | Resumen · Cobros · Incidentes · Asambleas · Más |
 | `app/(administrador)/administracion/` | `/administracion/...` | Administrador, escritorio | Inicio · Padrón · Equipo · Privacidad · Más |

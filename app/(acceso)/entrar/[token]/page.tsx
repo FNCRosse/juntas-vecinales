@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { consultarEnlace } from "@/modulos/identidad/aplicacion/entrarConEnlace";
+import { OtrasFormasDeEntrar } from "../../_componentes/Opciones";
 import { BotonEntrar } from "./_componentes/BotonEntrar";
 
 // El token va en la ruta: que no salga en la cabecera Referer hacia otros sitios.
@@ -17,8 +18,8 @@ export default async function EntrarConEnlace({ params }: { params: Promise<{ to
         <h1 className="text-titulo-1">Este enlace ya no sirve</h1>
         <MensajeEstado tipo="aviso" titulo="Su cuenta está bien">
           <p>Cada enlace sirve una sola vez y por 15 minutos. Si pidió otro, solo sirve el último.</p>
-          <p>Pida un enlace nuevo a la administración de la junta.</p>
         </MensajeEstado>
+        <OtrasFormasDeEntrar />
       </div>
     );
   }
@@ -38,6 +39,7 @@ export default async function EntrarConEnlace({ params }: { params: Promise<{ to
         </p>
       </div>
       <BotonEntrar token={token} />
+      <OtrasFormasDeEntrar />
     </div>
   );
 }

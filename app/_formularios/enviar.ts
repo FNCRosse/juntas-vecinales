@@ -15,7 +15,9 @@ export async function enviarJson<T>(ruta: string, metodo: string, cuerpo?: unkno
       body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
     });
     if (respuesta.ok) {
-      return { ok: true, datos: (respuesta.status === 204 ? null : await respuesta.json()) as T };
+      // 202 y 204 llegan sin cuerpo.
+      const texto = await respuesta.text();
+      return { ok: true, datos: (texto ? JSON.parse(texto) : null) as T };
     }
     const error = (await respuesta.json().catch(() => ({ error: SIN_RED }))) as CuerpoDeError;
     return { ok: false, estado: respuesta.status, error: error.error, campos: error.campos ?? {} };

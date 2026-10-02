@@ -1,12 +1,19 @@
 import { prisma, type Transaccion } from "@/compartido/bd/cliente";
+import type { PropositoEnlace } from "@/modulos/identidad/dominio/magicLink";
 
-/** Guarda un enlace nuevo y anula los vigentes de esa persona: solo sirve el último (R-01). */
+/** Guarda un enlace nuevo y anula los vigentes del mismo tipo: solo sirve el último (R-01). */
 export async function guardarEnlace(
   tx: Transaccion,
-  enlace: { usuarioId: string; tokenHash: string; emitidoEn: Date; expiraEn: Date },
+  enlace: {
+    usuarioId: string;
+    tokenHash: string;
+    emitidoEn: Date;
+    expiraEn: Date;
+    proposito: PropositoEnlace;
+  },
 ) {
   await tx.magicLink.updateMany({
-    where: { usuarioId: enlace.usuarioId, usadoEn: null, anuladoEn: null },
+    where: { usuarioId: enlace.usuarioId, proposito: enlace.proposito, usadoEn: null, anuladoEn: null },
     data: { anuladoEn: enlace.emitidoEn },
   });
   return tx.magicLink.create({ data: enlace });
@@ -28,12 +35,28 @@ export async function buscarEnlacePorHash(tokenHash: string) {
  */
 export async function bloquearEnlace(tx: Transaccion, tokenHash: string) {
   const [fila] = await tx.$queryRaw<
-    { id: string; usuarioId: string; usadoEn: Date | null; anuladoEn: Date | null; expiraEn: Date }[]
-  >`SELECT id, "usuarioId", "usadoEn", "anuladoEn", "expiraEn" FROM identidad_enlaces_acceso
+    {
+      id: string;
+      usuarioId: string;
+      proposito: PropositoEnlace;
+      usadoEn: Date | null;
+      anuladoEn: Date | null;
+      expiraEn: Date;
+    }[]
+  >`SELECT id, "usuarioId", proposito, "usadoEn", "anuladoEn", "expiraEn" FROM identidad_enlaces_acceso
     WHERE "tokenHash" = ${tokenHash} FOR UPDATE`;
   return fila ?? null;
 }
 
 export async function marcarEnlaceUsado(tx: Transaccion, id: string, ahora: Date) {
   await tx.magicLink.update({ where: { id }, data: { usadoEn: ahora } });
+}
+
+/** Cuándo se emitieron los enlaces de esa persona desde una fecha, de cualquier tipo. */
+export async function enlacesEmitidosDesde(usuarioId: string, desde: Date) {
+  const filas = await prisma.magicLink.findMany({
+    where: { usuarioId, emitidoEn: { gte: desde } },
+    select: { emitidoEn: true },
+  });
+  return filas.map((fila) => fila.emitidoEn);
 }

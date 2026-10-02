@@ -25,14 +25,20 @@ export default defineConfig({
         },
         // El enlace de entrada que se encoló hacia ese WhatsApp: en las pruebas no sale a Meta y el
         // worker no corre, así que sigue en la cola. Solo la BD de pruebas (DATABASE_URL del CI).
-        async enlaceEnCola(telefono: string) {
+        async enlaceEnCola({
+          telefono,
+          plantilla = "enlace_acceso",
+        }: {
+          telefono: string;
+          plantilla?: string;
+        }) {
           const cliente = new Client({ connectionString: process.env.DATABASE_URL });
           await cliente.connect();
           try {
             const { rows } = await cliente.query<{ parametros: string[] }>(
-              `SELECT parametros FROM nucleo_cola_avisos WHERE telefono = $1 AND plantilla = 'enlace_acceso'
+              `SELECT parametros FROM nucleo_cola_avisos WHERE telefono = $1 AND plantilla = $2
                ORDER BY "creadoEn" DESC LIMIT 1`,
-              [telefono],
+              [telefono, plantilla],
             );
             return rows[0]?.parametros[1] ?? null;
           } finally {
