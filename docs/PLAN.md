@@ -93,7 +93,7 @@ Privacidad (ARCO) y contacto:
 - [x] HU-GAR-17 Cambio de número de contacto verificado
 
 Trazabilidad:
-- [ ] HU-GAR-26 Log de auditoría global
+- [x] HU-GAR-26 Log de auditoría global
 
 **Pantallas:** ADM-ARC-01–05 · ADM-AUD-01 · ADM-ENT-01–02 · ADM-EQU-01–08 · ADM-INI-01 · ADM-PAD-01–11 · DIR-AYU-01 · DIR-COB-08 · DIR-INI-01–03 · VEC-ACC-01–16 · VEC-AYU-01–03 · VEC-COB-12–14 · VEC-GAR-01–06 · VIG-BIT-01 · VIG-CON-01–04 · VIG-ENT-01 · VIG-INI-01 · VIG-VIS-01–05.
 **Riesgos:** plantillas de WhatsApp sin aprobar (el simulador permite avanzar); la vista previa de enlaces que consume el token (canje por POST); el semáforo de garita sin M5 (proyección propia en M1, la actualiza M5); el panel de inicio y ARCO dependen de módulos posteriores (composición en `app/`, cierre en M5); módulo grande: un PR por HU o por grupo acoplado.
