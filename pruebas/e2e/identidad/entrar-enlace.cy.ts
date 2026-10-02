@@ -28,7 +28,14 @@ function empadronar(lote: string, dni: string, telefono: string) {
 }
 
 describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
-  it("@HU-GAR-02 CA1 CA2 CA3 @HU-ACC-01 entra sin clave, acepta la política, crea su clave y conserva Letra grande", () => {
+  it("@HU-GAR-03 CA3 el acceso directo abre el inicio del vecino con un toque", () => {
+    cy.request("/manifest.webmanifest").then(({ body }) => {
+      expect(body).to.include({ start_url: "/", display: "standalone", short_name: "Junta Vecinal" });
+      body.icons.forEach((icono: { src: string }) => cy.request(icono.src).its("status").should("eq", 200));
+    });
+  });
+
+  it("@HU-GAR-02 CA1 CA2 CA3 @HU-ACC-01 @HU-GAR-03 entra sin clave, acepta la política, crea su clave y conserva Letra grande", () => {
     empadronar(`1${sufijo.slice(-3)}`, `6${sufijo}1`, `9${sufijo}01`).then((ruta) => {
       // Antes de entrar elige Letra grande en este dispositivo (HU-ACC-01).
       cy.guardarModo("senior");
@@ -57,6 +64,18 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
       cy.get("#campo-clave-error").should("have.text", "La clave necesita al menos 6 números o letras.");
       cy.get("#campo-clave").clear().type("mi-clave-1");
       cy.contains("button", "Crear mi clave").click();
+
+      // HU-GAR-03 CA1: la guía opcional, paso a paso, con el acceso directo al final.
+      cy.location("pathname").should("eq", "/guia");
+      cy.get("h1").should("have.text", "Su cuota, siempre a la vista");
+      cy.revisarAccesibilidad("guia-paso1-senior");
+      cy.esperarHidratacion("Siguiente").click();
+      cy.focused().should("have.text", "Si algo se le complica, pida ayuda");
+      cy.contains("button", "Siguiente").click();
+      cy.get("h1").should("have.text", "Tenga la app en su pantalla");
+      cy.contains("p", "Agregar a inicio").should("exist");
+      cy.revisarAccesibilidad("guia-paso3-senior");
+      cy.contains("a", "Terminar e ir al inicio").click();
 
       cy.location("pathname").should("eq", "/");
       cy.get("h1").should("contain.text", "Sofía");

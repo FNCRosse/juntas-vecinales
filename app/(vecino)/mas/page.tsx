@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BotonCerrarSesion } from "@/app/_sesion/BotonCerrarSesion";
+import { TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
 
 export const metadata: Metadata = { title: "Más opciones" };
 
@@ -8,6 +9,9 @@ export default function MasOpciones() {
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-titulo-1">Más opciones</h1>
+      <TarjetaEnlace href="/guia" titulo="Guía rápida">
+        <span>Tres pasos para conocer la plataforma y tenerla en su pantalla de inicio.</span>
+      </TarjetaEnlace>
       <BotonCerrarSesion destino="/entrar" />
     </div>
   );
