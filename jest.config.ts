@@ -21,6 +21,8 @@ export default async function configuracion(): Promise<Config> {
     coverageDirectory: "coverage",
     coverageReporters: ["text-summary", "lcov", "json-summary"],
     coverageThreshold: { global: { lines: 80 } },
+    // Las pruebas de integración comparten la BD (TRUNCATE, cerrojo del worker): un archivo a la vez.
+    maxWorkers: 1,
     projects: [
       {
         ...base,

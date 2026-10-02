@@ -32,3 +32,49 @@ model RegistroAuditoria {
   @@index([fecha])
   @@map("nucleo_auditoria")
 }
+
+enum EstadoEnvio {
+  PENDIENTE
+  ENVIADA
+  FALLIDA
+  SIN_CANAL_EXTERNO
+}
+
+// Cola de avisos (ADR-006). El emisor solo encola; el worker escribe primero la copia interna
+// y luego intenta WhatsApp con reintentos de espera creciente (1, 4 y 16 min).
+model AvisoEnCola {
+  id              String        @id @default(uuid())
+  creadoEn        DateTime      @default(now())
+  destinatarioId  String
+  titulo          String
+  texto           String
+  // Canal externo: sin teléfono el aviso queda solo en el centro de notificaciones.
+  telefono        String?
+  plantilla       String?
+  parametros      String[]
+  estado          EstadoEnvio   @default(PENDIENTE)
+  intentos        Int           @default(0)
+  reintentarDesde DateTime      @default(now())
+  canal           String?
+  enviadoEn       DateTime?
+  ultimoError     String?
+  notificacion    Notificacion?
+
+  @@index([estado, reintentarDesde])
+  @@map("nucleo_cola_avisos")
+}
+
+// Copia interna: lo que ve el vecino en su centro de notificaciones (HU-GAR-20, M1).
+model Notificacion {
+  id             String      @id @default(uuid())
+  creadaEn       DateTime    @default(now())
+  destinatarioId String
+  titulo         String
+  texto          String
+  leidaEn        DateTime?
+  avisoId        String      @unique
+  aviso          AvisoEnCola @relation(fields: [avisoId], references: [id])
+
+  @@index([destinatarioId, creadaEn])
+  @@map("nucleo_notificaciones")
+}
