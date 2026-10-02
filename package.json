@@ -17,7 +17,8 @@
     "tipos": "tsc --noEmit",
     "worker:construir": "tsc -p worker/tsconfig.json",
     "worker:iniciar": "node dist/worker/worker/servidor.js",
-    "estilos": "bash guiones/revisar-estilos.sh"
+    "estilos": "bash guiones/revisar-estilos.sh",
+    "matriz": "node guiones/matriz-hu.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",
