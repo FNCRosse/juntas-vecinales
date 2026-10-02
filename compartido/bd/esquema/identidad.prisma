@@ -1,0 +1,58 @@
+// Tablas del módulo identidad (M1, prefijo identidad_). Diagrama 02a.
+
+enum EstadoUsuario {
+  ACTIVA
+  SUSPENDIDA
+  DESVINCULADA
+}
+
+enum NombreRol {
+  VECINO
+  VECINO_ADULTO_MAYOR
+  DIRECTIVA
+  DIRECTIVO_MEDIADOR
+  VIGILANTE
+  ADMINISTRADOR
+}
+
+// Usuario (Persona del diagrama aplanada): un usuario puede tener varios roles (la directiva también es vecina).
+model Usuario {
+  id                   String        @id @default(uuid())
+  nombreCompleto       String
+  dni                  String        @unique(map: "identidad_usuarios_dni_unico")
+  telefonoWhatsApp     String?
+  estado               EstadoUsuario @default(ACTIVA)
+  roles                NombreRol[]
+  fechaEmpadronamiento DateTime      @default(now())
+  sesiones             Sesion[]
+  credencial           CredencialRespaldo?
+
+  @@map("identidad_usuarios")
+}
+
+// Sesión persistente: la cookie lleva un token aleatorio de 32 bytes; aquí solo su hash SHA-256.
+model Sesion {
+  id          String    @id @default(uuid())
+  tokenHash   String    @unique
+  usuarioId   String
+  usuario     Usuario   @relation(fields: [usuarioId], references: [id])
+  creadaEn    DateTime  @default(now())
+  ultimoUsoEn DateTime  @default(now())
+  revocadaEn  DateTime?
+
+  @@index([usuarioId])
+  @@map("identidad_sesiones")
+}
+
+// Clave: la de respaldo del vecino y la de las cuentas internas. scrypt con sal por usuario.
+model CredencialRespaldo {
+  usuarioId      String    @id
+  usuario        Usuario   @relation(fields: [usuarioId], references: [id])
+  hash           String
+  sal            String
+  fallosSeguidos Int       @default(0)
+  bloqueadaHasta DateTime?
+  actualizadaEn  DateTime  @updatedAt
+
+  @@map("identidad_credenciales")
+}

@@ -18,7 +18,9 @@
     "worker:construir": "tsc -p worker/tsconfig.json",
     "worker:iniciar": "node dist/worker/worker/servidor.js",
     "estilos": "bash guiones/revisar-estilos.sh",
-    "matriz": "node guiones/matriz-hu.mjs"
+    "matriz": "node guiones/matriz-hu.mjs",
+    "semillas": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/semillas.js",
+    "administrador:crear": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/administradorInicial.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",

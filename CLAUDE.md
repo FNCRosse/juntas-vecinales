@@ -51,6 +51,8 @@ Se crean en la fase 0 (y `matriz` en la 0b). Si cambian, se actualiza esta lista
 | `npm run estilos` | Ningún hexadecimal, tamaño fijo ni `outline-none` fuera de `componentes/tokens/` (corre en el CI) |
 | `npm run worker:construir` / `npm run worker:iniciar` | Compila e inicia el worker (Render) |
 | `postinstall` | `prisma generate`: genera el cliente en `compartido/bd/generado/` (ignorado por git) al instalar |
+| `npm run semillas` | Personajes ficticios del prototipo en la BD local o del CI (nunca en Neon) |
+| `npm run administrador:crear` | Cuenta inicial del administrador en producción; la corre la autora con sus datos en variables de entorno |
 | `npm run matriz` | Genera `docs/evidencias/matriz-hu.md` desde las etiquetas `@HU` |
 
 Antes de abrir un PR: `npm run lint && npm run tipos && npm test`.

@@ -114,6 +114,8 @@ jobs:
       - run: npm ci
       - name: Migraciones
         run: npx prisma migrate deploy
+      - name: Semillas ficticias (docs/DATOS.md §5)
+        run: npm run semillas
       - name: Build y Cypress + axe contra el build
         run: npm run test:e2e
       - uses: actions/upload-artifact@v7

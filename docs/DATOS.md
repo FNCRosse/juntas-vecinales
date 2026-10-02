@@ -43,7 +43,9 @@ Se escriben como SQL dentro de la migración que crea la tabla:
 
 ## 5. Semillas ficticias
 
-`compartido/bd/semillas.ts`, ejecutado con `npx prisma db seed`. Se usa en desarrollo, en CI y en las previews; nunca en producción salvo la cuenta inicial del administrador (el prototipo asume que ya existe, Anexo M §6).
+`compartido/bd/semillas.ts`, ejecutado con `npm run semillas` (se compila con `tsc`, como el worker). Se usa en desarrollo y en el CI, **nunca contra Neon**: las ramas de las previews son copias de producción y una clave conocida del repositorio público daría acceso a ellas; el guion se niega a correr con una URL de Neon o en producción. Las cuentas del equipo de las semillas usan la clave `SEMILLA_CLAVE` (por defecto, una clave de prueba).
+
+La cuenta inicial del administrador en producción (el prototipo asume que ya existe, Anexo M §6) la crea la autora con `npm run administrador:crear` y sus datos en `ADMIN_INICIAL_NOMBRE`, `ADMIN_INICIAL_DNI` y `ADMIN_INICIAL_CLAVE` (y la `DATABASE_URL` de producción). Se niega si ya existe un administrador.
 
 Personajes del prototipo (todos ficticios; DNI, teléfonos y placas inventados):
 
