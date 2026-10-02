@@ -32,6 +32,8 @@ jobs:
       - run: npm ci
       - name: ESLint (incluye la regla de arquitectura y la matriz de módulos)
         run: npm run lint
+      - name: Solo tokens (sin hexadecimales, tamaños fijos ni outline-none)
+        run: npm run estilos
       - name: Formato (Prettier)
         run: npx prettier --check .
       - name: Expresión prohibida
