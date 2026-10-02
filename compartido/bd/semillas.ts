@@ -1,6 +1,6 @@
 import { cifrarClave } from "../claves";
 import { prisma } from "./cliente";
-import type { NombreRol, Prisma } from "./generado/client";
+import type { NombreRol, Prisma, TipoVehiculo } from "./generado/client";
 
 // Semillas ficticias (docs/DATOS.md §5): solo en local y en el CI. Nunca en Neon: las previews son
 // copias de producción y una clave conocida daría acceso a ellas.
@@ -11,8 +11,9 @@ type Persona = {
   telefonoWhatsApp: string;
   roles: NombreRol[];
   equipo?: boolean;
-  /** Predio donde es titular (docs/DATOS.md §5). */
-  predio?: Omit<Prisma.PredioCreateInput, "residencias">;
+  /** Predio donde es titular (docs/DATOS.md §5), con sus vehículos (placas inventadas). */
+  predio?: Omit<Prisma.PredioCreateInput, "residencias" | "vehiculos">;
+  vehiculos?: { placa: string; tipo: TipoVehiculo }[];
 };
 
 // DNI y teléfonos inventados.
@@ -59,6 +60,7 @@ export const PERSONAS: Persona[] = [
     telefonoWhatsApp: "51900000006",
     roles: ["VECINO"],
     predio: { manzana: "A", lote: "3", uso: "VIVIENDA", autos: 1, estadoGarita: "ROJO" },
+    vehiculos: [{ placa: "JLM-314", tipo: "AUTO_O_CAMIONETA" }],
   },
   {
     nombreCompleto: "Rosa Díaz",
@@ -66,6 +68,7 @@ export const PERSONAS: Persona[] = [
     telefonoWhatsApp: "51900000007",
     roles: ["VECINO"],
     predio: { manzana: "B", lote: "2", uso: "VIVIENDA", autos: 1 },
+    vehiculos: [{ placa: "CDF-220", tipo: "AUTO_O_CAMIONETA" }],
   },
   {
     nombreCompleto: "Elena Soto",
@@ -73,6 +76,10 @@ export const PERSONAS: Persona[] = [
     telefonoWhatsApp: "51900000008",
     roles: ["VECINO"],
     predio: { manzana: "D", lote: "9", uso: "VIVIENDA", autos: 1, motos: 1 },
+    vehiculos: [
+      { placa: "EDS-108", tipo: "AUTO_O_CAMIONETA" },
+      { placa: "ESM-021", tipo: "MOTO" },
+    ],
   },
   {
     nombreCompleto: "Víctor Salas",
@@ -92,7 +99,7 @@ export function negarseEnNube(url = process.env.DATABASE_URL ?? "") {
 export async function sembrar(claveEquipo = process.env.SEMILLA_CLAVE ?? "clave-de-prueba") {
   negarseEnNube();
   const credencial = await cifrarClave(claveEquipo);
-  for (const { equipo, predio, ...persona } of PERSONAS) {
+  for (const { equipo, predio, vehiculos = [], ...persona } of PERSONAS) {
     const usuario = await prisma.usuario.upsert({
       where: { dni: persona.dni },
       create: persona,
@@ -114,6 +121,13 @@ export async function sembrar(claveEquipo = process.env.SEMILLA_CLAVE ?? "clave-
       const vive = await prisma.residencia.count({ where: { usuarioId: usuario.id, fechaFin: null } });
       if (!vive)
         await prisma.residencia.create({ data: { usuarioId: usuario.id, predioId, relacion: "TITULAR" } });
+      for (const vehiculo of vehiculos) {
+        await prisma.vehiculo.upsert({
+          where: { placa: vehiculo.placa },
+          create: { ...vehiculo, predioId },
+          update: { predioId },
+        });
+      }
     }
   }
   return PERSONAS.length;

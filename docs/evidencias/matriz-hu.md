@@ -2,7 +2,7 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 21 · cerradas con e2e: 21 de 21 (100 %).
+- HU en el plan: 76 · cerradas: 24 · cerradas con e2e: 24 de 24 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
@@ -30,3 +30,6 @@ Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU
 | HU-GAR-19 Panel de inicio consolidado | En parte | `modulos/identidad/aplicacion/panelInicio.ts` | — | `pruebas/integracion/identidad/panelInicio.test.ts` | `pruebas/e2e/identidad/inicio-vecino.cy.ts` |
 | HU-GAR-04 Pre-registrar visitas | Cerrada | `app/(vecino)/visitas/nueva/RegistrarVisita.tsx`<br>`modulos/identidad/aplicacion/visitas.ts`<br>`modulos/identidad/dominio/visita.ts` | — | `pruebas/integracion/identidad/visitas.test.ts` | `pruebas/e2e/identidad/visitas.cy.ts` |
 | HU-GAR-05 Anular visitas | Cerrada | `app/(vecino)/visitas/[id]/anular/AnularVisita.tsx`<br>`modulos/identidad/aplicacion/visitas.ts`<br>`modulos/identidad/dominio/visita.ts` | — | `pruebas/integracion/identidad/visitas.test.ts` | `pruebas/e2e/identidad/visitas.cy.ts` |
+| HU-GAR-06 Consultar placa o DNI con semáforo (con la proyección de morosidad de M1 e instantánea sin conexión) | Cerrada | `app/(garita)/garita/consultar/ConsultarGarita.tsx`<br>`modulos/identidad/aplicacion/garita.ts`<br>`modulos/identidad/dominio/garita.ts` | — | `pruebas/integracion/identidad/garita.test.ts` | `pruebas/e2e/identidad/garita.cy.ts` |
+| HU-GAR-07 Verificar visitantes contra la lista blanca | Cerrada | `app/(garita)/garita/visitas/_componentes/AccionGarita.tsx`<br>`app/(garita)/garita/visitas/_componentes/BuscarVisita.tsx`<br>`app/(garita)/garita/visitas/nueva/PreguntarAlVecino.tsx`<br>`app/(vecino)/visitas/[id]/responder/ResponderVisita.tsx`<br>`modulos/identidad/aplicacion/garita.ts`<br>`modulos/identidad/dominio/garita.ts` | — | `pruebas/integracion/identidad/garita.test.ts` | `pruebas/e2e/identidad/garita.cy.ts` |
+| HU-GAR-08 Bitácora de entradas y salidas | Cerrada | `app/(garita)/garita/visitas/_componentes/AccionGarita.tsx`<br>`modulos/identidad/aplicacion/garita.ts`<br>`modulos/identidad/dominio/garita.ts` | — | `pruebas/integracion/identidad/garita.test.ts` | `pruebas/e2e/identidad/garita.cy.ts` |
