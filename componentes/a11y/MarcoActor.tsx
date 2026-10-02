@@ -1,3 +1,4 @@
+// @HU-ACC-06
 import type { ReactNode } from "react";
 import { AnunciadorRuta } from "./AnunciadorRuta";
 import { type Actor, BarraNavegacion } from "./BarraNavegacion";

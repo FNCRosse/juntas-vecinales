@@ -1,3 +1,4 @@
+// @HU-ACC-05
 // Contraste WCAG de los tokens semánticos en los modos Normal y Senior (guía visual §1.3 y §1.4).
 // Lo usa la prueba de Jest (TokensVisuales.cumpleWCAG_AA): falla si un par baja del mínimo.
 
