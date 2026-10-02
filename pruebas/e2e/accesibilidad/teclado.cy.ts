@@ -5,15 +5,28 @@ export {};
 
 const tab = () => cy.press(Cypress.Keyboard.Keys.TAB);
 
-/** Elemento con el foco, o <body> cuando el foco salió de la página. */
-const conFoco = () => cy.document().then((d) => d.activeElement ?? d.body);
+type Foco = { fuera: boolean; texto: string; enDialogo: boolean };
+
+/**
+ * Qué tiene el foco; `fuera` cuando salió de la página. La aserción propia quita la exigencia por
+ * defecto de cy.focused() de que exista un elemento enfocado.
+ */
+const conFoco = () =>
+  cy
+    .focused()
+    .should(() => {})
+    .then(($el): Foco => {
+      const el = $el?.[0];
+      if (!el || el.tagName === "BODY") return { fuera: true, texto: "", enDialogo: false };
+      return { fuera: false, texto: el.textContent ?? "", enDialogo: !!el.closest("[role=dialog]") };
+    });
 
 /** Tabula como una persona hasta llegar al control que contiene el texto. */
 function tabularHasta(texto: string, intentos = 30): void {
   if (intentos === 0) throw new Error(`No se llegó con Tab a «${texto}»`);
   tab();
-  conFoco().then((el) => {
-    if (el.tagName === "BODY" || !el.textContent?.includes(texto)) tabularHasta(texto, intentos - 1);
+  conFoco().then((foco) => {
+    if (!foco.texto.includes(texto)) tabularHasta(texto, intentos - 1);
   });
 }
 
@@ -81,14 +94,14 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
     tabularHasta("Ver cómo se calcula");
     cy.press(Cypress.Keyboard.Keys.ENTER);
     cy.get("[role=dialog]").should("be.visible").and("have.attr", "aria-labelledby");
-    conFoco().then((el) => expect(el.closest("[role=dialog]"), "foco dentro del diálogo").to.exist);
+    conFoco().its("enDialogo").should("eq", true);
     for (let i = 0; i < 3; i++) {
       tab();
-      conFoco().then((el) => expect(el.closest("[role=dialog]"), "foco dentro del diálogo").to.exist);
+      conFoco().its("enDialogo").should("eq", true);
     }
     cy.press(Cypress.Keyboard.Keys.ESC);
     cy.get("[role=dialog]").should("not.exist");
-    conFoco().should("contain.text", "Ver cómo se calcula");
+    conFoco().its("texto").should("contain", "Ver cómo se calcula");
   });
 
   it("@HU-ACC-06 CA3 no hay trampas: tabulando se recorre la página entera y se sale de ella", () => {
@@ -96,9 +109,7 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
     const vistos: string[] = [];
     for (let i = 0; i < 9; i++) {
       tab();
-      conFoco().then((el) =>
-        vistos.push(el.tagName === "BODY" ? "(fuera de la página)" : (el.textContent ?? "").trim()),
-      );
+      conFoco().then((foco) => vistos.push(foco.fuera ? "(fuera de la página)" : foco.texto.trim()));
     }
     cy.wrap(vistos).should("include", "Bitácora").and("include", "(fuera de la página)");
   });
