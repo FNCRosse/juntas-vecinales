@@ -3,22 +3,56 @@ import { nuevoToken } from "@/compartido/claves";
 import type { Transaccion } from "@/compartido/bd/cliente";
 import { primerNombre } from "@/compartido/fechas";
 import { encolarAviso } from "@/compartido/notificaciones/encolar";
-import { plantillaClaveNueva, plantillaEnlaceAcceso } from "@/compartido/notificaciones/plantillas";
+import {
+  plantillaClaveNueva,
+  plantillaEnlaceAcceso,
+  plantillaInvitacionEquipo,
+} from "@/compartido/notificaciones/plantillas";
+import { HORAS_INVITACION, NOMBRE_ROL, rolDeEquipo } from "@/modulos/identidad/dominio/equipo";
 import { MINUTOS_DE_VIGENCIA, type PropositoEnlace, venceEn } from "@/modulos/identidad/dominio/magicLink";
 import { guardarEnlace } from "@/modulos/identidad/infraestructura/repositorioEnlaces";
+import type { NombreRol } from "./sesion";
 
-type Destinatario = { id: string; nombreCompleto: string; telefonoWhatsApp: string | null };
+type Destinatario = {
+  id: string;
+  nombreCompleto: string;
+  telefonoWhatsApp: string | null;
+  roles?: NombreRol[];
+};
 
-const SEGUN_PROPOSITO = {
+const SEGUN_PROPOSITO: Record<
+  PropositoEnlace,
+  {
+    ruta: string;
+    titulo: string;
+    vence: string;
+    plantilla: (u: Destinatario, enlace: string) => { plantilla: string; parametros: string[] };
+  }
+> = {
   ENTRADA: {
     ruta: "/entrar",
-    plantilla: plantillaEnlaceAcceso,
     titulo: "Le enviamos su enlace de entrada",
+    vence: `${MINUTOS_DE_VIGENCIA} minutos`,
+    plantilla: (u, enlace) => plantillaEnlaceAcceso(primerNombre(u.nombreCompleto), enlace),
   },
   CLAVE: {
     ruta: "/clave/nueva",
-    plantilla: plantillaClaveNueva,
     titulo: "Le enviamos el enlace para crear su clave",
+    vence: `${MINUTOS_DE_VIGENCIA} minutos`,
+    plantilla: (u, enlace) => plantillaClaveNueva(primerNombre(u.nombreCompleto), enlace),
+  },
+  EQUIPO: {
+    ruta: "/entrar/equipo/crear",
+    titulo: "Le enviamos su invitación al equipo",
+    vence: `${HORAS_INVITACION} horas`,
+    plantilla: (u, enlace) => {
+      const rol = rolDeEquipo(u.roles ?? []);
+      return plantillaInvitacionEquipo(
+        primerNombre(u.nombreCompleto),
+        rol ? NOMBRE_ROL[rol] : "parte del equipo",
+        enlace,
+      );
+    },
   },
 };
 
@@ -34,24 +68,24 @@ export async function emitirEnlace(
   ahora: Date,
   proposito: PropositoEnlace = "ENTRADA",
 ) {
-  const { ruta, plantilla, titulo } = SEGUN_PROPOSITO[proposito];
+  const { ruta, plantilla, titulo, vence } = SEGUN_PROPOSITO[proposito];
   const { token, hash } = nuevoToken();
   await guardarEnlace(tx, {
     usuarioId: usuario.id,
     tokenHash: hash,
     emitidoEn: ahora,
-    expiraEn: venceEn(ahora),
+    expiraEn: venceEn(ahora, proposito),
     proposito,
   });
   await encolarAviso(
     {
       destinatarioId: usuario.id,
       titulo,
-      texto: `Lo enviamos a su WhatsApp. Sirve una sola vez y vence en ${MINUTOS_DE_VIGENCIA} minutos.`,
+      texto: `Lo enviamos a su WhatsApp. Sirve una sola vez y vence en ${vence}.`,
       whatsapp: usuario.telefonoWhatsApp
         ? {
             telefono: usuario.telefonoWhatsApp,
-            ...plantilla(primerNombre(usuario.nombreCompleto), `${origen}${ruta}/${token}`),
+            ...plantilla(usuario, `${origen}${ruta}/${token}`),
           }
         : undefined,
     },

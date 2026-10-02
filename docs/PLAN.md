@@ -63,9 +63,9 @@ Acceso y padrón:
 - [x] HU-GAR-25 Restablecer la clave de respaldo
 
 Equipo interno:
-- [ ] HU-GAR-21 Crear cuentas internas con rol
-- [ ] HU-GAR-22 Revocar el acceso de un miembro interno
-- [ ] HU-GAR-23 Reasignar el rol de un miembro interno
+- [x] HU-GAR-21 Crear cuentas internas con rol
+- [x] HU-GAR-22 Revocar el acceso de un miembro interno
+- [x] HU-GAR-23 Reasignar el rol de un miembro interno
 
 Padrón:
 - [ ] HU-GAR-10 Actualizar los datos del predio de un residente — `[~]` se cierra en M5, cuando el cálculo de la cuota usa la ocupación nueva

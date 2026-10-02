@@ -40,7 +40,7 @@ export default defineConfig({
                ORDER BY "creadoEn" DESC LIMIT 1`,
               [telefono, plantilla],
             );
-            return rows[0]?.parametros[1] ?? null;
+            return rows[0]?.parametros.find((p) => /^https?:\/\//.test(p)) ?? null;
           } finally {
             await cliente.end();
           }
