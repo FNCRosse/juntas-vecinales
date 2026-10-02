@@ -17,15 +17,15 @@ Leyenda de la casilla: `[ ]` pendiente · `[x]` cerrada (anotar el número de PR
 
 ## Fase 0 · Esqueleto, CI/CD y despliegue
 
-- [ ] Next.js (App Router, TS estricto, Tailwind v4, ESLint, Prettier) con la estructura de [ARQUITECTURA.md](ARQUITECTURA.md); `GET /api/salud` que comprueba la BD.
-- [ ] Reglas de arquitectura en `eslint.config.mjs` y la prueba que demuestra que fallan.
-- [ ] Prisma con el esquema base y la primera migración (solo `nucleo_ejecuciones_worker`); `prisma migrate deploy` en el build de Vercel.
-- [ ] Worker con `GET /salud` y `POST /tareas/ejecutar` (secreto, advisory lock, registro de ejecución).
-- [ ] Jest, Supertest y Cypress + axe con una prueba de humo `@HU-INFRA` cada uno.
-- [ ] CI (`ci.yml`) con lint, tipos, Jest con cobertura ≥ 80 %, build y Cypress contra Postgres de Actions; checks obligatorios en `main`.
-- [ ] Cron del worker (`worker-cron.yml`).
-- [ ] Vercel + Neon (rama por preview) + Render + R2 configurados; [DESPLIEGUE.md](DESPLIEGUE.md) con la configuración real.
-- [ ] Circuito probado: PR con preview y rama Neon, merge, producción y ejecución del cron registrada.
+- [x] Next.js (App Router, TS estricto, Tailwind v4, ESLint, Prettier) con la estructura de [ARQUITECTURA.md](ARQUITECTURA.md); `GET /api/salud` que comprueba la BD.
+- [x] Reglas de arquitectura en `eslint.config.mjs` y la prueba que demuestra que fallan.
+- [x] Prisma con el esquema base y la primera migración (solo `nucleo_ejecuciones_worker`); `prisma migrate deploy` en el build de Vercel.
+- [x] Worker con `GET /salud` y `POST /tareas/ejecutar` (secreto, advisory lock, registro de ejecución).
+- [x] Jest, Supertest y Cypress + axe con una prueba de humo `@HU-INFRA` cada uno.
+- [x] CI (`ci.yml`) con lint, tipos, Jest con cobertura ≥ 80 %, build y Cypress contra Postgres de Actions; checks obligatorios en `main`.
+- [x] Cron del worker (`worker-cron.yml`). PR [#1](https://github.com/FNCRosse/juntas-vecinales/pull/1).
+- [x] Vercel + Neon (rama por preview) + Render + R2 configurados; [DESPLIEGUE.md](DESPLIEGUE.md) con la configuración real.
+- [x] Circuito probado: PR con preview y rama Neon, merge, producción y ejecución del cron registrada.
 
 **Riesgos:** límites de Neon y Render con el cron cada 10 min; el arranque en frío de Render con el timeout del cron; la versión de Prisma decide cómo se declaran las URLs de conexión.
 

@@ -95,6 +95,21 @@ El conector creó el proyecto con `create_project` y `gitRepository`: `create_gi
 
 **GitHub** — variable de Actions `URL_WORKER` y secreto `SECRETO_WORKER` (la autora). Protección de `main`: PR obligatorio y checks obligatorios `lint`, `tipos`, `pruebas` y `e2e` (los nombres de los jobs de `ci.yml`).
 
+## 3c. URLs reales y checks obligatorios (fase 0)
+
+| Qué | URL |
+| --- | --- |
+| Producción (app) | https://juntas-vecinales-eight.vercel.app |
+| Salud de la app | https://juntas-vecinales-eight.vercel.app/api/salud |
+| Worker | https://juntas-vecinales-worker.onrender.com (salud: `/salud`; tareas: `POST /tareas/ejecutar`) |
+| Preview de una rama | `https://juntas-vecinales-git-<rama>-rosita4407-2852s-projects.vercel.app`, protegida por Vercel Authentication; cada una usa su rama de Neon `preview/<rama>` |
+| Panel de Vercel | https://vercel.com/rosita4407-2852s-projects/juntas-vecinales |
+| Panel de Render | https://dashboard.render.com/web/srv-davi9v67bikc73e60oig |
+
+Checks obligatorios en la protección de `main` (los jobs de `ci.yml`): `lint`, `tipos`, `pruebas` y `e2e`. Se comprobó con un PR que violaba la regla de arquitectura: con `lint` en rojo, GitHub lo reportó como `blocked`.
+
+Circuito de la fase 0 verificado: PR con preview y su rama de Neon, merge, despliegue de producción en Vercel y Render, y `worker-cron.yml` lanzado a mano ([corrida](https://github.com/FNCRosse/juntas-vecinales/actions/runs/36963424407)): el worker respondió `ejecutada` y la fila `EXITOSA` quedó en `nucleo_ejecuciones_worker` de la rama `main` de Neon.
+
 ## 4. Rollback
 
 | Pieza | Cómo | Tiempo |
