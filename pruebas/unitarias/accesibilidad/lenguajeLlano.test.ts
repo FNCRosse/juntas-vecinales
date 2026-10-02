@@ -53,7 +53,7 @@ const textos = CARPETAS.flatMap(archivos)
   // Lo técnico que no llega a la persona: rutas, clases de CSS, mensajes del log y de la configuración.
   .filter(
     ({ texto }) =>
-      !/^(Faltan|Hace falta|No se pudo|No existe|Error no|La confirmación en dos|Meta respondió|WHATSAPP_|Fallo simulado)/.test(
+      !/^(Faltan|Hace falta|No se pudo|No existe|Error no|La confirmación en dos|Meta respondió|WHATSAPP_|Fallo simulado|Bearer )/.test(
         texto,
       ),
   );
