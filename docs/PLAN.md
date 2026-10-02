@@ -56,7 +56,7 @@ Acceso y padrón:
 - [x] HU-GAR-01 Empadronar residente y enviarle su acceso inicial
 - [x] HU-GAR-02 Entrar con el enlace de acceso, aceptar la política y crear la clave de respaldo
 - [x] HU-ACC-01 Modo Senior guardado en la cuenta (enlaza el perfil de la fase 0b con `Usuario`)
-  - Enlazado: llave foránea, el perfil del dispositivo pasa a la cuenta al entrar (con enlace o con clave) y se lee por la sesión. Queda para sus HU: el switch "Letra grande" también en Mi perfil (VEC-ACC-13, con HU-GAR-13); "Pedir ayuda" ya lleva a `/mas/ayuda` (HU-ACC-04).
+  - Enlazado: llave foránea, el perfil del dispositivo pasa a la cuenta al entrar (con enlace o con clave) y se lee por la sesión. El switch "Letra grande" también está en Mi perfil (VEC-ACC-13) y "Pedir ayuda" lleva a `/mas/ayuda` (HU-ACC-04).
 - [x] HU-GAR-03 Abrir desde el ícono del teléfono sin volver a entrar (PWA)
 - [x] HU-GAR-11 Pedir un enlace nuevo
 - [x] HU-GAR-24 Entrar con la clave de respaldo
@@ -85,9 +85,9 @@ Garita:
 - [x] HU-GAR-08 Bitácora de entradas y salidas
 
 Privacidad (ARCO) y contacto:
-- [ ] HU-GAR-16 Bandeja ARCO del administrador con plazos
-- [ ] HU-GAR-12 Copia de mis datos personales — `[~]` se cierra en M5: cada módulo añade su sección a la copia
-- [ ] HU-GAR-13 Rectificación de datos
+- [x] HU-GAR-16 Bandeja ARCO del administrador con plazos
+- [~] HU-GAR-12 Copia de mis datos personales — `[~]` M1 dejó el PDF con las secciones de identidad y accesibilidad; se cierra en M5: cada módulo añade su sección a la copia
+- [x] HU-GAR-13 Rectificación de datos
 - [ ] HU-GAR-14 Cancelación de la cuenta — `[~]` se cierra en M5: cada módulo añade su anonimización
 - [ ] HU-GAR-15 Oposición a mostrar la ubicación exacta — `[~]` se cierra en M3, cuando el mapa la aplica
 - [ ] HU-GAR-17 Cambio de número de contacto verificado

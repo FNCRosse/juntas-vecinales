@@ -6,7 +6,7 @@ import { avisosSinLeer } from "@/modulos/identidad/aplicacion/avisos";
 
 export const metadata: Metadata = { title: "Más opciones" };
 
-// VEC-ACC-16 Más opciones. Mi perfil llega con su HU.
+// VEC-ACC-16 Más opciones.
 export default async function MasOpciones() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
   const sinLeer = await avisosSinLeer(sesion);
@@ -28,6 +28,9 @@ export default async function MasOpciones() {
         </TarjetaEnlace>
         <TarjetaEnlace href="/avisos/preferencias" titulo="Qué avisos recibo">
           <span>Elija qué avisos le llegan por WhatsApp.</span>
+        </TarjetaEnlace>
+        <TarjetaEnlace href="/mas/perfil" titulo="Mi perfil y privacidad">
+          <span>Sus datos, corregir un dato y bajar una copia de lo que la junta tiene de usted.</span>
         </TarjetaEnlace>
         <TarjetaEnlace href="/mas/ayuda-y-accesibilidad" titulo="Ayuda y accesibilidad">
           <span>Letra grande y el estado de sus pedidos de ayuda.</span>
