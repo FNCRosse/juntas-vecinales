@@ -5,28 +5,6 @@ export {};
 
 const tab = () => cy.press(Cypress.Keyboard.Keys.TAB);
 
-/**
- * Enter real del navegador (CDP): cy.press no envía el carácter "\r" y un <button> no se activa
- * sin él, aunque un enlace sí.
- */
-function pulsarEnter() {
-  const tecla = { key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 };
-  return cy
-    .wrap(
-      Cypress.automation("remote:debugger:protocol", {
-        command: "Input.dispatchKeyEvent",
-        params: { type: "keyDown", text: "\r", ...tecla },
-      }),
-      { log: false },
-    )
-    .then(() =>
-      Cypress.automation("remote:debugger:protocol", {
-        command: "Input.dispatchKeyEvent",
-        params: { type: "keyUp", ...tecla },
-      }),
-    );
-}
-
 type Foco = { fuera: boolean; texto: string; enDialogo: boolean };
 
 /**
@@ -115,7 +93,7 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
     cy.visit("/catalogo");
     cy.esperarHidratacion("Ver cómo se calcula");
     tabularHasta("Ver cómo se calcula");
-    pulsarEnter();
+    cy.press(Cypress.Keyboard.Keys.ENTER);
     cy.get("[role=dialog]").should("be.visible").and("have.attr", "aria-labelledby");
     conFoco().its("enDialogo").should("eq", true);
     for (let i = 0; i < 3; i++) {
