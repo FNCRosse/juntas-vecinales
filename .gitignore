@@ -24,6 +24,8 @@ pruebas/e2e/screenshots/
 
 # Grafo de graphify: se versiona el grafo, no la caché ni rutas de esta máquina
 graphify-out/cache/
+graphify-out/.graphify_python
+graphify-out/.graphify_root
 
 # Instrucciones locales con rutas de esta máquina
 CLAUDE.local.md
@@ -33,5 +35,3 @@ CLAUDE.local.md
 Thumbs.db
 *.log
 npm-debug.log*
-graphify-out/.graphify_python
-graphify-out/.graphify_root
