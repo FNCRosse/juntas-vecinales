@@ -8,6 +8,12 @@ enum CategoriaQueja {
   OTROS
 }
 
+enum Prioridad {
+  BAJA
+  MEDIA
+  ALTA
+}
+
 enum EstadoQueja {
   RECIBIDO
   EN_REVISION
@@ -33,6 +39,11 @@ model Queja {
   latitud               Float?
   longitud              Float?
   estado                EstadoQueja         @default(RECIBIDO)
+  /// Admisibilidad (HU-QUE-05): quién la evaluó, cuándo, con qué prioridad o por qué no procede.
+  prioridad             Prioridad?
+  evaluadaPor           String?
+  fechaEvaluacion       DateTime?
+  motivoRechazo         String?
   fechaRegistro         DateTime            @default(now())
   esAnonimo             Boolean             @default(false)
   denuncianteId         String?

@@ -85,11 +85,9 @@ describe("@HU-QUE-01 @HU-QUE-04 Registrar una queja y emitir su ticket", () => {
     cy.visit("/directiva");
     cy.contains("a", "Incidentes por evaluar").click();
     cy.get("h1").should("have.text", "Incidentes");
-    cy.contains("article", "Mz. F, frente al parque").should(
-      "contain.text",
-      "Recibido, pendiente de revisión",
-    );
-    cy.contains("li", "Mz. F, frente al parque").should("contain.text", "Nora Ruiz Pinto");
+    cy.contains("li", "Mz. F, frente al parque")
+      .should("contain.text", "Recibido, pendiente de revisión")
+      .and("contain.text", "Nora Ruiz Pinto");
     cy.revisarAccesibilidad("bandeja-incidentes-normal");
   });
 });

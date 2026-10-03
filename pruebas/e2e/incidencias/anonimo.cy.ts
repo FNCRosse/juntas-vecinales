@@ -46,8 +46,8 @@ describe("@HU-QUE-02 Modo anónimo", () => {
     cy.clearCookies();
     cy.request("POST", "/api/auth/clave", { dni: "40000002", clave: "clave-de-prueba" });
     cy.visit("/directiva/incidentes");
-    cy.contains("article", "Robaron").should("not.exist");
-    cy.contains("article", "Seguridad").should("contain.text", "Reporte anónimo");
+    cy.contains("li", "Robaron").should("not.exist");
+    cy.contains("li", "Seguridad").should("contain.text", "Reporte anónimo");
     cy.get("main").should("not.contain.text", "Inés");
     cy.revisarAccesibilidad("bandeja-anonimo-360");
   });

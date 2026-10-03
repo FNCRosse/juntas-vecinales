@@ -1,4 +1,4 @@
-// @HU-QUE-09
+// @HU-QUE-05 @HU-QUE-09
 import { createHash } from "node:crypto";
 import { ErrorEnPausa, ErrorNoEncontrado } from "@/compartido/errores";
 import { fechaYHora } from "@/compartido/fechas";
@@ -6,6 +6,7 @@ import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion
 import { CATEGORIAS, ESTADOS, numeroVisible } from "@/modulos/incidencias/dominio/queja";
 import {
   normalizarCodigo,
+  novedadDelReporte,
   pasosDelAvance,
   superaLimite,
   VENTANA_CONSULTAS_MS,
@@ -39,6 +40,7 @@ const avanceADto = (q: Fila) => {
     estadoTexto: ESTADOS[q.estado],
     fechaRegistro: q.fechaRegistro.toISOString(),
     pasos: pasosDelAvance(q.estado, fecha),
+    novedad: novedadDelReporte(q.estado, q.motivoRechazo),
   };
 };
 export type AvanceDto = ReturnType<typeof avanceADto>;

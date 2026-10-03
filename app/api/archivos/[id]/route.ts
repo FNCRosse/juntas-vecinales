@@ -3,7 +3,7 @@ import { manejar } from "@/compartido/manejar";
 import { exigirSesion } from "@/modulos/identidad/aplicacion/sesion";
 import { USOS } from "../usos";
 
-/** Quién puede ver un archivo: quien lo subió y los roles que pueden subir ese mismo uso. */
+/** Quién puede ver un archivo: quien lo subió y los roles que su uso deja ver; nadie más (AC-7). */
 export const GET = manejar<{ params: Promise<{ id: string }> }>(async (peticion, { params }) => {
   const sesion = await exigirSesion(peticion);
   const { url } = await descargarSiPuede(
@@ -11,7 +11,7 @@ export const GET = manejar<{ params: Promise<{ id: string }> }>(async (peticion,
     (a) =>
       a.subidoPor === sesion.usuarioId ||
       sesion.roles.some((rol) =>
-        (USOS[a.uso as keyof typeof USOS]?.roles as readonly string[] | undefined)?.includes(rol),
+        (USOS[a.uso as keyof typeof USOS]?.ven as readonly string[] | undefined)?.includes(rol),
       ),
   );
   return new Response(null, {

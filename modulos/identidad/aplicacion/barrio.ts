@@ -106,3 +106,12 @@ export async function vecinoActivo(id: string) {
   });
   return persona && aVecino(persona);
 }
+
+/** El WhatsApp de una persona activa, para avisarle de su reporte; null si no tiene o ya no está. */
+export async function telefonoDe(id: string) {
+  const persona = await prisma.usuario.findFirst({
+    where: { id, estado: "ACTIVA" },
+    select: { telefonoWhatsApp: true },
+  });
+  return persona?.telefonoWhatsApp ?? null;
+}
