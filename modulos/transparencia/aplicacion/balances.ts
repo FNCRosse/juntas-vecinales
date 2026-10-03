@@ -18,10 +18,11 @@ const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 const ROLES_VECINO = ["VECINO", "VECINO_ADULTO_MAYOR", ...ROLES_DIRECTIVA] as const;
 export const USO_COMPROBANTE = "comprobante_egreso";
 
-type Fila = NonNullable<Awaited<ReturnType<typeof buscarBalance>>>;
+export type FilaBalance = NonNullable<Awaited<ReturnType<typeof buscarBalance>>>;
+type Fila = FilaBalance;
 
 /** Los comprobantes solo los ve la directiva: el vecino ve concepto y monto de cada gasto. */
-const aDto = (p: Fila, sesion: SesionDto) => {
+export const balanceADto = (p: Fila, sesion: SesionDto) => {
   const b = p.balance!;
   const veComprobantes = sesion.roles.some((r) => (ROLES_DIRECTIVA as readonly string[]).includes(r));
   return {
@@ -41,7 +42,7 @@ const aDto = (p: Fila, sesion: SesionDto) => {
   };
 };
 
-export type BalanceDto = ReturnType<typeof aDto>;
+export type BalanceDto = ReturnType<typeof balanceADto>;
 
 /**
  * Publica el balance de una actividad pro fondos (HU-ASA-10 CA3): queda inalterable, avisa a cada vecino
@@ -68,7 +69,7 @@ export async function publicarBalance(
   if (Object.keys(errores).length) throw new ErrorValidacion(undefined, errores);
 
   const previa = await buscarBalancePorIdOperacion(datos.idOperacion);
-  if (previa) return { balance: aDto(previa, sesion), creado: false };
+  if (previa) return { balance: balanceADto(previa, sesion), creado: false };
 
   const totales = calcularTotales(balance);
   const creada = await prisma.$transaction(async (tx) => {
@@ -100,7 +101,7 @@ export async function publicarBalance(
     );
     return fila;
   });
-  return { balance: aDto(creada, sesion), creado: true };
+  return { balance: balanceADto(creada, sesion), creado: true };
 }
 
 /** Un balance publicado (VEC-TRA-03), para todo vecino con sesión. */
@@ -108,11 +109,11 @@ export async function verBalance(sesion: SesionDto, id: string) {
   exigirRol(sesion, ...ROLES_VECINO);
   const fila = await buscarBalance(id);
   if (!fila) throw new ErrorNoEncontrado();
-  return aDto(fila, sesion);
+  return balanceADto(fila, sesion);
 }
 
 /** Los balances publicados, los más nuevos primero. */
 export async function balancesPublicados(sesion: SesionDto) {
   exigirRol(sesion, ...ROLES_VECINO);
-  return (await listarBalances()).map((f) => aDto(f, sesion));
+  return (await listarBalances()).map((f) => balanceADto(f, sesion));
 }

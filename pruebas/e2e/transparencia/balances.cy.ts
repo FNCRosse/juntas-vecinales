@@ -88,9 +88,12 @@ describe("@HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos", (
           cy.viewport(360, 800);
           cy.guardarModo("senior");
           cy.visit("/transparencia");
-          cy.contains("a", `${TITULO} (vecino)`).should("contain.text", "Utilidad neta S/ 450.00");
+          cy.contains("article", `${TITULO} (vecino)`)
+            .should("contain.text", "Saldo final")
+            .and("contain.text", "S/ 450.00");
           cy.revisarAccesibilidad("transparencia-balances-senior-360");
-          cy.visit(`/transparencia/balances/${r.body.id}`);
+          cy.contains("article", `${TITULO} (vecino)`).contains("a", `${TITULO} (vecino)`).click();
+          cy.location("pathname").should("eq", `/transparencia/balances/${r.body.id}`);
           cy.get("h1").should("have.text", `${TITULO} (vecino)`);
           cy.contains("table th", "Utilidad neta").parent().should("contain.text", "S/ 450.00");
           cy.contains("li", "Sonido").should("contain.text", "S/ 300.00");

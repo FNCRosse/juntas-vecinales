@@ -16,9 +16,10 @@ import { avisarALaComunidad } from "./avisarComunidad";
 
 const ROLES_VECINO = ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 
-type Fila = NonNullable<Awaited<ReturnType<typeof buscarActa>>>;
+export type FilaActa = NonNullable<Awaited<ReturnType<typeof buscarActa>>>;
+type Fila = FilaActa;
 
-const aDto = (p: Fila) => ({
+export const actaADto = (p: Fila) => ({
   id: p.id,
   titulo: p.titulo,
   fechaAsamblea: fechaLarga(p.acta!.fechaAsamblea),
@@ -29,7 +30,7 @@ const aDto = (p: Fila) => ({
   fecha: p.fechaPublicacion.toISOString(),
 });
 
-export type ActaDto = ReturnType<typeof aDto>;
+export type ActaDto = ReturnType<typeof actaADto>;
 
 type ActaPreparada = ReturnType<typeof prepararActa>["acta"];
 
@@ -74,7 +75,7 @@ export async function publicarActa(
   exigirRol(sesion, "DIRECTIVA", "DIRECTIVO_MEDIADOR");
   const acta = revisar(datos, ahora);
   const previa = await buscarActaPorIdOperacion(datos.idOperacion);
-  if (previa) return { acta: aDto(previa), creado: false };
+  if (previa) return { acta: actaADto(previa), creado: false };
 
   const creada = await prisma.$transaction(async (tx) => {
     const fila = await crearActa(tx, {
@@ -105,7 +106,7 @@ export async function publicarActa(
     );
     return fila;
   });
-  return { acta: aDto(creada), creado: true };
+  return { acta: actaADto(creada), creado: true };
 }
 
 /** "Ver cómo queda el PDF" (DIR-ASA-10): el mismo documento con los datos del formulario, sin guardar nada. */
@@ -135,5 +136,5 @@ export async function descargarActa(sesion: SesionDto, id: string) {
 /** Las actas publicadas, las más nuevas primero (VEC-TRA-02). */
 export async function actasPublicadas(sesion: SesionDto): Promise<ActaDto[]> {
   exigirRol(sesion, ...ROLES_VECINO);
-  return (await listarActas()).map(aDto);
+  return (await listarActas()).map(actaADto);
 }
