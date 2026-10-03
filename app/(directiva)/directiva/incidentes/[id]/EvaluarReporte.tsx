@@ -1,5 +1,5 @@
 "use client";
-// @HU-QUE-05
+// @HU-QUE-05 @HU-QUE-07
 
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 const DECISIONES = [
   ["admitir", "Procede: pasar a En revisión", ""],
   ["rechazar", "No procede: es falso o malintencionado", "Se enviará una advertencia por mal uso"],
+  ["derivar", "Excede a la junta: derivar a la PNP o la Municipalidad", ""],
 ] as const;
 const PRIORIDADES = [
   ["ALTA", "Alta", "Riesgo para personas o bienes"],
@@ -42,6 +43,7 @@ export function EvaluarReporte({ id, numero, categoria }: { id: string; numero: 
     const nuevos: Record<string, string> = {};
     if (!decision) nuevos.decision = "Elija qué decide.";
     if (decision === "admitir" && !prioridad) nuevos.prioridad = "Elija la prioridad.";
+    if (decision === "derivar") return router.push(`/directiva/incidentes/${id}/derivar`);
     if (decision === "rechazar" && !motivo.trim())
       nuevos.motivo = "Escriba por qué no procede. Se lo diremos a quien reportó.";
     setErrores(nuevos);
@@ -149,6 +151,9 @@ export function EvaluarReporte({ id, numero, categoria }: { id: string; numero: 
             onChange={(e) => setMotivo(e.target.value)}
           />
         </>
+      )}
+      {decision === "derivar" && (
+        <p>En el siguiente paso armará el expediente para la PNP o la Municipalidad.</p>
       )}
       <Boton type="submit" icono={ArrowRight} anchoCompleto>
         Revisar la decisión

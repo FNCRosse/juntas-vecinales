@@ -25,7 +25,7 @@ export default async function AvanceDeMiReporte({ params }: { params: Promise<{ 
         <ArrowLeft aria-hidden className="size-icono" />
         Volver a Incidentes
       </Link>
-      <AvanceReporte avance={avance} />
+      <AvanceReporte avance={avance} hrefOficio={`/api/quejas/${avance.id}/oficio`} />
     </div>
   );
 }

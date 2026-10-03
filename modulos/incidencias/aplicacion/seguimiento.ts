@@ -1,4 +1,4 @@
-// @HU-QUE-05 @HU-QUE-06 @HU-QUE-09
+// @HU-QUE-05 @HU-QUE-06 @HU-QUE-07 @HU-QUE-09
 import { createHash } from "node:crypto";
 import { ErrorEnPausa, ErrorNoEncontrado } from "@/compartido/errores";
 import { fechaYHora } from "@/compartido/fechas";
@@ -11,6 +11,7 @@ import {
   superaLimite,
   VENTANA_CONSULTAS_MS,
 } from "@/modulos/incidencias/dominio/seguimiento";
+import { oficioDe, oficioDeLaQueja } from "./derivacion";
 import { hashDenunciante } from "@/modulos/incidencias/infraestructura/identidadProtegida";
 import {
   anotarConsulta,
@@ -31,8 +32,11 @@ type Fila = NonNullable<Awaited<ReturnType<typeof buscarPorCodigo>>>;
  */
 const avanceADto = (q: Fila) => {
   const fecha = fechaYHora(q.fechaRegistro);
+  const derivado = oficioDe(q);
+  const derivacion = derivado && { entidad: derivado.entidad, oficio: derivado.numero };
   return {
     numero: numeroVisible(q.numero),
+    id: q.id,
     codigo: q.codigoTicket,
     categoria: CATEGORIAS[q.categoria],
     lugar: q.manzana ? `Mz. ${q.manzana}` : "Otro lugar del barrio",
@@ -40,7 +44,8 @@ const avanceADto = (q: Fila) => {
     estadoTexto: ESTADOS[q.estado],
     fechaRegistro: q.fechaRegistro.toISOString(),
     pasos: pasosDelAvance(q.estado, fecha),
-    novedad: novedadDelReporte(q.estado, q.motivoRechazo, q.acciones[0]?.detalle ?? null),
+    novedad: novedadDelReporte(q.estado, q.motivoRechazo, q.acciones[0]?.detalle ?? null, derivacion),
+    oficio: derivacion,
   };
 };
 export type AvanceDto = ReturnType<typeof avanceADto>;
@@ -69,4 +74,17 @@ export async function verMiQueja(sesion: SesionDto, id: string) {
       queja.identidadProtegida?.hashDenunciante === hashDenunciante(sesion.usuarioId));
   if (!esSuya) throw new ErrorNoEncontrado();
   return avanceADto(queja);
+}
+
+/** El oficio de su reporte derivado, buscando por el código (sin sesión, con el mismo límite de intentos). */
+export async function oficioPorCodigo(texto: string, ip: string, ahora = new Date()) {
+  const { codigo } = await consultarPorCodigo(texto, ip, ahora);
+  const queja = await buscarPorCodigo(codigo);
+  return oficioDeLaQueja(queja!.id);
+}
+
+/** El oficio de uno de sus reportes, desde Mis reportes; de otra persona, 404 (AC-7). */
+export async function miOficio(sesion: SesionDto, id: string) {
+  await verMiQueja(sesion, id);
+  return oficioDeLaQueja(id);
 }

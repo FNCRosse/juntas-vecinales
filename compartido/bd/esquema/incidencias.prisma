@@ -14,6 +14,11 @@ enum Prioridad {
   ALTA
 }
 
+enum EntidadExterna {
+  PNP
+  MUNICIPALIDAD
+}
+
 enum MedidaCorrectiva {
   MEDIACION
   LLAMADA_DE_ATENCION
@@ -35,16 +40,16 @@ enum EstadoQueja {
 // IdentidadProtegida. numero es el correlativo del ticket; codigoTicket le suma el año y un sufijo aleatorio (CLAUDE.md del
 // módulo). idOperacion lo genera el dispositivo y evita registrar dos veces al reintentar (AC-5).
 model Queja {
-  id                    String              @id @default(uuid())
-  numero                Int                 @unique @default(autoincrement())
-  codigoTicket          String              @unique
+  id                    String                @id @default(uuid())
+  numero                Int                   @unique @default(autoincrement())
+  codigoTicket          String                @unique
   categoria             CategoriaQueja
   descripcion           String
   manzana               String?
   referencia            String?
   latitud               Float?
   longitud              Float?
-  estado                EstadoQueja         @default(RECIBIDO)
+  estado                EstadoQueja           @default(RECIBIDO)
   /// Admisibilidad (HU-QUE-05): quién la evaluó, cuándo, con qué prioridad o por qué no procede.
   prioridad             Prioridad?
   evaluadaPor           String?
@@ -53,14 +58,15 @@ model Queja {
   /// Cierre: cuándo pasó a RESUELTO o a DERIVADO_ENTIDAD_EXTERNA (HU-QUE-06, 07).
   fechaCierre           DateTime?
   acciones              AccionCorrectiva[]
-  fechaRegistro         DateTime            @default(now())
-  esAnonimo             Boolean             @default(false)
+  expediente            ExpedienteDerivacion?
+  fechaRegistro         DateTime              @default(now())
+  esAnonimo             Boolean               @default(false)
   denuncianteId         String?
   /// El mediador que la registró por el vecino (HU-QUE-03); vacío si la envió el propio vecino.
   registradaPor         String?
   consentimientoVersion String
   consentimientoEn      DateTime
-  idOperacion           String              @unique
+  idOperacion           String                @unique
   evidencias            EvidenciaQueja[]
   identidadProtegida    IdentidadProtegida?
 
@@ -118,4 +124,18 @@ model AccionCorrectiva {
 
   @@index([quejaId])
   @@map("incidencias_acciones_correctivas")
+}
+
+// Derivación de una falta o delito a la PNP o la Municipalidad (HU-QUE-07): a qué entidad, el número del
+// oficio (correlativo propio), cuándo y quién. El expediente en PDF se arma al pedirlo con los datos de la
+// queja; la entrega a la entidad ocurre fuera del sistema.
+model ExpedienteDerivacion {
+  quejaId       String         @id
+  queja         Queja          @relation(fields: [quejaId], references: [id])
+  entidad       EntidadExterna
+  numeroOficio  Int            @unique @default(autoincrement())
+  fecha         DateTime       @default(now())
+  responsableId String
+
+  @@map("incidencias_expedientes")
 }

@@ -1,4 +1,9 @@
-import { prepararAdmisibilidad, prepararResolucion } from "@/modulos/incidencias/dominio/gestion";
+import {
+  numeroDeOficio,
+  prepararAdmisibilidad,
+  prepararDerivacion,
+  prepararResolucion,
+} from "@/modulos/incidencias/dominio/gestion";
 import { novedadDelReporte } from "@/modulos/incidencias/dominio/seguimiento";
 
 describe("@HU-QUE-05 Admisibilidad", () => {
@@ -68,5 +73,30 @@ describe("@HU-QUE-06 Acciones correctivas y cierre", () => {
       titulo: "Su reporte se resolvió",
       texto: "Acordaron bajar la música.",
     });
+  });
+});
+
+describe("@HU-QUE-07 Derivación a una entidad externa", () => {
+  it("@HU-QUE-07 CA1 deriva al evaluar o en revisión, a la PNP o la Municipalidad; nunca un reporte cerrado", () => {
+    expect(prepararDerivacion("RECIBIDO", "PNP")).toEqual({ errores: {}, entidad: "PNP" });
+    expect(prepararDerivacion("EN_REVISION", "MUNICIPALIDAD")).toEqual({
+      errores: {},
+      entidad: "MUNICIPALIDAD",
+    });
+    expect(prepararDerivacion("EN_REVISION", "FISCALIA")).toEqual({
+      errores: { entidad: "Elija a qué entidad lo envía." },
+      entidad: null,
+    });
+    expect(prepararDerivacion("RESUELTO", "PNP")).toEqual({ errores: {}, noSePuede: true });
+  });
+
+  it("@HU-QUE-07 CA3 el oficio lleva su correlativo y el año", () => {
+    expect(numeroDeOficio(15, 2026)).toBe("N.° 015-2026-JVVF");
+    expect(
+      novedadDelReporte("DERIVADO_ENTIDAD_EXTERNA", null, null, {
+        entidad: "Municipalidad",
+        oficio: "N.° 015-2026-JVVF",
+      }),
+    ).toMatchObject({ titulo: "Su reporte pasó a otra entidad" });
   });
 });

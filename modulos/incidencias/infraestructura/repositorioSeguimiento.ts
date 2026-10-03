@@ -1,6 +1,6 @@
 import { prisma } from "@/compartido/bd/cliente";
 
-const conUltimaAccion = { acciones: { orderBy: { fecha: "desc" }, take: 1 } } as const;
+const conUltimaAccion = { acciones: { orderBy: { fecha: "desc" }, take: 1 }, expediente: true } as const;
 
 /** Anota la consulta y cuenta las de esa conexión en la ventana; borra las de hace más de un día. */
 export async function anotarConsulta(ipHash: string, ahora: Date, ventanaMs: number) {
