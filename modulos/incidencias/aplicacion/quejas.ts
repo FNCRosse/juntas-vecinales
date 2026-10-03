@@ -1,0 +1,190 @@
+// @HU-QUE-01 @HU-QUE-04
+import { randomInt } from "node:crypto";
+import { archivosSubidosPor } from "@/compartido/archivos/registro";
+import { registrarAuditoria } from "@/compartido/auditoria/registrar";
+import { prisma } from "@/compartido/bd/cliente";
+import type { EstadoQueja } from "@/compartido/bd/generado/client";
+import { ErrorValidacion } from "@/compartido/errores";
+import { encolarAvisos } from "@/compartido/notificaciones/encolar";
+import {
+  directivaParaAvisar,
+  manzanaDe,
+  manzanasDelBarrio,
+  versionDePolitica,
+} from "@/modulos/identidad/aplicacion/barrio";
+import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
+import {
+  CATEGORIAS,
+  codigoTicket,
+  type DatosQueja,
+  ESTADOS,
+  lugarEnTexto,
+  numeroVisible,
+  prepararQueja,
+  sufijoAleatorio,
+} from "@/modulos/incidencias/dominio/queja";
+import {
+  buscarPorIdOperacion,
+  contarPorEstado,
+  crearQueja,
+  listarQuejas,
+  quejasDe,
+  siguienteNumero,
+} from "@/modulos/incidencias/infraestructura/repositorioQuejas";
+
+export { CATEGORIAS, ESTADOS };
+
+const ROLES_VECINO = ["VECINO", "VECINO_ADULTO_MAYOR"] as const;
+const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
+export const USO_EVIDENCIA = "evidencia_queja";
+
+const anioEnLima = (fecha: Date) =>
+  Number(new Intl.DateTimeFormat("en-CA", { timeZone: "America/Lima", year: "numeric" }).format(fecha));
+
+type Fila = Awaited<ReturnType<typeof crearQueja>>;
+
+/** Lo que ve quien reportó: su propio reporte, con el código para seguirlo (VEC-QUE-07). */
+export const quejaADto = (q: Fila) => ({
+  id: q.id,
+  numero: numeroVisible(q.numero),
+  codigo: q.codigoTicket,
+  categoria: CATEGORIAS[q.categoria],
+  descripcion: q.descripcion,
+  lugar: lugarEnTexto(q.manzana, q.referencia),
+  estado: q.estado,
+  estadoTexto: ESTADOS[q.estado],
+  fechaRegistro: q.fechaRegistro.toISOString(),
+  evidencias: q.evidencias.length,
+});
+export type QuejaDto = ReturnType<typeof quejaADto>;
+
+/** Lo que el formulario necesita para ofrecer el lugar: las manzanas y la de su casa. */
+export async function lugaresParaReportar(sesion: SesionDto) {
+  exigirRol(sesion, ...ROLES_VECINO);
+  const [manzanas, miManzana] = await Promise.all([manzanasDelBarrio(), manzanaDe(sesion.usuarioId)]);
+  return { manzanas, miManzana };
+}
+
+/**
+ * Registra la queja (HU-QUE-01) y emite su ticket (HU-QUE-04): exige consentimiento, categoría,
+ * descripción, lugar y al menos una evidencia que subió quien reporta (CA1–CA3); asigna el correlativo
+ * con su código, queda en RECIBIDO con fecha y hora, avisa a la directiva y se audita, todo en una
+ * transacción (AC-6, ADR-006). Repetir el mismo `idOperacion` devuelve lo ya registrado (AC-5).
+ */
+export async function registrarQueja(
+  sesion: SesionDto,
+  datos: DatosQueja & { idOperacion: string },
+  ahora = new Date(),
+) {
+  exigirRol(sesion, ...ROLES_VECINO);
+  const { errores, queja } = prepararQueja(datos);
+  if (queja.manzana && !errores.lugar && !(await manzanasDelBarrio()).includes(queja.manzana)) {
+    errores.lugar = "Elija una manzana de la lista.";
+  }
+  if (!errores.evidencias) {
+    const propias = await archivosSubidosPor(sesion.usuarioId, USO_EVIDENCIA, queja.evidencias);
+    if (queja.evidencias.some((id) => !propias.has(id))) {
+      errores.evidencias = "Vuelva a adjuntar la foto o el video: no pudimos encontrarlo.";
+    }
+  }
+  if (Object.keys(errores).length) throw new ErrorValidacion(undefined, errores);
+
+  const previa = await buscarPorIdOperacion(datos.idOperacion);
+  if (previa) return { queja: quejaADto(previa), creada: false };
+
+  const directiva = await directivaParaAvisar();
+  const creada = await prisma.$transaction(async (tx) => {
+    const numero = await siguienteNumero(tx);
+    const fila = await crearQueja(tx, {
+      ...queja,
+      numero,
+      codigoTicket: codigoTicket(anioEnLima(ahora), numero, sufijoAleatorio(randomInt)),
+      fechaRegistro: ahora,
+      denuncianteId: sesion.usuarioId,
+      consentimientoVersion: versionDePolitica(),
+      consentimientoEn: ahora,
+      idOperacion: datos.idOperacion,
+    });
+    const lugar = lugarEnTexto(fila.manzana, fila.referencia);
+    // El aviso a la directiva no lleva el código ni el nombre de quien reporta (HU-QUE-04 CA2).
+    await encolarAvisos(
+      directiva.map((destinatarioId) => ({
+        destinatarioId,
+        tipo: "REPORTES" as const,
+        titulo: "Llegó un reporte nuevo",
+        texto: `${numeroVisible(numero)} · ${CATEGORIAS[fila.categoria]} en ${lugar}. Revíselo en Incidentes.`,
+      })),
+      tx,
+    );
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "registrar_queja",
+        entidad: "Queja",
+        entidadId: fila.id,
+        antes: null,
+        despues: {
+          numero,
+          categoria: fila.categoria,
+          lugar,
+          evidencias: fila.evidencias.length,
+          consentimiento: fila.consentimientoVersion,
+        },
+      },
+      tx,
+    );
+    return fila;
+  });
+  return { queja: quejaADto(creada), creada: true };
+}
+
+/** Los reportes de quien pregunta, los más nuevos arriba (VEC-QUE-01, "Mis reportes"). */
+export async function misQuejas(sesion: SesionDto) {
+  exigirRol(sesion, ...ROLES_VECINO);
+  return (await quejasDe(sesion.usuarioId)).map(quejaADto);
+}
+
+export const FILTROS_BANDEJA = {
+  todos: { etiqueta: "Todos", estados: undefined },
+  porEvaluar: { etiqueta: "Por evaluar", estados: ["RECIBIDO"] },
+  enRevision: { etiqueta: "En revisión", estados: ["EN_REVISION"] },
+  cerrados: { etiqueta: "Cerrados", estados: ["RESUELTO", "DERIVADO_ENTIDAD_EXTERNA", "RECHAZADO"] },
+} as const satisfies Record<string, { etiqueta: string; estados?: EstadoQueja[] }>;
+export type FiltroBandeja = keyof typeof FILTROS_BANDEJA;
+
+/**
+ * La bandeja de la directiva (DIR-QUE-01, HU-QUE-04): todos los reportes, los más nuevos arriba, con su
+ * número, estado inicial y fecha y hora de llegada. No muestra quién reportó: eso se ve al evaluarlo.
+ */
+export async function bandejaDeQuejas(sesion: SesionDto, filtro: FiltroBandeja = "todos") {
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
+  const estados = FILTROS_BANDEJA[filtro].estados;
+  const [filas, conteo] = await Promise.all([
+    listarQuejas(estados ? [...estados] : undefined),
+    contarPorEstado(),
+  ]);
+  return {
+    conteo: {
+      total: Object.values(conteo).reduce((a, b) => a + b, 0),
+      porEvaluar: conteo.RECIBIDO ?? 0,
+      enRevision: conteo.EN_REVISION ?? 0,
+    },
+    quejas: filas.map((q) => ({
+      id: q.id,
+      numero: numeroVisible(q.numero),
+      categoria: q.categoria,
+      categoriaTexto: CATEGORIAS[q.categoria],
+      lugar: lugarEnTexto(q.manzana, q.referencia),
+      estado: q.estado,
+      estadoTexto: ESTADOS[q.estado],
+      fechaRegistro: q.fechaRegistro.toISOString(),
+    })),
+  };
+}
+
+/** Lo que el resumen de la directiva muestra en "Para atender" (DIR-INI-01, HU-QUE-04 CA2). */
+export async function quejasPorAtender(sesion: SesionDto) {
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
+  const conteo = await contarPorEstado();
+  return { porEvaluar: conteo.RECIBIDO ?? 0, enRevision: conteo.EN_REVISION ?? 0 };
+}

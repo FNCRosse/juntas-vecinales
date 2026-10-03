@@ -1,0 +1,38 @@
+// @HU-QUE-01 @HU-QUE-04
+import { prisma } from "@/compartido/bd/cliente";
+import { VERSION_POLITICA } from "@/modulos/identidad/dominio/politica";
+
+// Puerto para M3: lo que incidencias necesita saber del barrio y de las personas, sin leer las tablas
+// de identidad (ARQUITECTURA §3).
+
+/** La versión vigente de la política de privacidad: la que acepta quien registra una queja (HU-QUE-01 CA1). */
+export const versionDePolitica = () => VERSION_POLITICA;
+
+/** Las manzanas del padrón, en orden: son los lugares que se eligen al reportar. */
+export async function manzanasDelBarrio() {
+  const filas = await prisma.predio.findMany({
+    distinct: ["manzana"],
+    select: { manzana: true },
+    orderBy: { manzana: "asc" },
+  });
+  return filas.map((f) => f.manzana);
+}
+
+/** La manzana donde vive hoy la persona, para "Cerca de mi casa"; null si no tiene residencia abierta. */
+export async function manzanaDe(usuarioId: string) {
+  const residencia = await prisma.residencia.findFirst({
+    where: { usuarioId, fechaFin: null },
+    select: { predio: { select: { manzana: true } } },
+  });
+  return residencia?.predio.manzana ?? null;
+}
+
+/** A quién avisar de un reporte nuevo (HU-QUE-04 CA2): la directiva y los mediadores activos. */
+export async function directivaParaAvisar() {
+  const personas = await prisma.usuario.findMany({
+    where: { estado: "ACTIVA", roles: { hasSome: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] } },
+    select: { id: true },
+    orderBy: { nombreCompleto: "asc" },
+  });
+  return personas.map((p) => p.id);
+}

@@ -16,7 +16,7 @@ describe("@HU-ASA-12 Historial público de actas y balances", () => {
   it("@HU-ASA-12 CA1 CA2 CA3 el vecino ve actas y balances del evento más nuevo al más antiguo, en teléfono y en modo Senior", () => {
     const ACTA = `Asamblea histórica ${sufijo}`;
     const BALANCE = `Bingo histórico ${sufijo}`;
-    cy.task<string>("comprobanteDePrueba", { dni: "40000002" }).then((archivoId) => {
+    cy.task<string>("archivoDePrueba", { dni: "40000002" }).then((archivoId) => {
       // Fechas lejanas en el pasado: el historial de pruebas puede tener otras publicaciones más nuevas.
       cy.request("POST", "/api/transparencia/actas", {
         titulo: ACTA,

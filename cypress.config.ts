@@ -59,9 +59,9 @@ export default defineConfig({
             await cliente.end();
           }
         },
-        // Un comprobante ya "subido" para esa persona: el CI no habla con R2 (docs/PRUEBAS.md §2), así
-        // que la prueba simula la subida y publica el balance con este archivo. Solo la BD de pruebas.
-        async comprobanteDePrueba({ dni }: { dni: string }) {
+        // Un archivo ya "subido" por esa persona (un comprobante o la evidencia de una queja): el CI no
+        // habla con R2 (docs/PRUEBAS.md §2), así que la prueba simula la subida y usa este. Solo la BD de pruebas.
+        async archivoDePrueba({ dni, uso = "comprobante_egreso" }: { dni: string; uso?: string }) {
           const cliente = new Client({ connectionString: process.env.DATABASE_URL });
           await cliente.connect();
           try {
@@ -71,9 +71,9 @@ export default defineConfig({
             );
             const { rows: archivo } = await cliente.query<{ id: string }>(
               `INSERT INTO nucleo_archivos (id, clave, tipo, tamano, uso, "subidoPor")
-               VALUES (gen_random_uuid(), 'comprobantes/' || gen_random_uuid() || '.jpg', 'image/jpeg', 1000, 'comprobante_egreso', $1)
+               VALUES (gen_random_uuid(), 'pruebas/' || gen_random_uuid() || '.jpg', 'image/jpeg', 1000, $2, $1)
                RETURNING id`,
-              [rows[0].id],
+              [rows[0].id, uso],
             );
             return archivo[0].id;
           } finally {
