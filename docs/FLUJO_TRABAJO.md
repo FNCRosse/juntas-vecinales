@@ -41,13 +41,14 @@ Claude implementa una HU tras otra, en el orden de [PLAN.md](PLAN.md), sin pedir
 Cuando todas las casillas del módulo están marcadas:
 
 1. Corre la suite completa en `main` y `npm run matriz`.
-2. Crea `docs/evidencias/M<n>.md` (o `F0b.md`) desde [PLANTILLA.md](evidencias/PLANTILLA.md) con:
+2. Borra en Neon las ramas de preview de los PR ya cerrados (el plan gratuito limita las ramas y la integración con Vercel falla al llegar al tope).
+3. Crea `docs/evidencias/M<n>.md` (o `F0b.md`) desde [PLANTILLA.md](evidencias/PLANTILLA.md) con:
    - el enlace a la corrida del CI en `main` después del último merge;
    - los números de cobertura (líneas, ramas, funciones; global y del módulo);
    - la matriz HU → código → prueba del módulo (extracto de `docs/evidencias/matriz-hu.md`);
    - el reporte axe por pantalla (pantalla, modo, tamaño, violaciones);
    - capturas de cada pantalla del módulo en teléfono y en modo Senior, tomadas con el navegador integrado sobre producción, en `docs/evidencias/capturas/M<n>/<id-pantalla>-<modo>.png`;
    - la URL de producción y lo que quedó diferido con su motivo.
-3. Abre el PR `docs(evidencias): cierre de M<n>`, espera el CI verde y haz el merge.
-4. `graphify update .`
-5. **Detente.** Entrega a la autora el resumen y la URL de producción, y espera su "aprobado" antes de empezar el siguiente módulo.
+4. Abre el PR `docs(evidencias): cierre de M<n>`, espera el CI verde y haz el merge.
+5. `graphify update .`
+6. **Detente.** Entrega a la autora el resumen y la URL de producción, y espera su "aprobado" antes de empezar el siguiente módulo.
