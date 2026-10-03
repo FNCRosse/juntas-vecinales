@@ -61,4 +61,45 @@ describe("@HU-QUE-05 @HU-QUE-06 Gestión de un reporte por la directiva", () => 
       },
     );
   });
+
+  it("@HU-QUE-05 CA2 @HU-QUE-06 CA1 CA2 CA3 la directiva admite con prioridad, registra la mediación y cierra; quien reportó recibe el detalle", () => {
+    reporteNuevo("Marco Díaz León", "Música muy fuerte todas las noches").then(
+      (queja: { id: string; codigo: string }) => {
+        entrarComoMarta();
+        cy.viewport(1280, 900);
+        cy.visit(`/directiva/incidentes/${queja.id}`);
+        cy.esperarHidratacion("Revisar la decisión");
+        cy.contains("label", "Procede").click();
+        cy.contains("label", "Alta").click();
+        cy.contains("button", "Revisar la decisión").click();
+        cy.contains("button", "Sí, pasar a En revisión").click();
+        cy.contains("Procede, con prioridad alta.").should("exist");
+        cy.contains("h2", "Registrar lo que se hizo").should("exist");
+        cy.esperarHidratacion("Revisar y cerrar el caso").click();
+        cy.get("#campo-detalle-error").should("contain.text", "Escriba qué se hizo");
+        cy.contains("label", "Mediación en persona, con acuerdo").click();
+        cy.get("#campo-detalle").type(
+          "Conversamos con el vecino y acordó bajar la música desde las 10 p. m.",
+        );
+        cy.revisarAccesibilidad("registrar-solucion-normal");
+        cy.contains("button", "Revisar y cerrar el caso").click();
+        cy.get("h2").should("contain.text", "¿Desea cerrar el caso como resuelto?");
+        cy.revisarAccesibilidad("cerrar-resuelto-normal");
+        cy.contains("button", "Sí, cerrar como resuelto").click();
+        cy.contains("Resuelto").should("exist");
+        cy.contains("strong", "Mediación en persona, con acuerdo").should("exist");
+        cy.clearCookies();
+        cy.visit("/seguimiento");
+        cy.esperarHidratacion("Buscar mi reporte");
+        cy.get("#campo-codigo").type(queja.codigo);
+        cy.contains("button", "Buscar mi reporte").click();
+        cy.contains('[role="status"]', "Su reporte se resolvió").should(
+          "contain.text",
+          "acordó bajar la música",
+        );
+        cy.contains("li", "3. Resuelto").should("contain.text", "Hecho");
+        cy.revisarAccesibilidad("avance-resuelto-normal");
+      },
+    );
+  });
 });

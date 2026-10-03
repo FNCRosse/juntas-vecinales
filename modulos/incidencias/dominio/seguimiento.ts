@@ -56,7 +56,14 @@ export function pasosDelAvance(estado: Estado, fechaRegistro: string): Paso[] {
 }
 
 /** La novedad que encabeza el avance (VEC-QUE-08), en palabras; ninguna mientras espera revisión. */
-export function novedadDelReporte(estado: Estado, motivoRechazo: string | null) {
+export function novedadDelReporte(
+  estado: Estado,
+  motivoRechazo: string | null,
+  solucion: string | null = null,
+) {
+  if (estado === "RESUELTO") {
+    return { tipo: "exito" as const, titulo: "Su reporte se resolvió", texto: solucion ?? "" };
+  }
   if (estado === "EN_REVISION") {
     return {
       tipo: "info" as const,

@@ -8,10 +8,11 @@ import { ErrorNoEncontrado } from "@/compartido/errores";
 import { fechaYHora } from "@/compartido/fechas";
 import { verQuejaParaGestion } from "@/modulos/incidencias/aplicacion/gestion";
 import { EvaluarReporte } from "./EvaluarReporte";
+import { RegistrarSolucion } from "./RegistrarSolucion";
 
 export const metadata: Metadata = { title: "Evaluar un reporte" };
 
-// DIR-QUE-02 y DIR-QUE-03 (HU-QUE-05): lo que se reportó, sus evidencias y la decisión de la directiva.
+// DIR-QUE-02 a DIR-QUE-05 (HU-QUE-05, HU-QUE-06): lo que se reportó, sus evidencias y la decisión de la directiva.
 export default async function ReporteDirectiva({ params }: { params: Promise<{ id: string }> }) {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
   const q = await verQuejaParaGestion(sesion, (await params).id).catch((e) => {
@@ -101,7 +102,19 @@ export default async function ReporteDirectiva({ params }: { params: Promise<{ i
           {q.prioridad && <p>Procede, con prioridad {q.prioridad.toLowerCase()}.</p>}
           {q.motivoRechazo && <p>No procede: {q.motivoRechazo}</p>}
           {q.evaluadaPor && <p className="text-texto-secundario">Lo evaluó {q.evaluadaPor}.</p>}
+          {q.acciones.map((a) => (
+            <div key={a.fecha} className="flex flex-col gap-1 border-t border-borde-sutil pt-2">
+              <strong>{a.medida}</strong>
+              <p>{a.detalle}</p>
+              <p className="text-texto-secundario">
+                {a.responsable} · {fechaYHora(new Date(a.fecha))}
+              </p>
+            </div>
+          ))}
         </section>
+      )}
+      {q.estado === "EN_REVISION" && (
+        <RegistrarSolucion id={q.id} numero={q.numero} categoria={q.categoria} />
       )}
     </div>
   );
