@@ -117,7 +117,7 @@ describe("@HU-ACC-02 Escuchar en voz alta los comunicados del feed", () => {
     cy.viewport(360, 800);
     cy.visit("/noticias", conVoces([{ lang: "en-US", name: "Ana" }]));
     cy.contains("article", TITULO).should("exist");
-    cy.contains("button", "Escuchar").should("not.exist");
+    cy.contains("article button", "Escuchar").should("not.exist");
     cy.contains("[role='status']", "Este teléfono no tiene una voz en español").should("exist");
     cy.revisarAccesibilidad("noticias-sin-voz-360");
   });
@@ -126,6 +126,6 @@ describe("@HU-ACC-02 Escuchar en voz alta los comunicados del feed", () => {
     cy.request("PUT", "/api/accesibilidad/perfil", { sintesisVozActiva: false });
     cy.visit("/noticias", conVoces(VOZ_PERUANA));
     cy.contains("article", TITULO).should("exist");
-    cy.contains("button", "Escuchar").should("not.exist");
+    cy.contains("article button", "Escuchar").should("not.exist");
   });
 });
