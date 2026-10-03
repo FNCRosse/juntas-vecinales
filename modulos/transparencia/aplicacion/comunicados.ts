@@ -2,9 +2,8 @@
 import { prisma } from "@/compartido/bd/cliente";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { ErrorValidacion } from "@/compartido/errores";
-import { encolarAvisos } from "@/compartido/notificaciones/encolar";
-import { vecinosDeLaComunidad } from "@/modulos/identidad/aplicacion/comunidad";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
+import { avisarALaComunidad } from "./avisarComunidad";
 import {
   type DatosComunicado,
   ordenarNoticias,
@@ -54,14 +53,8 @@ export async function publicarComunicado(
       autor: sesion.nombreCompleto,
       fechaPublicacion: ahora,
     });
-    const destinatarios = await vecinosDeLaComunidad(tx);
-    await encolarAvisos(
-      destinatarios.map((destinatarioId) => ({
-        destinatarioId,
-        tipo: "NOTICIAS" as const,
-        titulo: comunicado.titulo,
-        texto: comunicado.cuerpo,
-      })),
+    const avisados = await avisarALaComunidad(
+      { tipo: "NOTICIAS", titulo: comunicado.titulo, texto: comunicado.cuerpo },
       tx,
     );
     await registrarAuditoria(
@@ -71,7 +64,7 @@ export async function publicarComunicado(
         entidad: "Comunicado",
         entidadId: fila.id,
         antes: null,
-        despues: { titulo: comunicado.titulo, urgencia: comunicado.urgencia, avisados: destinatarios.length },
+        despues: { titulo: comunicado.titulo, urgencia: comunicado.urgencia, avisados },
       },
       tx,
     );

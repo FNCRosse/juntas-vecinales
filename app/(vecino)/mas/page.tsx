@@ -20,6 +20,9 @@ export default async function MasOpciones() {
         <TarjetaEnlace href="/noticias" titulo="Noticias de la junta">
           <span>Los comunicados de la directiva: cortes de servicio, seguridad y trámites.</span>
         </TarjetaEnlace>
+        <TarjetaEnlace href="/transparencia" titulo="Actas y balances">
+          <span>Lo que acordó la asamblea, con su PDF para descargar.</span>
+        </TarjetaEnlace>
         <TarjetaEnlace href="/avisos" titulo="Avisos">
           <span>
             {sinLeer

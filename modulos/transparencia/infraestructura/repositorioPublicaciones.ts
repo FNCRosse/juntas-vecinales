@@ -36,3 +36,47 @@ export async function listarComunicados() {
     take: 100,
   });
 }
+
+const conActa = { acta: true } as const;
+
+export async function buscarActaPorIdOperacion(idOperacion: string) {
+  return prisma.publicacion.findFirst({ where: { idOperacion, tipo: "ACTA" }, include: conActa });
+}
+
+export async function crearActa(
+  tx: Transaccion,
+  datos: {
+    idOperacion: string;
+    titulo: string;
+    fechaAsamblea: Date;
+    acuerdos: string[];
+    compromisos: string[];
+    conclusiones: string;
+    autorId: string;
+    autor: string;
+    fechaPublicacion: Date;
+  },
+) {
+  const { fechaAsamblea, acuerdos, compromisos, conclusiones, ...publicacion } = datos;
+  return tx.publicacion.create({
+    data: {
+      ...publicacion,
+      tipo: "ACTA",
+      acta: { create: { fechaAsamblea, acuerdos, compromisos, conclusiones } },
+    },
+    include: conActa,
+  });
+}
+
+export async function buscarActa(id: string) {
+  return prisma.publicacion.findFirst({ where: { id, tipo: "ACTA" }, include: conActa });
+}
+
+export async function listarActas() {
+  return prisma.publicacion.findMany({
+    where: { tipo: "ACTA" },
+    include: conActa,
+    orderBy: { fechaPublicacion: "desc" },
+    take: 100,
+  });
+}

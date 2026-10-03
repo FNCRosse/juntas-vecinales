@@ -2,6 +2,7 @@
 
 enum TipoPublicacion {
   COMUNICADO
+  ACTA
 }
 
 enum NivelUrgencia {
@@ -24,6 +25,7 @@ model Publicacion {
   correcciones     Publicacion[]      @relation("Correccion")
   idOperacion      String             @unique
   comunicado       ComunicadoGeneral?
+  acta             ActaDigital?
 
   @@index([fechaPublicacion])
   @@map("transparencia_publicaciones")
@@ -36,4 +38,17 @@ model ComunicadoGeneral {
   urgencia      NivelUrgencia
 
   @@map("transparencia_comunicados")
+}
+
+// Acta de una asamblea (HU-ASA-11). Mientras M4 no exista se registra con título y fecha; en M4 se enlaza
+// a su asamblea. La aprobación de la directiva es la confirmación al publicar: no se guardan borradores.
+model ActaDigital {
+  publicacionId String      @id
+  publicacion   Publicacion @relation(fields: [publicacionId], references: [id])
+  fechaAsamblea DateTime
+  acuerdos      String[]
+  compromisos   String[]
+  conclusiones  String
+
+  @@map("transparencia_actas")
 }

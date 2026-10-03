@@ -3,8 +3,12 @@ import PDFDocument from "pdfkit";
 // Adaptador de PDF (docs/BACKEND.md §8): pdfkit con PDF etiquetado y en español, para que el lector
 // de pantalla lea los títulos y el orden del documento.
 
-/** Una sección del documento: su título y pares "dato: valor". */
-export type SeccionPdf = { titulo: string; filas: [etiqueta: string, valor: string][] };
+/** Una sección del documento: su título, pares "dato: valor" y párrafos de texto corrido. */
+export type SeccionPdf = {
+  titulo: string;
+  filas?: [etiqueta: string, valor: string][];
+  parrafos?: string[];
+};
 
 export type DocumentoPdf = {
   titulo: string;
@@ -40,7 +44,10 @@ export function generarPdf({ titulo, subtitulos, secciones, pie }: DocumentoPdf)
     raiz.add(
       doc.struct("H2", {}, () => doc.font("Helvetica-Bold").fontSize(LETRA.seccion).text(seccion.titulo)),
     );
-    for (const [etiqueta, valor] of seccion.filas) {
+    for (const parrafo of seccion.parrafos ?? []) {
+      raiz.add(doc.struct("P", {}, () => doc.font("Helvetica").fontSize(LETRA.texto).text(parrafo)));
+    }
+    for (const [etiqueta, valor] of seccion.filas ?? []) {
       raiz.add(
         doc.struct("P", {}, () =>
           doc
