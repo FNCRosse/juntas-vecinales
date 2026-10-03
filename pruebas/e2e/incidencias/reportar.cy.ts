@@ -76,6 +76,7 @@ describe("@HU-QUE-01 @HU-QUE-04 Registrar una queja y emitir su ticket", () => {
     cy.visit("/directiva");
     cy.contains("a", "Incidentes por evaluar").should("exist");
     cy.revisarAccesibilidad("resumen-directiva-para-atender-normal");
+    cy.task("copiaInternaDeLaCola", { dni: "40000002" });
     cy.contains("a", "Ver todas las alertas de la directiva").click();
     cy.contains("article", "Llegó un reporte nuevo").should("contain.text", "Mz. F, frente al parque");
     cy.revisarAccesibilidad("alertas-directiva-normal");

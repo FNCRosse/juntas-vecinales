@@ -59,6 +59,27 @@ export default defineConfig({
             await cliente.end();
           }
         },
+        // Lo que haría el worker con los avisos pendientes de esa persona: escribir su copia interna
+        // (ADR-006). En el CI el worker no corre. Solo la BD de pruebas.
+        async copiaInternaDeLaCola({ dni }: { dni: string }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            await cliente.query(
+              `WITH pendientes AS (
+                 UPDATE nucleo_cola_avisos c SET estado = 'SIN_CANAL_EXTERNO'
+                 FROM identidad_usuarios u
+                 WHERE u.dni = $1 AND c."destinatarioId" = u.id AND c.estado = 'PENDIENTE'
+                 RETURNING c.*)
+               INSERT INTO nucleo_notificaciones (id, "destinatarioId", tipo, titulo, texto, "avisoId", "creadaEn")
+               SELECT gen_random_uuid(), "destinatarioId", tipo, titulo, texto, id, "creadoEn" FROM pendientes`,
+              [dni],
+            );
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
         // Un archivo ya "subido" por esa persona (un comprobante o la evidencia de una queja): el CI no
         // habla con R2 (docs/PRUEBAS.md §2), así que la prueba simula la subida y usa este. Solo la BD de pruebas.
         async archivoDePrueba({ dni, uso = "comprobante_egreso" }: { dni: string; uso?: string }) {
