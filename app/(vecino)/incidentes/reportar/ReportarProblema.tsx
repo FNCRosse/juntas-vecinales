@@ -1,8 +1,9 @@
 "use client";
-// @HU-QUE-01 @HU-QUE-02 @HU-QUE-04
+// @HU-QUE-01 @HU-QUE-02 @HU-QUE-04 @HU-QUE-09
 
 import {
   ArrowLeft,
+  ArrowRight,
   Camera,
   Check,
   CircleCheck,
@@ -192,8 +193,8 @@ export function ReportarProblema({
             </span>
           </div>
         </section>
-        <BotonEnlace href="/incidentes" icono={ArrowLeft}>
-          Volver a Incidentes
+        <BotonEnlace href={`/incidentes/${enviada.id}`} icono={ArrowRight}>
+          Ver el avance de mi reporte
         </BotonEnlace>
       </div>
     );
