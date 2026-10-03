@@ -13,6 +13,7 @@ import { MensajeEstado } from "./MensajeEstado";
 export function PasoConfirmacion({
   referencia,
   paso = "Paso 2 de 2",
+  nivel = 1,
   titulo,
   filas,
   efecto,
@@ -27,6 +28,8 @@ export function PasoConfirmacion({
   /** El título recibe el foco al llegar a este paso. */
   referencia?: RefObject<HTMLHeadingElement | null>;
   paso?: string;
+  /** 2 cuando el paso va dentro de una página que ya tiene su título (un reporte que se evalúa). */
+  nivel?: 1 | 2;
   titulo: string;
   filas: [etiqueta: string, valor: string][];
   efecto: string;
@@ -39,6 +42,7 @@ export function PasoConfirmacion({
   alCorregir: () => void;
   hrefCancelar: string;
 }) {
+  const Titulo = nivel === 1 ? "h1" : "h2";
   return (
     <div className="flex flex-col gap-6">
       <button
@@ -51,9 +55,9 @@ export function PasoConfirmacion({
       </button>
       <div className="flex flex-col gap-2">
         <p className="text-texto-secundario">{paso}</p>
-        <h1 ref={referencia} tabIndex={-1} className="text-titulo-1">
+        <Titulo ref={referencia} tabIndex={-1} className="text-titulo-1">
           {titulo}
-        </h1>
+        </Titulo>
       </div>
       <dl className="flex flex-col gap-3 rounded-control bg-fondo-suave p-4 senior:p-6">
         {filas.map(([etiqueta, valor]) => (

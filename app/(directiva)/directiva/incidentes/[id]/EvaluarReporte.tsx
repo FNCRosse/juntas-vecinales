@@ -69,6 +69,7 @@ export function EvaluarReporte({ id, numero, categoria }: { id: string; numero: 
     return (
       <PasoConfirmacion
         referencia={titulo}
+        nivel={2}
         titulo={
           admite ? "¿Desea pasar el reporte a En revisión?" : "¿Desea marcar el reporte como No procede?"
         }

@@ -43,7 +43,7 @@ describe("@HU-QUE-05 @HU-QUE-06 Gestión de un reporte por la directiva", () => 
         cy.contains('[role="status"]', "Se enviará una advertencia").should("exist");
         cy.get("#campo-motivo").type("No describe un problema del barrio.");
         cy.contains("button", "Revisar la decisión").click();
-        cy.get("h1").should("have.text", "¿Desea marcar el reporte como No procede?");
+        cy.get("h2").should("contain.text", "¿Desea marcar el reporte como No procede?");
         cy.revisarAccesibilidad("evaluar-confirmar-senior-360");
         cy.contains("button", "Sí, marcar como No procede").click();
         cy.contains("h2", "Decisión de la directiva").should("exist");
