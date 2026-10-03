@@ -1,6 +1,7 @@
 import { Bell, ChevronRight, Info } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaLarga, saludo } from "@/compartido/fechas";
 import { obtenerPerfil } from "@/modulos/accesibilidad/aplicacion/obtenerPerfil";
@@ -31,6 +32,9 @@ export default async function Inicio() {
           {fechaLarga(ahora)}
           {vivienda && ` · ${vivienda}`}
         </p>
+      </div>
+      <div className="flex flex-col gap-separacion md:flex-row">
+        <CambiarDePerfil sesion={sesion} actual="vecino" estilo="boton" />
       </div>
       <Link
         href="/avisos"

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { BotonCerrarSesion } from "@/app/_sesion/BotonCerrarSesion";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
@@ -21,6 +22,7 @@ export default async function MasOpciones() {
       <TarjetaEnlace href="/directiva/pedidos-de-ayuda" titulo="Pedidos de ayuda">
         <span>{pendientes ? `${pendientes} por atender` : "No hay pedidos por atender"}</span>
       </TarjetaEnlace>
+      <CambiarDePerfil sesion={sesion} actual="directiva" estilo="tarjeta" />
       <BotonCerrarSesion destino="/entrar/equipo" />
     </div>
   );
