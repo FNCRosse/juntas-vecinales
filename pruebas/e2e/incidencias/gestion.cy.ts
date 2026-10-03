@@ -83,7 +83,7 @@ describe("@HU-QUE-05 @HU-QUE-06 Gestión de un reporte por la directiva", () => 
         );
         cy.revisarAccesibilidad("registrar-solucion-normal");
         cy.contains("button", "Revisar y cerrar el caso").click();
-        cy.get("h1").should("have.text", "¿Desea cerrar el caso como resuelto?");
+        cy.get("h2").should("contain.text", "¿Desea cerrar el caso como resuelto?");
         cy.revisarAccesibilidad("cerrar-resuelto-normal");
         cy.contains("button", "Sí, cerrar como resuelto").click();
         cy.contains("Resuelto").should("exist");

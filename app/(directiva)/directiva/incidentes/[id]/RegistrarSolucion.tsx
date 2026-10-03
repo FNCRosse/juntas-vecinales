@@ -64,6 +64,7 @@ export function RegistrarSolucion({
     return (
       <PasoConfirmacion
         referencia={titulo}
+        nivel={2}
         titulo="¿Desea cerrar el caso como resuelto?"
         filas={[
           ["Reporte", `${numero} · ${categoria}`],
