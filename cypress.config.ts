@@ -80,6 +80,21 @@ export default defineConfig({
             await cliente.end();
           }
         },
+        // Deja a una persona del equipo con un solo rol: otra prueba (Equipo) cambia el de Pedro y el
+        // orden de los archivos no está garantizado. Solo la BD de pruebas.
+        async rolDePrueba({ dni, rol }: { dni: string; rol: string }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            await cliente.query(
+              `UPDATE identidad_usuarios SET roles = ARRAY[$2]::"NombreRol"[], estado = 'ACTIVA' WHERE dni = $1`,
+              [dni, rol],
+            );
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
         // Un archivo ya "subido" por esa persona (un comprobante o la evidencia de una queja): el CI no
         // habla con R2 (docs/PRUEBAS.md §2), así que la prueba simula la subida y usa este. Solo la BD de pruebas.
         async archivoDePrueba({ dni, uso = "comprobante_egreso" }: { dni: string; uso?: string }) {

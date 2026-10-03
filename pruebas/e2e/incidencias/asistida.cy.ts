@@ -4,6 +4,7 @@ export {};
 
 describe("@HU-QUE-03 Queja asistida por el mediador", () => {
   it("@HU-QUE-03 CA1 CA2 CA3 el mediador busca a la vecina, registra con anonimato y obtiene la constancia, en modo Senior", () => {
+    cy.task("rolDePrueba", { dni: "40000003", rol: "DIRECTIVO_MEDIADOR" });
     cy.clearCookies();
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
     cy.viewport(360, 800);
