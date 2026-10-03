@@ -73,7 +73,11 @@ export function BuscarConCodigo({ volver }: { volver: { href: string; texto: str
       </form>
       {avance && (
         <div ref={resultado} role="region" aria-label="Resultado de la búsqueda">
-          <AvanceReporte avance={avance} nivel={2} />
+          <AvanceReporte
+            avance={avance}
+            nivel={2}
+            hrefOficio={`/api/quejas/seguimiento/${encodeURIComponent(avance.codigo)}/oficio`}
+          />
         </div>
       )}
     </div>

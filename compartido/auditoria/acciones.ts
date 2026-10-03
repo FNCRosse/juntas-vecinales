@@ -37,6 +37,7 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   registrar_queja: { modulo: "Incidentes", texto: "Registró un reporte vecinal" },
   admitir_queja: { modulo: "Incidentes", texto: "Admitió un reporte vecinal" },
   resolver_queja: { modulo: "Incidentes", texto: "Cerró un reporte como resuelto" },
+  derivar_queja: { modulo: "Incidentes", texto: "Derivó un reporte a una entidad externa" },
   rechazar_queja: { modulo: "Incidentes", texto: "Rechazó un reporte vecinal" },
   registrar_queja_asistida: { modulo: "Incidentes", texto: "Registró un reporte por un vecino" },
   oponerse_ubicacion_exacta: { modulo: "Privacidad", texto: "Pidió no mostrar su ubicación exacta" },

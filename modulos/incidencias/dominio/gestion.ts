@@ -1,4 +1,4 @@
-// @HU-QUE-05 @HU-QUE-06
+// @HU-QUE-05 @HU-QUE-06 @HU-QUE-07
 import type { Estado } from "./queja";
 
 // Gestión de la queja por la directiva: qué decisión puede tomar en cada estado y qué dato exige.
@@ -67,3 +67,25 @@ export function prepararResolucion(
     errores.detalle = `Escriba el detalle en menos de ${MAXIMO_DETALLE} letras.`;
   return { errores, accion: { medida: datos.medida as Medida, detalle } };
 }
+
+export const ENTIDADES = {
+  PNP: "Policía Nacional del Perú (PNP)",
+  MUNICIPALIDAD: "Municipalidad",
+} as const;
+export type Entidad = keyof typeof ENTIDADES;
+
+/**
+ * Deriva a una entidad externa una falta o delito que excede a la junta (HU-QUE-07 CA1). Se puede derivar
+ * al evaluarlo o cuando ya está en revisión; nunca un reporte cerrado.
+ */
+export function prepararDerivacion(estado: Estado, entidad?: string | null) {
+  if (estado !== "RECIBIDO" && estado !== "EN_REVISION") return { errores: {}, noSePuede: true as const };
+  if (!entidad || !(entidad in ENTIDADES)) {
+    return { errores: { entidad: "Elija a qué entidad lo envía." }, entidad: null };
+  }
+  return { errores: {}, entidad: entidad as Entidad };
+}
+
+/** "N.° 015-2026-JVVF": el oficio con su correlativo y el año (prototipo DIR-QUE-06). */
+export const numeroDeOficio = (numero: number, anio: number) =>
+  `N.° ${String(numero).padStart(3, "0")}-${anio}-JVVF`;

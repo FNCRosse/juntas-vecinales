@@ -1,6 +1,12 @@
 import type { Transaccion } from "@/compartido/bd/cliente";
 import { prisma } from "@/compartido/bd/cliente";
-import type { CategoriaQueja, EstadoQueja, MedidaCorrectiva, Prisma } from "@/compartido/bd/generado/client";
+import type {
+  CategoriaQueja,
+  EntidadExterna,
+  EstadoQueja,
+  MedidaCorrectiva,
+  Prisma,
+} from "@/compartido/bd/generado/client";
 
 const conEvidencias = { evidencias: { orderBy: { orden: "asc" } } } as const;
 
@@ -81,6 +87,7 @@ export async function buscarParaGestion(id: string) {
       evidencias: { orderBy: { orden: "asc" }, include: { archivo: true } },
       identidadProtegida: true,
       acciones: { orderBy: { fecha: "asc" } },
+      expediente: true,
     },
   });
 }
@@ -101,4 +108,11 @@ export async function anotarAccion(
   datos: { quejaId: string; medida: MedidaCorrectiva; detalle: string; fecha: Date; responsableId: string },
 ) {
   return tx.accionCorrectiva.create({ data: datos });
+}
+
+export async function abrirExpediente(
+  tx: Transaccion,
+  datos: { quejaId: string; entidad: EntidadExterna; fecha: Date; responsableId: string },
+) {
+  return tx.expedienteDerivacion.create({ data: datos });
 }

@@ -1,5 +1,5 @@
-// @HU-QUE-05 @HU-QUE-09
-import { CircleCheck, CircleDashed, Clock, Info } from "lucide-react";
+// @HU-QUE-05 @HU-QUE-07 @HU-QUE-09
+import { CircleCheck, CircleDashed, Clock, FileText, Info } from "lucide-react";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import type { AvanceDto } from "@/modulos/incidencias/aplicacion/seguimiento";
 
@@ -12,7 +12,16 @@ const ICONO = {
   pendiente: { Icono: CircleDashed, clase: "text-texto-secundario", texto: "Todavía no" },
 } as const;
 
-export function AvanceReporte({ avance, nivel = 1 }: { avance: AvanceDto; nivel?: 1 | 2 }) {
+export function AvanceReporte({
+  avance,
+  hrefOficio,
+  nivel = 1,
+}: {
+  avance: AvanceDto;
+  /** Dónde descargar el oficio si el reporte se derivó (HU-QUE-07 CA3). */
+  hrefOficio: string;
+  nivel?: 1 | 2;
+}) {
   const Titulo = nivel === 1 ? "h1" : "h2";
   return (
     <div className="flex flex-col gap-6">
@@ -48,6 +57,15 @@ export function AvanceReporte({ avance, nivel = 1 }: { avance: AvanceDto; nivel?
           );
         })}
       </ol>
+      {avance.oficio && (
+        <a
+          href={hrefOficio}
+          className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
+        >
+          <FileText aria-hidden className="size-icono" />
+          Descargar el oficio {avance.oficio.oficio} (PDF)
+        </a>
+      )}
       <p>
         Le avisaremos aquí y por WhatsApp cada vez que cambie. Por su seguridad, aquí no mostramos datos de
         otras personas.

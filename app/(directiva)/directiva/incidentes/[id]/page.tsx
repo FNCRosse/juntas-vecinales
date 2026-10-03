@@ -1,8 +1,9 @@
-import { ChevronLeft, EyeOff, Image as Imagen, Info } from "lucide-react";
+import { ChevronLeft, EyeOff, FileText, Image as Imagen, Info, Send } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { ErrorNoEncontrado } from "@/compartido/errores";
 import { fechaYHora } from "@/compartido/fechas";
@@ -12,7 +13,7 @@ import { RegistrarSolucion } from "./RegistrarSolucion";
 
 export const metadata: Metadata = { title: "Evaluar un reporte" };
 
-// DIR-QUE-02 a DIR-QUE-05 (HU-QUE-05, HU-QUE-06): lo que se reportó, sus evidencias y la decisión de la directiva.
+// DIR-QUE-02 a DIR-QUE-05 (HU-QUE-05, HU-QUE-06) y el oficio de la derivación (HU-QUE-07): lo que se reportó, sus evidencias y la decisión de la directiva.
 export default async function ReporteDirectiva({ params }: { params: Promise<{ id: string }> }) {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
   const q = await verQuejaParaGestion(sesion, (await params).id).catch((e) => {
@@ -102,6 +103,20 @@ export default async function ReporteDirectiva({ params }: { params: Promise<{ i
           {q.prioridad && <p>Procede, con prioridad {q.prioridad.toLowerCase()}.</p>}
           {q.motivoRechazo && <p>No procede: {q.motivoRechazo}</p>}
           {q.evaluadaPor && <p className="text-texto-secundario">Lo evaluó {q.evaluadaPor}.</p>}
+          {q.oficio && (
+            <>
+              <p>
+                Derivado a {q.oficio.entidad} con el oficio {q.oficio.numero}.
+              </p>
+              <a
+                href={`/api/quejas/${q.id}/oficio`}
+                className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
+              >
+                <FileText aria-hidden className="size-icono" />
+                Descargar el oficio y el expediente (PDF)
+              </a>
+            </>
+          )}
           {q.acciones.map((a) => (
             <div key={a.fecha} className="flex flex-col gap-1 border-t border-borde-sutil pt-2">
               <strong>{a.medida}</strong>
@@ -114,7 +129,12 @@ export default async function ReporteDirectiva({ params }: { params: Promise<{ i
         </section>
       )}
       {q.estado === "EN_REVISION" && (
-        <RegistrarSolucion id={q.id} numero={q.numero} categoria={q.categoria} />
+        <>
+          <RegistrarSolucion id={q.id} numero={q.numero} categoria={q.categoria} />
+          <BotonEnlace href={`/directiva/incidentes/${q.id}/derivar`} variante="secundario" icono={Send}>
+            Derivar a la PNP o la Municipalidad
+          </BotonEnlace>
+        </>
       )}
     </div>
   );

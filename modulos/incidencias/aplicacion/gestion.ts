@@ -18,6 +18,7 @@ import {
   cambiarSiSigueEn,
 } from "@/modulos/incidencias/infraestructura/repositorioQuejas";
 import { avisarAlDenunciante } from "./avisarDenunciante";
+import { oficioDe } from "./derivacion";
 import { ANONIMO } from "./quejas";
 
 const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
@@ -61,6 +62,7 @@ export async function verQuejaParaGestion(sesion: SesionDto, id: string) {
     prioridad: q.prioridad ? PRIORIDADES[q.prioridad] : null,
     evaluadaPor: nombre(q.evaluadaPor),
     motivoRechazo: q.motivoRechazo,
+    oficio: oficioDe(q),
     acciones: q.acciones.map((a) => ({
       medida: MEDIDAS[a.medida],
       detalle: a.detalle,

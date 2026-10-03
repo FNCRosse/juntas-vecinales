@@ -1,4 +1,4 @@
-// @HU-QUE-09
+// @HU-QUE-07 @HU-QUE-09
 import type { Estado } from "./queja";
 
 // SeguimientoTicket: el avance de un reporte en tres pasos, en palabras (VEC-QUE-08). Solo datos del
@@ -60,7 +60,15 @@ export function novedadDelReporte(
   estado: Estado,
   motivoRechazo: string | null,
   solucion: string | null = null,
+  derivacion: { entidad: string; oficio: string } | null = null,
 ) {
+  if (estado === "DERIVADO_ENTIDAD_EXTERNA" && derivacion) {
+    return {
+      tipo: "info" as const,
+      titulo: "Su reporte pasó a otra entidad",
+      texto: `La junta lo envió a ${derivacion.entidad} con el oficio ${derivacion.oficio}. Puede descargarlo abajo.`,
+    };
+  }
   if (estado === "RESUELTO") {
     return { tipo: "exito" as const, titulo: "Su reporte se resolvió", texto: solucion ?? "" };
   }
