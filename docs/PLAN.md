@@ -75,7 +75,7 @@ Punto de entrada del vecino:
 - [x] HU-GAR-20 Centro de notificaciones unificado
 - [x] HU-GAR-18 Preferencias de notificación
 - [x] HU-ACC-04 Pedir ayuda humana desde cualquier pantalla
-- [~] HU-GAR-19 Panel de inicio consolidado — `[~]` M1 dejó el panel (saludo, vivienda) y el bloque de avisos; se cierra en M5: M1 deja el panel y el bloque de avisos; M3, M4 y M5 añaden los bloques de queja, evento y deuda
+- [~] HU-GAR-19 Panel de inicio consolidado — `[~]` M1 dejó el panel (saludo, vivienda) y el bloque de avisos; M3, el de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); se cierra en M5: M1 deja el panel y el bloque de avisos; M3, M4 y M5 añaden los bloques de queja, evento y deuda
 
 Garita:
 - [x] HU-GAR-04 Pre-registrar visitas
@@ -86,10 +86,10 @@ Garita:
 
 Privacidad (ARCO) y contacto:
 - [x] HU-GAR-16 Bandeja ARCO del administrador con plazos
-- [~] HU-GAR-12 Copia de mis datos personales — `[~]` M1 dejó el PDF con las secciones de identidad y accesibilidad; se cierra en M5: cada módulo añade su sección a la copia
+- [~] HU-GAR-12 Copia de mis datos personales — `[~]` M1 dejó el PDF con las secciones de identidad y accesibilidad; M3, la de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); se cierra en M5: cada módulo añade su sección a la copia
 - [x] HU-GAR-13 Rectificación de datos
-- [~] HU-GAR-14 Cancelación de la cuenta — `[~]` M1 anonimiza identidad y accesibilidad; se cierra en M5: cada módulo añade su anonimización
-- [~] HU-GAR-15 Oposición a mostrar la ubicación exacta — `[~]` M1 deja la opción y `prefiereUbicacionGeneralizada(usuarioId)`; se cierra en M3, cuando el mapa la aplica
+- [~] HU-GAR-14 Cancelación de la cuenta — `[~]` M1 anonimiza identidad y accesibilidad; M3, los reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); se cierra en M5: cada módulo añade su anonimización
+- [x] HU-GAR-15 Oposición a mostrar la ubicación exacta — M1 dejó la opción; se cerró en M3: el mapa muestra todos los reportes solo por manzana (PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45))
 - [x] HU-GAR-17 Cambio de número de contacto verificado
 
 Trazabilidad:
@@ -117,19 +117,21 @@ Evidencia de cierre: [M2.md](evidencias/M2.md).
 
 ## M3 · Demandas e Incidentes
 
-- [ ] HU-QUE-01 Registrar una queja con consentimiento y evidencia
-- [ ] HU-QUE-04 Ticket correlativo y aviso a la directiva (acoplada a la anterior)
-- [ ] HU-QUE-02 Modo anónimo
-- [ ] HU-QUE-03 Queja asistida por el mediador
-- [ ] HU-QUE-09 Seguimiento por código
-- [ ] HU-QUE-05 Admisibilidad
-- [ ] HU-QUE-06 Acciones correctivas y cierre
-- [ ] HU-QUE-07 Expediente y derivación a PNP o Municipalidad
-- [ ] HU-QUE-08 Mapa de incidentes
-- [ ] HU-ACC-07 Alternativa textual del mapa, imágenes e íconos
-- [ ] HU-ACC-10 Tutorial guiado por sección — `[~]` se cierra en M5: M3 deja el mecanismo y el recorrido de Incidentes; M4 y M5 añaden Asambleas y Mi cuota
+- [x] HU-QUE-01 Registrar una queja con consentimiento y evidencia — PR [#38](https://github.com/FNCRosse/juntas-vecinales/pull/38)
+- [x] HU-QUE-04 Ticket correlativo y aviso a la directiva (acoplada a la anterior) — PR [#38](https://github.com/FNCRosse/juntas-vecinales/pull/38)
+- [x] HU-QUE-02 Modo anónimo — PR [#39](https://github.com/FNCRosse/juntas-vecinales/pull/39)
+- [x] HU-QUE-03 Queja asistida por el mediador — PR [#40](https://github.com/FNCRosse/juntas-vecinales/pull/40)
+- [x] HU-QUE-09 Seguimiento por código — PR [#41](https://github.com/FNCRosse/juntas-vecinales/pull/41)
+- [x] HU-QUE-05 Admisibilidad — PR [#42](https://github.com/FNCRosse/juntas-vecinales/pull/42)
+- [x] HU-QUE-06 Acciones correctivas y cierre — PR [#43](https://github.com/FNCRosse/juntas-vecinales/pull/43)
+- [x] HU-QUE-07 Expediente y derivación a PNP o Municipalidad — PR [#44](https://github.com/FNCRosse/juntas-vecinales/pull/44)
+- [x] HU-QUE-08 Mapa de incidentes — PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45)
+- [x] HU-ACC-07 Alternativa textual del mapa, imágenes e íconos — PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45)
+- [~] HU-ACC-10 Tutorial guiado por sección — `[~]` se cierra en M5: M3 dejó el mecanismo y la guía de Incidentes (PR [#46](https://github.com/FNCRosse/juntas-vecinales/pull/46)); M4 y M5 añaden Asambleas y Mi cuota
 
-Al cerrar M3 también: cerrar la oposición de ubicación de M1, añadir el bloque de quejas al panel de inicio y la sección de quejas a la copia y la anonimización ARCO.
+Al cerrar M3 también: cerrar la oposición de ubicación de M1, añadir el bloque de quejas al panel de inicio y la sección de quejas a la copia y la anonimización ARCO. Hecho en PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45) (el mapa muestra todo por manzana) y PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47).
+
+Evidencia de cierre: [M3.md](evidencias/M3.md).
 
 **Pantallas:** DIR-INI-01–02 · DIR-QUE-01–10 · VEC-ACC-08, 11 · VEC-ASA-01 · VEC-AYU-03 · VEC-COB-01 · VEC-QUE-01–04, 06–10.
 **Riesgos:** fuga de identidad en anónimos (cifrado, avisos sin código ni detalle, ninguna pantalla que la revele); el mapa sin teselas externas (esquema por manzanas, ARQUITECTURA §7); videos pesados en R2.
