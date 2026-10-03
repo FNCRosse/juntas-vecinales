@@ -5,6 +5,7 @@ export {};
 
 const sufijo = String(Date.now()).slice(-6);
 const TITULO = `Asamblea de prueba ${sufijo}`;
+const TITULO_VECINO = `Asamblea para el vecino ${sufijo}`;
 
 describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
   beforeEach(() => {
@@ -54,7 +55,7 @@ describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
 
   it("@HU-ASA-11 CA2 CA3 en modo Senior el vecino ve el acta publicada y descarga su PDF", () => {
     cy.request("POST", "/api/transparencia/actas", {
-      titulo: TITULO,
+      titulo: TITULO_VECINO,
       fechaAsamblea: "2026-09-19",
       acuerdos: "Se aprobó la limpieza del parque.",
       compromisos: "",
@@ -67,7 +68,7 @@ describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
     cy.guardarModo("senior");
     cy.visit("/transparencia");
     cy.get("h1").should("have.text", "Actas y balances");
-    cy.contains("article", TITULO).within(() => {
+    cy.contains("article", TITULO_VECINO).within(() => {
       cy.contains("h3", "Acuerdos").should("exist");
       cy.contains("li", "Se aprobó la limpieza del parque.").should("exist");
       cy.contains("a", "Descargar el acta en PDF")
@@ -76,7 +77,7 @@ describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
     });
     cy.revisarAccesibilidad("actas-senior-360");
 
-    cy.contains("article", TITULO)
+    cy.contains("article", TITULO_VECINO)
       .contains("a", "Descargar el acta en PDF")
       .invoke("attr", "href")
       .then((href) =>
