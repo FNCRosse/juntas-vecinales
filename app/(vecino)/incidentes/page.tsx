@@ -4,14 +4,18 @@ import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { fechaLarga } from "@/compartido/fechas";
+import { mapaDeIncidentes } from "@/modulos/incidencias/aplicacion/mapa";
 import { misQuejas } from "@/modulos/incidencias/aplicacion/quejas";
+import { IncidentesDelBarrio, VISTAS, type Vista } from "./_componentes/IncidentesDelBarrio";
 
 export const metadata: Metadata = { title: "Incidentes del barrio" };
 
-// VEC-QUE-01 (HU-QUE-01, HU-QUE-04): reportar un problema y ver los reportes propios con su estado.
-export default async function Incidentes() {
+// VEC-QUE-01 a VEC-QUE-03 (HU-QUE-01, HU-QUE-04, HU-QUE-08): reportar un problema, ver los reportes propios
+// con su estado y los del barrio como lista, mapa o resumen.
+export default async function Incidentes({ searchParams }: { searchParams: Promise<{ vista?: string }> }) {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
-  const reportes = await misQuejas(sesion);
+  const { vista } = await searchParams;
+  const [reportes, mapa] = await Promise.all([misQuejas(sesion), mapaDeIncidentes(sesion)]);
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Incidentes del barrio</h1>
@@ -61,6 +65,7 @@ export default async function Incidentes() {
           Tengo un código de seguimiento
         </Link>
       </section>
+      <IncidentesDelBarrio mapa={mapa} vista={vista && vista in VISTAS ? (vista as Vista) : "lista"} />
     </div>
   );
 }
