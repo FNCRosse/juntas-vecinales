@@ -64,7 +64,9 @@ export default async function BandejaIncidentes({
                   {q.numero} · {fechaYHora(new Date(q.fechaRegistro))}
                 </span>
                 <h2 className="text-titulo-3">{q.categoriaTexto}</h2>
-                <span>{q.lugar}</span>
+                <span>
+                  {q.lugar} · {q.quien}
+                </span>
                 <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
                   <Info aria-hidden className="size-icono-pequeno" />
                   {q.estadoTexto}

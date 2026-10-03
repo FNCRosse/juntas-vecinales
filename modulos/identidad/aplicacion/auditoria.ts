@@ -1,5 +1,6 @@
 // @HU-GAR-26
 import {
+  ACTOR_ANONIMO,
   accionesDelModulo,
   ACCIONES,
   describirAccion,
@@ -60,6 +61,13 @@ function resumen(valores: unknown) {
  * más reciente a la más antigua (CA1), filtrables por módulo, acción y responsable (CA2). Solo lectura
  * (CA3): la tabla no admite cambios.
  */
+const responsable = (actorId: string | null, nombresDe: Map<string, string>) =>
+  actorId === ACTOR_ANONIMO
+    ? "Persona anónima"
+    : actorId
+      ? (nombresDe.get(actorId) ?? "Persona ya no registrada")
+      : SISTEMA;
+
 export async function auditoriaGlobal(sesion: SesionDto, filtros: FiltrosAuditoria = {}) {
   exigirRol(sesion, "ADMINISTRADOR");
   const modulo = MODULOS_AUDITORIA.find((m) => m === filtros.modulo);
@@ -86,7 +94,7 @@ export async function auditoriaGlobal(sesion: SesionDto, filtros: FiltrosAuditor
       return {
         id: f.id,
         fecha: fechaYHora(f.fecha),
-        responsable: f.actorId ? (nombresDe.get(f.actorId) ?? "Persona ya no registrada") : SISTEMA,
+        responsable: responsable(f.actorId, nombresDe),
         modulo: moduloDeAccion,
         texto,
         detalle: resumen(f.despues) ?? resumen(f.antes),
@@ -97,7 +105,7 @@ export async function auditoriaGlobal(sesion: SesionDto, filtros: FiltrosAuditor
     responsables: actores
       .map((id) => ({
         valor: id ?? "sistema",
-        texto: id ? (nombresDe.get(id) ?? "Persona ya no registrada") : SISTEMA,
+        texto: responsable(id, nombresDe),
       }))
       .sort((a, b) => a.texto.localeCompare(b.texto, "es")),
     acciones: Object.entries(ACCIONES)

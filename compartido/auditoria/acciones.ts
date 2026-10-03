@@ -1,6 +1,9 @@
 // Catálogo de acciones auditadas (HU-GAR-26 CA1 y CA2): de qué módulo viene cada una y cómo se lee en
 // la auditoría global. Cada módulo agrega aquí las acciones que registra.
 
+/** Actor de una acción hecha en modo anónimo (queja anónima, HU-QUE-02): nunca se guarda quién fue. */
+export const ACTOR_ANONIMO = "ANONIMO";
+
 export const MODULOS_AUDITORIA = [
   "Padrón",
   "Equipo",

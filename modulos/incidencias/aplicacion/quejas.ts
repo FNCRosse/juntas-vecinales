@@ -1,6 +1,7 @@
-// @HU-QUE-01 @HU-QUE-04
+// @HU-QUE-01 @HU-QUE-02 @HU-QUE-04
 import { randomInt } from "node:crypto";
 import { archivosSubidosPor } from "@/compartido/archivos/registro";
+import { ACTOR_ANONIMO } from "@/compartido/auditoria/acciones";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { prisma } from "@/compartido/bd/cliente";
 import type { EstadoQueja } from "@/compartido/bd/generado/client";
@@ -10,6 +11,7 @@ import {
   directivaParaAvisar,
   manzanaDe,
   manzanasDelBarrio,
+  nombresDe,
   versionDePolitica,
 } from "@/modulos/identidad/aplicacion/barrio";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
@@ -23,6 +25,7 @@ import {
   prepararQueja,
   sufijoAleatorio,
 } from "@/modulos/incidencias/dominio/queja";
+import { cifrar, hashDenunciante } from "@/modulos/incidencias/infraestructura/identidadProtegida";
 import {
   buscarPorIdOperacion,
   contarPorEstado,
@@ -55,6 +58,7 @@ export const quejaADto = (q: Fila) => ({
   estadoTexto: ESTADOS[q.estado],
   fechaRegistro: q.fechaRegistro.toISOString(),
   evidencias: q.evidencias.length,
+  esAnonimo: q.esAnonimo,
 });
 export type QuejaDto = ReturnType<typeof quejaADto>;
 
@@ -100,7 +104,11 @@ export async function registrarQueja(
       numero,
       codigoTicket: codigoTicket(anioEnLima(ahora), numero, sufijoAleatorio(randomInt)),
       fechaRegistro: ahora,
-      denuncianteId: sesion.usuarioId,
+      // Anónima: quien la envía queda solo cifrado (HU-QUE-02 CA2, R-09).
+      denuncianteId: queja.esAnonimo ? null : sesion.usuarioId,
+      identidad: queja.esAnonimo
+        ? { hashDenunciante: hashDenunciante(sesion.usuarioId), datosCifrados: cifrar(sesion.usuarioId) }
+        : null,
       consentimientoVersion: versionDePolitica(),
       consentimientoEn: ahora,
       idOperacion: datos.idOperacion,
@@ -118,7 +126,7 @@ export async function registrarQueja(
     );
     await registrarAuditoria(
       {
-        actorId: sesion.usuarioId,
+        actorId: queja.esAnonimo ? ACTOR_ANONIMO : sesion.usuarioId,
         accion: "registrar_queja",
         entidad: "Queja",
         entidadId: fila.id,
@@ -127,6 +135,7 @@ export async function registrarQueja(
           numero,
           categoria: fila.categoria,
           lugar,
+          anonimo: fila.esAnonimo,
           evidencias: fila.evidencias.length,
           consentimiento: fila.consentimientoVersion,
         },
@@ -141,7 +150,7 @@ export async function registrarQueja(
 /** Los reportes de quien pregunta, los más nuevos arriba (VEC-QUE-01, "Mis reportes"). */
 export async function misQuejas(sesion: SesionDto) {
   exigirRol(sesion, ...ROLES_VECINO);
-  return (await quejasDe(sesion.usuarioId)).map(quejaADto);
+  return (await quejasDe(sesion.usuarioId, hashDenunciante(sesion.usuarioId))).map(quejaADto);
 }
 
 export const FILTROS_BANDEJA = {
@@ -152,9 +161,17 @@ export const FILTROS_BANDEJA = {
 } as const satisfies Record<string, { etiqueta: string; estados?: EstadoQueja[] }>;
 export type FiltroBandeja = keyof typeof FILTROS_BANDEJA;
 
+/** Quién reportó, para la directiva: el nombre, o "Reporte anónimo" sin pista alguna (HU-QUE-02 CA2). */
+export const ANONIMO = "Reporte anónimo";
+async function quienReporta(filas: { esAnonimo: boolean; denuncianteId: string | null }[]) {
+  const nombres = await nombresDe(filas.flatMap((f) => (f.denuncianteId ? [f.denuncianteId] : [])));
+  return (f: { esAnonimo: boolean; denuncianteId: string | null }) =>
+    f.esAnonimo || !f.denuncianteId ? ANONIMO : (nombres.get(f.denuncianteId) ?? "Persona ya no registrada");
+}
+
 /**
  * La bandeja de la directiva (DIR-QUE-01, HU-QUE-04): todos los reportes, los más nuevos arriba, con su
- * número, estado inicial y fecha y hora de llegada. No muestra quién reportó: eso se ve al evaluarlo.
+ * número, quién lo envía, estado inicial y fecha y hora de llegada.
  */
 export async function bandejaDeQuejas(sesion: SesionDto, filtro: FiltroBandeja = "todos") {
   exigirRol(sesion, ...ROLES_DIRECTIVA);
@@ -163,6 +180,7 @@ export async function bandejaDeQuejas(sesion: SesionDto, filtro: FiltroBandeja =
     listarQuejas(estados ? [...estados] : undefined),
     contarPorEstado(),
   ]);
+  const quien = await quienReporta(filas);
   return {
     conteo: {
       total: Object.values(conteo).reduce((a, b) => a + b, 0),
@@ -175,6 +193,7 @@ export async function bandejaDeQuejas(sesion: SesionDto, filtro: FiltroBandeja =
       categoria: q.categoria,
       categoriaTexto: CATEGORIAS[q.categoria],
       lugar: lugarEnTexto(q.manzana, q.referencia),
+      quien: quien(q),
       estado: q.estado,
       estadoTexto: ESTADOS[q.estado],
       fechaRegistro: q.fechaRegistro.toISOString(),

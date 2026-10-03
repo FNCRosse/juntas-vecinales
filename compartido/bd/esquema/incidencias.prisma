@@ -19,25 +19,28 @@ enum EstadoQueja {
 // Queja o incidente vecinal (HU-QUE-01, 04). El lugar es la manzana del padrón (null: otro lugar del
 // barrio, descrito en la referencia); las coordenadas exactas son opcionales y nunca se muestran en el
 // mapa público. El consentimiento informado guarda la versión de la política aceptada y la fecha.
-// numero es el correlativo del ticket; codigoTicket le suma el año y un sufijo aleatorio (CLAUDE.md del
+// En una queja anónima (HU-QUE-02) denuncianteId queda vacío y quien la envió se guarda solo cifrado en
+// IdentidadProtegida. numero es el correlativo del ticket; codigoTicket le suma el año y un sufijo aleatorio (CLAUDE.md del
 // módulo). idOperacion lo genera el dispositivo y evita registrar dos veces al reintentar (AC-5).
 model Queja {
-  id                    String           @id @default(uuid())
-  numero                Int              @unique @default(autoincrement())
-  codigoTicket          String           @unique
+  id                    String              @id @default(uuid())
+  numero                Int                 @unique @default(autoincrement())
+  codigoTicket          String              @unique
   categoria             CategoriaQueja
   descripcion           String
   manzana               String?
   referencia            String?
   latitud               Float?
   longitud              Float?
-  estado                EstadoQueja      @default(RECIBIDO)
-  fechaRegistro         DateTime         @default(now())
-  denuncianteId         String
+  estado                EstadoQueja         @default(RECIBIDO)
+  fechaRegistro         DateTime            @default(now())
+  esAnonimo             Boolean             @default(false)
+  denuncianteId         String?
   consentimientoVersion String
   consentimientoEn      DateTime
-  idOperacion           String           @unique
+  idOperacion           String              @unique
   evidencias            EvidenciaQueja[]
+  identidadProtegida    IdentidadProtegida?
 
   @@index([denuncianteId])
   @@index([estado, fechaRegistro])
@@ -55,4 +58,16 @@ model EvidenciaQueja {
 
   @@index([quejaId])
   @@map("incidencias_evidencias")
+}
+
+// Quién envió una queja anónima (R-09): el id cifrado con AES-256-GCM y un HMAC para que el propio vecino
+// liste sus reportes. Ninguna pantalla lo muestra; el sistema lo descifra solo para avisarle.
+model IdentidadProtegida {
+  quejaId         String @id
+  queja           Queja  @relation(fields: [quejaId], references: [id])
+  hashDenunciante String
+  datosCifrados   String
+
+  @@index([hashDenunciante])
+  @@map("incidencias_identidades_protegidas")
 }

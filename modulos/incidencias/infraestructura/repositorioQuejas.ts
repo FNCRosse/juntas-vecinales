@@ -27,26 +27,30 @@ export async function crearQueja(
     latitud: number | null;
     longitud: number | null;
     fechaRegistro: Date;
-    denuncianteId: string;
+    esAnonimo: boolean;
+    denuncianteId: string | null;
+    identidad: { hashDenunciante: string; datosCifrados: string } | null;
     consentimientoVersion: string;
     consentimientoEn: Date;
     idOperacion: string;
     evidencias: string[];
   },
 ) {
-  const { evidencias, ...queja } = datos;
+  const { evidencias, identidad, ...queja } = datos;
   return tx.queja.create({
     data: {
       ...queja,
       evidencias: { create: evidencias.map((archivoId, orden) => ({ archivoId, orden })) },
+      ...(identidad && { identidadProtegida: { create: identidad } }),
     },
     include: conEvidencias,
   });
 }
 
-export async function quejasDe(denuncianteId: string) {
+/** Las quejas de una persona: las que llevan su nombre y las anónimas cuyo hash es el suyo. */
+export async function quejasDe(denuncianteId: string, hashDenunciante: string) {
   return prisma.queja.findMany({
-    where: { denuncianteId },
+    where: { OR: [{ denuncianteId }, { identidadProtegida: { hashDenunciante } }] },
     orderBy: [{ fechaRegistro: "desc" }, { numero: "desc" }],
     include: conEvidencias,
   });

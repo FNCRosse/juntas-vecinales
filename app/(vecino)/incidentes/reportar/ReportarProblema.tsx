@@ -1,11 +1,12 @@
 "use client";
-// @HU-QUE-01 @HU-QUE-04
+// @HU-QUE-01 @HU-QUE-02 @HU-QUE-04
 
 import {
   ArrowLeft,
   Camera,
   Check,
   CircleCheck,
+  EyeOff,
   House,
   Info,
   LocateFixed,
@@ -20,6 +21,7 @@ import { AreaTexto } from "@/componentes/a11y/AreaTexto";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo, MensajeDeCampo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { Interruptor } from "@/componentes/a11y/Interruptor";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
@@ -59,6 +61,7 @@ export function ReportarProblema({
   const [subiendo, setSubiendo] = useState<boolean>(false);
   const [fallaArchivo, setFallaArchivo] = useState<string>("");
   const [consentimiento, setConsentimiento] = useState<boolean>(false);
+  const [anonimo, setAnonimo] = useState<boolean>(false);
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [falla, setFalla] = useState<string | null>(null);
   const [enviando, setEnviando] = useState<boolean>(false);
@@ -142,6 +145,7 @@ export function ReportarProblema({
       longitud: lugar.longitud,
       evidencias: evidencias.map((e) => e.id),
       consentimiento,
+      esAnonimo: anonimo,
       idOperacion: idOperacion.current,
     });
     setEnviando(false);
@@ -181,7 +185,11 @@ export function ReportarProblema({
               Su <strong>código de seguimiento</strong> es:
             </span>
             <strong className="text-titulo-2 break-all">{enviada.codigo}</strong>
-            <span>Guárdelo. Con él puede ver el avance de su reporte.</span>
+            <span>
+              {enviada.esAnonimo
+                ? "Guárdelo. Con él puede ver el avance aunque haya enviado el reporte sin su nombre."
+                : "Guárdelo. Con él puede ver el avance de su reporte."}
+            </span>
           </div>
         </section>
         <BotonEnlace href="/incidentes" icono={ArrowLeft}>
@@ -201,7 +209,7 @@ export function ReportarProblema({
           ["Qué pasó", descripcion.trim()],
           ["Dónde", textoLugar(lugar)],
           ["Foto o video", evidencias.map((e) => e.nombre).join(", ")],
-          ["Quién lo envía", nombre],
+          ["Quién lo envía", anonimo ? "Sin su nombre (anónimo)" : nombre],
         ]}
         efecto="La directiva lo revisará y le avisaremos cada vez que avance. Puede corregir o cancelar ahora sin problema."
         textoConfirmar="Sí, enviar mi reporte"
@@ -371,6 +379,14 @@ export function ReportarProblema({
           Puede adjuntar hasta {MAXIMO_EVIDENCIAS} archivos.
         </p>
       </div>
+
+      <Interruptor
+        etiqueta="Enviar sin mi nombre (modo anónimo)"
+        descripcion="Nadie verá quién lo envió. Le daremos un código para seguirlo."
+        activo={anonimo}
+        alCambiar={setAnonimo}
+        icono={<EyeOff aria-hidden className="size-icono shrink-0 text-accion-primaria" />}
+      />
 
       <div id="campo-consentimiento" tabIndex={-1} className="flex flex-col gap-2">
         <label className="flex min-h-tactil cursor-pointer items-start gap-3 rounded-control border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie p-3 hover:bg-fondo-suave">
