@@ -31,7 +31,7 @@ describe("@HU-QUE-08 @HU-ACC-07 Mapa de incidentes", () => {
     cy.visit("/incidentes");
     cy.get('nav[aria-label="Ver incidentes como"] a[aria-current="true"]').should("contain.text", "Lista");
     cy.contains("li", "Cocheras o autos mal estacionados").should("contain.text", "Mz. B");
-    cy.get("main").should("not.contain.text", "lote 5");
+    cy.get('section[aria-labelledby="titulo-barrio"]').should("not.contain.text", "lote 5");
     cy.revisarAccesibilidad("incidentes-lista-senior-360");
 
     cy.contains("a", "Mapa").click();

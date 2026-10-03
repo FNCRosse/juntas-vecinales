@@ -39,6 +39,8 @@ const CALOR = {
   muchos: { clase: "bg-fondo-error border-borde-error", texto: "Muchos reportes" },
 } as const;
 
+const cantidad = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
+
 export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vista }) {
   const { totales } = mapa;
   return (
@@ -69,9 +71,10 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
         })}
       </nav>
       <p>
-        {totales.total === 1 ? "1 reporte" : `${totales.total} reportes`}: {totales.resueltos} resueltos,{" "}
-        {totales.derivados} derivados a otra entidad y {totales.enRevision} en revisión. Se muestran solo por
-        manzana, sin la casa de quien reportó.
+        {cantidad(totales.total, "reporte", "reportes")}:{" "}
+        {cantidad(totales.resueltos, "resuelto", "resueltos")},{" "}
+        {cantidad(totales.derivados, "derivado", "derivados")} a otra entidad y {totales.enRevision} en
+        revisión. Se muestran solo por manzana, sin la casa de quien reportó.
       </p>
 
       {vista === "lista" &&
