@@ -56,3 +56,28 @@ model SolicitudApoyo {
   @@index([estado, creadaEn])
   @@map("accesibilidad_solicitudes_apoyo")
 }
+
+// Secciones con guía propia (HU-ACC-10). M3 deja Incidentes; M4 y M5 agregan Asambleas y Mi cuota.
+enum SeccionGuia {
+  INCIDENTES
+}
+
+enum EstadoGuia {
+  EN_CURSO
+  PAUSADA
+  OMITIDA
+  COMPLETADA
+}
+
+// OnboardingGuiado (HU-ACC-10): hasta dónde llegó cada persona en la guía de cada sección. Sin fila, la
+// guía se ofrece; completada u omitida, ya no se ofrece sola (R-10), pero se puede volver a ver.
+model GuiaSeccion {
+  usuarioId     String
+  seccion       SeccionGuia
+  estado        EstadoGuia
+  paso          Int         @default(0)
+  actualizadaEn DateTime    @updatedAt
+
+  @@id([usuarioId, seccion])
+  @@map("accesibilidad_guias")
+}

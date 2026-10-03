@@ -1,9 +1,11 @@
 import { ChevronRight, Info, Megaphone, Search } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { OfertaDeGuia } from "@/app/_guias/OfertaDeGuia";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { fechaLarga } from "@/compartido/fechas";
+import { guiaDeSeccion } from "@/modulos/accesibilidad/aplicacion/guias";
 import { mapaDeIncidentes } from "@/modulos/incidencias/aplicacion/mapa";
 import { misQuejas } from "@/modulos/incidencias/aplicacion/quejas";
 import { IncidentesDelBarrio, VISTAS, type Vista } from "./_componentes/IncidentesDelBarrio";
@@ -15,10 +17,15 @@ export const metadata: Metadata = { title: "Incidentes del barrio" };
 export default async function Incidentes({ searchParams }: { searchParams: Promise<{ vista?: string }> }) {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
   const { vista } = await searchParams;
-  const [reportes, mapa] = await Promise.all([misQuejas(sesion), mapaDeIncidentes(sesion)]);
+  const [reportes, mapa, guia] = await Promise.all([
+    misQuejas(sesion),
+    mapaDeIncidentes(sesion),
+    guiaDeSeccion(sesion.usuarioId, "INCIDENTES"),
+  ]);
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Incidentes del barrio</h1>
+      {guia.ofrecer && <OfertaDeGuia seccion="INCIDENTES" enPausa={guia.estado === "PAUSADA"} />}
       <BotonEnlace href="/incidentes/reportar" icono={Megaphone} anchoCompleto>
         Reportar un problema
       </BotonEnlace>

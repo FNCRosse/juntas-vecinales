@@ -1,4 +1,4 @@
-import { CircleCheck, Clock, LifeBuoy } from "lucide-react";
+import { BookOpen, CircleCheck, Clock, LifeBuoy } from "lucide-react";
 import type { Metadata } from "next";
 import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
 import { exigirActor } from "@/app/_sesion/sesion";
@@ -8,18 +8,20 @@ import { InterruptorLetraGrande } from "@/componentes/a11y/InterruptorLetraGrand
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { obtenerPerfil } from "@/modulos/accesibilidad/aplicacion/obtenerPerfil";
 import { InterruptorVoz } from "@/app/_accesibilidad/InterruptorVoz";
+import { guiasDeUso } from "@/modulos/accesibilidad/aplicacion/guias";
 import { misSolicitudes } from "@/modulos/accesibilidad/aplicacion/mediacion";
 
 export const metadata: Metadata = { title: "Ayuda y accesibilidad" };
 
-// VEC-AYU-03 (HU-ACC-01, HU-ACC-02 CA1, HU-ACC-04 CA3): "Letra grande" y la lectura en voz alta también aquí y el estado de sus pedidos de
-// ayuda. Las guías llegan con HU-ACC-10.
+// VEC-AYU-03 (HU-ACC-01, HU-ACC-02 CA1, HU-ACC-04 CA3, HU-ACC-10 CA2): "Letra grande", la lectura en voz alta,
+// las guías de uso de cada sección y el estado de sus pedidos de ayuda.
 export default async function AyudaYAccesibilidad() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
-  const [pedidos, senior, perfil] = await Promise.all([
+  const [pedidos, senior, perfil, guias] = await Promise.all([
     misSolicitudes(sesion.usuarioId),
     modoSeniorAlRenderizar(),
     obtenerPerfil({ usuarioId: sesion.usuarioId }),
+    guiasDeUso(sesion.usuarioId),
   ]);
   return (
     <div className="flex flex-col gap-6">
@@ -33,6 +35,28 @@ export default async function AyudaYAccesibilidad() {
       <Tarjeta titulo="Lectura en voz alta">
         <p>El teléfono le lee las noticias de la junta, para que no tenga que leerlas en pantalla.</p>
         <InterruptorVoz activoAlInicio={perfil.sintesisVozActiva} />
+      </Tarjeta>
+      <Tarjeta titulo="Guías de uso">
+        <ul className="flex flex-col gap-3">
+          {guias.map((g) => (
+            <li
+              key={g.seccion}
+              className="flex flex-wrap items-center justify-between gap-2 border-b border-borde-sutil pb-3 last:border-b-0"
+            >
+              <span className="flex flex-col">
+                <strong>{g.nombre}</strong>
+                <span className="text-pequeno text-texto-secundario">{g.estado}</span>
+              </span>
+              <BotonEnlace
+                href={`/guia/${g.seccion.toLowerCase()}?desde=inicio`}
+                variante="secundario"
+                icono={BookOpen}
+              >
+                {`Ver la guía de ${g.nombre}`}
+              </BotonEnlace>
+            </li>
+          ))}
+        </ul>
       </Tarjeta>
       <Tarjeta titulo="Mis pedidos de ayuda">
         {pedidos.length ? (
