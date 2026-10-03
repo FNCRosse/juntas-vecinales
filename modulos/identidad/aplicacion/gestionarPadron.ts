@@ -20,7 +20,9 @@ import {
   buscarPredio,
   cerrarResidencia,
   guardarOcupacion,
+  reemplazarVehiculos,
 } from "@/modulos/identidad/infraestructura/repositorioPadron";
+import { type Placas, revisarVehiculos } from "./placas";
 import { exigirRol, type SesionDto } from "./sesion";
 
 export { MOTIVOS_BAJA_RESIDENTE };
@@ -34,22 +36,55 @@ export type { MotivoBajaResidente };
 export async function actualizarPredio(
   sesion: SesionDto,
   predioId: string,
-  datos: { uso: UsoPredio } & Ocupacion,
+  datos: { uso: UsoPredio } & Ocupacion & { placas?: Placas },
 ) {
   exigirRol(sesion, "ADMINISTRADOR");
   const predio = await buscarPredio(predioId);
   if (!predio) throw new ErrorNoEncontrado();
-  const { errores } = normalizarPredio({ ...datos, manzana: predio.manzana, lote: predio.lote });
-  if (Object.keys(errores).length) {
-    throw new ErrorValidacion(
-      undefined,
-      Object.fromEntries(Object.entries(errores).map(([campo, mensaje]) => [`vivienda.${campo}`, mensaje])),
-    );
-  }
-  const cambios = cambiosDeOcupacion(predio, datos);
+  const { placas, ...ocupacion } = datos;
+  const { errores: erroresPredio } = normalizarPredio({
+    ...ocupacion,
+    manzana: predio.manzana,
+    lote: predio.lote,
+  });
+  const errores: Record<string, string> = Object.fromEntries(
+    Object.entries(erroresPredio).map(([campo, mensaje]) => [`vivienda.${campo}`, mensaje]),
+  );
+  const revision = await revisarVehiculos(ocupacion, placas, predioId);
+  Object.assign(errores, revision.errores);
+  if (Object.keys(errores).length) throw new ErrorValidacion(undefined, errores);
+
+  const placasDe = (tipo: string) =>
+    predio.vehiculos
+      .filter((v) => v.tipo === tipo)
+      .map((v) => v.placa)
+      .sort()
+      .join(", ");
+  const nuevasDe = (tipo: string) =>
+    revision.vehiculos
+      .filter((v) => v.tipo === tipo)
+      .map((v) => v.placa)
+      .sort()
+      .join(", ");
+  const cambios = [
+    ...cambiosDeOcupacion(predio, ocupacion),
+    ...(
+      [
+        ["placasAutos", "AUTO_O_CAMIONETA"],
+        ["placasMotos", "MOTO"],
+      ] as const
+    )
+      .filter(([, tipo]) => placasDe(tipo) !== nuevasDe(tipo))
+      .map(([campo, tipo]) => ({
+        campo,
+        antes: placasDe(tipo) || "ninguna",
+        despues: nuevasDe(tipo) || "ninguna",
+      })),
+  ];
   if (!cambios.length) throw new ErrorReglaNegocio("No cambió ningún dato. Cambie lo que ya no es igual.");
   await prisma.$transaction(async (tx) => {
-    await guardarOcupacion(tx, predioId, datos);
+    await guardarOcupacion(tx, predioId, ocupacion);
+    await reemplazarVehiculos(tx, predioId, revision.vehiculos);
     await registrarAuditoria(
       {
         actorId: sesion.usuarioId,

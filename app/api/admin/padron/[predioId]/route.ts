@@ -12,6 +12,7 @@ const esquema = z.object({
   motos: contador,
   triciclos: contador,
   negocios: contador,
+  placas: z.object({ autos: z.array(z.string()).max(9), motos: z.array(z.string()).max(9) }).optional(),
 });
 
 /** Actualizar el uso y la ocupación del predio (HU-GAR-10). */

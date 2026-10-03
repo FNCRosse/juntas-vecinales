@@ -11,6 +11,8 @@ import { Contador } from "@/componentes/a11y/Contador";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
+import { CamposPlacas, type PlacasEscritas } from "../../_componentes/CamposPlacas";
+import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
 
 type Uso = "VIVIENDA" | "NEGOCIO" | "VIVIENDA_Y_NEGOCIO";
 type Concepto = "familias" | "inquilinos" | "autos" | "motos" | "triciclos" | "negocios";
@@ -36,13 +38,17 @@ export function ActualizarPredio({
   predioId,
   direccion,
   actual,
+  placasActuales,
 }: {
   predioId: string;
   direccion: string;
   actual: Ocupacion;
+  placasActuales: PlacasEscritas;
 }) {
   const [paso, setPaso] = useState<"editar" | "confirmar">("editar");
   const [datos, setDatos] = useState<Ocupacion>(actual);
+  const [placas, setPlacas] = useState<PlacasEscritas>(placasActuales);
+  const [errores, setErrores] = useState<Record<string, string>>({});
   const [aviso, setAviso] = useState<string | null>(null);
   const [falla, setFalla] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -58,6 +64,12 @@ export function ActualizarPredio({
     titulo.current?.focus();
   }, [paso]);
 
+  const ver = (lista: string[], cantidad: number) =>
+    lista
+      .slice(0, cantidad)
+      .map((p) => p.replace(/[^A-Za-z0-9]/g, "").toUpperCase())
+      .sort()
+      .join(", ") || "ninguna";
   const filas: [string, string][] = [
     ...(datos.uso !== actual.uso
       ? [["Uso", `${nombreUso(actual.uso)} → ${nombreUso(datos.uso)}`] as [string, string]]
@@ -65,18 +77,32 @@ export function ActualizarPredio({
     ...CONCEPTOS.filter(([c]) => datos[c] !== actual[c]).map(
       ([c, etiqueta]) => [etiqueta, `${actual[c]} → ${datos[c]}`] as [string, string],
     ),
+    ...(["autos", "motos"] as const)
+      .filter((t) => ver(placas[t], datos[t]) !== ver(placasActuales[t], actual[t]))
+      .map(
+        (t) =>
+          [
+            t === "autos" ? "Placas de autos" : "Placas de motos",
+            `${ver(placasActuales[t], actual[t])} → ${ver(placas[t], datos[t])}`,
+          ] as [string, string],
+      ),
   ];
 
   async function guardar() {
     setEnviando(true);
     setFalla(null);
-    const r = await enviarJson(`/api/admin/padron/${predioId}`, "PATCH", datos);
+    const r = await enviarJson(`/api/admin/padron/${predioId}`, "PATCH", { ...datos, placas });
     if (r.ok) {
       router.push(`/administracion/padron/${predioId}?aviso=actualizado`);
       return;
     }
     setEnviando(false);
-    setFalla(r.error);
+    if (r.estado === 400 && Object.keys(r.campos).length) {
+      setErrores(
+        Object.fromEntries(Object.entries(r.campos).map(([c, m]) => [c.replace(/^placas\./, ""), m])),
+      );
+      setPaso("editar");
+    } else setFalla(r.error);
   }
 
   if (paso === "confirmar") {
@@ -142,6 +168,19 @@ export function ActualizarPredio({
           ))}
         </div>
       </section>
+      <CamposPlacas
+        autos={datos.autos}
+        motos={datos.motos}
+        placas={placas}
+        errores={errores}
+        alCambiar={setPlacas}
+      />
+      <ResumenErrores
+        errores={Object.entries(errores).map(([campo, mensaje]) => ({
+          campo: `campo-placas.${campo}`,
+          mensaje,
+        }))}
+      />
       {aviso && (
         <MensajeEstado tipo="info" titulo="No cambió ningún dato">
           <p>{aviso}</p>

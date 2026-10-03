@@ -35,8 +35,10 @@ export function ocupacionEnTexto(ocupacion: Record<Concepto, number>) {
 }
 
 type Fila = NonNullable<Awaited<ReturnType<typeof buscarPredio>>>;
+/** Lo que comparten la ficha y la lista del padrón: la lista no carga los vehículos. */
+type FilaBase = Omit<Fila, "vehiculos">;
 
-function residentes(predio: Fila) {
+function residentes(predio: FilaBase) {
   return [...predio.residencias]
     .sort((a, b) => Number(b.relacion === "TITULAR") - Number(a.relacion === "TITULAR"))
     .map((r) => ({
@@ -48,7 +50,7 @@ function residentes(predio: Fila) {
     }));
 }
 
-function resumen(predio: Fila) {
+function resumen(predio: FilaBase) {
   const lista = residentes(predio);
   return {
     id: predio.id,
@@ -61,8 +63,13 @@ function resumen(predio: Fila) {
 }
 
 type Json = unknown;
+const CAMPOS_DE_PLACAS = { placasAutos: "placas de autos", placasMotos: "placas de motos" } as const;
 const etiquetaCampo = (campo: string) =>
-  campo === "uso" ? "uso" : (NOMBRE_CONCEPTO[campo as Concepto]?.[1] ?? campo);
+  campo === "uso"
+    ? "uso"
+    : (CAMPOS_DE_PLACAS[campo as keyof typeof CAMPOS_DE_PLACAS] ??
+      NOMBRE_CONCEPTO[campo as Concepto]?.[1] ??
+      campo);
 const valorCampo = (valor: unknown) =>
   typeof valor === "string" && valor in NOMBRE_USO
     ? NOMBRE_USO[valor as UsoPredio].toLowerCase()
@@ -77,7 +84,7 @@ function describirAccion(accion: string, antes: Json, despues: Json) {
       return "Empadronó la vivienda, con el DNI de cada residente verificado en físico";
     case "actualizar_predio":
       // jsonb no guarda el orden de las claves: se describen en el orden de la pantalla.
-      return `Actualizó los datos: ${["uso", ...CONCEPTOS]
+      return `Actualizó los datos: ${["uso", ...CONCEPTOS, "placasAutos", "placasMotos"]
         .filter((campo) => campo in d)
         .map((campo) => `${etiquetaCampo(campo)} ${valorCampo(a[campo])} → ${valorCampo(d[campo])}`)
         .join("; ")}`;
@@ -109,6 +116,15 @@ export async function verVivienda(sesion: SesionDto, predioId: string) {
   return {
     ...resumen(predio),
     residentes: residentes(predio),
+    vehiculos: predio.vehiculos.map((v) => ({
+      placa: v.placa,
+      tipo:
+        v.tipo === "AUTO_O_CAMIONETA"
+          ? ("auto" as const)
+          : v.tipo === "MOTO"
+            ? ("moto" as const)
+            : ("triciclo" as const),
+    })),
     ocupacion: {
       uso: predio.uso,
       ...(Object.fromEntries(CONCEPTOS.map((c) => [c, predio[c]])) as Record<Concepto, number>),

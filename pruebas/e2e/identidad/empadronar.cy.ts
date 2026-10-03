@@ -8,6 +8,7 @@ const sufijo = String(Date.now()).slice(-6);
 const LOTE = `9${sufijo.slice(-3)}`;
 const DNI_TITULAR = `7${sufijo}1`;
 const DNI_OTRO = `7${sufijo}2`;
+const PLACA = `E${sufijo.slice(-5)}`;
 const porId = (id: string) => cy.get(`[id="${id}"]`);
 
 const entrarComoAna = () =>
@@ -37,6 +38,14 @@ describe("@HU-GAR-01 Empadronar una vivienda", () => {
     cy.focused().should("have.attr", "role", "alert");
     cy.revisarAccesibilidad("empadronar-paso1-errores-normal");
     porId("campo-vivienda.lote").clear().type(LOTE);
+    // Cada auto o moto pide su placa: sin ella no avanza, y una placa que ya está en el padrón se rechaza.
+    cy.contains("button", "Siguiente: las personas").click();
+    porId("campo-placas.autos.0-error").should("contain.text", "Escriba la placa del auto 1.");
+    porId("campo-placas.autos.0").type("jlm 314");
+    cy.contains("button", "Siguiente: las personas").click();
+    porId("campo-placas.autos.0-error").should("contain.text", "ya está registrada en Mz. A, lote 3");
+    cy.revisarAccesibilidad("empadronar-placas-errores-normal");
+    porId("campo-placas.autos.0").clear().type(PLACA);
     cy.contains("button", "Siguiente: las personas").click();
 
     // Paso 2: sin ver el DNI no avanza; un DNI del padrón se bloquea y dice dónde vive.
@@ -73,6 +82,7 @@ describe("@HU-GAR-01 Empadronar una vivienda", () => {
     // Paso 3: confirmación con el resumen; "Corregir algo" vuelve sin borrar nada.
     cy.get("h1").should("have.text", `¿Desea empadronar Mz. C, lote ${LOTE}?`);
     cy.contains("dd", "Sofía: 912 345 678 · Manuel: 912 345 700").should("exist");
+    cy.contains("dt", "Placas").next("dd").should("contain.text", PLACA);
     cy.revisarAccesibilidad("empadronar-confirmar-normal");
     cy.contains("button", "Corregir algo").click();
     porId("campo-titular.nombreCompleto").should("have.value", "Sofía Castro Ríos");
