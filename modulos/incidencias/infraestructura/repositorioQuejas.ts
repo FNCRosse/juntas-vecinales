@@ -1,6 +1,6 @@
 import type { Transaccion } from "@/compartido/bd/cliente";
 import { prisma } from "@/compartido/bd/cliente";
-import type { CategoriaQueja, EstadoQueja, Prisma } from "@/compartido/bd/generado/client";
+import type { CategoriaQueja, EstadoQueja, MedidaCorrectiva, Prisma } from "@/compartido/bd/generado/client";
 
 const conEvidencias = { evidencias: { orderBy: { orden: "asc" } } } as const;
 
@@ -80,6 +80,7 @@ export async function buscarParaGestion(id: string) {
       ...conEvidencias,
       evidencias: { orderBy: { orden: "asc" }, include: { archivo: true } },
       identidadProtegida: true,
+      acciones: { orderBy: { fecha: "asc" } },
     },
   });
 }
@@ -93,4 +94,11 @@ export async function cambiarSiSigueEn(
 ) {
   const { count } = await tx.queja.updateMany({ where: { id, estado }, data: datos });
   return count === 1;
+}
+
+export async function anotarAccion(
+  tx: Transaccion,
+  datos: { quejaId: string; medida: MedidaCorrectiva; detalle: string; fecha: Date; responsableId: string },
+) {
+  return tx.accionCorrectiva.create({ data: datos });
 }

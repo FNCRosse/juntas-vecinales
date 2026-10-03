@@ -14,6 +14,12 @@ enum Prioridad {
   ALTA
 }
 
+enum MedidaCorrectiva {
+  MEDIACION
+  LLAMADA_DE_ATENCION
+  OTRA
+}
+
 enum EstadoQueja {
   RECIBIDO
   EN_REVISION
@@ -44,6 +50,9 @@ model Queja {
   evaluadaPor           String?
   fechaEvaluacion       DateTime?
   motivoRechazo         String?
+  /// Cierre: cuándo pasó a RESUELTO o a DERIVADO_ENTIDAD_EXTERNA (HU-QUE-06, 07).
+  fechaCierre           DateTime?
+  acciones              AccionCorrectiva[]
   fechaRegistro         DateTime            @default(now())
   esAnonimo             Boolean             @default(false)
   denuncianteId         String?
@@ -94,4 +103,19 @@ model ConsultaSeguimiento {
 
   @@index([ipHash, fecha])
   @@map("incidencias_consultas_seguimiento")
+}
+
+// Lo que hizo la junta para resolver una queja de convivencia (HU-QUE-06): la medida, el detalle que
+// recibe quien reportó, cuándo y quién lo registró.
+model AccionCorrectiva {
+  id            String           @id @default(uuid())
+  quejaId       String
+  queja         Queja            @relation(fields: [quejaId], references: [id])
+  medida        MedidaCorrectiva
+  detalle       String
+  fecha         DateTime         @default(now())
+  responsableId String
+
+  @@index([quejaId])
+  @@map("incidencias_acciones_correctivas")
 }

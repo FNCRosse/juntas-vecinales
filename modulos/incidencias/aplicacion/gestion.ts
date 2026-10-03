@@ -1,4 +1,4 @@
-// @HU-QUE-05
+// @HU-QUE-05 @HU-QUE-06
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { prisma } from "@/compartido/bd/cliente";
 import { ErrorConflicto, ErrorNoEncontrado, ErrorValidacion } from "@/compartido/errores";
@@ -6,17 +6,25 @@ import { nombresDe } from "@/modulos/identidad/aplicacion/barrio";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 import {
   type Admisibilidad,
+  MEDIDAS,
   PRIORIDADES,
   prepararAdmisibilidad,
+  prepararResolucion,
 } from "@/modulos/incidencias/dominio/gestion";
 import { CATEGORIAS, ESTADOS, lugarEnTexto, numeroVisible } from "@/modulos/incidencias/dominio/queja";
-import { buscarParaGestion, cambiarSiSigueEn } from "@/modulos/incidencias/infraestructura/repositorioQuejas";
+import {
+  anotarAccion,
+  buscarParaGestion,
+  cambiarSiSigueEn,
+} from "@/modulos/incidencias/infraestructura/repositorioQuejas";
 import { avisarAlDenunciante } from "./avisarDenunciante";
 import { ANONIMO } from "./quejas";
 
 const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
-export { PRIORIDADES };
+export { MEDIDAS, PRIORIDADES };
 
+export const MENSAJE_NO_EN_REVISION =
+  "Este reporte ya no está en revisión: otra persona de la directiva lo cerró. Revise su estado.";
 export const MENSAJE_YA_EVALUADA = "Otra persona de la directiva ya evaluó este reporte. Revise su estado.";
 
 /**
@@ -28,7 +36,9 @@ export async function verQuejaParaGestion(sesion: SesionDto, id: string) {
   const q = await buscarParaGestion(id);
   if (!q) throw new ErrorNoEncontrado();
   const nombres = await nombresDe(
-    [q.denuncianteId, q.registradaPor, q.evaluadaPor].filter((x): x is string => !!x),
+    [q.denuncianteId, q.registradaPor, q.evaluadaPor, ...q.acciones.map((a) => a.responsableId)].filter(
+      (x): x is string => !!x,
+    ),
   );
   const nombre = (id: string | null) => (id ? (nombres.get(id) ?? "Persona ya no registrada") : null);
   return {
@@ -51,6 +61,12 @@ export async function verQuejaParaGestion(sesion: SesionDto, id: string) {
     prioridad: q.prioridad ? PRIORIDADES[q.prioridad] : null,
     evaluadaPor: nombre(q.evaluadaPor),
     motivoRechazo: q.motivoRechazo,
+    acciones: q.acciones.map((a) => ({
+      medida: MEDIDAS[a.medida],
+      detalle: a.detalle,
+      fecha: a.fecha.toISOString(),
+      responsable: nombre(a.responsableId),
+    })),
   };
 }
 export type QuejaGestionDto = Awaited<ReturnType<typeof verQuejaParaGestion>>;
@@ -108,6 +124,51 @@ export async function evaluarAdmisibilidad(
             titulo: "Su reporte no procede",
             texto: `La directiva revisó su reporte ${numero} y no puede darle curso: ${cambio.motivoRechazo} Le pedimos usar los reportes solo para problemas reales del barrio. Si cree que es un error, pida ayuda a una persona.`,
           },
+      tx,
+    );
+  });
+  return verQuejaParaGestion(sesion, id);
+}
+
+/**
+ * Documenta las medidas tomadas en una queja de convivencia (HU-QUE-06 CA1), la cierra como "Resuelto"
+ * (CA2) y le envía el detalle a quien reportó (CA3), auditado en la misma transacción (AC-6).
+ */
+export async function resolverQueja(
+  sesion: SesionDto,
+  id: string,
+  datos: { medida?: string | null; detalle?: string | null },
+  ahora = new Date(),
+) {
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
+  const q = await buscarParaGestion(id);
+  if (!q) throw new ErrorNoEncontrado();
+  const resultado = prepararResolucion(q.estado, datos);
+  if ("noSePuede" in resultado) throw new ErrorConflicto(MENSAJE_NO_EN_REVISION);
+  if (Object.keys(resultado.errores).length) throw new ErrorValidacion(undefined, resultado.errores);
+  const { accion } = resultado;
+
+  await prisma.$transaction(async (tx) => {
+    const cambiada = await cambiarSiSigueEn(tx, id, "EN_REVISION", {
+      estado: "RESUELTO",
+      fechaCierre: ahora,
+    });
+    if (!cambiada) throw new ErrorConflicto(MENSAJE_NO_EN_REVISION);
+    await anotarAccion(tx, { quejaId: id, ...accion, fecha: ahora, responsableId: sesion.usuarioId });
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "resolver_queja",
+        entidad: "Queja",
+        entidadId: id,
+        antes: { estado: q.estado },
+        despues: { estado: "RESUELTO", medida: accion.medida },
+      },
+      tx,
+    );
+    await avisarAlDenunciante(
+      q,
+      { titulo: "Su reporte se resolvió", texto: `Reporte ${numeroVisible(q.numero)}: ${accion.detalle}` },
       tx,
     );
   });

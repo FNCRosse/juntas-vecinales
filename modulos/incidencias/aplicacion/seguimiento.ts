@@ -1,4 +1,4 @@
-// @HU-QUE-05 @HU-QUE-09
+// @HU-QUE-05 @HU-QUE-06 @HU-QUE-09
 import { createHash } from "node:crypto";
 import { ErrorEnPausa, ErrorNoEncontrado } from "@/compartido/errores";
 import { fechaYHora } from "@/compartido/fechas";
@@ -40,7 +40,7 @@ const avanceADto = (q: Fila) => {
     estadoTexto: ESTADOS[q.estado],
     fechaRegistro: q.fechaRegistro.toISOString(),
     pasos: pasosDelAvance(q.estado, fecha),
-    novedad: novedadDelReporte(q.estado, q.motivoRechazo),
+    novedad: novedadDelReporte(q.estado, q.motivoRechazo, q.acciones[0]?.detalle ?? null),
   };
 };
 export type AvanceDto = ReturnType<typeof avanceADto>;

@@ -1,5 +1,7 @@
 import { prisma } from "@/compartido/bd/cliente";
 
+const conUltimaAccion = { acciones: { orderBy: { fecha: "desc" }, take: 1 } } as const;
+
 /** Anota la consulta y cuenta las de esa conexión en la ventana; borra las de hace más de un día. */
 export async function anotarConsulta(ipHash: string, ahora: Date, ventanaMs: number) {
   const [, , recientes] = await prisma.$transaction([
@@ -15,9 +17,12 @@ export async function anotarConsulta(ipHash: string, ahora: Date, ventanaMs: num
 }
 
 export async function buscarPorCodigo(codigoTicket: string) {
-  return prisma.queja.findUnique({ where: { codigoTicket } });
+  return prisma.queja.findUnique({ where: { codigoTicket }, include: conUltimaAccion });
 }
 
 export async function buscarPorId(id: string) {
-  return prisma.queja.findUnique({ where: { id }, include: { identidadProtegida: true } });
+  return prisma.queja.findUnique({
+    where: { id },
+    include: { identidadProtegida: true, ...conUltimaAccion },
+  });
 }
