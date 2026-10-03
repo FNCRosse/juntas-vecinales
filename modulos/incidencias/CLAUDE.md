@@ -33,7 +33,7 @@ Enums: `CategoriaQueja` (RUIDOS, BASURA, COCHERAS, SEGURIDAD, OTROS) · `EstadoQ
 **Mapa (HU-ACC-07)**
 - Solo muestra quejas admitidas, derivadas o resueltas; nunca RECIBIDO ni RECHAZADO.
 - Las anónimas y sensibles, y todas las de vecinos con oposición activa en M1, se generalizan a una cuadrícula de ~100 m (nivel manzana), también de forma retroactiva.
-- Siempre con su alternativa textual: lista de zonas con categoría y cantidad, debajo o en una pestaña "Ver como lista". Teselas de OpenStreetMap con su atribución visible.
+- Siempre con su alternativa textual: lista de zonas con categoría y cantidad, debajo o en una pestaña "Ver como lista". El mapa es un esquema del barrio por manzanas, sin teselas externas (ARQUITECTURA §7): todo se ve a nivel de manzana.
 
 **ARCO:** el módulo expone `datosPersonales(usuarioId)` (quejas propias no anónimas y sus coordenadas) y `anonimizar(usuarioId)`.
 

@@ -80,7 +80,7 @@ Son las únicas interfaces con una sola implementación real que se permiten, po
 | --- | --- | --- | --- |
 | WhatsApp | `compartido/notificaciones/whatsapp.ts` | `meta` (Cloud API, número de prueba) y `simulador` | `WHATSAPP_MODO`; fuera de producción el valor por defecto es `simulador` |
 | Archivos | `compartido/archivos/` | R2 vía su API compatible con S3 | Única; en pruebas se usa un bucket simulado en memoria |
-| Mapas | componente cliente del mapa de incidentes | Leaflet + teselas de `NEXT_PUBLIC_MAPA_URL_TESELAS` | URL configurable |
+| Mapas | — | Mapa esquemático por manzanas en un Server Component (`app/(vecino)/incidentes/_componentes`), sin proveedor externo | ARQUITECTURA §7 |
 | PDF | `compartido/archivos/pdf.ts` | `pdfkit` con `tagged: true` y `lang: 'es-PE'` (PDF etiquetado, legible por lector de pantalla) | Única |
 
 - **Simulador de WhatsApp:** no envía nada; guarda el mensaje como si se hubiera enviado (estado `ENVIADA`, canal `simulador`). Admite un modo de fallo (`WHATSAPP_SIMULAR_FALLO=1`) para probar los reintentos.

@@ -42,7 +42,6 @@ Sin valores en el repositorio. `.env.example` lista los nombres; los valores loc
 | `R2_ID_CLAVE_ACCESO` | Sí | Vercel | La autora |
 | `R2_CLAVE_ACCESO_SECRETA` | Sí | Vercel | La autora |
 | `CLAVE_CIFRADO` | Sí | Vercel, Render (32 bytes en base64, AES-256-GCM) | La autora |
-| `NEXT_PUBLIC_MAPA_URL_TESELAS` | No | Vercel | Claude |
 | `WHATSAPP_SIMULAR_FALLO` | No | Solo local y pruebas | — |
 | `CYPRESS_INSTALL_BINARY` | No | Vercel (prod y preview) y Render = `0`; jobs del CI sin e2e | Claude |
 | `NODE_VERSION` | No | Render = `22` | Claude |
@@ -76,7 +75,7 @@ Para recrearla sin los conectores, en el panel de cada servicio.
 | Instalación y salida | Las de Next por defecto (`npm install`, `.next`) |
 | Node.js | `22.x` |
 | Protección de despliegues | Vercel Authentication solo en previews (`ssoProtection: preview`); producción es pública |
-| Variables (no secretas) | `WHATSAPP_MODO=simulador` (prod, preview, dev) · `CYPRESS_INSTALL_BINARY=0` (prod, preview) · `R2_BUCKET=juntas-vecinales-archivos` (todas) · `NEXT_PUBLIC_MAPA_URL_TESELAS=https://tile.openstreetmap.org/{z}/{x}/{y}.png` (todas) · `URL_WORKER=https://juntas-vecinales-worker.onrender.com` (prod) |
+| Variables (no secretas) | `WHATSAPP_MODO=simulador` (prod, preview, dev) · `CYPRESS_INSTALL_BINARY=0` (prod, preview) · `R2_BUCKET=juntas-vecinales-archivos` (todas) · `URL_WORKER=https://juntas-vecinales-worker.onrender.com` (prod) |
 | Variables de la integración Neon | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` y las que la integración agrega sola (`PG*`, `POSTGRES_*`, `NEON_*`, `VITE_NEON_AUTH_URL`), para prod y preview. Solo se usan las dos primeras |
 | Base de datos | Integración Neon del Marketplace, región Washington D. C. (`iad1`, AWS us-east-1), plan Free |
 | `R2_ID_CUENTA` | Account ID de Cloudflare (no secreto), en todos los entornos |

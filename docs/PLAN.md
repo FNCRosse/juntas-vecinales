@@ -132,7 +132,7 @@ Evidencia de cierre: [M2.md](evidencias/M2.md).
 Al cerrar M3 también: cerrar la oposición de ubicación de M1, añadir el bloque de quejas al panel de inicio y la sección de quejas a la copia y la anonimización ARCO.
 
 **Pantallas:** DIR-INI-01–02 · DIR-QUE-01–10 · VEC-ACC-08, 11 · VEC-ASA-01 · VEC-AYU-03 · VEC-COB-01 · VEC-QUE-01–04, 06–10.
-**Riesgos:** fuga de identidad en anónimos (cifrado, avisos sin código ni detalle, ninguna pantalla que la revele); teselas de OpenStreetMap con su política de uso; videos pesados en R2.
+**Riesgos:** fuga de identidad en anónimos (cifrado, avisos sin código ni detalle, ninguna pantalla que la revele); el mapa sin teselas externas (esquema por manzanas, ARQUITECTURA §7); videos pesados en R2.
 
 ## M4 · Asambleas y eventos pro fondos
 

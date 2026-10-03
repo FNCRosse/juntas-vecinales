@@ -116,3 +116,12 @@ export async function abrirExpediente(
 ) {
   return tx.expedienteDerivacion.create({ data: datos });
 }
+
+/** Los reportes que van al mapa: solo estado, tipo, manzana y fecha; nunca la referencia ni quién. */
+export async function quejasParaElMapa(estados: EstadoQueja[], desde: Date) {
+  return prisma.queja.findMany({
+    where: { estado: { in: estados }, fechaRegistro: { gte: desde } },
+    select: { manzana: true, categoria: true, estado: true, fechaRegistro: true },
+    orderBy: [{ fechaRegistro: "desc" }, { numero: "desc" }],
+  });
+}
