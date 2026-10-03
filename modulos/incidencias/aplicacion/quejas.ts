@@ -1,14 +1,16 @@
-// @HU-QUE-01 @HU-QUE-02 @HU-QUE-04
+// @HU-QUE-01 @HU-QUE-02 @HU-QUE-03 @HU-QUE-04
 import { randomInt } from "node:crypto";
 import { archivosSubidosPor } from "@/compartido/archivos/registro";
 import { ACTOR_ANONIMO } from "@/compartido/auditoria/acciones";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { prisma } from "@/compartido/bd/cliente";
 import type { EstadoQueja } from "@/compartido/bd/generado/client";
-import { ErrorValidacion } from "@/compartido/errores";
+import { ErrorNoEncontrado, ErrorValidacion } from "@/compartido/errores";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
 import {
+  buscarVecinos,
   directivaParaAvisar,
+  vecinoActivo,
   manzanaDe,
   manzanasDelBarrio,
   nombresDe,
@@ -69,49 +71,59 @@ export async function lugaresParaReportar(sesion: SesionDto) {
   return { manzanas, miManzana };
 }
 
-/**
- * Registra la queja (HU-QUE-01) y emite su ticket (HU-QUE-04): exige consentimiento, categoría,
- * descripción, lugar y al menos una evidencia que subió quien reporta (CA1–CA3); asigna el correlativo
- * con su código, queda en RECIBIDO con fecha y hora, avisa a la directiva y se audita, todo en una
- * transacción (AC-6, ADR-006). Repetir el mismo `idOperacion` devuelve lo ya registrado (AC-5).
- */
-export async function registrarQueja(
-  sesion: SesionDto,
-  datos: DatosQueja & { idOperacion: string },
-  ahora = new Date(),
-) {
-  exigirRol(sesion, ...ROLES_VECINO);
-  const { errores, queja } = prepararQueja(datos);
+/** Revisa la manzana y que cada evidencia sea un archivo que subió quien registra. */
+async function validar(
+  quien: string,
+  datos: DatosQueja,
+  opciones: { asistida?: boolean } = {},
+): Promise<ReturnType<typeof prepararQueja>["queja"]> {
+  const { errores, queja } = prepararQueja(datos, opciones);
   if (queja.manzana && !errores.lugar && !(await manzanasDelBarrio()).includes(queja.manzana)) {
     errores.lugar = "Elija una manzana de la lista.";
   }
-  if (!errores.evidencias) {
-    const propias = await archivosSubidosPor(sesion.usuarioId, USO_EVIDENCIA, queja.evidencias);
+  if (!errores.evidencias && queja.evidencias.length) {
+    const propias = await archivosSubidosPor(quien, USO_EVIDENCIA, queja.evidencias);
     if (queja.evidencias.some((id) => !propias.has(id))) {
       errores.evidencias = "Vuelva a adjuntar la foto o el video: no pudimos encontrarlo.";
     }
   }
   if (Object.keys(errores).length) throw new ErrorValidacion(undefined, errores);
+  return queja;
+}
 
-  const previa = await buscarPorIdOperacion(datos.idOperacion);
-  if (previa) return { queja: quejaADto(previa), creada: false };
+/**
+ * Guarda la queja y emite su ticket (HU-QUE-04): correlativo con su código, RECIBIDO con fecha y hora,
+ * aviso a la directiva y auditoría, todo en una transacción (AC-6, ADR-006). Si es anónima, el
+ * denunciante queda solo cifrado (HU-QUE-02, R-09). Repetir el `idOperacion` devuelve lo registrado (AC-5).
+ */
+async function guardarQueja(
+  queja: Awaited<ReturnType<typeof validar>>,
+  quien: { denuncianteId: string; registradaPor: string | null; actorId: string },
+  idOperacion: string,
+  ahora: Date,
+) {
+  const previa = await buscarPorIdOperacion(idOperacion);
+  if (previa) return { fila: previa, creada: false };
 
   const directiva = await directivaParaAvisar();
-  const creada = await prisma.$transaction(async (tx) => {
+  const fila = await prisma.$transaction(async (tx) => {
     const numero = await siguienteNumero(tx);
     const fila = await crearQueja(tx, {
       ...queja,
       numero,
       codigoTicket: codigoTicket(anioEnLima(ahora), numero, sufijoAleatorio(randomInt)),
       fechaRegistro: ahora,
-      // Anónima: quien la envía queda solo cifrado (HU-QUE-02 CA2, R-09).
-      denuncianteId: queja.esAnonimo ? null : sesion.usuarioId,
+      denuncianteId: queja.esAnonimo ? null : quien.denuncianteId,
+      registradaPor: quien.registradaPor,
       identidad: queja.esAnonimo
-        ? { hashDenunciante: hashDenunciante(sesion.usuarioId), datosCifrados: cifrar(sesion.usuarioId) }
+        ? {
+            hashDenunciante: hashDenunciante(quien.denuncianteId),
+            datosCifrados: cifrar(quien.denuncianteId),
+          }
         : null,
       consentimientoVersion: versionDePolitica(),
       consentimientoEn: ahora,
-      idOperacion: datos.idOperacion,
+      idOperacion,
     });
     const lugar = lugarEnTexto(fila.manzana, fila.referencia);
     // El aviso a la directiva no lleva el código ni el nombre de quien reporta (HU-QUE-04 CA2).
@@ -126,8 +138,8 @@ export async function registrarQueja(
     );
     await registrarAuditoria(
       {
-        actorId: queja.esAnonimo ? ACTOR_ANONIMO : sesion.usuarioId,
-        accion: "registrar_queja",
+        actorId: quien.actorId,
+        accion: quien.registradaPor ? "registrar_queja_asistida" : "registrar_queja",
         entidad: "Queja",
         entidadId: fila.id,
         antes: null,
@@ -144,8 +156,76 @@ export async function registrarQueja(
     );
     return fila;
   });
-  return { queja: quejaADto(creada), creada: true };
+  return { fila, creada: true };
 }
+
+/**
+ * Registra la queja del propio vecino (HU-QUE-01): exige consentimiento, categoría, descripción, lugar y
+ * al menos una evidencia que subió quien reporta (CA1–CA3). En modo anónimo la auditoría no guarda quién
+ * fue (HU-QUE-02).
+ */
+export async function registrarQueja(
+  sesion: SesionDto,
+  datos: DatosQueja & { idOperacion: string },
+  ahora = new Date(),
+) {
+  exigirRol(sesion, ...ROLES_VECINO);
+  const queja = await validar(sesion.usuarioId, datos);
+  const { fila, creada } = await guardarQueja(
+    queja,
+    {
+      denuncianteId: sesion.usuarioId,
+      registradaPor: null,
+      actorId: queja.esAnonimo ? ACTOR_ANONIMO : sesion.usuarioId,
+    },
+    datos.idOperacion,
+    ahora,
+  );
+  return { queja: quejaADto(fila), creada };
+}
+
+/** Las manzanas para el formulario del mediador (DIR-QUE-08). */
+export async function lugaresParaAsistir(sesion: SesionDto) {
+  exigirRol(sesion, "DIRECTIVO_MEDIADOR");
+  return manzanasDelBarrio();
+}
+
+/** Vecinos que el mediador puede elegir al registrar por ellos (DIR-QUE-08): por nombre, DNI, manzana o lote. */
+export async function vecinosParaAsistir(sesion: SesionDto, texto: string) {
+  exigirRol(sesion, "DIRECTIVO_MEDIADOR");
+  return buscarVecinos(texto);
+}
+
+/**
+ * El mediador registra la queja en nombre de un vecino (HU-QUE-03): con sus palabras, con anonimato si
+ * el vecino lo pide (CA2) y sin exigir foto. `registradaPor` guarda al mediador. Devuelve los datos de
+ * la constancia con el código (CA3).
+ */
+export async function registrarQuejaAsistida(
+  sesion: SesionDto,
+  datos: DatosQueja & { vecinoId: string; idOperacion: string },
+  ahora = new Date(),
+) {
+  exigirRol(sesion, "DIRECTIVO_MEDIADOR");
+  const vecino = await vecinoActivo(datos.vecinoId);
+  if (!vecino) throw new ErrorNoEncontrado("No encontramos a ese vecino. Búsquelo de nuevo.");
+  const queja = await validar(sesion.usuarioId, datos, { asistida: true });
+  const { fila, creada } = await guardarQueja(
+    queja,
+    { denuncianteId: vecino.id, registradaPor: sesion.usuarioId, actorId: sesion.usuarioId },
+    datos.idOperacion,
+    ahora,
+  );
+  return {
+    queja: {
+      ...quejaADto(fila),
+      vecino: vecino.nombre,
+      registradaPor: sesion.nombreCompleto,
+    },
+    creada,
+  };
+}
+export type ConstanciaDto = Awaited<ReturnType<typeof registrarQuejaAsistida>>["queja"];
 
 /** Los reportes de quien pregunta, los más nuevos arriba (VEC-QUE-01, "Mis reportes"). */
 export async function misQuejas(sesion: SesionDto) {

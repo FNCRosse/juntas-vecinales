@@ -1,7 +1,8 @@
-import { Check, Info } from "lucide-react";
+import { Check, Info, UserRoundPlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { fechaYHora } from "@/compartido/fechas";
 import {
   bandejaDeQuejas,
@@ -33,6 +34,11 @@ export default async function BandejaIncidentes({
           {conteo.enRevision} en revisión, {cerrados} {cerrados === 1 ? "cerrado" : "cerrados"}.
         </p>
       </div>
+      {sesion.roles.includes("DIRECTIVO_MEDIADOR") && (
+        <BotonEnlace href="/directiva/incidentes/asistido" icono={UserRoundPlus}>
+          Registrar un reporte por un vecino
+        </BotonEnlace>
+      )}
       <nav aria-label="Filtrar por estado" className="flex flex-wrap gap-separacion">
         {(Object.keys(FILTROS_BANDEJA) as FiltroBandeja[]).map((clave) => {
           const activo = clave === filtro;

@@ -35,6 +35,7 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   publicar_balance: { modulo: "Transparencia", texto: "Publicó el balance de una actividad" },
   publicar_comunicado: { modulo: "Transparencia", texto: "Publicó un comunicado" },
   registrar_queja: { modulo: "Incidentes", texto: "Registró un reporte vecinal" },
+  registrar_queja_asistida: { modulo: "Incidentes", texto: "Registró un reporte por un vecino" },
   oponerse_ubicacion_exacta: { modulo: "Privacidad", texto: "Pidió no mostrar su ubicación exacta" },
   retirar_oposicion_ubicacion: { modulo: "Privacidad", texto: "Volvió a mostrar su ubicación exacta" },
 };
