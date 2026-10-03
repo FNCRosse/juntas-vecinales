@@ -1,0 +1,39 @@
+// Tablas del módulo transparencia (M2), prefijo transparencia_.
+
+enum TipoPublicacion {
+  COMUNICADO
+}
+
+enum NivelUrgencia {
+  INFORMATIVO
+  URGENTE
+}
+
+// Todo lo que la junta publica a la comunidad. Es inalterable: un trigger rechaza UPDATE y DELETE
+// (docs/DATOS.md §3); corregir es publicar otra y enlazarla con corrigeAId. idOperacion lo genera el
+// dispositivo y evita publicar dos veces al reintentar (AC-5). El autor se guarda como figuraba al publicar.
+model Publicacion {
+  id               String             @id @default(uuid())
+  tipo             TipoPublicacion
+  titulo           String
+  fechaPublicacion DateTime           @default(now())
+  autorId          String
+  autor            String
+  corrigeAId       String?
+  corrigeA         Publicacion?       @relation("Correccion", fields: [corrigeAId], references: [id])
+  correcciones     Publicacion[]      @relation("Correccion")
+  idOperacion      String             @unique
+  comunicado       ComunicadoGeneral?
+
+  @@index([fechaPublicacion])
+  @@map("transparencia_publicaciones")
+}
+
+model ComunicadoGeneral {
+  publicacionId String        @id
+  publicacion   Publicacion   @relation(fields: [publicacionId], references: [id])
+  cuerpo        String
+  urgencia      NivelUrgencia
+
+  @@map("transparencia_comunicados")
+}

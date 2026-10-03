@@ -1,7 +1,14 @@
 // Catálogo de acciones auditadas (HU-GAR-26 CA1 y CA2): de qué módulo viene cada una y cómo se lee en
 // la auditoría global. Cada módulo agrega aquí las acciones que registra.
 
-export const MODULOS_AUDITORIA = ["Padrón", "Equipo", "Acceso", "Garita", "Privacidad"] as const;
+export const MODULOS_AUDITORIA = [
+  "Padrón",
+  "Equipo",
+  "Acceso",
+  "Garita",
+  "Privacidad",
+  "Transparencia",
+] as const;
 export type ModuloAuditoria = (typeof MODULOS_AUDITORIA)[number] | "Otros";
 
 export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }> = {
@@ -20,6 +27,7 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   descargar_copia_datos: { modulo: "Privacidad", texto: "Descargó la copia de sus datos" },
   aprobar_arco: { modulo: "Privacidad", texto: "Aprobó una solicitud de privacidad" },
   rechazar_arco: { modulo: "Privacidad", texto: "Rechazó una solicitud de privacidad" },
+  publicar_comunicado: { modulo: "Transparencia", texto: "Publicó un comunicado" },
   oponerse_ubicacion_exacta: { modulo: "Privacidad", texto: "Pidió no mostrar su ubicación exacta" },
   retirar_oposicion_ubicacion: { modulo: "Privacidad", texto: "Volvió a mostrar su ubicación exacta" },
 };
