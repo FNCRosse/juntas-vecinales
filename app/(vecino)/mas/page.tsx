@@ -17,6 +17,9 @@ export default async function MasOpciones() {
         <TarjetaEnlace href="/visitas" titulo="Mis visitas">
           <span>Anuncie a quien viene a su casa para que entre sin esperar.</span>
         </TarjetaEnlace>
+        <TarjetaEnlace href="/noticias" titulo="Noticias de la junta">
+          <span>Los comunicados de la directiva: cortes de servicio, seguridad y trámites.</span>
+        </TarjetaEnlace>
         <TarjetaEnlace href="/avisos" titulo="Avisos">
           <span>
             {sinLeer

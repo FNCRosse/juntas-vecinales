@@ -4,6 +4,8 @@ import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaLarga, saludo } from "@/compartido/fechas";
 import { bloqueDeIdentidad } from "@/modulos/identidad/aplicacion/panelInicio";
+import { ultimasNoticias } from "@/modulos/transparencia/aplicacion/comunicados";
+import { TarjetaNoticia } from "./noticias/TarjetaNoticia";
 
 export const metadata: Metadata = { title: "Inicio" };
 
@@ -13,6 +15,7 @@ export const metadata: Metadata = { title: "Inicio" };
 export default async function Inicio() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
   const { nombre, vivienda, avisosSinLeer } = await bloqueDeIdentidad(sesion);
+  const noticias = await ultimasNoticias(sesion, 2);
   const ahora = new Date();
   return (
     <div className="flex flex-col gap-6">
@@ -43,6 +46,23 @@ export default async function Inicio() {
         </span>
         <ChevronRight aria-hidden className="size-icono shrink-0" />
       </Link>
+      {noticias.length > 0 && (
+        <section aria-labelledby="titulo-noticias" className="flex flex-col gap-separacion">
+          <h2 id="titulo-noticias" className="text-titulo-2">
+            Últimas noticias de la junta
+          </h2>
+          {noticias.map((n) => (
+            <TarjetaNoticia key={n.id} noticia={n} nivel={3} />
+          ))}
+          <Link
+            href="/noticias"
+            className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace underline underline-offset-4"
+          >
+            Ver todas las noticias
+            <ChevronRight aria-hidden className="size-icono" />
+          </Link>
+        </section>
+      )}
     </div>
   );
 }

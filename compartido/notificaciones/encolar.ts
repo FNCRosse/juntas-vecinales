@@ -31,3 +31,16 @@ export async function encolarAviso(aviso: AvisoNuevo, tx: Transaccion) {
   });
   return { id: fila.id };
 }
+
+/** Encola el mismo aviso para muchas personas (un comunicado a toda la comunidad) en un solo envío a la BD. */
+export async function encolarAvisos(avisos: AvisoNuevo[], tx: Transaccion) {
+  const { count } = await tx.avisoEnCola.createMany({
+    data: avisos.map(({ whatsapp, ...resto }) => ({
+      ...resto,
+      telefono: whatsapp?.telefono,
+      plantilla: whatsapp?.plantilla,
+      parametros: whatsapp?.parametros ?? [],
+    })),
+  });
+  return { cantidad: count };
+}

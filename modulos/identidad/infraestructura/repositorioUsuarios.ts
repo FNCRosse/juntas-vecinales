@@ -47,3 +47,12 @@ export async function marcarPoliticaAceptada(
     data: { politicaAceptadaEn: ahora, politicaVersion: version },
   });
 }
+
+/** Los vecinos con cuenta activa: a quienes llega un comunicado a toda la comunidad. */
+export async function idsDeVecinosActivos(tx: Transaccion) {
+  const vecinos = await tx.usuario.findMany({
+    where: { estado: "ACTIVA", anonimizadaEn: null, roles: { hasSome: ["VECINO", "VECINO_ADULTO_MAYOR"] } },
+    select: { id: true },
+  });
+  return vecinos.map((v) => v.id);
+}
