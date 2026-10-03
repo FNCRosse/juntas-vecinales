@@ -4,6 +4,7 @@ import { manejar } from "@/compartido/manejar";
 import { datosPersonales as datosDeAccesibilidad } from "@/modulos/accesibilidad/aplicacion/datosPersonales";
 import { copiaAutorizada, datosPersonales as datosDeIdentidad } from "@/modulos/identidad/aplicacion/arco";
 import { exigirSesion } from "@/modulos/identidad/aplicacion/sesion";
+import { datosPersonales as datosDeIncidencias } from "@/modulos/incidencias/aplicacion/datosPersonales";
 
 /**
  * La copia de los datos personales en PDF (HU-GAR-12): se compone aquí con `datosPersonales` de cada
@@ -12,7 +13,11 @@ import { exigirSesion } from "@/modulos/identidad/aplicacion/sesion";
 export const GET = manejar<{ params: Promise<{ id: string }> }>(async (peticion, { params }) => {
   const sesion = await exigirSesion(peticion);
   const { usuarioId, numero, fecha } = await copiaAutorizada(sesion, (await params).id);
-  const secciones = [...(await datosDeIdentidad(usuarioId)), ...(await datosDeAccesibilidad(usuarioId))];
+  const secciones = [
+    ...(await datosDeIdentidad(usuarioId)),
+    ...(await datosDeAccesibilidad(usuarioId)),
+    ...(await datosDeIncidencias(usuarioId)),
+  ];
   const pdf = await generarPdf({
     titulo: "Mis datos en la Junta Vecinal",
     subtitulos: [

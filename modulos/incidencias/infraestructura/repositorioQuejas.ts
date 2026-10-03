@@ -125,3 +125,27 @@ export async function quejasParaElMapa(estados: EstadoQueja[], desde: Date) {
     orderBy: [{ fechaRegistro: "desc" }, { numero: "desc" }],
   });
 }
+
+/** Las quejas con nombre de una persona, para su copia de datos (HU-GAR-12). */
+export async function quejasConNombreDe(denuncianteId: string) {
+  return prisma.queja.findMany({
+    where: { denuncianteId },
+    orderBy: [{ fechaRegistro: "asc" }, { numero: "asc" }],
+  });
+}
+
+/**
+ * Cancelación (HU-GAR-14): sus quejas con nombre quedan como anónimas, sin referencia ni coordenadas, y
+ * las anónimas pierden la identidad protegida que las unía a ella.
+ */
+export async function anonimizarQuejasDe(tx: Transaccion, denuncianteId: string, hashDenunciante: string) {
+  const anonimas = await tx.identidadProtegida.findMany({
+    where: { hashDenunciante },
+    select: { quejaId: true },
+  });
+  await tx.queja.updateMany({
+    where: { OR: [{ denuncianteId }, { id: { in: anonimas.map((a) => a.quejaId) } }] },
+    data: { denuncianteId: null, esAnonimo: true, referencia: null, latitud: null, longitud: null },
+  });
+  await tx.identidadProtegida.deleteMany({ where: { hashDenunciante } });
+}

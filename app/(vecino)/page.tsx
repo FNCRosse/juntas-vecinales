@@ -1,4 +1,4 @@
-import { Bell, ChevronRight, Info } from "lucide-react";
+import { Bell, ChevronRight, Info, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
@@ -6,20 +6,22 @@ import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaLarga, saludo } from "@/compartido/fechas";
 import { obtenerPerfil } from "@/modulos/accesibilidad/aplicacion/obtenerPerfil";
 import { bloqueDeIdentidad } from "@/modulos/identidad/aplicacion/panelInicio";
+import { bloqueDeReportes } from "@/modulos/incidencias/aplicacion/quejas";
 import { ultimasNoticias } from "@/modulos/transparencia/aplicacion/comunicados";
 import { TarjetaNoticia } from "./noticias/TarjetaNoticia";
 
 export const metadata: Metadata = { title: "Inicio" };
 
 // VEC-ACC-09 Inicio del vecino (HU-GAR-19). El panel se compone aquí (modulos/identidad/CLAUDE.md):
-// M1 aporta el saludo, la vivienda y los avisos; M3, M4 y M5 suman la cuota, la asamblea y los
-// reportes, cada bloque con su enlace (CA2). Se lee en cada carga (CA3).
+// M1 aporta el saludo, la vivienda y los avisos; M3, los reportes; M4 y M5 suman la asamblea y la
+// cuota, cada bloque con su enlace (CA2). Se lee en cada carga (CA3).
 export default async function Inicio() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
   const { nombre, vivienda, avisosSinLeer } = await bloqueDeIdentidad(sesion);
-  const [noticias, perfil] = await Promise.all([
+  const [noticias, perfil, reportes] = await Promise.all([
     ultimasNoticias(sesion, 2),
     obtenerPerfil({ usuarioId: sesion.usuarioId }),
+    bloqueDeReportes(sesion),
   ]);
   const ahora = new Date();
   return (
@@ -50,6 +52,30 @@ export default async function Inicio() {
             </span>
           ) : (
             <span className="text-texto-secundario">No tiene avisos nuevos</span>
+          )}
+        </span>
+        <ChevronRight aria-hidden className="size-icono shrink-0" />
+      </Link>
+      <Link
+        href="/incidentes"
+        className="flex min-h-tactil items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 senior:p-6 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte"
+      >
+        <MapPin aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+        <span className="flex flex-1 flex-col gap-1">
+          <strong className="text-titulo-3 text-texto-enlace underline underline-offset-4">
+            Mis reportes
+          </strong>
+          <span>
+            {reportes.abiertos === 0
+              ? "No tiene reportes abiertos"
+              : reportes.abiertos === 1
+                ? "1 reporte abierto"
+                : `${reportes.abiertos} reportes abiertos`}
+          </span>
+          {reportes.ultimo && (
+            <span className="text-texto-secundario">
+              Último: {reportes.ultimo.numero} · {reportes.ultimo.categoria} · {reportes.ultimo.estado}
+            </span>
           )}
         </span>
         <ChevronRight aria-hidden className="size-icono shrink-0" />

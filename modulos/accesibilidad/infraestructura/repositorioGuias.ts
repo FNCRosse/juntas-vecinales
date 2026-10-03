@@ -1,4 +1,4 @@
-import { prisma } from "@/compartido/bd/cliente";
+import { prisma, type Transaccion } from "@/compartido/bd/cliente";
 import type { EstadoGuia, SeccionGuia } from "@/compartido/bd/generado/client";
 
 export async function guiasDe(usuarioId: string) {
@@ -11,4 +11,8 @@ export async function guardarGuia(usuarioId: string, seccion: SeccionGuia, estad
     create: { usuarioId, seccion, estado, paso },
     update: { estado, paso },
   });
+}
+
+export async function borrarGuiasDe(tx: Transaccion, usuarioId: string) {
+  await tx.guiaSeccion.deleteMany({ where: { usuarioId } });
 }

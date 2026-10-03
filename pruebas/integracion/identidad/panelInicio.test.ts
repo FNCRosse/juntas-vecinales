@@ -8,7 +8,7 @@ import { marcarTodosLeidos } from "@/modulos/identidad/aplicacion/avisos";
 import { iniciarSesionConClave } from "@/modulos/identidad/aplicacion/iniciarSesionConClave";
 
 beforeEach(async () => {
-  await prisma.$executeRaw`TRUNCATE identidad_usuarios, identidad_predios, nucleo_cola_avisos CASCADE`;
+  await prisma.$executeRaw`TRUNCATE identidad_usuarios, identidad_predios, nucleo_cola_avisos, incidencias_quejas CASCADE`;
   await sembrar("clave-de-prueba");
 });
 
@@ -26,6 +26,7 @@ describe("@HU-GAR-19 Panel de inicio consolidado", () => {
       );
     expect(await (await pedir()).json()).toEqual({
       identidad: { nombre: "Marta", vivienda: "Mz. A, lote 12", avisosSinLeer: 0 },
+      reportes: { abiertos: 0, ultimo: null },
     });
 
     await prisma.$transaction((tx) =>

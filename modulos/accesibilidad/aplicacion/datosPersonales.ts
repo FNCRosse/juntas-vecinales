@@ -3,6 +3,7 @@ import type { SeccionPdf } from "@/compartido/archivos/pdf";
 import type { Transaccion } from "@/compartido/bd/cliente";
 import { fechaLarga } from "@/compartido/fechas";
 import { anonimizarPedidos, solicitudesDe } from "@/modulos/accesibilidad/infraestructura/repositorioApoyo";
+import { borrarGuiasDe } from "@/modulos/accesibilidad/infraestructura/repositorioGuias";
 import {
   borrarPerfilDe,
   buscarPerfilPorUsuario,
@@ -38,4 +39,5 @@ export async function datosPersonales(usuarioId: string): Promise<SeccionPdf[]> 
 export async function anonimizar(usuarioId: string, tx: Transaccion) {
   await borrarPerfilDe(tx, usuarioId);
   await anonimizarPedidos(tx, usuarioId, "Persona anonimizada");
+  await borrarGuiasDe(tx, usuarioId);
 }

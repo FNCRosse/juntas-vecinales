@@ -287,3 +287,18 @@ export async function quejasPorAtender(sesion: SesionDto) {
   const conteo = await contarPorEstado();
   return { porEvaluar: conteo.RECIBIDO ?? 0, enRevision: conteo.EN_REVISION ?? 0 };
 }
+
+/**
+ * El bloque de reportes del panel de inicio (HU-GAR-19 CA1): cuántos siguen abiertos y el último, con su
+ * estado. Se lee en cada carga (CA3).
+ */
+export async function bloqueDeReportes(sesion: SesionDto) {
+  const quejas = await misQuejas(sesion);
+  const ultimo = quejas[0];
+  return {
+    abiertos: quejas.filter((q) => q.estado === "RECIBIDO" || q.estado === "EN_REVISION").length,
+    ultimo: ultimo
+      ? { numero: ultimo.numero, categoria: ultimo.categoria, estado: ultimo.estadoTexto }
+      : null,
+  };
+}
