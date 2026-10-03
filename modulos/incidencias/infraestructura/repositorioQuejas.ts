@@ -1,6 +1,6 @@
 import type { Transaccion } from "@/compartido/bd/cliente";
 import { prisma } from "@/compartido/bd/cliente";
-import type { CategoriaQueja, EstadoQueja } from "@/compartido/bd/generado/client";
+import type { CategoriaQueja, EstadoQueja, Prisma } from "@/compartido/bd/generado/client";
 
 const conEvidencias = { evidencias: { orderBy: { orden: "asc" } } } as const;
 
@@ -70,4 +70,27 @@ export async function contarPorEstado() {
   return Object.fromEntries(filas.map((f) => [f.estado, f._count._all])) as Partial<
     Record<EstadoQueja, number>
   >;
+}
+
+/** La queja con todo lo que la directiva necesita para gestionarla. */
+export async function buscarParaGestion(id: string) {
+  return prisma.queja.findUnique({
+    where: { id },
+    include: {
+      ...conEvidencias,
+      evidencias: { orderBy: { orden: "asc" }, include: { archivo: true } },
+      identidadProtegida: true,
+    },
+  });
+}
+
+/** Cambia la queja solo si sigue en el estado esperado: dos personas no la deciden a la vez. */
+export async function cambiarSiSigueEn(
+  tx: Transaccion,
+  id: string,
+  estado: EstadoQueja,
+  datos: Prisma.QuejaUpdateManyMutationInput,
+) {
+  const { count } = await tx.queja.updateMany({ where: { id, estado }, data: datos });
+  return count === 1;
 }

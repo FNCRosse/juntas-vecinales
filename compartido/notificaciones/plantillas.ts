@@ -114,3 +114,12 @@ export function plantillaNumeroCambiado(nombre: string, terminaEn: string) {
 export function plantillaCancelacionPedida(vecino: string, vence: string) {
   return { plantilla: "cancelacion_pedida", parametros: [vecino, vence] };
 }
+
+/**
+ * Novedad en un reporte (HU-QUE-09 CA2), para quien reportó. Sin nombre, código ni detalle, para que
+ * sirva también al reporte anónimo (R-09). Texto en Meta: "Hay novedades en su reporte a la Junta
+ * Vecinal. Consúltelo en la app, en Incidentes, o con su código de seguimiento."
+ */
+export function plantillaNovedadReporte() {
+  return { plantilla: "novedad_reporte", parametros: [] };
+}

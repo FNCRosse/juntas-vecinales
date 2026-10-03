@@ -54,3 +54,22 @@ export function pasosDelAvance(estado: Estado, fechaRegistro: string): Paso[] {
     },
   ];
 }
+
+/** La novedad que encabeza el avance (VEC-QUE-08), en palabras; ninguna mientras espera revisión. */
+export function novedadDelReporte(estado: Estado, motivoRechazo: string | null) {
+  if (estado === "EN_REVISION") {
+    return {
+      tipo: "info" as const,
+      titulo: "La directiva revisa su reporte",
+      texto: "Vio que procede. Le avisaremos cuando haya una solución.",
+    };
+  }
+  if (estado === "RECHAZADO") {
+    return {
+      tipo: "aviso" as const,
+      titulo: "La directiva no pudo darle curso",
+      texto: `${motivoRechazo ?? ""} Si cree que es un error, pida ayuda a una persona.`.trim(),
+    };
+  }
+  return null;
+}

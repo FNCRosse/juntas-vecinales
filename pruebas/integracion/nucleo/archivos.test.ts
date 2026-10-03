@@ -3,6 +3,7 @@ import { GET as descargarHttp } from "@/app/api/archivos/[id]/route";
 import { POST as pedirSubidaHttp } from "@/app/api/archivos/route";
 import { prisma } from "@/compartido/bd/cliente";
 import { sembrar } from "@/compartido/bd/semillas";
+import { hashDeToken } from "@/compartido/claves";
 import { iniciarSesionConClave } from "@/modulos/identidad/aplicacion/iniciarSesionConClave";
 
 const R2 = {
@@ -126,5 +127,32 @@ describe("@HU-ASA-10 Archivos con URL firmada (comprobantes de los gastos)", () 
       params: Promise.resolve({ id }),
     });
     expect(sinSesion.status).toBe(401);
+  });
+
+  it("@HU-QUE-05 AC-7 la evidencia de una queja la ven quien la subió y la directiva; otro vecino recibe 404", async () => {
+    const vecino = async (dni: string) => {
+      const token = randomUUID();
+      const { id } = await prisma.usuario.findUniqueOrThrow({ where: { dni } });
+      await prisma.sesion.create({ data: { usuarioId: id, tokenHash: hashDeToken(token) } });
+      return { id, token };
+    };
+    const carmen = await vecino("08123478");
+    const julio = await vecino("40000006");
+    const { id } = await prisma.archivo.create({
+      data: {
+        clave: `evidencias/${randomUUID()}.jpg`,
+        tipo: "image/jpeg",
+        tamano: 1000,
+        uso: "evidencia_queja",
+        subidoPor: carmen.id,
+      },
+    });
+    const estado = async (token: string) =>
+      (await descargarHttp(pedir(`/api/archivos/${id}`, "GET", token), { params: Promise.resolve({ id }) }))
+        .status;
+    expect(await estado(carmen.token)).toBe(302);
+    expect(await estado(tokenMarta)).toBe(302);
+    expect(await estado(tokenPedro)).toBe(302);
+    expect(await estado(julio.token)).toBe(404);
   });
 });

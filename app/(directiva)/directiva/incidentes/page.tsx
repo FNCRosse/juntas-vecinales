@@ -1,4 +1,4 @@
-import { Check, Info, UserRoundPlus } from "lucide-react";
+import { Check, ChevronRight, Info, UserRoundPlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
@@ -65,11 +65,14 @@ export default async function BandejaIncidentes({
         <ul className="flex flex-col gap-separacion" aria-label="Reportes">
           {quejas.map((q) => (
             <li key={q.id}>
-              <article className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6">
+              <Link
+                href={`/directiva/incidentes/${q.id}`}
+                className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+              >
                 <span className="text-pequeno text-texto-secundario">
                   {q.numero} · {fechaYHora(new Date(q.fechaRegistro))}
                 </span>
-                <h2 className="text-titulo-3">{q.categoriaTexto}</h2>
+                <strong className="text-titulo-3">{q.categoriaTexto}</strong>
                 <span>
                   {q.lugar} · {q.quien}
                 </span>
@@ -77,7 +80,11 @@ export default async function BandejaIncidentes({
                   <Info aria-hidden className="size-icono-pequeno" />
                   {q.estadoTexto}
                 </span>
-              </article>
+                <span className="inline-flex items-center gap-1 font-bold text-texto-enlace">
+                  {q.estado === "RECIBIDO" ? "Evaluar" : "Ver el reporte"}
+                  <ChevronRight aria-hidden className="size-icono" />
+                </span>
+              </Link>
             </li>
           ))}
         </ul>
