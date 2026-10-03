@@ -1,8 +1,11 @@
 import { Download, FileText } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaYHora } from "@/compartido/fechas";
+import { soles } from "@/compartido/dinero";
 import { actasPublicadas } from "@/modulos/transparencia/aplicacion/actas";
+import { balancesPublicados } from "@/modulos/transparencia/aplicacion/balances";
 
 export const metadata: Metadata = { title: "Actas y balances" };
 
@@ -10,13 +13,42 @@ export const metadata: Metadata = { title: "Actas y balances" };
 // historial completo con los balances llega con HU-ASA-12.
 export default async function ActasYBalances() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
-  const actas = await actasPublicadas(sesion);
+  const [actas, balances] = await Promise.all([actasPublicadas(sesion), balancesPublicados(sesion)]);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-titulo-1">Actas y balances</h1>
         <p className="text-texto-secundario">Lo que decidió la asamblea, publicado por la directiva.</p>
       </div>
+      {balances.length > 0 && (
+        <section aria-labelledby="titulo-balances" className="flex flex-col gap-4">
+          <h2 id="titulo-balances" className="text-titulo-2">
+            Balances de actividades
+          </h2>
+          <ul className="flex flex-col gap-separacion" aria-label="Balances">
+            {balances.map((b) => (
+              <li key={b.id}>
+                <Link
+                  href={`/transparencia/balances/${b.id}`}
+                  className="flex min-h-tactil flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 senior:p-6 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte"
+                >
+                  <strong className="text-titulo-3 text-texto-enlace underline underline-offset-4">
+                    {b.titulo}
+                  </strong>
+                  <span className="text-texto-secundario">
+                    Actividad del {b.fechaActividad.toLowerCase()}
+                  </span>
+                  <span>
+                    Ingresos {soles(b.totales.ingresos)} · Gastos {soles(b.totales.egresos)} ·{" "}
+                    {b.totales.utilidadNeta < 0 ? "Pérdida" : "Utilidad neta"} {soles(b.totales.utilidadNeta)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <h2 className="text-titulo-2">Actas de asamblea</h2>
+        </section>
+      )}
       {actas.length ? (
         <ul className="flex flex-col gap-separacion" aria-label="Actas">
           {actas.map((a) => (

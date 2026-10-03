@@ -59,6 +59,27 @@ export default defineConfig({
             await cliente.end();
           }
         },
+        // Un comprobante ya "subido" para esa persona: el CI no habla con R2 (docs/PRUEBAS.md §2), así
+        // que la prueba simula la subida y publica el balance con este archivo. Solo la BD de pruebas.
+        async comprobanteDePrueba({ dni }: { dni: string }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            const { rows } = await cliente.query<{ id: string }>(
+              "SELECT id FROM identidad_usuarios WHERE dni = $1",
+              [dni],
+            );
+            const { rows: archivo } = await cliente.query<{ id: string }>(
+              `INSERT INTO nucleo_archivos (id, clave, tipo, tamano, uso, "subidoPor")
+               VALUES (gen_random_uuid(), 'comprobantes/' || gen_random_uuid() || '.jpg', 'image/jpeg', 1000, 'comprobante_egreso', $1)
+               RETURNING id`,
+              [rows[0].id],
+            );
+            return archivo[0].id;
+          } finally {
+            await cliente.end();
+          }
+        },
         async enlaceEnCola({
           telefono,
           plantilla = "enlace_acceso",

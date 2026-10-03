@@ -3,6 +3,7 @@
 enum TipoPublicacion {
   COMUNICADO
   ACTA
+  BALANCE
 }
 
 enum NivelUrgencia {
@@ -26,6 +27,7 @@ model Publicacion {
   idOperacion      String             @unique
   comunicado       ComunicadoGeneral?
   acta             ActaDigital?
+  balance          BalanceFinanciero?
 
   @@index([fechaPublicacion])
   @@map("transparencia_publicaciones")
@@ -51,4 +53,32 @@ model ActaDigital {
   conclusiones  String
 
   @@map("transparencia_actas")
+}
+
+// Balance de una actividad pro fondos (HU-ASA-10). Mientras M4 no exista, la actividad se identifica por
+// su nombre (el título de la publicación) y su fecha. Los montos son céntimos enteros; la utilidad neta
+// se calcula, no se guarda.
+model BalanceFinanciero {
+  publicacionId     String      @id
+  publicacion       Publicacion @relation(fields: [publicacionId], references: [id])
+  fechaActividad    DateTime
+  ingresosVirtuales Int
+  ingresosEnPuerta  Int
+  egresos           Egreso[]
+
+  @@map("transparencia_balances")
+}
+
+model Egreso {
+  id        String            @id @default(uuid())
+  balanceId String
+  balance   BalanceFinanciero @relation(fields: [balanceId], references: [publicacionId])
+  orden     Int
+  concepto  String
+  monto     Int
+  archivoId String
+  archivo   Archivo           @relation(fields: [archivoId], references: [id])
+
+  @@index([balanceId])
+  @@map("transparencia_egresos")
 }
