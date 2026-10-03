@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
-import { Campo, MensajeDeCampo } from "@/componentes/a11y/Campo";
+import { AreaTexto } from "@/componentes/a11y/AreaTexto";
+import { Campo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
@@ -141,23 +142,15 @@ export function PublicarComunicado() {
         error={errores.titulo}
         onChange={(e) => setDatos({ ...datos, titulo: e.target.value })}
       />
-      <div className="flex flex-col gap-3">
-        <label htmlFor="campo-cuerpo" className="text-base font-bold">
-          Mensaje
-        </label>
-        <textarea
-          id="campo-cuerpo"
-          name="cuerpo"
-          rows={6}
-          maxLength={1500}
-          value={datos.cuerpo}
-          aria-invalid={errores.cuerpo ? true : undefined}
-          aria-describedby={errores.cuerpo ? "campo-cuerpo-error" : undefined}
-          onChange={(e) => setDatos({ ...datos, cuerpo: e.target.value })}
-          className="w-full rounded-control border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie p-3 text-base text-texto-principal hover:border-borde-fuerte aria-invalid:border-borde-error"
-        />
-        {errores.cuerpo && <MensajeDeCampo id="campo-cuerpo-error">{errores.cuerpo}</MensajeDeCampo>}
-      </div>
+      <AreaTexto
+        name="cuerpo"
+        etiqueta="Mensaje"
+        rows={6}
+        maxLength={1500}
+        value={datos.cuerpo}
+        error={errores.cuerpo}
+        onChange={(e) => setDatos({ ...datos, cuerpo: e.target.value })}
+      />
       <GrupoOpciones id="campo-urgencia" pregunta="¿Qué tan urgente es?" error={errores.urgencia}>
         {(Object.keys(URGENCIAS) as Urgencia[]).map((clave) => (
           <Opcion

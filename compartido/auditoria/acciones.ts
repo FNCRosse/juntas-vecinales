@@ -27,6 +27,7 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   descargar_copia_datos: { modulo: "Privacidad", texto: "Descargó la copia de sus datos" },
   aprobar_arco: { modulo: "Privacidad", texto: "Aprobó una solicitud de privacidad" },
   rechazar_arco: { modulo: "Privacidad", texto: "Rechazó una solicitud de privacidad" },
+  publicar_acta: { modulo: "Transparencia", texto: "Publicó un acta de asamblea" },
   publicar_comunicado: { modulo: "Transparencia", texto: "Publicó un comunicado" },
   oponerse_ubicacion_exacta: { modulo: "Privacidad", texto: "Pidió no mostrar su ubicación exacta" },
   retirar_oposicion_ubicacion: { modulo: "Privacidad", texto: "Volvió a mostrar su ubicación exacta" },
