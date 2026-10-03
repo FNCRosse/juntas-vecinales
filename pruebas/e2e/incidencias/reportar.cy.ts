@@ -66,6 +66,8 @@ describe("@HU-QUE-01 @HU-QUE-04 Registrar una queja y emitir su ticket", () => {
     cy.contains("Recibido, pendiente de revisión").should("exist");
     cy.contains("strong", /^Q-\d{4}-\d{5}-[A-Z2-9]{4}$/).should("exist");
     cy.revisarAccesibilidad("reporte-enviado-senior-360");
+    cy.contains("a", "Ver el avance de mi reporte").click();
+    cy.get("h1").should("contain.text", "Reporte N.°");
     cy.contains("a", "Volver a Incidentes").click();
     cy.contains("li", "Ruidos molestos").should("contain.text", "Recibido, pendiente de revisión");
 
