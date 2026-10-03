@@ -1,35 +1,35 @@
 # Graph Report - juntas-vecinales  (2026-10-03)
 
 ## Corpus Check
-- 429 files · ~293,013 words
+- 518 files · ~451,799 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 11 file(s) not represented in the graph (top: .prisma 5, (none) 3, .example 1)
+- Unclassified: 12 file(s) not represented in the graph (top: .prisma 6, (none) 3, .example 1)
 
 ## Summary
-- 2217 nodes · 6689 edges · 140 communities (94 shown, 46 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 80 edges (avg confidence: 0.86)
+- 2611 nodes · 8188 edges · 161 communities (108 shown, 53 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 86 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2be217e2`
+- Built from commit: `617b3df2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - compartido/archivos (R2 firmado, validación, PDF etiquetado)
-- actas.test.ts
+- ErrorNoEncontrado
 - aplicacion/garita.ts
 - Cierre diferido de HU parciales ([~] / [-])
 - Predio
-- BotonEnlace
+- Campo
 - verificar-contraste.mjs
 - Queja
 - Módulo accesibilidad (M6)
 - package.json
-- Panel de inicio del vecino (HU-GAR-19)
-- Adaptador WhatsApp
+- Matriz de dependencias permitidas entre módulos
+- Desviaciones respecto del Anexo H
 - guia-visual/generar-css.mjs
-- entradaAlterna.ts
+- plantillas.ts
 - MagicLink de un solo uso
 - SolicitudAjusteTarifa
 - PropuestaAgenda
@@ -45,10 +45,10 @@
 - scripts
 - compilerOptions
 - compilerOptions
-- ErrorValidacion
+- aplicacion/seguimiento.ts
 - Worker (GET /salud, POST /tareas/ejecutar)
-- Evidencia de cierre · M1 Identidad: usuarios y control de acceso
-- Reglas duras del proyecto
+- Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido
+- Pirámide de pruebas (Jest, Supertest, Cypress+axe)
 - actas.ts
 - GuiaPrimerUso
 - postcss.config.mjs
@@ -56,110 +56,124 @@
 - inicio.cy.ts
 - PublicarActa.tsx
 - unitarias/nucleo/archivos.test.ts
-- entrarConEnlace.test.ts
+- repositorioPerfiles.ts
 - comunicados.ts
 - contraste.ts
 - matriz-hu.mjs
 - Fase 0b · Base de accesibilidad (M6) y núcleo compartido
 - balances.ts
-- errores.ts
-- dependencies
 - prisma
+- dependencies
+- credencialRespaldo.ts
 - e2e.ts
 - avisos.test.ts
 - Worker de tareas programadas (advisory lock, cron cada 10 min)
-- empadronar.test.ts
+- padron/esquema.ts
 - mediacion.ts
 - aplicacion/equipo.ts
 - lenguajeLlano.test.ts
-- zod
-- consultarPadron.ts
 - aplicacion/sesion.ts
-- ref_node_child_process
+- gestionarPadron.ts
+- quejas.ts
+- e2e.mjs
 - jest.config.ts
 - tabularHasta
-- repositorioArco.ts
+- visitas.ts
 - area-tactil.cy.ts
 - catalogo.cy.ts
 - revisar-estilos.sh
 - letra-grande.cy.ts
 - AsistenteEmpadronar.tsx
-- entrarConEnlace.ts
+- entradaAlterna.ts
+- AyudaEquipo
 - exigirActor
-- modoSeniorAlRenderizar
 - exigirSesion
-- Opciones.tsx
-- _sesion/sesion.ts
+- clave/page.tsx
+- guias.ts
 - PublicarBalance.tsx
-- Boton
-- perfiles.ts
+- lucide-react
+- avisos.ts
 - compilerOptions
-- notificaciones.test.ts
+- ejecutor.ts
 - MensajeEstado
-- administracion/equipo/page.tsx
+- aplicacion/mapa.ts
 - aplicacion/arco.ts
-- equipo.cy.ts
+- garita.test.ts
 - instantaneaLocal.ts
 - arco.test.ts
 - auditoria.ts
-- ErrorNoEncontrado
+- resolverSolicitudArco
 - empadronar.cy.ts
 - entrar-enlace.cy.ts
 - Plan de implementación
 - next
 - balance.ts
-- integracion/identidad/entradaAlterna.test.ts
-- cancelacion.test.ts
-- Campo
+- cuentas/route.ts
+- repositorioArco.ts
+- Boton
 - fechas.ts
-- salud.test.ts
+- entrarConEnlace.test.ts
 - cliente.ts
 - administracion/privacidad/page.tsx
-- Desviaciones respecto del Anexo H
+- Reglas duras del proyecto
 - acta.ts
 - HU-ACC-07 Alternativas textuales de imágenes, íconos y mapa
 - avisos.cy.ts
 - garita.cy.ts
 - padron-gestion.cy.ts
 - visitas.cy.ts
+- perfil/page.tsx
 - escuchar.cy.ts
 - catalogo/layout.tsx
 - aplicacion/historial.ts
 - comunicados.cy.ts
 - balances/[id]/page.tsx
 - tokens/generar-css.mjs
-- Lista de comprobación por pantalla
-- Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido
+- Plantilla de evidencia de cierre de módulo
+- direccion
 - ref_node_fs
-- Casos de uso (una función por archivo)
+- (vecino)/incidentes/page.tsx
 - lintear.mjs
 - actas.cy.ts
 - balances.cy.ts
 - historial.cy.ts
+- repositorioGarita.ts
+- registrarQueja
+- queja.ts
+- avisarDenunciante.ts
+- Comprobante
+- ConsultarGarita.tsx
+- BuscarConCodigo.tsx
+- Evidencia de cierre · M1 Identidad: usuarios y control de acceso
+- verVivienda
+- ADR-007 Esquema único con separación lógica por módulo
+- Preferencias.tsx
+- Procedimiento por HU
+- corregir/page.tsx
 
 ## God Nodes (most connected - your core abstractions)
-1. `next` - 104 edges
-2. `MensajeEstado()` - 101 edges
-3. `exigirActor()` - 95 edges
-4. `exigirSesion()` - 93 edges
-5. `Boton()` - 81 edges
-6. `lucide-react` - 75 edges
-7. `leerJson()` - 69 edges
-8. `react` - 65 edges
-9. `enviarJson()` - 64 edges
-10. `prisma` - 63 edges
+1. `next` - 123 edges
+2. `exigirActor()` - 113 edges
+3. `exigirSesion()` - 113 edges
+4. `MensajeEstado()` - 111 edges
+5. `Boton()` - 96 edges
+6. `lucide-react` - 90 edges
+7. `ErrorNoEncontrado` - 83 edges
+8. `leerJson()` - 81 edges
+9. `enviarJson()` - 80 edges
+10. `prisma` - 80 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Matriz HU → código → pruebas` --references--> `Confirmacion()`  [INFERRED]
   docs/evidencias/matriz-hu.md → componentes/a11y/Confirmacion.tsx
-- `7. Pendientes y decisiones` --references--> `css()`  [INFERRED]
-  docs/evidencias/F0b.md → componentes/tokens/generar-css.mjs
 - `1. HU de la fase` --references--> `manejar()`  [INFERRED]
   docs/evidencias/F0b.md → compartido/manejar.ts
 - `1. HU de la fase` --references--> `Confirmacion()`  [INFERRED]
   docs/evidencias/F0b.md → componentes/a11y/Confirmacion.tsx
-- `1. HU del módulo` --references--> `anonimizar()`  [INFERRED]
-  docs/evidencias/M1.md → modulos/accesibilidad/aplicacion/datosPersonales.ts
+- `7. Pendientes y decisiones` --references--> `css()`  [INFERRED]
+  docs/evidencias/F0b.md → componentes/tokens/generar-css.mjs
+- `1. HU del módulo` --references--> `actualizarEstadoMorosidad()`  [INFERRED]
+  docs/evidencias/M1.md → modulos/identidad/aplicacion/visitas.ts
 
 ## Import Cycles
 - None detected.
@@ -172,19 +186,19 @@
 - **Protección de identidad y no identificación** — modulos_incidencias_claude_identidadprotegida, modulos_incidencias_claude_mapaincidentes, modulos_identidad_claude_prefiereubicaciongeneralizada, modulos_transparencia_claude_garantizarnoidentificacion [INFERRED 0.75]
 - **Mediación asistida para adultos mayores** — modulos_accesibilidad_claude_canalmediacionhumana, modulos_accesibilidad_claude_hu_acc_04, modulos_asambleas_claude_hu_asa_03, modulos_incidencias_claude_hu_que_03 [INFERRED 0.85]
 
-## Communities (140 total, 46 thin omitted)
+## Communities (161 total, 53 thin omitted)
 
 ### Community 0 - "compartido/archivos (R2 firmado, validación, PDF etiquetado)"
-Cohesion: 0.08
-Nodes (30): compartido/archivos (R2 firmado, validación, PDF etiquetado), Comprobante, HU-COB-08 Subir comprobante de pago digital, HU-COB-09 Auditar comprobantes, HU-COB-10 Observar comprobante con motivo, HU-COB-11 Cobro en efectivo sin conexión, HU-COB-12 Recibo digital en PDF, Pago (abstracta) (+22 more)
+Cohesion: 0.09
+Nodes (26): compartido/archivos (R2 firmado, validación, PDF etiquetado), compartido/notificaciones (cola, worker, adaptador Meta + simulador), HU-COB-12 Recibo digital en PDF, ReciboDigital, Asamblea, CheckInPresencial, Convocatoria (abstracta, versión imprimible), EventoProFondos (+18 more)
 
-### Community 1 - "actas.test.ts"
-Cohesion: 0.21
-Nodes (7): esquemaActa, GET, GET, POST, POST, vistaPreviaActa(), T0
+### Community 1 - "ErrorNoEncontrado"
+Cohesion: 0.10
+Nodes (43): Derivar(), metadata, ErrorNoEncontrado, 3. Matriz HU → código → prueba, exigirRol(), anioEnLima(), derivarQueja(), documentoDelOficio() (+35 more)
 
 ### Community 2 - "aplicacion/garita.ts"
-Cohesion: 0.05
-Nodes (99): esquema, POST, vecino, GET, DELETE, PATCH, ErrorConflicto, horaCorta() (+91 more)
+Cohesion: 0.11
+Nodes (30): rangoHorario(), plantillaEmergenciaGarita(), plantillaRejaManual(), plantillaVisitaEnPuerta(), plantillaVisitaLlego(), anunciada(), FilaBitacora, PredioConResidentes (+22 more)
 
 ### Community 3 - "Cierre diferido de HU parciales ([~] / [-])"
 Cohesion: 0.12
@@ -194,41 +208,41 @@ Nodes (18): Open Peeps (ilustraciones CC0), HU-ACC-10 Tutorial guiado por secci�
 Cohesion: 0.11
 Nodes (23): Cuota semanal, HU-COB-01 Cálculo semanal de la deuda (worker), HU-COB-16 Conceptos y montos de la tarifa, Tarifa (ConceptoTarifa), CredencialRespaldo, HU-GAR-01 Empadronar residente y enviar acceso inicial, HU-GAR-02 Entrar con enlace de acceso y clave de respaldo, HU-GAR-03 Abrir desde el ícono del teléfono (PWA) (+15 more)
 
-### Community 5 - "BotonEnlace"
-Cohesion: 0.10
-Nodes (22): AgregarAlEquipo(), Equipo(), CambiarEstado(), pasarA(), metadata, PedidosDeAyuda(), MarcarLeido(), MarcarTodos() (+14 more)
+### Community 5 - "Campo"
+Cohesion: 0.06
+Nodes (50): FormularioPolitica(), metadata, Privacidad(), PUNTOS, Agregado, AgregarAlEquipo(), Encontrada, Errores (+42 more)
 
 ### Community 6 - "verificar-contraste.mjs"
 Cohesion: 0.11
 Nodes (14): css, esperado, fondos, hex(), json, lum(), minimo, neutros (+6 more)
 
 ### Community 7 - "Queja"
-Cohesion: 0.09
-Nodes (22): compartido/notificaciones (cola, worker, adaptador Meta + simulador), EstadoCuenta, HU-COB-02 Estado de cuenta privado, CheckInPresencial, ConfirmacionAsistencia (DIGITAL / ASISTIDA), HU-ASA-02 Confirmar asistencia, HU-ASA-03 Confirmación asistida por el mediador, HU-ASA-07 Check-in presencial y quórum definitivo (+14 more)
+Cohesion: 0.14
+Nodes (14): EstadoCuenta, HU-COB-02 Estado de cuenta privado, ConfirmacionAsistencia (DIGITAL / ASISTIDA), HU-ASA-02 Confirmar asistencia, HU-ASA-03 Confirmación asistida por el mediador, HU-GAR-19 Panel de inicio consolidado, PanelInicio, HU-QUE-02 Modo anónimo (+6 more)
 
 ### Community 8 - "Módulo accesibilidad (M6)"
-Cohesion: 0.29
-Nodes (11): Reparto de las 10 HU de M6, Módulo accesibilidad (M6), Módulo aportes (M5), Módulo asambleas (M4), Módulo identidad (M1), Módulo incidencias (M3), Módulo transparencia (M2), Derechos ARCO (+3 more)
+Cohesion: 0.39
+Nodes (9): Reparto de las 10 HU de M6, Módulo accesibilidad (M6), Módulo aportes (M5), Módulo asambleas (M4), Módulo identidad (M1), Módulo incidencias (M3), Módulo transparencia (M2), Derechos ARCO (+1 more)
 
 ### Community 9 - "package.json"
 Cohesion: 0.09
-Nodes (21): engines, node, name, private, version, prettier, prisma, @prisma/adapter-pg (+13 more)
+Nodes (20): engines, node, name, private, version, prettier, prisma, @prisma/adapter-pg (+12 more)
 
-### Community 10 - "Panel de inicio del vecino (HU-GAR-19)"
-Cohesion: 0.14
-Nodes (11): AC-2 Baja carga cognitiva (<= 3 interacciones), Modo Senior ("Letra grande"), Tamaños mínimos, Semillas ficticias (personajes del prototipo), Grupos de rutas por actor, Panel de inicio del vecino (HU-GAR-19), Server Components por defecto, Tokens, Tailwind v4 y Radix (+3 more)
+### Community 10 - "Matriz de dependencias permitidas entre módulos"
+Cohesion: 0.22
+Nodes (7): AC-2 Baja carga cognitiva (<= 3 interacciones), Modo Senior ("Letra grande"), Tamaños mínimos, Matriz de dependencias permitidas entre módulos, Panel de inicio del vecino (HU-GAR-19), Server Components por defecto, Tokens, Tailwind v4 y Radix
 
-### Community 11 - "Adaptador WhatsApp"
+### Community 11 - "Desviaciones respecto del Anexo H"
 Cohesion: 0.16
-Nodes (9): Neon PostgreSQL, WhatsApp Cloud API (número de prueba), Adaptador WhatsApp, Despacho de notificaciones con reintentos, Simulador de WhatsApp, Tabla nucleo_notificaciones, Entornos (local, CI, preview, producción), Variables de entorno (sin valores) (+1 more)
+Nodes (11): Cloudflare R2, Neon PostgreSQL, WhatsApp Cloud API (número de prueba), Adaptador de archivos R2 (URLs firmadas), Adaptador WhatsApp, Despacho de notificaciones con reintentos, Simulador de WhatsApp, Tabla nucleo_notificaciones (+3 more)
 
 ### Community 12 - "guia-visual/generar-css.mjs"
 Cohesion: 0.29
 Nodes (9): aplanar(), css(), linea(), nombreCss(), ref(), REM, TAILWIND, tokens (+1 more)
 
-### Community 13 - "entradaAlterna.ts"
-Cohesion: 0.15
-Nodes (23): plantillaClaveCambiada(), plantillaClaveNueva(), plantillaEnlaceAcceso(), plantillaInvitacionEquipo(), Destinatario, emitirEnlace(), SEGUN_PROPOSITO, MENSAJE_MUCHOS (+15 more)
+### Community 13 - "plantillas.ts"
+Cohesion: 0.33
+Nodes (5): plantillaCancelacionPedida(), plantillaClaveNueva(), plantillaInvitacionEquipo(), plantillaSolicitudPrivacidad(), avisarResultado()
 
 ### Community 15 - "SolicitudAjusteTarifa"
 Cohesion: 0.67
@@ -262,45 +276,45 @@ Nodes (11): compilerOptions, esModuleInterop, lib, module, moduleResolution, noE
 Cohesion: 0.17
 Nodes (11): compilerOptions, esModuleInterop, lib, module, outDir, rootDir, skipLibCheck, strict (+3 more)
 
-### Community 37 - "ErrorValidacion"
-Cohesion: 0.14
-Nodes (21): ErrorValidacion, DatosEmpadronamiento, empadronar(), MENSAJE_YA_REGISTRADO, personasDe(), validarEmpadronamiento(), ViviendaEmpadronada, agregarAlEquipo() (+13 more)
+### Community 37 - "aplicacion/seguimiento.ts"
+Cohesion: 0.10
+Nodes (31): GET, respuestaPdf(), GET, GET, ipDe(), avanceADto(), consultarPorCodigo(), Fila (+23 more)
 
 ### Community 38 - "Worker (GET /salud, POST /tareas/ejecutar)"
-Cohesion: 0.43
-Nodes (6): Render (worker Node.js), Despertador del worker con after(), Worker (GET /salud, POST /tareas/ejecutar), Política de retención de datos, Cron de GitHub Actions para el worker, Límites de los planes gratuitos
+Cohesion: 0.36
+Nodes (7): Render (worker Node.js), Vercel (app Next.js), Despertador del worker con after(), Worker (GET /salud, POST /tareas/ejecutar), Política de retención de datos, Cron de GitHub Actions para el worker, Límites de los planes gratuitos
 
-### Community 39 - "Evidencia de cierre · M1 Identidad: usuarios y control de acceso"
-Cohesion: 0.10
-Nodes (17): 1. HU del módulo, 2. Cobertura de Jest (unitarias + integración), 3. Matriz HU → código → prueba, 4. Reporte axe por pantalla, 5. Revisión manual de accesibilidad, 6. Capturas, 7. Pendientes y decisiones, Evidencia de cierre · M1 Identidad: usuarios y control de acceso (+9 more)
+### Community 39 - "Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido"
+Cohesion: 0.07
+Nodes (23): 1. HU de la fase, 2. Cobertura de Jest (unitarias + integración), 3. Matriz HU → código → prueba, 4. Reporte axe por pantalla, 5. Revisión manual de accesibilidad, 6. Capturas, Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido, 1. HU del módulo (+15 more)
 
-### Community 40 - "Reglas duras del proyecto"
-Cohesion: 0.17
-Nodes (11): Uso del grafo graphify en el repo, AC-5 Idempotencia por idOperacion, AC-6 Auditoría en la misma transacción, AC-7 Confidencialidad (404 a datos ajenos), registrarAuditoria(), Tabla nucleo_auditoria, Conventional Commits en español, Procedimiento por HU (+3 more)
+### Community 40 - "Pirámide de pruebas (Jest, Supertest, Cypress+axe)"
+Cohesion: 0.22
+Nodes (9): Funciones de aptitud con ESLint, AC-5 Idempotencia por idOperacion, AC-6 Auditoría en la misma transacción, registrarAuditoria(), Tabla nucleo_auditoria, Cola local de cobros sin conexión, Instantánea del padrón en la garita (AC-4), PWA con service worker propio (+1 more)
 
 ### Community 41 - "actas.ts"
-Cohesion: 0.17
-Nodes (15): ActaDto, ActaPreparada, descargarActa(), Fila, FilaActa, pdfDelActa(), publicarActa(), revisar() (+7 more)
+Cohesion: 0.13
+Nodes (20): actaADto(), ActaDto, ActaPreparada, actasPublicadas(), descargarActa(), Fila, FilaActa, publicarActa() (+12 more)
 
 ### Community 42 - "GuiaPrimerUso"
 Cohesion: 0.50
 Nodes (3): GuiaPrimerUso(), Guia(), metadata
 
 ### Community 46 - "PublicarActa.tsx"
-Cohesion: 0.13
-Nodes (12): metadata, NuevaActa(), hoyEnLima(), PublicarActa(), publicar(), VACIO, metadata, NuevoComunicado() (+4 more)
+Cohesion: 0.24
+Nodes (6): metadata, NuevaActa(), hoyEnLima(), PublicarActa(), publicar(), VACIO
 
 ### Community 47 - "unitarias/nucleo/archivos.test.ts"
-Cohesion: 0.10
-Nodes (25): codificar(), Credenciales, fechaAmz(), firmarUrl(), hmac(), PeticionAFirmar, sha256(), configuracion() (+17 more)
+Cohesion: 0.09
+Nodes (29): GET, esquema, POST, USOS, codificar(), Credenciales, fechaAmz(), firmarUrl() (+21 more)
 
-### Community 48 - "entrarConEnlace.test.ts"
-Cohesion: 0.08
-Nodes (28): esquema, PUT, ADR-0004, cambiarModoSenior(), cambiarSintesisVoz(), obtenerPerfil(), ADR-0004, aDto() (+20 more)
+### Community 48 - "repositorioPerfiles.ts"
+Cohesion: 0.07
+Nodes (35): InterruptorVoz(), hayVozEnEspanol(), sintetizador(), suscribirVoces(), PUT, Escuchar(), leer(), Estado (+27 more)
 
 ### Community 49 - "comunicados.ts"
-Cohesion: 0.07
-Nodes (34): hayVozEnEspanol(), sintetizador(), suscribirVoces(), esquema, GET, POST, Escuchar(), leer() (+26 more)
+Cohesion: 0.16
+Nodes (16): aDto(), Fila, publicarComunicado(), ADR-0006, verNoticias(), DatosComunicado, MAXIMO_CUERPO, MAXIMO_TITULO (+8 more)
 
 ### Community 50 - "contraste.ts"
 Cohesion: 0.15
@@ -315,60 +329,64 @@ Cohesion: 0.09
 Nodes (31): Token spacing/tactil (48 px Normal, 56 px Senior), Atkinson Hyperlegible, Foco visible global (:focus-visible), generar-css.mjs → tokens.css, Modo Senior (data-mode="senior"), Reglas de accesibilidad verificables A1–A12, Switch "Letra grande", tokens.json (fuente única de verdad) (+23 more)
 
 ### Community 53 - "balances.ts"
-Cohesion: 0.13
-Nodes (19): archivosSubidosPor(), balanceADto(), BalanceDto, balancesPublicados(), Fila, FilaBalance, publicarBalance(), ROLES_DIRECTIVA (+11 more)
+Cohesion: 0.17
+Nodes (15): balanceADto(), BalanceDto, Fila, FilaBalance, publicarBalance(), ROLES_DIRECTIVA, ROLES_VECINO, ADR-0006 (+7 more)
 
-### Community 54 - "errores.ts"
-Cohesion: 0.07
-Nodes (26): GET, GET, GET, negarseEnNube(), Persona, PERSONAS, sembrar(), ErrorDeAplicacion (+18 more)
+### Community 54 - "prisma"
+Cohesion: 0.06
+Nodes (39): prisma, negarseEnNube(), Persona, PERSONAS, sembrar(), ErrorDeAplicacion, ErrorEnPausa, ErrorNoAutenticado (+31 more)
 
 ### Community 55 - "dependencies"
 Cohesion: 0.18
 Nodes (11): dependencies, lucide-react, next, pdfkit, pg, @prisma/adapter-pg, @prisma/client, @radix-ui/react-dialog (+3 more)
 
-### Community 56 - "prisma"
-Cohesion: 0.11
-Nodes (18): crearAdministradorInicial(), prisma, cifrarClave(), claveCoincide(), derivar(), aceptarPolitica(), crearClaveRespaldo(), CredencialRespaldo (+10 more)
+### Community 56 - "credencialRespaldo.ts"
+Cohesion: 0.15
+Nodes (6): CredencialRespaldo, DatosCredencial, LARGO_MINIMO_CLAVE, MAX_FALLOS, MINUTOS_DE_PAUSA, T0
 
 ### Community 57 - "e2e.ts"
 Cohesion: 0.20
 Nodes (5): Chainable, Cypress, ETIQUETAS, axe-core, cypress-axe
 
 ### Community 58 - "avisos.test.ts"
-Cohesion: 0.07
-Nodes (43): PATCH, POST, filtro, GET, esquema, PUT, GET, contarNoLeidas() (+35 more)
+Cohesion: 0.08
+Nodes (30): despacharAvisos(), escribirCopiaInterna(), ESPERAS_MIN, intentarCanalExterno(), reclamarLote(), ResumenDespacho, ADR-0006, AvisoNuevo (+22 more)
 
 ### Community 59 - "Worker de tareas programadas (advisory lock, cron cada 10 min)"
 Cohesion: 0.14
 Nodes (17): Despliegue Vercel + Neon + Render + R2, Fase 0 · Esqueleto, CI/CD y despliegue, Worker de tareas programadas (advisory lock, cron cada 10 min), EstadoMorosidad (SOLVENTE, MOROSO_PREVENTIVO, MOROSO_CRITICO), EvaluadorMorosidad, HU-COB-05 Alerta preventiva a la semana de retraso, HU-COB-06 Moroso crítico a las 8 semanas, HU-COB-07 Liquidar deuda histórica y restituir garita (+9 more)
 
-### Community 60 - "empadronar.test.ts"
-Cohesion: 0.14
-Nodes (11): POST, contador, dni, esquemaEmpadronamiento, nombre, otro, telefono, titular (+3 more)
+### Community 60 - "padron/esquema.ts"
+Cohesion: 0.17
+Nodes (10): contador, dni, esquemaEmpadronamiento, esquemaPlacas, nombre, otro, telefono, titular (+2 more)
 
 ### Community 61 - "mediacion.ts"
-Cohesion: 0.12
-Nodes (27): nombreDePantalla(), NOMBRES, Ayuda(), metadata, plantillaPedidoAyuda(), Actor, aDto(), cambiarEstadoApoyo() (+19 more)
+Cohesion: 0.08
+Nodes (43): MasOpciones(), metadata, esquema, POST, nombreDePantalla(), NOMBRES, MasOpciones(), metadata (+35 more)
 
 ### Community 62 - "aplicacion/equipo.ts"
-Cohesion: 0.11
-Nodes (32): metadata, QuitarAccesoPagina(), EntradaAuditoria, registrarAuditoria(), encolarAviso(), plantillaBajaPadron(), plantillaRolCambiado(), MENSAJE_ENLACE_NO_SIRVE (+24 more)
+Cohesion: 0.06
+Nodes (48): Agregar(), metadata, metadata, QuitarAccesoPagina(), CambiarRolPagina(), metadata, ErrorReglaNegocio, encolarAviso() (+40 more)
 
 ### Community 63 - "lenguajeLlano.test.ts"
 Cohesion: 0.33
 Nodes (6): archivos(), CARPETAS, EXCLUIDAS, RAIZ, textos, textosVisibles()
 
-### Community 64 - "zod"
-Cohesion: 0.18
-Nodes (18): cookieDeSesion(), esquema, POST, esquema, esquema, POST, esquema, POST (+10 more)
+### Community 64 - "aplicacion/sesion.ts"
+Cohesion: 0.16
+Nodes (24): EntradaEquipo(), metadata, esquema, ADR-0004, cookieDeSesion(), esquema, POST, esquema (+16 more)
 
-### Community 65 - "consultarPadron.ts"
-Cohesion: 0.10
-Nodes (29): Actualizar(), metadata, Baja(), metadata, describirAccion(), etiquetaCampo(), Fila, Json (+21 more)
+### Community 65 - "gestionarPadron.ts"
+Cohesion: 0.05
+Nodes (63): esquema, POST, contador, esquema, PATCH, plantillaBajaPadron(), plantillaEnlaceAcceso(), CAMPOS_DE_PLACAS (+55 more)
 
-### Community 66 - "aplicacion/sesion.ts"
-Cohesion: 0.28
-Nodes (8): GET, esquema, POST, USOS, NombreRol, pedir(), R2, subida()
+### Community 66 - "quejas.ts"
+Cohesion: 0.08
+Nodes (34): metadata, ReporteAsistido(), aVecino(), buscarVecinos(), conCasa, directivaParaAvisar(), manzanaDe(), nombresDe() (+26 more)
+
+### Community 67 - "e2e.mjs"
+Cohesion: 0.20
+Nodes (3): entorno, servidor, casos
 
 ### Community 68 - "jest.config.ts"
 Cohesion: 0.50
@@ -378,133 +396,137 @@ Nodes (4): collectCoverageFrom, configuracion(), conTransformacionDeNext, jest
 Cohesion: 0.60
 Nodes (4): conFoco(), Foco, tab(), tabularHasta()
 
-### Community 70 - "repositorioArco.ts"
-Cohesion: 0.20
-Nodes (7): administradoresActivos(), anonimizarIdentidad(), cancelacionPendiente(), cerrarSolicitud(), CON_VECINO, contarPendientes(), pendienteDelMismoCampo()
+### Community 70 - "visitas.ts"
+Cohesion: 0.15
+Nodes (24): DELETE, respuesta, actualizarEstadoMorosidad(), aDto(), anularVisita(), MENSAJE_VISITAS_EN_PAUSA, misVisitas(), miVivienda() (+16 more)
 
 ### Community 72 - "catalogo.cy.ts"
 Cohesion: 0.50
 Nodes (3): MODOS, PAGINAS, TAMANOS
 
 ### Community 77 - "AsistenteEmpadronar.tsx"
-Cohesion: 0.10
-Nodes (29): AsistenteEmpadronar(), guardarOtro(), revisar(), revisarTodo(), siguienteVivienda(), CasillaDni(), Concepto, CONCEPTOS (+21 more)
-
-### Community 78 - "entrarConEnlace.ts"
-Cohesion: 0.22
-Nodes (20): hashDeToken(), nuevoToken(), pasarPerfilALaCuenta(), asignarPerfilSinDueno(), cerrarSesion(), restablecerClave(), Bienvenida, canjearEnlace() (+12 more)
-
-### Community 79 - "exigirActor"
 Cohesion: 0.08
-Nodes (35): Ayuda(), metadata, MasOpciones(), metadata, enlaceFiltro(), metadata, Padron(), Parametros (+27 more)
+Nodes (36): CamposPlacas(), PlacasEscritas, AsistenteEmpadronar(), guardarOtro(), revisar(), revisarTodo(), siguienteVivienda(), Concepto (+28 more)
 
-### Community 80 - "modoSeniorAlRenderizar"
-Cohesion: 0.09
-Nodes (34): modoSeniorAlRenderizar, ADR-0004, Layout(), Layout(), MarcoDeActor(), MARCOS, Layout(), Layout() (+26 more)
+### Community 78 - "entradaAlterna.ts"
+Cohesion: 0.10
+Nodes (46): hashDeToken(), nuevoToken(), ErrorConflicto, plantillaClaveCambiada(), pasarPerfilALaCuenta(), asignarPerfilSinDueno(), cerrarSesion(), MENSAJE_MUCHOS (+38 more)
+
+### Community 79 - "AyudaEquipo"
+Cohesion: 0.27
+Nodes (8): Ayuda(), metadata, AyudaEquipo(), Ayuda(), metadata, Ayuda(), metadata, contactoDeAdministracion()
+
+### Community 80 - "exigirActor"
+Cohesion: 0.06
+Nodes (44): modoSeniorAlRenderizar, ADR-0004, ClaveRespaldo(), metadata, Layout(), Layout(), metadata, Resolver() (+36 more)
 
 ### Community 81 - "exigirSesion"
-Cohesion: 0.07
-Nodes (42): esquema, PATCH, esquema, POST, esquema, PATCH, esquema, POST (+34 more)
+Cohesion: 0.06
+Nodes (64): esquema, PATCH, GET, esquema, PATCH, esquema, POST, esquema (+56 more)
 
-### Community 82 - "Opciones.tsx"
-Cohesion: 0.16
-Nodes (16): ClaveNueva(), metadata, FormularioPedirEnlace(), ICONOS, OpcionEntrada(), OtrasFormasDeEntrar(), Volver(), EnlaceNuevo() (+8 more)
+### Community 82 - "clave/page.tsx"
+Cohesion: 0.13
+Nodes (19): ClaveNueva(), metadata, EntrarConClave(), metadata, FormularioEntradaClave(), FormularioPedirEnlace(), ICONOS, OpcionEntrada() (+11 more)
 
-### Community 83 - "_sesion/sesion.ts"
-Cohesion: 0.16
-Nodes (15): EntrarConClave(), metadata, FormularioEntradaClave(), FormularioClave(), ClaveRespaldo(), metadata, EntradaEquipo(), metadata (+7 more)
+### Community 83 - "guias.ts"
+Cohesion: 0.14
+Nodes (20): esquema, GET, POST, ACCIONES_GUIA, esSeccion(), guiaDeSeccion(), GuiaDto, guiasDeUso() (+12 more)
 
 ### Community 84 - "PublicarBalance.tsx"
-Cohesion: 0.12
-Nodes (17): metadata, NuevoBalance(), Gasto, hoyEnLima(), nuevoGasto(), PublicarBalance(), publicar(), revisar() (+9 more)
+Cohesion: 0.29
+Nodes (7): metadata, NuevoBalance(), Gasto, hoyEnLima(), nuevoGasto(), PublicarBalance(), publicar()
 
-### Community 85 - "Boton"
-Cohesion: 0.07
-Nodes (56): Errores, Agregado, Encontrada, Errores, QuitarAcceso(), CambiarRol(), Lista(), Opcion (+48 more)
+### Community 85 - "lucide-react"
+Cohesion: 0.08
+Nodes (41): Errores, EFECTOS, Motivo, Residente, ENTIDADES, DECISIONES, EvaluarReporte(), guardar() (+33 more)
 
-### Community 86 - "perfiles.ts"
-Cohesion: 0.50
-Nodes (3): ClavePerfil, PERFILES, perfilesParaCambiar()
+### Community 86 - "avisos.ts"
+Cohesion: 0.11
+Nodes (22): PATCH, POST, filtro, GET, esquema, PUT, AlertasDirectiva(), metadata (+14 more)
 
 ### Community 87 - "compilerOptions"
 Cohesion: 0.17
 Nodes (11): compilerOptions, esModuleInterop, lib, module, outDir, rootDir, skipLibCheck, strict (+3 more)
 
-### Community 88 - "notificaciones.test.ts"
+### Community 88 - "ejecutor.ts"
 Cohesion: 0.12
-Nodes (17): depurarVencidos(), haceDias(), RETENCION_DIAS, VIDA_SESION_DIAS, encolar(), simulador, simuladorEnFallo, T0 (+9 more)
+Nodes (17): dynamic, GET(), comprobarBaseDatos(), depurarVencidos(), haceDias(), RETENCION_DIAS, VIDA_SESION_DIAS, ahora (+9 more)
 
 ### Community 89 - "MensajeEstado"
-Cohesion: 0.08
-Nodes (27): InterruptorVoz(), FormularioClaveNueva(), ClaveNuevaConEnlace(), metadata, FormularioAccesoEquipo(), CrearAccesoEquipo(), metadata, BotonReenviar() (+19 more)
+Cohesion: 0.12
+Nodes (16): FormularioClaveNueva(), ClaveNuevaConEnlace(), metadata, FormularioClave(), FormularioAccesoEquipo(), CrearAccesoEquipo(), metadata, CambiarRol() (+8 more)
 
-### Community 90 - "administracion/equipo/page.tsx"
-Cohesion: 0.14
-Nodes (15): Agregar(), metadata, metadata, CambiarRolPagina(), metadata, diferenciaDePermisos(), HORAS_INVITACION, LARGO_MINIMO_CLAVE_EQUIPO (+7 more)
+### Community 90 - "aplicacion/mapa.ts"
+Cohesion: 0.15
+Nodes (21): manzanasDelBarrio(), ESTADO_EN_EL_MAPA, mapaDeIncidentes(), ROLES, descripcionTextualAlternativa(), DIAS_DEL_MAPA, ESTADOS_EN_EL_MAPA, FilaMapa (+13 more)
 
 ### Community 91 - "aplicacion/arco.ts"
 Cohesion: 0.12
-Nodes (32): ErrorReglaNegocio, plantillaSolicitudPrivacidad(), aFila(), AnonimizarEnOtroModulo, aplicarRectificacion(), avisarResultado(), insignia(), Solicitud (+24 more)
+Nodes (32): plantillaNumeroCambiado(), aFila(), AnonimizarEnOtroModulo, aplicarRectificacion(), avisarCambioDeNumero(), insignia(), Solicitud, titulo() (+24 more)
+
+### Community 92 - "garita.test.ts"
+Cohesion: 0.13
+Nodes (16): GET, PATCH, buscarCasas(), consultar(), guardarRespuesta(), hashDeDni(), instantanea(), marcarRespuestaTelefono() (+8 more)
 
 ### Community 93 - "instantaneaLocal.ts"
-Cohesion: 0.27
-Nodes (11): buscar(), abrir(), buscarEnInstantanea(), compacto(), guardarInstantanea(), Instantanea, leerInstantanea(), sha256() (+3 more)
+Cohesion: 0.26
+Nodes (12): buscar(), abrir(), buscarEnInstantanea(), compacto(), guardarInstantanea(), Instantanea, leerInstantanea(), refrescarInstantanea() (+4 more)
 
 ### Community 94 - "arco.test.ts"
-Cohesion: 0.17
-Nodes (14): GET, DocumentoPdf, generarPdf(), LETRA, SeccionPdf, anonimizar(), datosPersonales(), ESCALAS (+6 more)
+Cohesion: 0.16
+Nodes (15): GET, DocumentoPdf, generarPdf(), LETRA, SeccionPdf, anonimizar(), datosPersonales(), ESCALAS (+7 more)
 
 ### Community 95 - "auditoria.ts"
-Cohesion: 0.23
-Nodes (14): ACCIONES, accionesDelModulo(), describirAccion(), ModuloAuditoria, MODULOS_AUDITORIA, actoresDeAuditoria(), leerAuditoria(), auditoriaGlobal() (+6 more)
+Cohesion: 0.14
+Nodes (20): Auditoria(), enlace(), metadata, ACCIONES, accionesDelModulo(), ACTOR_ANONIMO, describirAccion(), ModuloAuditoria (+12 more)
 
-### Community 96 - "ErrorNoEncontrado"
-Cohesion: 0.21
-Nodes (12): metadata, Resolver(), ErrorNoEncontrado, plantillaNumeroCambiado(), avisarCambioDeNumero(), exigirAdministracion(), resolverCambioDeNumero(), resolverSolicitudArco() (+4 more)
+### Community 96 - "resolverSolicitudArco"
+Cohesion: 0.48
+Nodes (7): exigirAdministracion(), resolverCambioDeNumero(), resolverSolicitudArco(), verSolicitudArco(), anonimizarIdentidad(), cerrarSolicitud(), solicitudConVecino()
 
 ### Community 100 - "Plan de implementación"
-Cohesion: 0.30
-Nodes (15): CLAUDE.md (instrucciones del proyecto), Plantilla de evidencia de cierre de módulo, Cierre de módulo, Guía visual · Plataforma Junta Vecinal, Plan de implementación, LEEME del prototipo de referencia, Matriz HU -> código -> pruebas (npm run matriz), M6 · Accesibilidad y Diseño Centrado en el Usuario (+7 more)
+Cohesion: 0.37
+Nodes (12): CLAUDE.md (instrucciones del proyecto), Guía visual · Plataforma Junta Vecinal, Plan de implementación, LEEME del prototipo de referencia, M6 · Accesibilidad y Diseño Centrado en el Usuario, M5 · Aportes Vecinales y Vigilancia, M4 · Asambleas y eventos pro fondos, M1 · Identidad: Usuarios y Control de Acceso (+4 more)
 
 ### Community 101 - "next"
-Cohesion: 0.10
-Nodes (28): metadata, PoliticaDePrivacidad(), SECCIONES, Auditoria(), enlace(), metadata, Bitacora(), FILTROS (+20 more)
+Cohesion: 0.08
+Nodes (41): metadata, PoliticaDePrivacidad(), SECCIONES, Equipo(), metadata, BotonReenviar(), FichaVivienda(), metadata (+33 more)
 
 ### Community 102 - "balance.ts"
-Cohesion: 0.18
-Nodes (13): desdeHoraDeLima(), calcularTotales(), DatosBalance, esFechaReal(), esMontoValido(), hoyEnLima(), MAXIMO_CONCEPTO, MAXIMO_EGRESOS (+5 more)
+Cohesion: 0.20
+Nodes (12): desdeHoraDeLima(), calcularTotales(), esFechaReal(), esMontoValido(), hoyEnLima(), MAXIMO_CONCEPTO, MAXIMO_EGRESOS, MAXIMO_MONTO (+4 more)
 
-### Community 103 - "integracion/identidad/entradaAlterna.test.ts"
-Cohesion: 0.15
-Nodes (16): deAfuera, esquema, POST, rol, POST, POST, esquema, POST (+8 more)
+### Community 103 - "cuentas/route.ts"
+Cohesion: 0.19
+Nodes (11): deAfuera, esquema, POST, rol, POST, POST, esquema, POST (+3 more)
 
-### Community 104 - "cancelacion.test.ts"
-Cohesion: 0.18
-Nodes (18): PATCH, esquema, POST, plantillaCancelacionPedida(), cambiarOposicion(), cargarUsuario(), miPerfil(), prefiereUbicacionGeneralizada() (+10 more)
+### Community 104 - "repositorioArco.ts"
+Cohesion: 0.16
+Nodes (18): esquema, POST, cambiarOposicion(), cargarUsuario(), miPerfil(), prefiereUbicacionGeneralizada(), solicitarCancelacion(), solicitarCopia() (+10 more)
 
-### Community 105 - "Campo"
-Cohesion: 0.13
-Nodes (17): DemoConfirmacion(), Catalogo(), Consulta, ConsultarGarita(), abrirPorEmergencia(), MOTIVOS, Respuesta, refrescarInstantanea() (+9 more)
+### Community 105 - "Boton"
+Cohesion: 0.14
+Nodes (20): enlaceFiltro(), metadata, Padron(), Parametros, plural(), DemoConfirmacion(), Catalogo(), MarcarLeido() (+12 more)
 
 ### Community 106 - "fechas.ts"
-Cohesion: 0.30
-Nodes (11): metadata, PanelAdministracion(), metadata, ResumenDirectiva(), Inicio(), metadata, fechaLarga(), primerNombre() (+3 more)
+Cohesion: 0.21
+Nodes (16): metadata, PanelAdministracion(), metadata, ResumenDirectiva(), Inicio(), metadata, fechaLarga(), primerNombre() (+8 more)
 
-### Community 107 - "salud.test.ts"
-Cohesion: 0.43
-Nodes (3): dynamic, GET(), comprobarBaseDatos()
+### Community 107 - "entrarConEnlace.test.ts"
+Cohesion: 0.15
+Nodes (15): registrarAuditoria(), crearAdministradorInicial(), cifrarClave(), claveCoincide(), derivar(), aceptarPolitica(), crearClaveRespaldo(), MENSAJE_FALTA_ACEPTAR (+7 more)
 
 ### Community 108 - "cliente.ts"
-Cohesion: 0.20
-Nodes (10): global, Transaccion, AvisoNuevo, encolarAvisos(), ADR-0006, ADR-0007, vecinosDeLaComunidad(), idsDeVecinosActivos() (+2 more)
+Cohesion: 0.17
+Nodes (10): EntradaAuditoria, global, Transaccion, encolarAvisos(), ADR-0006, ADR-0007, vecinosDeLaComunidad(), idsDeVecinosActivos() (+2 more)
 
 ### Community 109 - "administracion/privacidad/page.tsx"
 Cohesion: 0.22
 Nodes (6): ESTILO_INSIGNIA, FILTROS, metadata, bandejaArco(), FilaArco, solicitudesParaLaBandeja()
 
-### Community 110 - "Desviaciones respecto del Anexo H"
-Cohesion: 0.12
-Nodes (12): Anexo H de la tesis (arquitectura 4+1), Cloudflare R2, Equivalencia de nombres Anexo H -> repositorio, Funciones de aptitud con ESLint, Matriz de dependencias permitidas entre módulos, Vercel (app Next.js), Adaptador de archivos R2 (URLs firmadas), Convenciones de nombres de BD (+4 more)
+### Community 110 - "Reglas duras del proyecto"
+Cohesion: 0.16
+Nodes (9): Anexo H de la tesis (arquitectura 4+1), Equivalencia de nombres Anexo H -> repositorio, AC-7 Confidencialidad (404 a datos ajenos), Casos de uso (una función por archivo), Errores tipados de dominio (compartido/errores.ts), exigirRol() autorización en aplicacion, manejar() envoltorio de route handlers, Recorrido de una petición (route handler -> aplicacion -> dominio -> repositorio) (+1 more)
 
 ### Community 112 - "acta.ts"
 Cohesion: 0.21
@@ -514,61 +536,109 @@ Nodes (11): DatosActa, esFechaReal(), hoyEnLima(), MAXIMO_ACUERDOS, MAXIMO_COMPR
 Cohesion: 0.40
 Nodes (6): Lucide (librería de íconos), ContenidoAccesible (textoAlternativo, sintetizarVoz), HU-ACC-02 Escuchar en voz alta los comunicados, HU-ACC-07 Alternativas textuales de imágenes, íconos y mapa, FeedComunitario, HU-ASA-12 Historial público de actas y balances
 
+### Community 125 - "perfil/page.tsx"
+Cohesion: 0.17
+Nodes (16): DescargarCopia(), OposicionUbicacion(), cambiar(), Dato(), metadata, MiPerfil(), clasesBotonBarra(), Encabezado() (+8 more)
+
 ### Community 126 - "escuchar.cy.ts"
 Cohesion: 0.33
 Nodes (4): Anotada, sufijo, VOZ_PERUANA, Window
 
 ### Community 129 - "aplicacion/historial.ts"
-Cohesion: 0.23
-Nodes (9): actaADto(), actasPublicadas(), Actas, Balance, historialPublico(), RegistroDeHistorial, ROLES_VECINO, ordenarHistorial() (+1 more)
+Cohesion: 0.21
+Nodes (9): ActasYBalances(), metadata, Actas, Balance, historialPublico(), RegistroDeHistorial, ROLES_VECINO, ordenarHistorial() (+1 more)
 
 ### Community 131 - "balances/[id]/page.tsx"
-Cohesion: 0.40
-Nodes (6): Balance(), metadata, soles(), GraficoBalance(), Totales, verBalance()
+Cohesion: 0.35
+Nodes (7): revisar(), Balance(), metadata, aCentimos(), soles(), GraficoBalance(), Totales
 
 ### Community 132 - "tokens/generar-css.mjs"
-Cohesion: 0.29
-Nodes (9): aplanar(), css(), linea(), nombreCss(), ref(), REM, TAILWIND, tokens (+1 more)
-
-### Community 133 - "Lista de comprobación por pantalla"
-Cohesion: 0.27
-Nodes (10): Plantilla de PR, Plataforma web Junta Vecinal Villa de Fátima (R3.1), AC-1 Accesibilidad (0 violaciones axe), Lenguaje llano (R-07, HU-ACC-08), Lista de comprobación por pantalla, WCAG 2.2 AA, Definition of Done de una HU, Componente Confirmacion (+2 more)
-
-### Community 134 - "Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido"
 Cohesion: 0.25
-Nodes (8): 1. HU de la fase, 2. Cobertura de Jest (unitarias + integración), 3. Matriz HU → código → prueba, 4. Reporte axe por pantalla, 5. Revisión manual de accesibilidad, 6. Capturas, 7. Pendientes y decisiones, Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido
+Nodes (10): aplanar(), css(), linea(), nombreCss(), ref(), REM, TAILWIND, tokens (+2 more)
 
-### Community 135 - "ref_node_fs"
-Cohesion: 0.33
-Nodes (3): ADR-0006, cypress, pg
+### Community 133 - "Plantilla de evidencia de cierre de módulo"
+Cohesion: 0.13
+Nodes (18): Plantilla de PR, Plataforma web Junta Vecinal Villa de Fátima (R3.1), AC-1 Accesibilidad (0 violaciones axe), Lenguaje llano (R-07, HU-ACC-08), Lista de comprobación por pantalla, WCAG 2.2 AA, Semillas ficticias (personajes del prototipo), Plantilla de evidencia de cierre de módulo (+10 more)
 
-### Community 136 - "Casos de uso (una función por archivo)"
-Cohesion: 0.40
-Nodes (5): Casos de uso (una función por archivo), Errores tipados de dominio (compartido/errores.ts), exigirRol() autorización en aplicacion, manejar() envoltorio de route handlers, Recorrido de una petición (route handler -> aplicacion -> dominio -> repositorio)
+### Community 134 - "direccion"
+Cohesion: 0.29
+Nodes (18): esquema, POST, vecino, horaCorta(), abrirPorEmergencia(), aFila(), anotarEntradaVecino(), anotarEntradaVisita() (+10 more)
+
+### Community 136 - "(vecino)/incidentes/page.tsx"
+Cohesion: 0.17
+Nodes (15): OfertaDeGuia(), CALOR, cantidad(), CORTO, ICONOS, IncidentesDelBarrio(), TIPOS, Vista (+7 more)
 
 ### Community 137 - "lintear.mjs"
 Cohesion: 0.40
 Nodes (4): casos, eslint, resultados, eslint
 
+### Community 141 - "repositorioGarita.ts"
+Cohesion: 0.16
+Nodes (11): inicioDelDiaEnLima(), bitacora(), marcarSalida(), anotarSalida(), buscarRegistro(), directivaActiva(), entradasSinSalida(), predioConResidentes() (+3 more)
+
+### Community 142 - "registrarQueja"
+Cohesion: 0.18
+Nodes (13): anonimizar(), datosPersonales(), registrarQueja(), anonimizarQuejasDe(), quejasConNombreDe(), reportar(), reportar(), reportar() (+5 more)
+
+### Community 143 - "queja.ts"
+Cohesion: 0.19
+Nodes (12): archivosSubidosPor(), validar(), Categoria, codigoTicket(), DatosQueja, esCoordenada(), ESTADOS, MAXIMO_EVIDENCIAS (+4 more)
+
+### Community 144 - "avisarDenunciante.ts"
+Cohesion: 0.25
+Nodes (11): plantillaNovedadReporte(), telefonoDe(), avisarAlDenunciante(), ADR-0006, cifrar(), clave(), descifrar(), Entorno (+3 more)
+
+### Community 145 - "Comprobante"
+Cohesion: 0.18
+Nodes (12): Comprobante, HU-COB-08 Subir comprobante de pago digital, HU-COB-09 Auditar comprobantes, HU-COB-10 Observar comprobante con motivo, HU-COB-11 Cobro en efectivo sin conexión, Pago (abstracta), PagoDigital, PagoPresencial (+4 more)
+
+### Community 146 - "ConsultarGarita.tsx"
+Cohesion: 0.22
+Nodes (7): Consulta, ConsultarGarita(), abrirPorEmergencia(), MOTIVOS, Respuesta, Consultar(), metadata
+
+### Community 147 - "BuscarConCodigo.tsx"
+Cohesion: 0.31
+Nodes (6): BuscarConCodigo(), metadata, Seguimiento(), AvanceReporte(), ICONO, AvanceDto
+
+### Community 148 - "Evidencia de cierre · M1 Identidad: usuarios y control de acceso"
+Cohesion: 0.22
+Nodes (8): 1. HU del módulo, 2. Cobertura de Jest (unitarias + integración), 3. Matriz HU → código → prueba, 4. Reporte axe por pantalla, 5. Revisión manual de accesibilidad, 6. Capturas, 7. Pendientes y decisiones, Evidencia de cierre · M1 Identidad: usuarios y control de acceso
+
+### Community 149 - "verVivienda"
+Cohesion: 0.32
+Nodes (5): Actualizar(), metadata, Baja(), metadata, verVivienda()
+
+### Community 150 - "ADR-007 Esquema único con separación lógica por módulo"
+Cohesion: 0.25
+Nodes (4): Convenciones de nombres de BD, Esquema Prisma por módulo, Migraciones Prisma, Rollback por pieza
+
+### Community 151 - "Preferencias.tsx"
+Cohesion: 0.38
+Nodes (3): OPCIONES, Preferencias(), Interruptor()
+
+### Community 152 - "Procedimiento por HU"
+Cohesion: 0.40
+Nodes (4): Uso del grafo graphify en el repo, Conventional Commits en español, Procedimiento por HU, Etiquetas @HU
+
 ## Knowledge Gaps
-- **576 isolated node(s):** `printWidth`, `Errores`, `ICONOS`, `metadata`, `metadata` (+571 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 778 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **46 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **673 isolated node(s):** `printWidth`, `Errores`, `ICONOS`, `metadata`, `metadata` (+668 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 910 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **53 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Plan de implementación` connect `Plan de implementación` to `Worker de tareas programadas (advisory lock, cron cada 10 min)`, `Fase 0b · Base de accesibilidad (M6) y núcleo compartido`, `Evidencia de cierre · M1 Identidad: usuarios y control de acceso`?**
-  _High betweenness centrality (0.156) - this node is a cross-community bridge._
-- **Why does `Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido` connect `Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido` to `Evidencia de cierre · M1 Identidad: usuarios y control de acceso`?**
-  _High betweenness centrality (0.110) - this node is a cross-community bridge._
-- **Why does `1. HU de la fase` connect `Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido` to `exigirSesion`, `Campo`?**
-  _High betweenness centrality (0.098) - this node is a cross-community bridge._
+- **Why does `Plan de implementación` connect `Plan de implementación` to `Worker de tareas programadas (advisory lock, cron cada 10 min)`, `Evidencia de cierre · M1 Identidad: usuarios y control de acceso`, `Fase 0b · Base de accesibilidad (M6) y núcleo compartido`, `Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido`?**
+  _High betweenness centrality (0.175) - this node is a cross-community bridge._
+- **Why does `Evidencia de cierre · M3 Demandas e incidentes` connect `Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido` to `ErrorNoEncontrado`?**
+  _High betweenness centrality (0.088) - this node is a cross-community bridge._
+- **Why does `3. Matriz HU → código → prueba` connect `ErrorNoEncontrado` to `(vecino)/incidentes/page.tsx`, `aplicacion/mapa.ts`, `Evidencia de cierre · Fase 0b Base de accesibilidad (M6) y núcleo compartido`?**
+  _High betweenness centrality (0.087) - this node is a cross-community bridge._
 - **What connects `printWidth`, `Errores`, `ICONOS` to the rest of the system?**
-  _576 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _673 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `compartido/archivos (R2 firmado, validación, PDF etiquetado)` be split into smaller, more focused modules?**
-  _Cohesion score 0.07956989247311828 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08547008547008547 - nodes in this community are weakly interconnected._
+- **Should `ErrorNoEncontrado` be split into smaller, more focused modules?**
+  _Cohesion score 0.10459183673469388 - nodes in this community are weakly interconnected._
 - **Should `aplicacion/garita.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05098988748041589 - nodes in this community are weakly interconnected._
-- **Should `Cierre diferido de HU parciales ([~] / [-])` be split into smaller, more focused modules?**
-  _Cohesion score 0.12380952380952381 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10887096774193548 - nodes in this community are weakly interconnected._
