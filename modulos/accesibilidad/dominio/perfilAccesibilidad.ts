@@ -58,6 +58,15 @@ export class PerfilAccesibilidad {
     } satisfies Partial<DatosPerfil>);
   }
 
+  /** Lectura en voz alta de las noticias (HU-ACC-02 CA1): no cambia nada más del perfil. */
+  activarSintesisVoz() {
+    this.datos.sintesisVozActiva = true;
+  }
+
+  desactivarSintesisVoz() {
+    this.datos.sintesisVozActiva = false;
+  }
+
   get id() {
     return this.datos.id;
   }
