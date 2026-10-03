@@ -1,0 +1,58 @@
+// Tablas del módulo incidencias (M3), prefijo incidencias_. Diagrama 02d.
+
+enum CategoriaQueja {
+  RUIDOS
+  BASURA
+  COCHERAS
+  SEGURIDAD
+  OTROS
+}
+
+enum EstadoQueja {
+  RECIBIDO
+  EN_REVISION
+  RECHAZADO
+  RESUELTO
+  DERIVADO_ENTIDAD_EXTERNA
+}
+
+// Queja o incidente vecinal (HU-QUE-01, 04). El lugar es la manzana del padrón (null: otro lugar del
+// barrio, descrito en la referencia); las coordenadas exactas son opcionales y nunca se muestran en el
+// mapa público. El consentimiento informado guarda la versión de la política aceptada y la fecha.
+// numero es el correlativo del ticket; codigoTicket le suma el año y un sufijo aleatorio (CLAUDE.md del
+// módulo). idOperacion lo genera el dispositivo y evita registrar dos veces al reintentar (AC-5).
+model Queja {
+  id                    String           @id @default(uuid())
+  numero                Int              @unique @default(autoincrement())
+  codigoTicket          String           @unique
+  categoria             CategoriaQueja
+  descripcion           String
+  manzana               String?
+  referencia            String?
+  latitud               Float?
+  longitud              Float?
+  estado                EstadoQueja      @default(RECIBIDO)
+  fechaRegistro         DateTime         @default(now())
+  denuncianteId         String
+  consentimientoVersion String
+  consentimientoEn      DateTime
+  idOperacion           String           @unique
+  evidencias            EvidenciaQueja[]
+
+  @@index([denuncianteId])
+  @@index([estado, fechaRegistro])
+  @@map("incidencias_quejas")
+}
+
+// Foto o video de la queja, subido a R2 por quien la registra y validado en el servidor.
+model EvidenciaQueja {
+  id        String  @id @default(uuid())
+  quejaId   String
+  queja     Queja   @relation(fields: [quejaId], references: [id])
+  archivoId String
+  archivo   Archivo @relation(fields: [archivoId], references: [id])
+  orden     Int
+
+  @@index([quejaId])
+  @@map("incidencias_evidencias")
+}

@@ -114,14 +114,15 @@ model PreferenciaAviso {
 // subió cada uno y para qué, que es lo que decide quién puede pedir su descarga. `uso` lo fija cada
 // módulo ("comprobante_egreso"). Un archivo subido no se borra mientras algo lo referencia.
 model Archivo {
-  id        String   @id @default(uuid())
-  clave     String   @unique
-  tipo      String
-  tamano    Int
-  uso       String
-  subidoPor String
-  creadoEn  DateTime @default(now())
-  egresos   Egreso[]
+  id         String           @id @default(uuid())
+  clave      String           @unique
+  tipo       String
+  tamano     Int
+  uso        String
+  subidoPor  String
+  creadoEn   DateTime         @default(now())
+  egresos    Egreso[]
+  evidencias EvidenciaQueja[]
 
   @@index([subidoPor])
   @@map("nucleo_archivos")

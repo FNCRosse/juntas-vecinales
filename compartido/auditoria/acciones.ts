@@ -8,6 +8,7 @@ export const MODULOS_AUDITORIA = [
   "Garita",
   "Privacidad",
   "Transparencia",
+  "Incidentes",
 ] as const;
 export type ModuloAuditoria = (typeof MODULOS_AUDITORIA)[number] | "Otros";
 
@@ -30,6 +31,7 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   publicar_acta: { modulo: "Transparencia", texto: "Publicó un acta de asamblea" },
   publicar_balance: { modulo: "Transparencia", texto: "Publicó el balance de una actividad" },
   publicar_comunicado: { modulo: "Transparencia", texto: "Publicó un comunicado" },
+  registrar_queja: { modulo: "Incidentes", texto: "Registró un reporte vecinal" },
   oponerse_ubicacion_exacta: { modulo: "Privacidad", texto: "Pidió no mostrar su ubicación exacta" },
   retirar_oposicion_ubicacion: { modulo: "Privacidad", texto: "Volvió a mostrar su ubicación exacta" },
 };

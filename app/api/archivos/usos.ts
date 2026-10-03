@@ -7,6 +7,11 @@ export const USOS = {
     clase: "documento",
     roles: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"],
   },
+  evidencia_queja: {
+    carpeta: "evidencias",
+    clase: "evidencia",
+    roles: ["VECINO", "VECINO_ADULTO_MAYOR"],
+  },
 } as const satisfies Record<
   string,
   { carpeta: string; clase: "documento" | "evidencia"; roles: NombreRol[] }

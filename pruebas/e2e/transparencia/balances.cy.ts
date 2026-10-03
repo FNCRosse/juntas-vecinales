@@ -17,7 +17,7 @@ describe("@HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos", (
   });
 
   it("@HU-ASA-10 CA1 CA2 CA3 la directiva registra ingresos y un gasto con su foto, ve el gráfico y publica en teléfono", () => {
-    cy.task<string>("comprobanteDePrueba", { dni: "40000002" }).then((archivoId) => {
+    cy.task<string>("archivoDePrueba", { dni: "40000002" }).then((archivoId) => {
       cy.intercept("POST", "/api/archivos", {
         statusCode: 201,
         body: { id: archivoId, url: R2_SIMULADO, metodo: "PUT", cabeceras: { "content-type": "image/jpeg" } },
@@ -73,7 +73,7 @@ describe("@HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos", (
   });
 
   it("@HU-ASA-10 CA2 CA3 en modo Senior el vecino ve el balance publicado con su gráfico y su tabla", () => {
-    cy.task<string>("comprobanteDePrueba", { dni: "40000002" }).then((archivoId) =>
+    cy.task<string>("archivoDePrueba", { dni: "40000002" }).then((archivoId) =>
       cy
         .request("POST", "/api/transparencia/balances", {
           titulo: `${TITULO} (vecino)`,
