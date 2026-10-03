@@ -168,7 +168,7 @@ Al cerrar M4 también: bloque de próximo evento en el panel, recorrido guiado d
 - [ ] HU-COB-04 Auditar solicitudes de ajuste
 - [ ] HU-COB-13 Tablero de recaudación
 
-Al cerrar M5 también: las dos HU diferidas de M2, el bloque de deuda del panel (cierra el panel de inicio de M1 con su prueba de AC-2), el recálculo por cambio de ocupación (cierra la actualización del predio de M1), el recorrido guiado de Mi cuota (cierra el tutorial de M3), y las secciones de pagos en la copia y la anonimización ARCO (cierran las dos HU parciales de M1).
+Al cerrar M5 también: la foto del sustento documental de la rectificación (HU-GAR-13, que llega con la primera subida firmada a R2), las dos HU diferidas de M2, el bloque de deuda del panel (cierra el panel de inicio de M1 con su prueba de AC-2), el recálculo por cambio de ocupación (cierra la actualización del predio de M1), el recorrido guiado de Mi cuota (cierra el tutorial de M3), y las secciones de pagos en la copia y la anonimización ARCO (cierran las dos HU parciales de M1).
 
 **Pantallas:** ADM-INI-01 · ADM-PAD-01–03, 08–09 · DIR-COB-01–18, 20–23 · DIR-INI-01–02, 05 · DIR-TRA-05 · VEC-ACC-09, 11 · VEC-COB-01–08, 10–15 · VEC-GAR-06 · VEC-TRA-01 · VIG-CON-01–03.
 **Riesgos:** dinero duplicado al sincronizar (idempotencia por `idOperacionLocal` con `UNIQUE`); semanas y fechas límite en `America/Lima`; cambios de tarifa que no deben tocar cuotas ya emitidas; el tablero debe cuadrar al céntimo con los recibos; es el módulo con más trabajo diferido de otros.
