@@ -15,7 +15,10 @@ describe("@HU-GAR-01 Placas de los vehículos al empadronar", () => {
   });
 
   it("@HU-GAR-01 CA1 sin vehículos no pide placas", () => {
-    expect(prepararPlacas({ autos: 0, motos: 0 }, { autos: [], motos: [] })).toEqual({ errores: {}, vehiculos: [] });
+    expect(prepararPlacas({ autos: 0, motos: 0 }, { autos: [], motos: [] })).toEqual({
+      errores: {},
+      vehiculos: [],
+    });
   });
 
   it("@HU-GAR-01 CA1 dice de qué vehículo falta la placa", () => {
@@ -39,7 +42,10 @@ describe("@HU-GAR-01 Placas de los vehículos al empadronar", () => {
   });
 
   it("@HU-GAR-01 las placas de más que la cantidad declarada se ignoran", () => {
-    const { vehiculos } = prepararPlacas({ autos: 1, motos: 0 }, { autos: ["JLM314", "CDF220"], motos: ["X1234"] });
+    const { vehiculos } = prepararPlacas(
+      { autos: 1, motos: 0 },
+      { autos: ["JLM314", "CDF220"], motos: ["X1234"] },
+    );
     expect(vehiculos).toEqual([{ tipo: "AUTO_O_CAMIONETA", placa: "JLM-314" }]);
   });
 });
