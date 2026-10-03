@@ -14,7 +14,14 @@ export default async function Actualizar({ params }: { params: Promise<{ predioI
     if (error instanceof ErrorNoEncontrado) notFound();
     throw error;
   });
+  const placasDe = (tipo: "auto" | "moto") =>
+    vivienda.vehiculos.filter((v) => v.tipo === tipo).map((v) => v.placa);
   return (
-    <ActualizarPredio predioId={vivienda.id} direccion={vivienda.direccion} actual={vivienda.ocupacion} />
+    <ActualizarPredio
+      predioId={vivienda.id}
+      direccion={vivienda.direccion}
+      actual={vivienda.ocupacion}
+      placasActuales={{ autos: placasDe("auto"), motos: placasDe("moto") }}
+    />
   );
 }

@@ -17,10 +17,13 @@ import {
   esDuplicado,
 } from "@/modulos/identidad/infraestructura/repositorioPadron";
 import { emitirEnlace } from "./emitirEnlace";
+import { type Placas, revisarVehiculos } from "./placas";
 import { exigirRol, type SesionDto } from "./sesion";
 
 export type DatosEmpadronamiento = {
   vivienda: DatosPredio;
+  /** Una placa por cada auto y moto declarados (HU-GAR-06 las busca en la garita). */
+  placas?: Placas;
   titular?: Omit<PersonaNueva, "relacion" | "cuentaPropia">;
   otros?: (Omit<PersonaNueva, "relacion"> & { relacion: Exclude<PersonaNueva["relacion"], "TITULAR"> })[];
 };
@@ -69,6 +72,8 @@ export async function validarEmpadronamiento(sesion: SesionDto, datos: DatosEmpa
   );
   const personas = personasDe(datos);
   Object.assign(errores, revisarPersonas(personas));
+  const revision = await revisarVehiculos(predio, datos.placas);
+  Object.assign(errores, revision.errores);
 
   if (predio.manzana && predio.lote) {
     const ocupado = await buscarPredioPorLote(predio.manzana, predio.lote);
@@ -89,7 +94,7 @@ export async function validarEmpadronamiento(sesion: SesionDto, datos: DatosEmpa
   }
 
   if (Object.keys(errores).length) throw new ErrorValidacion(undefined, errores);
-  return { predio, personas: personas.map(({ persona }) => persona) };
+  return { predio, personas: personas.map(({ persona }) => persona), vehiculos: revision.vehiculos };
 }
 
 /**
@@ -104,11 +109,11 @@ export async function empadronar(
 ): Promise<ViviendaEmpadronada> {
   if (!datos.titular)
     throw new ErrorValidacion(undefined, { "titular.dni": "Faltan los datos del titular." });
-  const { predio, personas } = await validarEmpadronamiento(sesion, datos);
+  const { predio, personas, vehiculos } = await validarEmpadronamiento(sesion, datos);
   const conTelefono = personas.map((p) => ({ ...p, telefono: p.telefono && telefonoCompleto(p.telefono) }));
   try {
     return await prisma.$transaction(async (tx) => {
-      const { predioId, usuarios } = await crearVivienda(tx, predio, conTelefono);
+      const { predioId, usuarios } = await crearVivienda(tx, predio, conTelefono, vehiculos);
       const enviados = [];
       for (const [i, usuario] of usuarios.entries()) {
         if (!conTelefono[i].cuentaPropia) continue;
@@ -128,6 +133,7 @@ export async function empadronar(
           antes: null,
           despues: {
             ...predio,
+            placas: vehiculos.map((v) => v.placa),
             residentes: usuarios.map((usuario, i) => ({
               usuarioId: usuario.id,
               relacion: conTelefono[i].relacion,

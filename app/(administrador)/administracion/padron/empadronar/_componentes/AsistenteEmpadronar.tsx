@@ -9,6 +9,7 @@ import { fechaYHora, primerNombre } from "@/compartido/fechas";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo, MensajeDeCampo } from "@/componentes/a11y/Campo";
 import { Contador } from "@/componentes/a11y/Contador";
+import { CamposPlacas, type PlacasEscritas } from "../../_componentes/CamposPlacas";
 import { Interruptor } from "@/componentes/a11y/Interruptor";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
@@ -83,6 +84,7 @@ function erroresDe(errores: Errores, prefijo: string): Errores {
 export function AsistenteEmpadronar() {
   const [paso, setPaso] = useState<Paso>("vivienda");
   const [vivienda, setVivienda] = useState(VIVIENDA);
+  const [placas, setPlacas] = useState<PlacasEscritas>({ autos: [], motos: [] });
   const [titular, setTitular] = useState(TITULAR);
   const [otros, setOtros] = useState<Otro[]>([]);
   const [nuevo, setNuevo] = useState<Otro | null>(null);
@@ -103,7 +105,7 @@ export function AsistenteEmpadronar() {
     window.scrollTo({ top: 0 });
   }, [paso]);
 
-  const cuerpo = (extra: { titular?: Titular; otros?: Otro[] } = {}) => ({ vivienda, ...extra });
+  const cuerpo = (extra: { titular?: Titular; otros?: Otro[] } = {}) => ({ vivienda, placas, ...extra });
 
   /** Revisa en el servidor sin guardar: los errores por campo, vacío si está bien, o null si no hubo respuesta. */
   async function revisar(datos: object): Promise<Errores | null> {
@@ -128,7 +130,7 @@ export function AsistenteEmpadronar() {
     const e = await revisar(cuerpo({ titular, otros }));
     if (!e) return;
     setErrores(e);
-    if (Object.keys(e).some((c) => c.startsWith("vivienda."))) setPaso("vivienda");
+    if (Object.keys(e).some((c) => c.startsWith("vivienda.") || c.startsWith("placas."))) setPaso("vivienda");
     else if (!Object.keys(e).length) setPaso("confirmar");
   }
 
@@ -161,7 +163,11 @@ export function AsistenteEmpadronar() {
       setPaso("listo");
     } else if (r.estado === 400) {
       setErrores(r.campos);
-      setPaso(Object.keys(r.campos).some((c) => c.startsWith("vivienda.")) ? "vivienda" : "residentes");
+      setPaso(
+        Object.keys(r.campos).some((c) => c.startsWith("vivienda.") || c.startsWith("placas."))
+          ? "vivienda"
+          : "residentes",
+      );
     } else setFalla(r.error);
   }
 
@@ -231,6 +237,12 @@ export function AsistenteEmpadronar() {
         "Ocupación",
         CONCEPTOS.filter(([c]) => vivienda[c] > 0)
           .map(([c, nombre]) => `${nombre}: ${vivienda[c]}`)
+          .join(" · ") || "Ninguna",
+      ],
+      [
+        "Placas",
+        [...placas.autos.slice(0, vivienda.autos), ...placas.motos.slice(0, vivienda.motos)]
+          .map((p) => p.trim().toUpperCase())
           .join(" · ") || "Ninguna",
       ],
       [
@@ -464,6 +476,13 @@ export function AsistenteEmpadronar() {
           ))}
         </div>
       </section>
+      <CamposPlacas
+        autos={vivienda.autos}
+        motos={vivienda.motos}
+        placas={placas}
+        errores={erroresDe(errores, "placas")}
+        alCambiar={setPlacas}
+      />
       {falla && (
         <MensajeEstado tipo="error" titulo="No pudimos revisar los datos">
           <p>{falla}</p>

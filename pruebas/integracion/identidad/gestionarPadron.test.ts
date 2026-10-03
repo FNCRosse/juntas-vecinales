@@ -45,6 +45,7 @@ describe("@HU-GAR-10 Actualizar los datos del predio", () => {
         motos: 0,
         triciclos: 0,
         negocios: 1,
+        placas: { autos: ["zxc123"], motos: [] },
       }),
       conPredio(c7.id),
     );
@@ -61,14 +62,14 @@ describe("@HU-GAR-10 Actualizar los datos del predio", () => {
     });
     expect(registro).toMatchObject({
       actorId: ana.usuarioId,
-      antes: { uso: "VIVIENDA", inquilinos: 1, autos: 0, negocios: 0 },
-      despues: { uso: "VIVIENDA_Y_NEGOCIO", inquilinos: 0, autos: 1, negocios: 1 },
+      antes: { uso: "VIVIENDA", inquilinos: 1, autos: 0, negocios: 0, placasAutos: "ninguna" },
+      despues: { uso: "VIVIENDA_Y_NEGOCIO", inquilinos: 0, autos: 1, negocios: 1, placasAutos: "ZXC-123" },
     });
     const ficha = await verVivienda(ana, c7.id);
     expect(ficha.historial[0]).toMatchObject({
       actor: "Ana Flores",
       texto:
-        "Actualizó los datos: uso vivienda → vivienda y negocio; inquilinos 1 → 0; autos o camionetas 0 → 1; locales de negocio 0 → 1",
+        "Actualizó los datos: uso vivienda → vivienda y negocio; inquilinos 1 → 0; autos o camionetas 0 → 1; locales de negocio 0 → 1; placas de autos ninguna → ZXC-123",
     });
   });
 
@@ -89,9 +90,59 @@ describe("@HU-GAR-10 Actualizar los datos del predio", () => {
     expect((await fuera.json()).campos).toEqual({ "vivienda.autos": "Elija un número entre 0 y 9." });
     await expect(actualizarPredio(ana, "no-existe", igual)).rejects.toBeInstanceOf(ErrorNoEncontrado);
     const { sesion: marta } = await iniciarSesionConClave({ dni: "40000002", clave: CLAVE });
-    await expect(actualizarPredio(marta, c7.id, { ...igual, autos: 1 })).rejects.toBeInstanceOf(
-      ErrorNoAutorizado,
-    );
+    await expect(
+      actualizarPredio(marta, c7.id, { ...igual, autos: 1, placas: { autos: ["ZXC123"], motos: [] } }),
+    ).rejects.toBeInstanceOf(ErrorNoAutorizado);
+  });
+});
+
+describe("@HU-GAR-10 Placas al actualizar el predio", () => {
+  const igual = {
+    uso: "VIVIENDA" as const,
+    familias: 1,
+    inquilinos: 1,
+    autos: 0,
+    motos: 0,
+    triciclos: 0,
+    negocios: 0,
+  };
+
+  it("@HU-GAR-10 CA1 CA3 agregar un vehículo pide su placa, la guarda y queda en el historial; quitarlo la borra", async () => {
+    const c7 = await predioDe("C", "7");
+    await expect(actualizarPredio(ana, c7.id, { ...igual, motos: 1 })).rejects.toMatchObject({
+      campos: { "placas.motos.0": "Escriba la placa de la moto 1." },
+    });
+    await actualizarPredio(ana, c7.id, { ...igual, motos: 1, placas: { autos: [], motos: ["1234a"] } });
+    expect((await verVivienda(ana, c7.id)).vehiculos).toEqual([{ placa: "1234A", tipo: "moto" }]);
+    expect((await verVivienda(ana, c7.id)).historial[0].texto).toContain("placas de motos ninguna → 1234A");
+
+    await actualizarPredio(ana, c7.id, { ...igual, motos: 0 });
+    expect((await verVivienda(ana, c7.id)).vehiculos).toEqual([]);
+  });
+
+  it("@HU-GAR-10 CA1 cambiar solo una placa cuenta como cambio y la placa de otra vivienda no se acepta", async () => {
+    const a3 = await predioDe("A", "3");
+    const actual = {
+      uso: "VIVIENDA" as const,
+      familias: 1,
+      inquilinos: 0,
+      autos: 1,
+      motos: 0,
+      triciclos: 0,
+      negocios: 0,
+    };
+    // La placa que ya tenía esta vivienda no cuenta como repetida: sin cambios no guarda.
+    await expect(
+      actualizarPredio(ana, a3.id, { ...actual, placas: { autos: ["jlm314"], motos: [] } }),
+    ).rejects.toBeInstanceOf(ErrorReglaNegocio);
+    await actualizarPredio(ana, a3.id, { ...actual, placas: { autos: ["QWE456"], motos: [] } });
+    expect((await verVivienda(ana, a3.id)).vehiculos).toEqual([{ placa: "QWE-456", tipo: "auto" }]);
+    const c7 = await predioDe("C", "7");
+    await expect(
+      actualizarPredio(ana, c7.id, { ...igual, autos: 1, placas: { autos: ["qwe 456"], motos: [] } }),
+    ).rejects.toMatchObject({
+      campos: { "placas.autos.0": expect.stringContaining("ya está registrada en Mz. A, lote 3") },
+    });
   });
 });
 

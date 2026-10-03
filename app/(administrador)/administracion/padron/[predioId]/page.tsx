@@ -89,6 +89,14 @@ export default async function FichaVivienda({
               <dd className="font-bold">{cantidad}</dd>
             </div>
           ))}
+          <div className="flex flex-col">
+            <dt className="text-pequeno text-texto-secundario">Placas</dt>
+            <dd className="font-bold">
+              {vivienda.vehiculos.length
+                ? vivienda.vehiculos.map((v) => `${v.placa} (${v.tipo})`).join(" · ")
+                : "Ninguna registrada"}
+            </dd>
+          </div>
         </dl>
       </Tarjeta>
 

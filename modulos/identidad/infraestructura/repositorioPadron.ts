@@ -2,6 +2,9 @@ import { prisma, type Transaccion } from "@/compartido/bd/cliente";
 import { Prisma } from "@/compartido/bd/generado/client";
 import type { PersonaNueva } from "@/modulos/identidad/dominio/empadronamiento";
 import type { DatosPredio } from "@/modulos/identidad/dominio/predio";
+import type { TipoVehiculoPlaca } from "@/modulos/identidad/dominio/vehiculo";
+
+export type VehiculoNuevo = { tipo: TipoVehiculoPlaca; placa: string };
 
 const RESIDENCIAS_VIGENTES = { where: { fechaFin: null }, include: { usuario: true } } as const;
 
@@ -22,8 +25,13 @@ export async function buscarPersonasPorDni(dnis: string[]) {
 }
 
 /** Crea el predio, sus residentes (rol VECINO) y sus residencias en la transacción del caso de uso. */
-export async function crearVivienda(tx: Transaccion, predio: DatosPredio, personas: PersonaNueva[]) {
-  const { id: predioId } = await tx.predio.create({ data: predio });
+export async function crearVivienda(
+  tx: Transaccion,
+  predio: DatosPredio,
+  personas: PersonaNueva[],
+  vehiculos: VehiculoNuevo[],
+) {
+  const { id: predioId } = await tx.predio.create({ data: { ...predio, vehiculos: { create: vehiculos } } });
   const usuarios = [];
   for (const persona of personas) {
     const usuario = await tx.usuario.create({
@@ -93,7 +101,10 @@ export async function manzanasDelPadron() {
 }
 
 export async function buscarPredio(id: string) {
-  return prisma.predio.findUnique({ where: { id }, include: { residencias: RESIDENCIAS_VIGENTES } });
+  return prisma.predio.findUnique({
+    where: { id },
+    include: { residencias: RESIDENCIAS_VIGENTES, vehiculos: { orderBy: { placa: "asc" } } },
+  });
 }
 
 /** La persona de ese DNI o el titular vigente de esa casa (HU-GAR-11 CA1), si está activa. */
@@ -141,4 +152,15 @@ export async function historialDePredio(predioId: string) {
     ...r,
     actor: actores.find((a) => a.id === r.actorId)?.nombreCompleto ?? "El sistema",
   }));
+}
+
+/** Las placas que ya están en el padrón, con su vivienda: una placa pertenece a un solo predio. */
+export async function buscarVehiculosPorPlaca(placas: string[]) {
+  return prisma.vehiculo.findMany({ where: { placa: { in: placas } }, include: { predio: true } });
+}
+
+/** Cambia los autos y motos del predio por la lista nueva; los triciclos no llevan placa y no se tocan. */
+export async function reemplazarVehiculos(tx: Transaccion, predioId: string, vehiculos: VehiculoNuevo[]) {
+  await tx.vehiculo.deleteMany({ where: { predioId, tipo: { in: ["AUTO_O_CAMIONETA", "MOTO"] } } });
+  await tx.vehiculo.createMany({ data: vehiculos.map((v) => ({ ...v, predioId })) });
 }

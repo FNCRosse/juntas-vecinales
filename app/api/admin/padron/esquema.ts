@@ -41,8 +41,14 @@ const otro = titular.extend({
   cuentaPropia: z.boolean(),
 });
 
+export const esquemaPlacas = z.object({
+  autos: z.array(z.string()).max(9),
+  motos: z.array(z.string()).max(9),
+});
+
 export const esquemaEmpadronamiento = z.object({
   vivienda,
+  placas: esquemaPlacas.optional(),
   titular: titular.optional(),
   otros: z.array(otro).max(20).optional(),
 });

@@ -33,6 +33,7 @@ const datos = (cambios: Partial<DatosEmpadronamiento> = {}): DatosEmpadronamient
     triciclos: 0,
     negocios: 0,
   },
+  placas: { autos: ["zxc123"], motos: [] },
   titular: { nombreCompleto: "Sofía Castro Ríos", dni: "45678123", dniVisto: true, telefono: "912345678" },
   otros: [
     {
@@ -94,6 +95,57 @@ describe("@HU-GAR-01 Empadronar residentes", () => {
       ["CONYUGE", "45678999", "51912345700", ["VECINO"]],
       ["HIJO", "71234567", null, ["VECINO"]],
     ]);
+  });
+
+  it("@HU-GAR-01 CA1 guarda la placa de cada auto y moto, y la garita las encuentra por su placa", async () => {
+    const vivienda = await empadronar(
+      ana,
+      datos({
+        vivienda: { ...datos().vivienda, autos: 1, motos: 2 },
+        placas: { autos: [" zxc 123"], motos: ["1234a", "5678-b"] },
+      }),
+      ORIGEN,
+      T0,
+    );
+    const vehiculos = await prisma.vehiculo.findMany({
+      where: { predioId: vivienda.predioId },
+      orderBy: { placa: "asc" },
+    });
+    expect(vehiculos.map((v) => [v.tipo, v.placa])).toEqual([
+      ["MOTO", "1234A"],
+      ["MOTO", "5678B"],
+      ["AUTO_O_CAMIONETA", "ZXC-123"],
+    ]);
+    const { consultar } = await import("@/modulos/identidad/aplicacion/garita");
+    const { sesion: luis } = await iniciarSesionConClave({ dni: "40000004", clave: CLAVE });
+    expect((await consultar(luis, "zxc123")).resultados).toMatchObject([{ vivienda: "Mz. C, lote 15" }]);
+  });
+
+  it("@HU-GAR-01 CA1 no empadrona si falta la placa de un vehículo, y dice de cuál", async () => {
+    const error = await empadronar(
+      ana,
+      datos({ vivienda: { ...datos().vivienda, autos: 1, motos: 1 }, placas: { autos: [""], motos: [] } }),
+      ORIGEN,
+      T0,
+    ).catch((e) => e);
+    expect(error).toBeInstanceOf(ErrorValidacion);
+    expect(error.campos).toMatchObject({
+      "placas.autos.0": "Escriba la placa del auto 1.",
+      "placas.motos.0": "Escriba la placa de la moto 1.",
+    });
+    expect(await prisma.predio.count({ where: { manzana: "C", lote: "15" } })).toBe(0);
+  });
+
+  it("@HU-GAR-01 CA1 una placa que ya está en otra vivienda se rechaza diciendo cuál es", async () => {
+    const error = await empadronar(
+      ana,
+      datos({ placas: { autos: ["jlm 314"], motos: [] } }),
+      ORIGEN,
+      T0,
+    ).catch((e) => e);
+    expect(error.campos).toEqual({
+      "placas.autos.0": "Esta placa ya está registrada en Mz. A, lote 3. Revise que esté bien escrita.",
+    });
   });
 
   it("@HU-GAR-01 CA2 emite un enlace de un solo uso por cuenta propia, que vence en 15 minutos, y lo encola a su WhatsApp", async () => {
@@ -229,7 +281,7 @@ describe("@HU-GAR-01 Empadronar residentes", () => {
 
 describe("@HU-GAR-01 Route handlers del padrón", () => {
   it("@HU-GAR-01 CA1 validar revisa un paso sin guardar nada", async () => {
-    const soloVivienda = { vivienda: datos().vivienda };
+    const soloVivienda = { vivienda: datos().vivienda, placas: datos().placas };
     expect((await pedir(validarHttp, soloVivienda)).status).toBe(204);
     const ocupado = await pedir(validarHttp, { vivienda: { ...datos().vivienda, manzana: "a", lote: "3" } });
     expect(ocupado.status).toBe(400);

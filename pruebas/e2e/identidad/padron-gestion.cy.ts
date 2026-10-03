@@ -49,13 +49,18 @@ describe("@HU-GAR-10 @HU-GAR-09 Gestión del padrón", () => {
     cy.esperarHidratacion("Revisar el cambio").click();
     cy.contains('[role="status"]', "No cambió ningún dato").should("exist");
     cy.get('button[aria-label="Agregar uno: Motos"]').click();
+    cy.get('[id="campo-placas.motos.0"]').type(`M${sufijo.slice(-4)}A`);
     cy.revisarAccesibilidad("predio-actualizar-normal");
     cy.contains("button", "Revisar el cambio").click();
     cy.contains("dd", "0 → 1").should("exist");
+    cy.contains("dt", "Placas de motos")
+      .next("dd")
+      .should("contain.text", `M${sufijo.slice(-4)}A`);
     cy.revisarAccesibilidad("predio-actualizar-confirmar-normal");
     cy.contains("button", "Sí, guardar los cambios").click();
     cy.contains('[role="status"]', "Datos guardados").should("exist");
     cy.contains("li", "Actualizó los datos: motos 0 → 1").should("contain.text", "Ana Flores");
+    cy.contains("li", `M${sufijo.slice(-4)}A`).should("exist");
 
     cy.viewport(360, 800);
     cy.guardarModo("senior");
