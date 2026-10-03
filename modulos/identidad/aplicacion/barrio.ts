@@ -1,4 +1,4 @@
-// @HU-QUE-01 @HU-QUE-04
+// @HU-QUE-01 @HU-QUE-02 @HU-QUE-04
 import { prisma } from "@/compartido/bd/cliente";
 import { VERSION_POLITICA } from "@/modulos/identidad/dominio/politica";
 
@@ -35,4 +35,13 @@ export async function directivaParaAvisar() {
     orderBy: { nombreCompleto: "asc" },
   });
   return personas.map((p) => p.id);
+}
+
+/** Nombres de las personas por su id, para mostrar quién reportó una queja con nombre. */
+export async function nombresDe(ids: string[]) {
+  const personas = await prisma.usuario.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, nombreCompleto: true },
+  });
+  return new Map(personas.map((p) => [p.id, p.nombreCompleto]));
 }

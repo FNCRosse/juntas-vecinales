@@ -179,7 +179,7 @@ describe("@HU-QUE-04 Ticket correlativo y aviso a la directiva", () => {
     });
   });
 
-  it("@HU-QUE-04 CA2 CA3 la bandeja de la directiva muestra el reporte por evaluar; un vecino no la ve", async () => {
+  it("@HU-QUE-04 CA2 CA3 la bandeja de la directiva muestra el reporte por evaluar y quién lo envía; un vecino no la ve", async () => {
     const { queja } = await registrarQueja(carmen, datos(), T0);
     const bandeja = await bandejaDeQuejas(marta);
     expect(bandeja.conteo).toEqual({ total: 1, porEvaluar: 1, enRevision: 0 });
@@ -191,7 +191,7 @@ describe("@HU-QUE-04 Ticket correlativo y aviso a la directiva", () => {
         fechaRegistro: T0.toISOString(),
       }),
     ]);
-    expect(JSON.stringify(bandeja)).not.toContain("Carmen");
+    expect(bandeja.quejas[0].quien).toBe("Carmen Huamán");
     expect((await bandejaDeQuejas(marta, "cerrados")).quejas).toEqual([]);
     expect(await quejasPorAtender(marta)).toEqual({ porEvaluar: 1, enRevision: 0 });
     await expect(bandejaDeQuejas(carmen)).rejects.toBeInstanceOf(ErrorNoAutorizado);

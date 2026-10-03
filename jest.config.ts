@@ -27,11 +27,13 @@ export default async function configuracion(): Promise<Config> {
       {
         ...base,
         displayName: "unitarias",
+        setupFiles: ["<rootDir>/pruebas/claveDeCifrado.ts"],
         testMatch: ["<rootDir>/pruebas/unitarias/**/*.test.ts"],
       },
       {
         ...base,
         displayName: "integracion",
+        setupFiles: ["<rootDir>/pruebas/claveDeCifrado.ts"],
         testMatch: ["<rootDir>/pruebas/integracion/**/*.test.ts"],
         globalSetup: "<rootDir>/pruebas/integracion/preparar.ts",
       },

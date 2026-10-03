@@ -1,4 +1,4 @@
-// @HU-QUE-01 @HU-QUE-04
+// @HU-QUE-01 @HU-QUE-02 @HU-QUE-04
 // Reglas de la queja: qué datos exige (HU-QUE-01 CA1–CA3) y cómo se arma su código de seguimiento
 // (HU-QUE-04 CA1). Sin dependencias: solo datos.
 
@@ -34,6 +34,8 @@ export type DatosQueja = {
   longitud?: number | null;
   evidencias: string[];
   consentimiento: boolean;
+  /** Modo anónimo (HU-QUE-02): nadie ve quién lo envió. */
+  esAnonimo?: boolean;
 };
 
 const MENSAJES = {
@@ -91,6 +93,7 @@ export function prepararQueja(datos: DatosQueja) {
       latitud: conUbicacion ? (datos.latitud as number) : null,
       longitud: conUbicacion ? (datos.longitud as number) : null,
       evidencias,
+      esAnonimo: datos.esAnonimo === true,
     },
   };
 }

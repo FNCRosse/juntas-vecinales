@@ -28,6 +28,7 @@ describe("@HU-QUE-01 Registrar una queja con consentimiento y evidencia", () => 
       latitud: null,
       longitud: null,
       evidencias: [ARCHIVO],
+      esAnonimo: false,
     });
   });
 

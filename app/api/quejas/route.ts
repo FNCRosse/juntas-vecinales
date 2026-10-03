@@ -13,10 +13,11 @@ const esquema = z.object({
   longitud: coordenada,
   evidencias: z.array(z.string()).max(10),
   consentimiento: z.boolean(),
+  esAnonimo: z.boolean().optional(),
   idOperacion: z.uuid(),
 });
 
-/** Registrar una queja (HU-QUE-01, HU-QUE-04): 201 con el ticket; 200 si ya estaba registrada (AC-5). */
+/** Registrar una queja (HU-QUE-01, HU-QUE-04), con o sin nombre (HU-QUE-02): 201 con el ticket; 200 si ya estaba registrada (AC-5). */
 export const POST = manejar(async (peticion) => {
   const sesion = await exigirSesion(peticion);
   const { queja, creada } = await registrarQueja(sesion, esquema.parse(await leerJson(peticion)));
