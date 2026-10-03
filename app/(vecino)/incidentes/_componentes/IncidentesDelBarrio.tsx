@@ -133,7 +133,13 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
       )}
 
       {vista === "resumen" && (
-        <div className="overflow-x-auto">
+        // La tabla puede ser más ancha que el teléfono: la región se enfoca para moverla con el teclado.
+        <div
+          tabIndex={0}
+          role="region"
+          aria-label="Tabla de reportes por zona y tipo"
+          className="overflow-x-auto"
+        >
           <table className="w-full border-collapse text-left">
             <caption className="mb-2 text-left font-bold">Reportes del último mes por zona y tipo</caption>
             <thead>
