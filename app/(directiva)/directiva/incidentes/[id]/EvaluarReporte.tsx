@@ -135,10 +135,7 @@ export function EvaluarReporte({ id, numero, categoria }: { id: string; numero: 
       {decision === "rechazar" && (
         <>
           <MensajeEstado tipo="aviso" titulo="Se enviará una advertencia">
-            <p>
-              Si el reporte es falso o busca dañar a alguien, avisaremos a quien lo envió que es un mal uso de
-              la plataforma.
-            </p>
+            <p>Si es falso o busca dañar a alguien, avisaremos a quien lo envió que es un mal uso.</p>
           </MensajeEstado>
           <AreaTexto
             name="motivo"
