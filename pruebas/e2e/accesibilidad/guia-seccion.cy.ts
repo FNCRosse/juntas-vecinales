@@ -31,7 +31,7 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     cy.get('[role="note"]').should("not.exist");
 
     cy.visit("/mas/ayuda-y-accesibilidad");
-    cy.contains("li", "Incidentes").should("contain.text", "Ya la vio");
+    cy.get("main").contains("li", "Incidentes").should("contain.text", "Ya la vio");
     cy.revisarAccesibilidad("ayuda-guias-senior-360");
     cy.contains("a", "Ver la guía de Incidentes").click();
     cy.contains("p", "paso 1 de 4").should("exist");
