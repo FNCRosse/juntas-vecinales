@@ -1,4 +1,4 @@
-// @HU-QUE-01 @HU-QUE-02 @HU-QUE-04
+// @HU-QUE-01 @HU-QUE-02 @HU-QUE-03 @HU-QUE-04
 // Reglas de la queja: qué datos exige (HU-QUE-01 CA1–CA3) y cómo se arma su código de seguimiento
 // (HU-QUE-04 CA1). Sin dependencias: solo datos.
 
@@ -50,6 +50,7 @@ const MENSAJES = {
     "Falta una foto o video. Si no puede tomarla, pida ayuda a una persona y la directiva registrará su reporte.",
   muchasEvidencias: `Adjunte hasta ${MAXIMO_EVIDENCIAS} fotos o videos.`,
   consentimiento: "Falta marcar esta casilla. Es necesaria para registrar el reporte.",
+  consentimientoAsistido: "Confirme que el vecino aceptó la política de privacidad.",
 } as const;
 
 const esCoordenada = (valor: unknown, limite: number) =>
@@ -57,9 +58,10 @@ const esCoordenada = (valor: unknown, limite: number) =>
 
 /**
  * Revisa lo que exige el formulario (CA1: consentimiento; CA2: categoría y evidencia; CA3: descripción,
- * ubicación y evidencia completas). Devuelve los errores por campo y la queja lista para guardar.
+ * ubicación y evidencia completas). Devuelve los errores por campo y la queja lista para guardar. En la
+ * queja asistida (HU-QUE-03) la evidencia es opcional: es la salida para quien no puede tomar la foto.
  */
-export function prepararQueja(datos: DatosQueja) {
+export function prepararQueja(datos: DatosQueja, { asistida = false } = {}) {
   const errores: Record<string, string> = {};
   const descripcion = datos.descripcion.trim();
   const referencia = datos.referencia?.trim() || null;
@@ -78,10 +80,12 @@ export function prepararQueja(datos: DatosQueja) {
   }
 
   const evidencias = [...new Set(datos.evidencias.filter(Boolean))];
-  if (!evidencias.length) errores.evidencias = MENSAJES.evidencias;
+  if (!evidencias.length && !asistida) errores.evidencias = MENSAJES.evidencias;
   else if (evidencias.length > MAXIMO_EVIDENCIAS) errores.evidencias = MENSAJES.muchasEvidencias;
 
-  if (!datos.consentimiento) errores.consentimiento = MENSAJES.consentimiento;
+  if (!datos.consentimiento) {
+    errores.consentimiento = asistida ? MENSAJES.consentimientoAsistido : MENSAJES.consentimiento;
+  }
 
   return {
     errores,

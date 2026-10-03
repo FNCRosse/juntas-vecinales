@@ -29,6 +29,7 @@ export async function crearQueja(
     fechaRegistro: Date;
     esAnonimo: boolean;
     denuncianteId: string | null;
+    registradaPor: string | null;
     identidad: { hashDenunciante: string; datosCifrados: string } | null;
     consentimientoVersion: string;
     consentimientoEn: Date;

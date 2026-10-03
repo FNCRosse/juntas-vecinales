@@ -36,6 +36,8 @@ model Queja {
   fechaRegistro         DateTime            @default(now())
   esAnonimo             Boolean             @default(false)
   denuncianteId         String?
+  /// El mediador que la registró por el vecino (HU-QUE-03); vacío si la envió el propio vecino.
+  registradaPor         String?
   consentimientoVersion String
   consentimientoEn      DateTime
   idOperacion           String              @unique

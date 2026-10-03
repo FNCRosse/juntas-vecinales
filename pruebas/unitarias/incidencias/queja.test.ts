@@ -98,3 +98,13 @@ describe("@HU-QUE-04 Ticket correlativo intransferible", () => {
     expect(sufijoAleatorio((n) => Math.floor(Math.random() * n))).toMatch(/^[A-HJKMNP-Z2-9]{4}$/);
   });
 });
+
+describe("@HU-QUE-03 Queja asistida", () => {
+  it("@HU-QUE-03 CA1 en la queja asistida la foto es opcional y el consentimiento lo confirma el mediador", () => {
+    const { errores } = prepararQueja(
+      { ...completa, evidencias: [], consentimiento: false },
+      { asistida: true },
+    );
+    expect(errores).toEqual({ consentimiento: "Confirme que el vecino aceptó la política de privacidad." });
+  });
+});
