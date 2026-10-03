@@ -6,15 +6,21 @@ import { fechaYHora } from "@/compartido/fechas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { InterruptorLetraGrande } from "@/componentes/a11y/InterruptorLetraGrande";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
+import { obtenerPerfil } from "@/modulos/accesibilidad/aplicacion/obtenerPerfil";
+import { InterruptorVoz } from "@/app/_accesibilidad/InterruptorVoz";
 import { misSolicitudes } from "@/modulos/accesibilidad/aplicacion/mediacion";
 
 export const metadata: Metadata = { title: "Ayuda y accesibilidad" };
 
-// VEC-AYU-03 (HU-ACC-01, HU-ACC-04 CA3): "Letra grande" también aquí y el estado de sus pedidos de
-// ayuda. La lectura en voz alta y las guías llegan con HU-ACC-02 y HU-ACC-10.
+// VEC-AYU-03 (HU-ACC-01, HU-ACC-02 CA1, HU-ACC-04 CA3): "Letra grande" y la lectura en voz alta también aquí y el estado de sus pedidos de
+// ayuda. Las guías llegan con HU-ACC-10.
 export default async function AyudaYAccesibilidad() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
-  const [pedidos, senior] = await Promise.all([misSolicitudes(sesion.usuarioId), modoSeniorAlRenderizar()]);
+  const [pedidos, senior, perfil] = await Promise.all([
+    misSolicitudes(sesion.usuarioId),
+    modoSeniorAlRenderizar(),
+    obtenerPerfil({ usuarioId: sesion.usuarioId }),
+  ]);
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Ayuda y accesibilidad</h1>
@@ -23,6 +29,10 @@ export default async function AyudaYAccesibilidad() {
         <div className="self-start">
           <InterruptorLetraGrande activoAlInicio={senior} />
         </div>
+      </Tarjeta>
+      <Tarjeta titulo="Lectura en voz alta">
+        <p>El teléfono le lee las noticias de la junta, para que no tenga que leerlas en pantalla.</p>
+        <InterruptorVoz activoAlInicio={perfil.sintesisVozActiva} />
       </Tarjeta>
       <Tarjeta titulo="Mis pedidos de ayuda">
         {pedidos.length ? (
