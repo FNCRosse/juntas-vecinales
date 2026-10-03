@@ -80,3 +80,54 @@ export async function listarActas() {
     take: 100,
   });
 }
+
+const conBalance = { balance: { include: { egresos: { orderBy: { orden: "asc" } } } } } as const;
+
+export async function buscarBalancePorIdOperacion(idOperacion: string) {
+  return prisma.publicacion.findFirst({ where: { idOperacion, tipo: "BALANCE" }, include: conBalance });
+}
+
+export async function crearBalance(
+  tx: Transaccion,
+  datos: {
+    idOperacion: string;
+    titulo: string;
+    fechaActividad: Date;
+    ingresosVirtuales: number;
+    ingresosEnPuerta: number;
+    egresos: { concepto: string; monto: number; archivoId: string }[];
+    autorId: string;
+    autor: string;
+    fechaPublicacion: Date;
+  },
+) {
+  const { fechaActividad, ingresosVirtuales, ingresosEnPuerta, egresos, ...publicacion } = datos;
+  return tx.publicacion.create({
+    data: {
+      ...publicacion,
+      tipo: "BALANCE",
+      balance: {
+        create: {
+          fechaActividad,
+          ingresosVirtuales,
+          ingresosEnPuerta,
+          egresos: { create: egresos.map((e, orden) => ({ ...e, orden })) },
+        },
+      },
+    },
+    include: conBalance,
+  });
+}
+
+export async function buscarBalance(id: string) {
+  return prisma.publicacion.findFirst({ where: { id, tipo: "BALANCE" }, include: conBalance });
+}
+
+export async function listarBalances() {
+  return prisma.publicacion.findMany({
+    where: { tipo: "BALANCE" },
+    include: conBalance,
+    orderBy: { fechaPublicacion: "desc" },
+    take: 100,
+  });
+}

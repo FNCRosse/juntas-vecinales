@@ -1,4 +1,4 @@
-import { FileText, Megaphone } from "lucide-react";
+import { FileText, Landmark, Megaphone } from "lucide-react";
 import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
@@ -24,6 +24,11 @@ export default async function ResumenDirectiva() {
       <div>
         <BotonEnlace href="/directiva/actas/nueva" variante="secundario" icono={FileText}>
           Publicar un acta
+        </BotonEnlace>
+      </div>
+      <div>
+        <BotonEnlace href="/directiva/balances/nuevo" variante="secundario" icono={Landmark}>
+          Publicar un balance
         </BotonEnlace>
       </div>
     </div>

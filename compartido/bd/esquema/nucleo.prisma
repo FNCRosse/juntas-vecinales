@@ -109,3 +109,20 @@ model PreferenciaAviso {
 
   @@map("nucleo_preferencias_aviso")
 }
+
+// Archivos subidos a R2 con URL firmada (docs/BACKEND.md §7). El bucket es privado: aquí queda quién
+// subió cada uno y para qué, que es lo que decide quién puede pedir su descarga. `uso` lo fija cada
+// módulo ("comprobante_egreso"). Un archivo subido no se borra mientras algo lo referencia.
+model Archivo {
+  id        String   @id @default(uuid())
+  clave     String   @unique
+  tipo      String
+  tamano    Int
+  uso       String
+  subidoPor String
+  creadoEn  DateTime @default(now())
+  egresos   Egreso[]
+
+  @@index([subidoPor])
+  @@map("nucleo_archivos")
+}
