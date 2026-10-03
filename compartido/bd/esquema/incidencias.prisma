@@ -73,3 +73,14 @@ model IdentidadProtegida {
   @@index([hashDenunciante])
   @@map("incidencias_identidades_protegidas")
 }
+
+// Consultas al seguimiento por código sin sesión (HU-QUE-09): limitan los intentos por IP para que no
+// se adivinen códigos. Solo el hash de la IP; se borran al día siguiente.
+model ConsultaSeguimiento {
+  id     String   @id @default(uuid())
+  ipHash String
+  fecha  DateTime @default(now())
+
+  @@index([ipHash, fecha])
+  @@map("incidencias_consultas_seguimiento")
+}

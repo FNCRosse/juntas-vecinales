@@ -1,4 +1,5 @@
-import { Info, Megaphone } from "lucide-react";
+import { ChevronRight, Info, Megaphone, Search } from "lucide-react";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
@@ -25,11 +26,14 @@ export default async function Incidentes() {
           <ul className="flex flex-col gap-separacion">
             {reportes.map((r) => (
               <li key={r.id}>
-                <article className="flex items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6">
+                <Link
+                  href={`/incidentes/${r.id}`}
+                  className="flex items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+                >
                   <div className="flex flex-1 flex-col gap-1">
-                    <h3 className="font-bold">
+                    <strong>
                       {r.numero} · {r.categoria}
-                    </h3>
+                    </strong>
                     <span className="text-texto-secundario">
                       {r.lugar} · {fechaLarga(new Date(r.fechaRegistro))}
                     </span>
@@ -38,7 +42,8 @@ export default async function Incidentes() {
                       {r.estadoTexto}
                     </span>
                   </div>
-                </article>
+                  <ChevronRight aria-hidden className="size-icono shrink-0" />
+                </Link>
               </li>
             ))}
           </ul>
@@ -48,6 +53,13 @@ export default async function Incidentes() {
             <span>Cuando reporte algo, aquí verá cómo avanza.</span>
           </div>
         )}
+        <Link
+          href="/seguimiento"
+          className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
+        >
+          <Search aria-hidden className="size-icono" />
+          Tengo un código de seguimiento
+        </Link>
       </section>
     </div>
   );
