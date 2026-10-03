@@ -1,5 +1,6 @@
 import { FileText, Landmark, Megaphone } from "lucide-react";
 import type { Metadata } from "next";
+import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { fechaLarga, primerNombre, saludo } from "@/compartido/fechas";
@@ -16,6 +17,11 @@ export default async function ResumenDirectiva() {
         {saludo(ahora)}, {primerNombre(sesion?.nombreCompleto ?? "")}
       </h1>
       <p className="text-texto-secundario">{fechaLarga(ahora)} · Resumen de la directiva</p>
+      {sesion && (
+        <div className="pt-4">
+          <CambiarDePerfil sesion={sesion} actual="directiva" estilo="boton" />
+        </div>
+      )}
       <div className="pt-4">
         <BotonEnlace href="/directiva/comunicados/nuevo" variante="secundario" icono={Megaphone}>
           Publicar un comunicado

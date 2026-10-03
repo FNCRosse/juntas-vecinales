@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { BotonCerrarSesion } from "@/app/_sesion/BotonCerrarSesion";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
@@ -45,6 +46,7 @@ export default async function MasOpciones() {
           <span>Tres pasos para conocer la plataforma y tenerla en su pantalla de inicio.</span>
         </TarjetaEnlace>
       </div>
+      <CambiarDePerfil sesion={sesion} actual="vecino" estilo="tarjeta" />
       <BotonCerrarSesion destino="/entrar" />
     </div>
   );
