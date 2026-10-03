@@ -2,7 +2,7 @@
 
 Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU-…`. No se edita a mano.
 
-- HU en el plan: 76 · cerradas: 28 · cerradas con e2e: 28 de 28 (100 %).
+- HU en el plan: 76 · cerradas: 33 · cerradas con e2e: 33 de 33 (100 %).
 - Se listan las HU con casilla distinta de pendiente o con algo etiquetado.
 
 | HU | Estado | Código | Unitarias | Integración | E2E |
@@ -40,3 +40,8 @@ Generada por `npm run matriz` (`guiones/matriz-hu.mjs`) desde las etiquetas `@HU
 | HU-GAR-15 Oposición a mostrar la ubicación exacta | En parte | `app/(vecino)/mas/perfil/OposicionUbicacion.tsx`<br>`modulos/identidad/aplicacion/arco.ts` | — | `pruebas/integracion/identidad/cancelacion.test.ts` | `pruebas/e2e/identidad/cancelacion.cy.ts` |
 | HU-GAR-17 Cambio de número de contacto verificado | Cerrada | `app/(administrador)/administracion/privacidad/[id]/ResolverSolicitud.tsx`<br>`app/(vecino)/mas/perfil/corregir/CorregirDato.tsx`<br>`modulos/identidad/aplicacion/arco.ts`<br>`modulos/identidad/dominio/arco.ts` | — | `pruebas/integracion/identidad/contacto.test.ts` | `pruebas/e2e/identidad/privacidad.cy.ts` |
 | HU-GAR-26 Log de auditoría global | Cerrada | `modulos/identidad/aplicacion/auditoria.ts` | — | `pruebas/integracion/identidad/auditoria.test.ts` | `pruebas/e2e/identidad/auditoria.cy.ts` |
+| HU-ASA-15 Comunicados generales y feed comunitario | Cerrada | `app/(directiva)/directiva/comunicados/nuevo/PublicarComunicado.tsx`<br>`modulos/identidad/aplicacion/comunidad.ts`<br>`modulos/transparencia/aplicacion/comunicados.ts`<br>`modulos/transparencia/dominio/comunicado.ts` | `pruebas/unitarias/transparencia/comunicado.test.ts` | `pruebas/integracion/transparencia/comunicados.test.ts` | `pruebas/e2e/transparencia/comunicados.cy.ts` |
+| HU-ACC-02 Escuchar en voz alta los comunicados del feed | Cerrada | `app/(vecino)/noticias/Escuchar.tsx`<br>`app/_accesibilidad/InterruptorVoz.tsx`<br>`modulos/accesibilidad/aplicacion/cambiarSintesisVoz.ts`<br>`modulos/accesibilidad/aplicacion/sintesisVoz.ts`<br>`modulos/accesibilidad/dominio/sintesisVoz.ts` | `pruebas/unitarias/accesibilidad/sintesisVoz.test.ts` | `pruebas/integracion/accesibilidad/perfil.test.ts` | `pruebas/e2e/transparencia/escuchar.cy.ts` |
+| HU-ASA-11 Acta digital en PDF y su publicación | Cerrada | `app/(directiva)/directiva/actas/nueva/PublicarActa.tsx`<br>`modulos/transparencia/aplicacion/actas.ts`<br>`modulos/transparencia/dominio/acta.ts` | `pruebas/unitarias/transparencia/acta.test.ts` | `pruebas/integracion/transparencia/actas.test.ts` | `pruebas/e2e/transparencia/actas.cy.ts` |
+| HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos | Cerrada | `app/(directiva)/directiva/balances/nuevo/PublicarBalance.tsx`<br>`modulos/transparencia/aplicacion/balances.ts`<br>`modulos/transparencia/aplicacion/totales.ts`<br>`modulos/transparencia/dominio/balance.ts` | `pruebas/unitarias/transparencia/balance.test.ts` | `pruebas/integracion/nucleo/archivos.test.ts`<br>`pruebas/integracion/transparencia/balances.test.ts` | `pruebas/e2e/transparencia/balances.cy.ts` |
+| HU-ASA-12 Historial público de actas y balances | Cerrada | `modulos/transparencia/aplicacion/historial.ts`<br>`modulos/transparencia/dominio/historial.ts` | `pruebas/unitarias/transparencia/historial.test.ts` | `pruebas/integracion/transparencia/historial.test.ts` | `pruebas/e2e/transparencia/historial.cy.ts` |

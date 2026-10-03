@@ -102,13 +102,15 @@ Evidencia de cierre: [M1.md](evidencias/M1.md) (PR [#11](https://github.com/FNCR
 
 ## M2 · Transparencia y Rendición de Cuentas
 
-- [ ] HU-ASA-15 Comunicados generales y feed comunitario
-- [ ] HU-ACC-02 Escuchar en voz alta los comunicados del feed
-- [ ] HU-ASA-11 Acta digital en PDF y su publicación
-- [ ] HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos
-- [ ] HU-ASA-12 Historial público de actas y balances
+- [x] HU-ASA-15 Comunicados generales y feed comunitario
+- [x] HU-ACC-02 Escuchar en voz alta los comunicados del feed
+- [x] HU-ASA-11 Acta digital en PDF y su publicación
+- [x] HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos
+- [x] HU-ASA-12 Historial público de actas y balances
 - [ ] HU-COB-14 Balance agregado y anonimizado de la recaudación — `[-]` diferida a M5: necesita cuotas y pagos
 - [ ] HU-COB-15 Exportar la recaudación a CSV — `[-]` diferida a M5: necesita cuotas y pagos
+
+Evidencia de cierre: [M2.md](evidencias/M2.md).
 
 **Pantallas:** DIR-ASA-01, 10–18 · DIR-COB-19 · DIR-INI-01, 05 · DIR-TRA-01–05 · VEC-ACC-09 · VEC-ASA-09, 13 · VEC-AYU-03 · VEC-TRA-01–04.
 **Riesgos:** el orden de módulos pone M2 antes de M4 y M5, de los que consume datos: las actas y balances se registran a mano con título y fecha (en M4 se enlazan a su asamblea o evento) y las dos HU de recaudación se hacen en M5. La evidencia de M2 lo declara.
