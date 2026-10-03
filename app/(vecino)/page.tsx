@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaLarga, saludo } from "@/compartido/fechas";
+import { obtenerPerfil } from "@/modulos/accesibilidad/aplicacion/obtenerPerfil";
 import { bloqueDeIdentidad } from "@/modulos/identidad/aplicacion/panelInicio";
 import { ultimasNoticias } from "@/modulos/transparencia/aplicacion/comunicados";
 import { TarjetaNoticia } from "./noticias/TarjetaNoticia";
@@ -15,7 +16,10 @@ export const metadata: Metadata = { title: "Inicio" };
 export default async function Inicio() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
   const { nombre, vivienda, avisosSinLeer } = await bloqueDeIdentidad(sesion);
-  const noticias = await ultimasNoticias(sesion, 2);
+  const [noticias, perfil] = await Promise.all([
+    ultimasNoticias(sesion, 2),
+    obtenerPerfil({ usuarioId: sesion.usuarioId }),
+  ]);
   const ahora = new Date();
   return (
     <div className="flex flex-col gap-6">
@@ -52,7 +56,7 @@ export default async function Inicio() {
             Últimas noticias de la junta
           </h2>
           {noticias.map((n) => (
-            <TarjetaNoticia key={n.id} noticia={n} nivel={3} />
+            <TarjetaNoticia key={n.id} noticia={n} nivel={3} conVoz={perfil.sintesisVozActiva} />
           ))}
           <Link
             href="/noticias"
