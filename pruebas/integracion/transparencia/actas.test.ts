@@ -1,3 +1,4 @@
+import { fijarReloj } from "@/pruebas/relojFijo";
 import { randomUUID } from "node:crypto";
 import { GET as pdfHttp } from "@/app/api/transparencia/actas/[id]/pdf/route";
 import { POST as previaHttp } from "@/app/api/transparencia/actas/vista-previa/route";
@@ -39,6 +40,7 @@ async function sesionDeVecino(dni: string): Promise<SesionDto> {
 }
 
 beforeEach(async () => {
+  fijarReloj(T0);
   await prisma.$executeRaw`TRUNCATE identidad_usuarios, identidad_predios, nucleo_cola_avisos, nucleo_notificaciones CASCADE`;
   await prisma.$executeRaw`TRUNCATE transparencia_publicaciones CASCADE`;
   await sembrar("clave-de-prueba");

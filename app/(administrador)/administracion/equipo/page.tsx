@@ -6,6 +6,7 @@ import { fechaYHora } from "@/compartido/fechas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
+import { GenerarEnlace } from "./GenerarEnlace";
 import {
   listarEquipo,
   NOMBRE_ROL,
@@ -74,6 +75,7 @@ export default async function Equipo({
                 Invitación enviada: todavía no crea su acceso
               </span>
             )}
+            {m.gestionable && !m.tieneAcceso && <GenerarEnlace usuarioId={m.id} nombre={m.nombre} />}
             {m.esUsted && <span className="font-bold text-texto-secundario">Es usted</span>}
             {m.gestionable && (
               <div className="flex flex-wrap gap-separacion">

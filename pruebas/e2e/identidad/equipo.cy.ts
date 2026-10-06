@@ -110,4 +110,39 @@ describe("@HU-GAR-21 Crear el acceso de equipo con la invitación", () => {
       },
     );
   });
+
+  it("@HU-GAR-21 CA2 el administrador genera un enlace para copiar y la persona crea su clave con él", () => {
+    cy.clearCookies();
+    entrarComoAna();
+    cy.request("POST", "/api/admin/cuentas", {
+      persona: {
+        tipo: "afuera",
+        nombreCompleto: "Gloria Paz Rey",
+        dni: `4${sufijo}8`,
+        telefono: `9${sufijo}66`,
+      },
+      rol: "DIRECTIVA",
+    });
+    cy.viewport(360, 800);
+    cy.guardarModo("senior");
+    cy.visit("/administracion/equipo");
+    cy.contains("li", "Gloria Paz Rey").within(() => {
+      cy.esperarHidratacion("Generar enlace para copiar (Gloria Paz Rey)").click();
+    });
+    cy.contains("li", "Gloria Paz Rey")
+      .find("input[readonly]")
+      .should("have.attr", "value")
+      .and("match", /\/entrar\/equipo\/crear\//);
+    cy.contains("li", "Gloria Paz Rey").should("contain.text", "Sirve una sola vez");
+    cy.revisarAccesibilidad("equipo-enlace-senior-360");
+    cy.contains("li", "Gloria Paz Rey")
+      .find("input[readonly]")
+      .invoke("val")
+      .then((url) => {
+        cy.clearCookies();
+        cy.visit(new URL(String(url)).pathname);
+        cy.get("h1").should("have.text", "Crear su acceso de equipo");
+        cy.guardarModo("normal");
+      });
+  });
 });

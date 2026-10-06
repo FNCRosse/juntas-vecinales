@@ -1,5 +1,6 @@
 import { POST as agregarHttp } from "@/app/api/admin/cuentas/route";
 import { DELETE as quitarHttp } from "@/app/api/admin/cuentas/[usuarioId]/route";
+import { POST as enlaceHttp } from "@/app/api/admin/cuentas/[usuarioId]/enlace/route";
 import { PATCH as rolHttp } from "@/app/api/admin/cuentas/[usuarioId]/rol/route";
 import { POST as buscarHttp } from "@/app/api/admin/cuentas/buscar/route";
 import { POST as crearAccesoHttp } from "@/app/api/auth/equipo/crear/route";
@@ -17,6 +18,7 @@ import {
   consultarInvitacion,
   crearAccesoEquipo,
   diferenciaDePermisos,
+  generarEnlaceDeInvitacion,
   listarEquipo,
   quitarAcceso,
 } from "@/modulos/identidad/aplicacion/equipo";
@@ -124,6 +126,58 @@ describe("@HU-GAR-21 Crear cuentas internas con rol", () => {
     // La invitación sirve una sola vez.
     await expect(crearAccesoEquipo(token, "otra-clave-de-equipo", undefined)).rejects.toBeInstanceOf(
       ErrorConflicto,
+    );
+  });
+
+  it("@HU-GAR-21 CA2 el administrador genera un enlace para copiar: sirve una vez, anula el anterior y no se guarda", async () => {
+    await agregarAlEquipo(
+      ana,
+      { nombreCompleto: "Raúl Vega", dni: "41234567", telefono: "912345601" },
+      "DIRECTIVA",
+      ORIGEN,
+      T0,
+    );
+    const antes = await invitacionEnCola();
+    const raul = await idDe("41234567");
+
+    const r = await enlaceHttp(pedir("POST", {}), conId(raul));
+    expect(r.status).toBe(201);
+    expect(r.headers.get("cache-control")).toBe("no-store");
+    const { enlace, nombre, vence } = await r.json();
+    expect(nombre).toBe("Raúl Vega");
+    expect(enlace).toMatch(/^http:\/\/localhost\/entrar\/equipo\/crear\/[A-Za-z0-9_-]{20,}$/);
+    expect(new Date(vence).getTime()).toBeGreaterThan(Date.now());
+    const token = enlace.replace(/^.*\/crear\//, "");
+
+    // Nada guarda el enlace: ni la cola de avisos ni la auditoría.
+    expect(JSON.stringify(await prisma.avisoEnCola.findMany())).not.toContain(token);
+    const registro = await prisma.registroAuditoria.findFirstOrThrow({
+      where: { accion: "generar_enlace_equipo", entidadId: raul },
+    });
+    expect(registro.actorId).toBe(ana.usuarioId);
+    expect(JSON.stringify(registro)).not.toContain(token);
+
+    // La invitación que ya estaba en la cola dejó de servir; la nueva sí, y una sola vez.
+    expect(await consultarInvitacion(antes)).toBeNull();
+    expect(await consultarInvitacion(token)).toMatchObject({ nombre: "Raúl", rolTexto: "Directiva" });
+    await crearAccesoEquipo(token, "una-clave-de-equipo", undefined);
+    await expect(crearAccesoEquipo(token, "otra-clave-de-equipo", undefined)).rejects.toBeInstanceOf(
+      ErrorConflicto,
+    );
+    // Ya creó su acceso: no se genera otro enlace.
+    await expect(generarEnlaceDeInvitacion(ana, raul, ORIGEN)).rejects.toBeInstanceOf(ErrorReglaNegocio);
+  });
+
+  it("@HU-GAR-21 solo la administración genera el enlace, y solo de quien es del equipo", async () => {
+    const { sesion: marta } = await iniciarSesionConClave({ dni: "40000002", clave: CLAVE });
+    await expect(generarEnlaceDeInvitacion(marta, await idDe("40000003"), ORIGEN)).rejects.toBeInstanceOf(
+      ErrorNoAutorizado,
+    );
+    await expect(generarEnlaceDeInvitacion(ana, await idDe("08123478"), ORIGEN)).rejects.toBeInstanceOf(
+      ErrorNoEncontrado,
+    );
+    await expect(generarEnlaceDeInvitacion(ana, ana.usuarioId, ORIGEN)).rejects.toBeInstanceOf(
+      ErrorNoEncontrado,
     );
   });
 

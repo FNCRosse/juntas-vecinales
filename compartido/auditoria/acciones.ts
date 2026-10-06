@@ -20,6 +20,7 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   actualizar_predio: { modulo: "Padrón", texto: "Actualizó los datos de un predio" },
   dar_de_baja_residente: { modulo: "Padrón", texto: "Dio de baja a un residente" },
   dar_acceso_equipo: { modulo: "Equipo", texto: "Dio acceso de equipo" },
+  generar_enlace_equipo: { modulo: "Equipo", texto: "Generó un enlace de invitación para copiar" },
   crear_acceso_equipo: { modulo: "Equipo", texto: "Creó su acceso de equipo" },
   cambiar_rol: { modulo: "Equipo", texto: "Cambió un rol del equipo" },
   quitar_acceso_equipo: { modulo: "Equipo", texto: "Quitó un acceso de equipo" },

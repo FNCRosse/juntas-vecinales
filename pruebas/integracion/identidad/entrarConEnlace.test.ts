@@ -22,7 +22,8 @@ import { VERSION_POLITICA } from "@/modulos/identidad/dominio/politica";
 jest.mock("next/server", () => ({ after: jest.fn() }));
 
 const ORIGEN = "https://jv.ejemplo";
-const T0 = new Date("2026-10-05T15:00:00Z");
+// Relativo a la fecha real: los enlaces y avisos se guardan con la hora de la BD.
+const T0 = new Date();
 const minutos = (m: number) => new Date(T0.getTime() + m * 60_000);
 const DNI_SOFIA = "45678123";
 

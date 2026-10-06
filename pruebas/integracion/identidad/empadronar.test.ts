@@ -18,7 +18,8 @@ import type { SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 jest.mock("next/server", () => ({ after: jest.fn() }));
 
 const CLAVE = "clave-de-prueba";
-const T0 = new Date("2026-10-05T15:00:00Z");
+// Relativo a la fecha real: los enlaces y avisos se guardan con la hora de la BD.
+const T0 = new Date();
 const ORIGEN = "https://jv.ejemplo";
 
 const datos = (cambios: Partial<DatosEmpadronamiento> = {}): DatosEmpadronamiento => ({
@@ -174,7 +175,7 @@ describe("@HU-GAR-01 Empadronar residentes", () => {
     expect(avisos[0].texto).not.toContain(token);
 
     // Al enviarse, el enlace deja de estar guardado en la cola.
-    await despacharAvisos(T0, crearSimulador({}));
+    await despacharAvisos(new Date(T0.getTime() + 60_000), crearSimulador({}));
     expect((await prisma.avisoEnCola.findMany()).map((a) => [a.estado, a.parametros])).toEqual([
       ["ENVIADA", []],
       ["ENVIADA", []],
