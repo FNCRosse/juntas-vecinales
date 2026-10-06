@@ -10,7 +10,8 @@ import { iniciarSesionConClave } from "@/modulos/identidad/aplicacion/iniciarSes
 import type { SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 import { balancesPublicados, publicarBalance, verBalance } from "@/modulos/transparencia/aplicacion/balances";
 
-const T0 = new Date("2026-10-05T15:00:00Z");
+// Relativo a la fecha real: los enlaces y avisos se guardan con la hora de la BD.
+const T0 = new Date();
 let marta: SesionDto;
 let tokenMarta: string;
 let carmen: SesionDto;

@@ -13,7 +13,8 @@ import {
   verNoticias,
 } from "@/modulos/transparencia/aplicacion/comunicados";
 
-const T0 = new Date("2026-10-05T15:00:00Z");
+// Relativo a la fecha real: los enlaces y avisos se guardan con la hora de la BD.
+const T0 = new Date();
 const horas = (h: number) => new Date(T0.getTime() + h * 3_600_000);
 let marta: SesionDto;
 let tokenMarta: string;

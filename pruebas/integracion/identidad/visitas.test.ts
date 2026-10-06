@@ -1,3 +1,4 @@
+import { fijarReloj } from "@/pruebas/relojFijo";
 import { POST as registrarHttp } from "@/app/api/garita/visitas/route";
 import { DELETE as anularHttp } from "@/app/api/garita/visitas/[id]/route";
 import { prisma } from "@/compartido/bd/cliente";
@@ -29,6 +30,7 @@ async function sesionDe(dni: string) {
 }
 
 beforeEach(async () => {
+  fijarReloj(T0);
   await prisma.$executeRaw`TRUNCATE identidad_usuarios, identidad_predios CASCADE`;
   await sembrar("clave-de-prueba");
   ({ sesion: marta, token: tokenMarta } = await iniciarSesionConClave({
