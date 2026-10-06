@@ -85,13 +85,21 @@
   },
   "docs/ARQUITECTURA.md": {
     "mtime": 1791021824.6591501,
+<<<<<<< Updated upstream
     "seen": 1791022341.7788231,
+=======
+    "seen": 1791324849.7651877,
+>>>>>>> Stashed changes
     "ast_hash": "238fc0151dfc6c0bc26426a1ac83ccf7",
     "semantic_hash": ""
   },
   "docs/BACKEND.md": {
     "mtime": 1791021824.659306,
+<<<<<<< Updated upstream
     "seen": 1791022341.778831,
+=======
+    "seen": 1791324849.7651892,
+>>>>>>> Stashed changes
     "ast_hash": "7d044af143951d0be78468c2cad6f596",
     "semantic_hash": ""
   },
@@ -103,7 +111,11 @@
   },
   "docs/DESPLIEGUE.md": {
     "mtime": 1791022335.5351403,
+<<<<<<< Updated upstream
     "seen": 1791022341.7788572,
+=======
+    "seen": 1791324849.7652118,
+>>>>>>> Stashed changes
     "ast_hash": "07ea8744ae54bf9a2050af869bec0cbb",
     "semantic_hash": ""
   },
@@ -121,7 +133,11 @@
   },
   "docs/PLAN.md": {
     "mtime": 1791022335.5394778,
+<<<<<<< Updated upstream
     "seen": 1791022341.7789013,
+=======
+    "seen": 1791324849.7652872,
+>>>>>>> Stashed changes
     "ast_hash": "f76b707fb1b522fc5d1b32b4f1f630f2",
     "semantic_hash": ""
   },
@@ -175,7 +191,11 @@
   },
   "modulos/incidencias/CLAUDE.md": {
     "mtime": 1791021824.6629245,
+<<<<<<< Updated upstream
     "seen": 1791022341.7791529,
+=======
+    "seen": 1791324849.7655823,
+>>>>>>> Stashed changes
     "ast_hash": "6590aaecc9da8db3fb23f9ee91e281c6",
     "semantic_hash": ""
   },
@@ -217,7 +237,11 @@
   },
   "cypress.config.ts": {
     "mtime": 1791021824.658974,
+<<<<<<< Updated upstream
     "seen": 1791022341.7748904,
+=======
+    "seen": 1791324849.7612612,
+>>>>>>> Stashed changes
     "ast_hash": "311803a6b8e1047e6fa69624387bb1e3",
     "semantic_hash": ""
   },
@@ -229,13 +253,21 @@
   },
   "guiones/e2e.mjs": {
     "mtime": 1791021824.6600251,
+<<<<<<< Updated upstream
     "seen": 1791022341.77514,
+=======
+    "seen": 1791324849.7615442,
+>>>>>>> Stashed changes
     "ast_hash": "5398cc311981984d51501e1d8aaad61e",
     "semantic_hash": ""
   },
   "jest.config.ts": {
     "mtime": 1791021824.660279,
+<<<<<<< Updated upstream
     "seen": 1791022341.7751853,
+=======
+    "seen": 1791324849.7615914,
+>>>>>>> Stashed changes
     "ast_hash": "2e64fd2dcfb9a64293d7d220ca4941ce",
     "semantic_hash": ""
   },
@@ -703,7 +735,11 @@
   },
   "docs/evidencias/matriz-hu.md": {
     "mtime": 1791022335.5764842,
+<<<<<<< Updated upstream
     "seen": 1791022341.7790163,
+=======
+    "seen": 1791324849.765419,
+>>>>>>> Stashed changes
     "ast_hash": "97a9f3294c59d33641051d1caa140900",
     "semantic_hash": ""
   },
@@ -823,19 +859,31 @@
   },
   "app/(administrador)/administracion/mas/page.tsx": {
     "mtime": 1791005618.7092888,
+<<<<<<< Updated upstream
     "seen": 1791022341.7698176,
+=======
+    "seen": 1791324849.7560897,
+>>>>>>> Stashed changes
     "ast_hash": "02068db40fc582213d9f93184087b1c9",
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/padron/[predioId]/page.tsx": {
     "mtime": 1791021824.6449118,
+<<<<<<< Updated upstream
     "seen": 1791022341.769938,
+=======
+    "seen": 1791324849.756206,
+>>>>>>> Stashed changes
     "ast_hash": "989ae279058151f0f8d1d75d6fa8e213",
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/padron/empadronar/_componentes/AsistenteEmpadronar.tsx": {
     "mtime": 1791021824.6449118,
+<<<<<<< Updated upstream
     "seen": 1791022341.7699409,
+=======
+    "seen": 1791324849.756209,
+>>>>>>> Stashed changes
     "ast_hash": "142665540580e2c1cbfcc0d9f1f14153",
     "semantic_hash": ""
   },
@@ -859,13 +907,21 @@
   },
   "app/(directiva)/directiva/mas/page.tsx": {
     "mtime": 1791005618.7092888,
+<<<<<<< Updated upstream
     "seen": 1791022341.7704444,
+=======
+    "seen": 1791324849.7567408,
+>>>>>>> Stashed changes
     "ast_hash": "9562310abaa7e523f0e8ed5a7544308a",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/page.tsx": {
     "mtime": 1791021824.6494527,
+<<<<<<< Updated upstream
     "seen": 1791022341.7704458,
+=======
+    "seen": 1791324849.7567427,
+>>>>>>> Stashed changes
     "ast_hash": "c766be0a33ea44f219eed2bd0d2b14c8",
     "semantic_hash": ""
   },
@@ -877,13 +933,21 @@
   },
   "app/(vecino)/mas/page.tsx": {
     "mtime": 1791005618.7092888,
+<<<<<<< Updated upstream
     "seen": 1791022341.7712417,
+=======
+    "seen": 1791324849.7575884,
+>>>>>>> Stashed changes
     "ast_hash": "ec3f17f58b0b1c1f1220dfddae3731ec",
     "semantic_hash": ""
   },
   "app/(vecino)/page.tsx": {
     "mtime": 1791021824.6518826,
+<<<<<<< Updated upstream
     "seen": 1791022341.771526,
+=======
+    "seen": 1791324849.7578897,
+>>>>>>> Stashed changes
     "ast_hash": "ea3c142d8dcf06e436319889c5149c48",
     "semantic_hash": ""
   },
@@ -913,7 +977,11 @@
   },
   "app/api/admin/padron/esquema.ts": {
     "mtime": 1791021824.6529074,
+<<<<<<< Updated upstream
     "seen": 1791022341.7723894,
+=======
+    "seen": 1791324849.7587895,
+>>>>>>> Stashed changes
     "ast_hash": "8e1953095dd338aabf81ad6fc4a6cda1",
     "semantic_hash": ""
   },
@@ -991,7 +1059,11 @@
   },
   "compartido/notificaciones/plantillas.ts": {
     "mtime": 1791021824.6582253,
+<<<<<<< Updated upstream
     "seen": 1791022341.7742727,
+=======
+    "seen": 1791324849.7606304,
+>>>>>>> Stashed changes
     "ast_hash": "883470f1143666404481ff8db48839f4",
     "semantic_hash": ""
   },
@@ -1033,7 +1105,11 @@
   },
   "modulos/identidad/aplicacion/consultarPadron.ts": {
     "mtime": 1791021824.6618848,
+<<<<<<< Updated upstream
     "seen": 1791022341.775639,
+=======
+    "seen": 1791324849.762033,
+>>>>>>> Stashed changes
     "ast_hash": "5508cfb96d349cd862d6a8de3faf504e",
     "semantic_hash": ""
   },
@@ -1045,7 +1121,11 @@
   },
   "modulos/identidad/aplicacion/empadronar.ts": {
     "mtime": 1791021824.6623087,
+<<<<<<< Updated upstream
     "seen": 1791022341.7756922,
+=======
+    "seen": 1791324849.762094,
+>>>>>>> Stashed changes
     "ast_hash": "69b94ff4b0ca2e7b530fe4ebc51b57de",
     "semantic_hash": ""
   },
@@ -1111,7 +1191,11 @@
   },
   "modulos/identidad/infraestructura/repositorioPadron.ts": {
     "mtime": 1791021824.6629245,
+<<<<<<< Updated upstream
     "seen": 1791022341.7762852,
+=======
+    "seen": 1791324849.762746,
+>>>>>>> Stashed changes
     "ast_hash": "6f30d5a5451985db00f205df4862724a",
     "semantic_hash": ""
   },
@@ -1129,7 +1213,11 @@
   },
   "pruebas/e2e/identidad/empadronar.cy.ts": {
     "mtime": 1791021824.6669652,
+<<<<<<< Updated upstream
     "seen": 1791022341.7770221,
+=======
+    "seen": 1791324849.7635725,
+>>>>>>> Stashed changes
     "ast_hash": "8651d1ebe204c4d80df7047ca6c12487",
     "semantic_hash": ""
   },
@@ -1146,15 +1234,21 @@
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/empadronar.test.ts": {
+<<<<<<< Updated upstream
     "mtime": 1791021824.6687272,
     "seen": 1791022341.7775352,
     "ast_hash": "4df86e74535a39d3d6a8b2940b952eb2",
+=======
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7640994,
+    "ast_hash": "8ed20cbcd1190f2d17628e53e178538f",
+>>>>>>> Stashed changes
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/entrarConEnlace.test.ts": {
-    "mtime": 1790985446.8618724,
-    "seen": 1791000720.3002503,
-    "ast_hash": "2ae91bb6a60c7cc54a63491a0ad4809e",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7641017,
+    "ast_hash": "a1665eea952ff7a761cccea105731e7f",
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/sesion.test.ts": {
@@ -1290,9 +1384,9 @@
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/equipo/page.tsx": {
-    "mtime": 1790985446.6842349,
-    "seen": 1791000720.2987554,
-    "ast_hash": "48fdbfa8235def16080ad495597a3ce0",
+    "mtime": 1791324839.2643185,
+    "seen": 1791324849.7560494,
+    "ast_hash": "2ee2aff88d0acd2280b7029f11f8a408",
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/padron/[predioId]/_componentes/BotonReenviar.tsx": {
@@ -1303,13 +1397,21 @@
   },
   "app/(administrador)/administracion/padron/[predioId]/actualizar/ActualizarPredio.tsx": {
     "mtime": 1791021824.6449118,
+<<<<<<< Updated upstream
     "seen": 1791022341.7698677,
+=======
+    "seen": 1791324849.7561305,
+>>>>>>> Stashed changes
     "ast_hash": "f19ebc0bc2c1ba0d3c6756140db968a5",
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/padron/[predioId]/actualizar/page.tsx": {
     "mtime": 1791021824.6449118,
+<<<<<<< Updated upstream
     "seen": 1791022341.7698693,
+=======
+    "seen": 1791324849.7561324,
+>>>>>>> Stashed changes
     "ast_hash": "ca6c8c76fb527b0d702a0f0639e4940c",
     "semantic_hash": ""
   },
@@ -1477,7 +1579,11 @@
   },
   "app/(vecino)/mas/ayuda-y-accesibilidad/page.tsx": {
     "mtime": 1791021824.6515825,
+<<<<<<< Updated upstream
     "seen": 1791022341.771182,
+=======
+    "seen": 1791324849.757526,
+>>>>>>> Stashed changes
     "ast_hash": "5ce461bd86aaf436dc6695907ed25705",
     "semantic_hash": ""
   },
@@ -1651,7 +1757,11 @@
   },
   "app/api/admin/padron/[predioId]/route.ts": {
     "mtime": 1791021824.6527193,
+<<<<<<< Updated upstream
     "seen": 1791022341.7723572,
+=======
+    "seen": 1791324849.7587585,
+>>>>>>> Stashed changes
     "ast_hash": "cd0b448328e1043f1d3d8167003fce13",
     "semantic_hash": ""
   },
@@ -1663,13 +1773,21 @@
   },
   "app/api/arco/solicitudes/[id]/copia/route.ts": {
     "mtime": 1791021824.6533785,
+<<<<<<< Updated upstream
     "seen": 1791022341.7724838,
+=======
+    "seen": 1791324849.7588892,
+>>>>>>> Stashed changes
     "ast_hash": "57f9c8d5a152676f8770a65fc7f04296",
     "semantic_hash": ""
   },
   "app/api/arco/solicitudes/[id]/route.ts": {
     "mtime": 1791021824.65377,
+<<<<<<< Updated upstream
     "seen": 1791022341.7724857,
+=======
+    "seen": 1791324849.7588904,
+>>>>>>> Stashed changes
     "ast_hash": "b4b9705ea91e4a6240b8ea6683ada8a1",
     "semantic_hash": ""
   },
@@ -1783,7 +1901,11 @@
   },
   "app/api/portal/inicio/route.ts": {
     "mtime": 1791021824.65377,
+<<<<<<< Updated upstream
     "seen": 1791022341.7731917,
+=======
+    "seen": 1791324849.7596703,
+>>>>>>> Stashed changes
     "ast_hash": "f7067a850148b0e63ae1db056f0d0654",
     "semantic_hash": ""
   },
@@ -1800,9 +1922,15 @@
     "semantic_hash": ""
   },
   "compartido/auditoria/acciones.ts": {
+<<<<<<< Updated upstream
     "mtime": 1791021824.6561074,
     "seen": 1791022341.773762,
     "ast_hash": "4f9caf6b5c43b319fb80963c02adb7e2",
+=======
+    "mtime": 1791324839.2643185,
+    "seen": 1791324849.7602088,
+    "ast_hash": "00dfa5431e97b37189bb97510125a1b2",
+>>>>>>> Stashed changes
     "semantic_hash": ""
   },
   "compartido/auditoria/consultar.ts": {
@@ -1837,13 +1965,21 @@
   },
   "componentes/a11y/PasoConfirmacion.tsx": {
     "mtime": 1791021824.658639,
+<<<<<<< Updated upstream
     "seen": 1791022341.7747624,
+=======
+    "seen": 1791324849.7611165,
+>>>>>>> Stashed changes
     "ast_hash": "983dceaf1295fa2f5141480bc2f973e0",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/aplicacion/datosPersonales.ts": {
     "mtime": 1791021824.660279,
+<<<<<<< Updated upstream
     "seen": 1791022341.775243,
+=======
+    "seen": 1791324849.7616503,
+>>>>>>> Stashed changes
     "ast_hash": "2ed2b737a703e7be7b50958631c8f863",
     "semantic_hash": ""
   },
@@ -1873,7 +2009,11 @@
   },
   "modulos/identidad/aplicacion/auditoria.ts": {
     "mtime": 1791021824.661335,
+<<<<<<< Updated upstream
     "seen": 1791022341.7755294,
+=======
+    "seen": 1791324849.761953,
+>>>>>>> Stashed changes
     "ast_hash": "049e0fbfcdfd2753a7d61ed53f3ef0cd",
     "semantic_hash": ""
   },
@@ -1896,9 +2036,9 @@
     "semantic_hash": ""
   },
   "modulos/identidad/aplicacion/equipo.ts": {
-    "mtime": 1790985446.7762828,
-    "seen": 1791000720.2999547,
-    "ast_hash": "f4a0e50b398a711d3e8962c15376f7d7",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.762148,
+    "ast_hash": "4050a340b38feff35222c2179808d40f",
     "semantic_hash": ""
   },
   "modulos/identidad/aplicacion/garita.ts": {
@@ -1909,7 +2049,11 @@
   },
   "modulos/identidad/aplicacion/gestionarPadron.ts": {
     "mtime": 1791021824.6623087,
+<<<<<<< Updated upstream
     "seen": 1791022341.775797,
+=======
+    "seen": 1791324849.7621753,
+>>>>>>> Stashed changes
     "ast_hash": "7716e9ab63252ab5efb35bbfe9cd8940",
     "semantic_hash": ""
   },
@@ -2010,9 +2154,9 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/equipo.cy.ts": {
-    "mtime": 1790985446.8564632,
-    "seen": 1791000720.300204,
-    "ast_hash": "1cca8655b652119a56f6b8b3dad01c74",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7636535,
+    "ast_hash": "0b0f1231e07c482ae5b1f191544b9d86",
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/garita.cy.ts": {
@@ -2023,13 +2167,21 @@
   },
   "pruebas/e2e/identidad/inicio-vecino.cy.ts": {
     "mtime": 1791021824.6669652,
+<<<<<<< Updated upstream
     "seen": 1791022341.7771485,
+=======
+    "seen": 1791324849.763682,
+>>>>>>> Stashed changes
     "ast_hash": "91a2605329e2160b0eb199bbf448f3d2",
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/padron-gestion.cy.ts": {
     "mtime": 1791021824.6673026,
+<<<<<<< Updated upstream
     "seen": 1791022341.77715,
+=======
+    "seen": 1791324849.7636828,
+>>>>>>> Stashed changes
     "ast_hash": "de6fa45514d7cdd58aa950e437345f86",
     "semantic_hash": ""
   },
@@ -2082,15 +2234,15 @@
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/entradaAlterna.test.ts": {
-    "mtime": 1790985446.8618724,
-    "seen": 1791000720.300249,
-    "ast_hash": "038b47d9ccba7efb0a80fd8bfa2598db",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7641003,
+    "ast_hash": "50f0f329442a95ef6d8f6469616b4086",
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/equipo.test.ts": {
-    "mtime": 1790985446.8618724,
-    "seen": 1791000720.3002515,
-    "ast_hash": "3c51f4d292b5f6af0f0520c3318b3c59",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7641027,
+    "ast_hash": "249d12e394336b5364def9a96422781b",
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/garita.test.ts": {
@@ -2101,20 +2253,28 @@
   },
   "pruebas/integracion/identidad/gestionarPadron.test.ts": {
     "mtime": 1791021824.6687272,
+<<<<<<< Updated upstream
     "seen": 1791022341.7776756,
+=======
+    "seen": 1791324849.76413,
+>>>>>>> Stashed changes
     "ast_hash": "50d926628584d8741db2932e9df76b0f",
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/panelInicio.test.ts": {
     "mtime": 1791021824.6687272,
+<<<<<<< Updated upstream
     "seen": 1791022341.777677,
+=======
+    "seen": 1791324849.7641313,
+>>>>>>> Stashed changes
     "ast_hash": "b71956b53b9588bbcb40345479b594f6",
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/visitas.test.ts": {
-    "mtime": 1790985446.8638983,
-    "seen": 1791000720.300256,
-    "ast_hash": "a08a2492edda9f27ddbecdc6f0c4ba45",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.764158,
+    "ast_hash": "f0511421ca074393f8190bd59fb536ef",
     "semantic_hash": ""
   },
   "pruebas/integracion/nucleo/retencion.test.ts": {
@@ -2604,9 +2764,9 @@
     "semantic_hash": ""
   },
   "pruebas/integracion/transparencia/comunicados.test.ts": {
-    "mtime": 1791004337.712476,
-    "seen": 1791005078.176719,
-    "ast_hash": "2d298016659da34ae243f240143fb867",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7643363,
+    "ast_hash": "ea4ba7907e009b071e02692f2b18646b",
     "semantic_hash": ""
   },
   "pruebas/unitarias/accesibilidad/sintesisVoz.test.ts": {
@@ -2659,7 +2819,11 @@
   },
   "app/api/archivos/[id]/route.ts": {
     "mtime": 1791021824.6531754,
+<<<<<<< Updated upstream
     "seen": 1791022341.7724555,
+=======
+    "seen": 1791324849.7588606,
+>>>>>>> Stashed changes
     "ast_hash": "67a1522781758455c3015b0ed04420f3",
     "semantic_hash": ""
   },
@@ -2671,7 +2835,11 @@
   },
   "app/api/archivos/usos.ts": {
     "mtime": 1791021824.6533785,
+<<<<<<< Updated upstream
     "seen": 1791022341.7724826,
+=======
+    "seen": 1791324849.7588882,
+>>>>>>> Stashed changes
     "ast_hash": "4f4a1196c8aaf3ea4a4c55fb32e852cd",
     "semantic_hash": ""
   },
@@ -2797,32 +2965,44 @@
   },
   "pruebas/e2e/transparencia/balances.cy.ts": {
     "mtime": 1791021824.6687272,
+<<<<<<< Updated upstream
     "seen": 1791022341.7772837,
+=======
+    "seen": 1791324849.7638266,
+>>>>>>> Stashed changes
     "ast_hash": "0d63e511b086220e8774e693fcb249fb",
     "semantic_hash": ""
   },
   "pruebas/e2e/transparencia/historial.cy.ts": {
     "mtime": 1791021824.6687272,
+<<<<<<< Updated upstream
     "seen": 1791022341.777336,
+=======
+    "seen": 1791324849.76388,
+>>>>>>> Stashed changes
     "ast_hash": "61b3038658da85867d4d1bdfbf11028e",
     "semantic_hash": ""
   },
   "pruebas/integracion/nucleo/archivos.test.ts": {
     "mtime": 1791021824.6709187,
+<<<<<<< Updated upstream
     "seen": 1791022341.7777362,
+=======
+    "seen": 1791324849.7641685,
+>>>>>>> Stashed changes
     "ast_hash": "ce7d8b09215ef7513843dac9a6974e7f",
     "semantic_hash": ""
   },
   "pruebas/integracion/transparencia/actas.test.ts": {
-    "mtime": 1791004337.7116127,
-    "seen": 1791005078.1767154,
-    "ast_hash": "f3476cb48bce4708503e7d04a3f91672",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7643332,
+    "ast_hash": "5e1c4f8ac7406f7e48921d8c10e2d6ad",
     "semantic_hash": ""
   },
   "pruebas/integracion/transparencia/balances.test.ts": {
-    "mtime": 1791004337.712476,
-    "seen": 1791005078.176717,
-    "ast_hash": "68e48778d18bc251e0abee7b5ed62733",
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7643352,
+    "ast_hash": "07849f79ce56588647bc54f9572986a2",
     "semantic_hash": ""
   },
   "pruebas/integracion/transparencia/historial.test.ts": {
@@ -3007,36 +3187,57 @@
   },
   "app/_sesion/CambiarDePerfil.tsx": {
     "mtime": 1791005618.7092888,
+<<<<<<< Updated upstream
     "seen": 1791022341.7720044,
+=======
+    "seen": 1791324849.7583842,
+>>>>>>> Stashed changes
     "ast_hash": "bc4035052900f42bcc04584d38ca8690",
     "semantic_hash": ""
   },
   "modulos/identidad/aplicacion/perfiles.ts": {
     "mtime": 1791005618.7252886,
+<<<<<<< Updated upstream
     "seen": 1791022341.7758596,
+=======
+    "seen": 1791324849.76223,
+>>>>>>> Stashed changes
     "ast_hash": "33f1f82679fcc1224e3fd9f54b0b7f76",
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/cambiar-perfil.cy.ts": {
     "mtime": 1791005618.7252886,
+<<<<<<< Updated upstream
     "seen": 1791022341.7769961,
+=======
+    "seen": 1791324849.763542,
+>>>>>>> Stashed changes
     "ast_hash": "09ea93612d04103e4d1fa5248602bcea",
     "semantic_hash": ""
   },
   "pruebas/unitarias/identidad/perfiles.test.ts": {
     "mtime": 1791005618.7252886,
+<<<<<<< Updated upstream
     "seen": 1791022341.7783127,
+=======
+    "seen": 1791324849.7646902,
+>>>>>>> Stashed changes
     "ast_hash": "6a71c64589d5810f5350a59cfc6c9893",
     "semantic_hash": ""
   },
   "app/(acceso)/seguimiento/BuscarConCodigo.tsx": {
     "mtime": 1791021824.6391098,
+<<<<<<< Updated upstream
     "seen": 1791022341.7694516,
+=======
+    "seen": 1791324849.7557547,
+>>>>>>> Stashed changes
     "ast_hash": "d923a901509c5cc0a1a01b141f297c18",
     "semantic_hash": ""
   },
   "app/(acceso)/seguimiento/page.tsx": {
     "mtime": 1791021824.644025,
+<<<<<<< Updated upstream
     "seen": 1791022341.7694538,
     "ast_hash": "579819cd42b3befc2c9979026eaa2f3b",
     "semantic_hash": ""
@@ -3044,119 +3245,207 @@
   "app/(administrador)/administracion/padron/_componentes/CamposPlacas.tsx": {
     "mtime": 1791021824.6449118,
     "seen": 1791022341.7699392,
+=======
+    "seen": 1791324849.755757,
+    "ast_hash": "579819cd42b3befc2c9979026eaa2f3b",
+    "semantic_hash": ""
+  },
+  "app/(administrador)/administracion/equipo/GenerarEnlace.tsx": {
+    "mtime": 1791324839.2643185,
+    "seen": 1791324849.755827,
+    "ast_hash": "15af58641071ef75eb4eda277b6a3906",
+    "semantic_hash": ""
+  },
+  "app/(administrador)/administracion/padron/_componentes/CamposPlacas.tsx": {
+    "mtime": 1791021824.6449118,
+    "seen": 1791324849.7562075,
+>>>>>>> Stashed changes
     "ast_hash": "3e9bac0267adee501a58f627c9e03b24",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/alertas/page.tsx": {
     "mtime": 1791021824.6449118,
+<<<<<<< Updated upstream
     "seen": 1791022341.770242,
+=======
+    "seen": 1791324849.7565298,
+>>>>>>> Stashed changes
     "ast_hash": "d43f5742b1a884334d18118398573b0f",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/[id]/EvaluarReporte.tsx": {
     "mtime": 1791021824.646994,
+<<<<<<< Updated upstream
     "seen": 1791022341.7704062,
+=======
+    "seen": 1791324849.7567015,
+>>>>>>> Stashed changes
     "ast_hash": "bab13994da9906f45a72d5782b4c0120",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/[id]/RegistrarSolucion.tsx": {
     "mtime": 1791021824.647178,
+<<<<<<< Updated upstream
     "seen": 1791022341.770408,
+=======
+    "seen": 1791324849.756703,
+>>>>>>> Stashed changes
     "ast_hash": "64ecbeff76aac477a7edab376a1991ac",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/[id]/derivar/DerivarReporte.tsx": {
     "mtime": 1791021824.6474645,
+<<<<<<< Updated upstream
     "seen": 1791022341.770409,
+=======
+    "seen": 1791324849.7567046,
+>>>>>>> Stashed changes
     "ast_hash": "c5dfc2edd5e4364de582a028edd1f60b",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/[id]/derivar/page.tsx": {
     "mtime": 1791021824.6478713,
+<<<<<<< Updated upstream
     "seen": 1791022341.7704105,
+=======
+    "seen": 1791324849.7567055,
+>>>>>>> Stashed changes
     "ast_hash": "1849f459fe258e7614c52c4d5a2a0d49",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/[id]/page.tsx": {
     "mtime": 1791021824.6483219,
+<<<<<<< Updated upstream
     "seen": 1791022341.7704115,
+=======
+    "seen": 1791324849.7567065,
+>>>>>>> Stashed changes
     "ast_hash": "c4f2eefb270161ffaba991a6aae2ad5d",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/asistido/RegistrarPorVecino.tsx": {
     "mtime": 1791021824.6483219,
+<<<<<<< Updated upstream
     "seen": 1791022341.7704124,
+=======
+    "seen": 1791324849.756708,
+>>>>>>> Stashed changes
     "ast_hash": "cb519b172ba2383483371f913f81cf2e",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/asistido/page.tsx": {
     "mtime": 1791021824.6487315,
+<<<<<<< Updated upstream
     "seen": 1791022341.7704136,
+=======
+    "seen": 1791324849.7567093,
+>>>>>>> Stashed changes
     "ast_hash": "f7a906b9ea22f7317656ec76d3f47052",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/page.tsx": {
     "mtime": 1791021824.6490693,
+<<<<<<< Updated upstream
     "seen": 1791022341.7704146,
+=======
+    "seen": 1791324849.7567103,
+>>>>>>> Stashed changes
     "ast_hash": "563ac3623aab1b2dc5aacd92deb541b6",
     "semantic_hash": ""
   },
   "app/(vecino)/guia/[seccion]/GuiaDeSeccion.tsx": {
     "mtime": 1791021824.6494527,
+<<<<<<< Updated upstream
     "seen": 1791022341.7710927,
+=======
+    "seen": 1791324849.757433,
+>>>>>>> Stashed changes
     "ast_hash": "2be0e7a01e8c0d88cf50f9941b8709fe",
     "semantic_hash": ""
   },
   "app/(vecino)/guia/[seccion]/page.tsx": {
     "mtime": 1791021824.649851,
+<<<<<<< Updated upstream
     "seen": 1791022341.771094,
+=======
+    "seen": 1791324849.7574341,
+>>>>>>> Stashed changes
     "ast_hash": "c59a7aa88fe199241e564f85ab0342e7",
     "semantic_hash": ""
   },
   "app/(vecino)/incidentes/[id]/page.tsx": {
     "mtime": 1791021824.6501005,
+<<<<<<< Updated upstream
     "seen": 1791022341.7711506,
+=======
+    "seen": 1791324849.7574947,
+>>>>>>> Stashed changes
     "ast_hash": "c3d8484c108b2eeb4874e5fef366c75c",
     "semantic_hash": ""
   },
   "app/(vecino)/incidentes/_componentes/IncidentesDelBarrio.tsx": {
     "mtime": 1791021824.6503787,
+<<<<<<< Updated upstream
     "seen": 1791022341.7711518,
+=======
+    "seen": 1791324849.7574959,
+>>>>>>> Stashed changes
     "ast_hash": "8691587bbfe76f2fcef57d60d35bdfac",
     "semantic_hash": ""
   },
   "app/(vecino)/incidentes/page.tsx": {
     "mtime": 1791021824.6503787,
+<<<<<<< Updated upstream
     "seen": 1791022341.7711532,
+=======
+    "seen": 1791324849.7574968,
+>>>>>>> Stashed changes
     "ast_hash": "134b1b3a4666719fd786b3fc3c364148",
     "semantic_hash": ""
   },
   "app/(vecino)/incidentes/reportar/ReportarProblema.tsx": {
     "mtime": 1791021824.6503787,
+<<<<<<< Updated upstream
     "seen": 1791022341.771154,
+=======
+    "seen": 1791324849.7574975,
+>>>>>>> Stashed changes
     "ast_hash": "303e09298396b8884537f58adbfe1a5d",
     "semantic_hash": ""
   },
   "app/(vecino)/incidentes/reportar/page.tsx": {
     "mtime": 1791021824.651024,
+<<<<<<< Updated upstream
     "seen": 1791022341.7711549,
+=======
+    "seen": 1791324849.757499,
+>>>>>>> Stashed changes
     "ast_hash": "0a564e74456688de02c1eeda5dcd81fc",
     "semantic_hash": ""
   },
   "app/_guias/OfertaDeGuia.tsx": {
     "mtime": 1791021824.6518826,
+<<<<<<< Updated upstream
     "seen": 1791022341.771978,
+=======
+    "seen": 1791324849.7583544,
+>>>>>>> Stashed changes
     "ast_hash": "e954071d1be974c29adb3fe1be09df43",
     "semantic_hash": ""
   },
   "app/_incidentes/AvanceReporte.tsx": {
     "mtime": 1791021824.6518826,
+<<<<<<< Updated upstream
     "seen": 1791022341.7719793,
+=======
+    "seen": 1791324849.7583556,
+>>>>>>> Stashed changes
     "ast_hash": "953d55999ec54e96498165329f7b7539",
     "semantic_hash": ""
   },
   "app/api/accesibilidad/onboarding/route.ts": {
     "mtime": 1791021824.6518826,
+<<<<<<< Updated upstream
     "seen": 1791022341.7721148,
     "ast_hash": "68b842deb84005ef4ade2ee927914dc2",
     "semantic_hash": ""
@@ -3164,305 +3453,517 @@
   "app/api/quejas/[id]/acciones/route.ts": {
     "mtime": 1791021824.6540809,
     "seen": 1791022341.773193,
+=======
+    "seen": 1791324849.758505,
+    "ast_hash": "68b842deb84005ef4ade2ee927914dc2",
+    "semantic_hash": ""
+  },
+  "app/api/admin/cuentas/[usuarioId]/enlace/route.ts": {
+    "mtime": 1791324839.2643185,
+    "seen": 1791324849.7585983,
+    "ast_hash": "550778c84c2943231c5eee41ca4d3699",
+    "semantic_hash": ""
+  },
+  "app/api/quejas/[id]/acciones/route.ts": {
+    "mtime": 1791021824.6540809,
+    "seen": 1791324849.7596714,
+>>>>>>> Stashed changes
     "ast_hash": "66813e8a93ff9e5f9508e69d5ff04aa5",
     "semantic_hash": ""
   },
   "app/api/quejas/[id]/admisibilidad/route.ts": {
     "mtime": 1791021824.6540809,
+<<<<<<< Updated upstream
     "seen": 1791022341.773194,
+=======
+    "seen": 1791324849.7596726,
+>>>>>>> Stashed changes
     "ast_hash": "405868a57310a3cf80e3f0d7bb2e4f62",
     "semantic_hash": ""
   },
   "app/api/quejas/[id]/derivacion/route.ts": {
     "mtime": 1791021824.6540809,
+<<<<<<< Updated upstream
     "seen": 1791022341.773195,
+=======
+    "seen": 1791324849.7596736,
+>>>>>>> Stashed changes
     "ast_hash": "63eff8afc887ac1f787dd305422822a8",
     "semantic_hash": ""
   },
   "app/api/quejas/[id]/oficio/route.ts": {
     "mtime": 1791021824.6546454,
+<<<<<<< Updated upstream
     "seen": 1791022341.7731962,
+=======
+    "seen": 1791324849.7596748,
+>>>>>>> Stashed changes
     "ast_hash": "f888478874e70c94fed59c3ecaba7155",
     "semantic_hash": ""
   },
   "app/api/quejas/asistida/route.ts": {
     "mtime": 1791021824.6546454,
+<<<<<<< Updated upstream
     "seen": 1791022341.7731972,
+=======
+    "seen": 1791324849.7596757,
+>>>>>>> Stashed changes
     "ast_hash": "b76ff295850a1b379ada674c34e218a7",
     "semantic_hash": ""
   },
   "app/api/quejas/asistida/vecinos/route.ts": {
     "mtime": 1791021824.654909,
+<<<<<<< Updated upstream
     "seen": 1791022341.773198,
+=======
+    "seen": 1791324849.759677,
+>>>>>>> Stashed changes
     "ast_hash": "87c4648c1913bdc94e3326b87fb2dc09",
     "semantic_hash": ""
   },
   "app/api/quejas/mapa/route.ts": {
     "mtime": 1791021824.654909,
+<<<<<<< Updated upstream
     "seen": 1791022341.7731988,
+=======
+    "seen": 1791324849.759678,
+>>>>>>> Stashed changes
     "ast_hash": "8537b00902dcbd383a8d568a14b5276f",
     "semantic_hash": ""
   },
   "app/api/quejas/pdf.ts": {
     "mtime": 1791021824.654909,
+<<<<<<< Updated upstream
     "seen": 1791022341.7731998,
+=======
+    "seen": 1791324849.7596786,
+>>>>>>> Stashed changes
     "ast_hash": "cb492ee26d4637b9e91924b9d35bab75",
     "semantic_hash": ""
   },
   "app/api/quejas/route.ts": {
     "mtime": 1791021824.654909,
+<<<<<<< Updated upstream
     "seen": 1791022341.7732012,
+=======
+    "seen": 1791324849.7596798,
+>>>>>>> Stashed changes
     "ast_hash": "ece921b4490897c5901e02959558ec27",
     "semantic_hash": ""
   },
   "app/api/quejas/seguimiento/[codigo]/oficio/route.ts": {
     "mtime": 1791021824.6555114,
+<<<<<<< Updated upstream
     "seen": 1791022341.7732022,
+=======
+    "seen": 1791324849.7596815,
+>>>>>>> Stashed changes
     "ast_hash": "abd2670ec31233d8aae0e769bfa5b3b9",
     "semantic_hash": ""
   },
   "app/api/quejas/seguimiento/[codigo]/route.ts": {
     "mtime": 1791021824.6555114,
+<<<<<<< Updated upstream
     "seen": 1791022341.7732031,
+=======
+    "seen": 1791324849.7596827,
+>>>>>>> Stashed changes
     "ast_hash": "546380c461058a1a2a846f413302d716",
     "semantic_hash": ""
   },
   "app/api/quejas/seguimiento/ip.ts": {
     "mtime": 1791021824.6557329,
+<<<<<<< Updated upstream
     "seen": 1791022341.7732038,
+=======
+    "seen": 1791324849.7596836,
+>>>>>>> Stashed changes
     "ast_hash": "897dad0ce1baa62bad9e7f9c00776e80",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/aplicacion/guias.ts": {
     "mtime": 1791021824.660279,
+<<<<<<< Updated upstream
     "seen": 1791022341.7752442,
+=======
+    "seen": 1791324849.761652,
+>>>>>>> Stashed changes
     "ast_hash": "26c36b6da79bd097d03091c3d9aad63d",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/dominio/onboardingGuiado.ts": {
     "mtime": 1791021824.6608253,
+<<<<<<< Updated upstream
     "seen": 1791022341.7753968,
+=======
+    "seen": 1791324849.761814,
+>>>>>>> Stashed changes
     "ast_hash": "fd288aab0e04df36b24aa9ce041d1f3b",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/dominio/recorridos.ts": {
     "mtime": 1791021824.660953,
+<<<<<<< Updated upstream
     "seen": 1791022341.7754233,
+=======
+    "seen": 1791324849.7618413,
+>>>>>>> Stashed changes
     "ast_hash": "eb050f530b7781aec1ba9a2ea74b3c83",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/infraestructura/repositorioGuias.ts": {
     "mtime": 1791021824.661116,
+<<<<<<< Updated upstream
     "seen": 1791022341.775475,
+=======
+    "seen": 1791324849.761896,
+>>>>>>> Stashed changes
     "ast_hash": "34a329b24ea61107ff3de5d8c33d3dc1",
     "semantic_hash": ""
   },
   "modulos/identidad/aplicacion/barrio.ts": {
     "mtime": 1791021824.661523,
+<<<<<<< Updated upstream
     "seen": 1791022341.7755792,
+=======
+    "seen": 1791324849.7619808,
+>>>>>>> Stashed changes
     "ast_hash": "45d4511f7c0a524fa5a642b5e68b4786",
     "semantic_hash": ""
   },
   "modulos/identidad/aplicacion/placas.ts": {
     "mtime": 1791021824.6629245,
+<<<<<<< Updated upstream
     "seen": 1791022341.7758613,
+=======
+    "seen": 1791324849.7622445,
+>>>>>>> Stashed changes
     "ast_hash": "83114af74ae35206db6203e65974cb69",
     "semantic_hash": ""
   },
   "modulos/identidad/dominio/vehiculo.ts": {
     "mtime": 1791021824.6629245,
+<<<<<<< Updated upstream
     "seen": 1791022341.7761624,
+=======
+    "seen": 1791324849.7626107,
+>>>>>>> Stashed changes
     "ast_hash": "d442c66944842f669dd9bd86232fe4ac",
     "semantic_hash": ""
   },
   "modulos/incidencias/aplicacion/avisarDenunciante.ts": {
     "mtime": 1791021824.6629245,
+<<<<<<< Updated upstream
     "seen": 1791022341.776359,
+=======
+    "seen": 1791324849.7628243,
+>>>>>>> Stashed changes
     "ast_hash": "53229882285c9aed1707062b9b7306ae",
     "semantic_hash": ""
   },
   "modulos/incidencias/aplicacion/datosPersonales.ts": {
     "mtime": 1791021824.6639602,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763608,
+=======
+    "seen": 1791324849.7628255,
+>>>>>>> Stashed changes
     "ast_hash": "1d8fffac310c487d200f7b930bf27105",
     "semantic_hash": ""
   },
   "modulos/incidencias/aplicacion/derivacion.ts": {
     "mtime": 1791021824.6639602,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763617,
+=======
+    "seen": 1791324849.7628267,
+>>>>>>> Stashed changes
     "ast_hash": "b65beac679ce044c4b13b1b54c5e6c3a",
     "semantic_hash": ""
   },
   "modulos/incidencias/aplicacion/gestion.ts": {
     "mtime": 1791021824.6639602,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763624,
+=======
+    "seen": 1791324849.7628279,
+>>>>>>> Stashed changes
     "ast_hash": "ccdaff629ef4a7ae916af3f49a709954",
     "semantic_hash": ""
   },
   "modulos/incidencias/aplicacion/mapa.ts": {
     "mtime": 1791021824.6639602,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763634,
+=======
+    "seen": 1791324849.7628288,
+>>>>>>> Stashed changes
     "ast_hash": "4084c8dbc2f77f6cce9c9088aea57d02",
     "semantic_hash": ""
   },
   "modulos/incidencias/aplicacion/quejas.ts": {
     "mtime": 1791021824.6639602,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763643,
+=======
+    "seen": 1791324849.7628295,
+>>>>>>> Stashed changes
     "ast_hash": "e352ae66d658fe00491b0b519088fdc4",
     "semantic_hash": ""
   },
   "modulos/incidencias/aplicacion/seguimiento.ts": {
     "mtime": 1791021824.6639602,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763653,
+=======
+    "seen": 1791324849.7628305,
+>>>>>>> Stashed changes
     "ast_hash": "7938ca292788a5729691cb79a06f89c0",
     "semantic_hash": ""
   },
   "modulos/incidencias/dominio/gestion.ts": {
     "mtime": 1791021824.6639602,
+<<<<<<< Updated upstream
     "seen": 1791022341.776366,
+=======
+    "seen": 1791324849.7628314,
+>>>>>>> Stashed changes
     "ast_hash": "f7e033afccb2f3430e89ceaedbb6b275",
     "semantic_hash": ""
   },
   "modulos/incidencias/dominio/mapa.ts": {
     "mtime": 1791021824.665015,
+<<<<<<< Updated upstream
     "seen": 1791022341.776367,
+=======
+    "seen": 1791324849.7628322,
+>>>>>>> Stashed changes
     "ast_hash": "7ee2238acc648079ae7afc002fdcd9db",
     "semantic_hash": ""
   },
   "modulos/incidencias/dominio/queja.ts": {
     "mtime": 1791021824.665015,
+<<<<<<< Updated upstream
     "seen": 1791022341.776368,
+=======
+    "seen": 1791324849.762833,
+>>>>>>> Stashed changes
     "ast_hash": "0109fd0d9c8c510aba2148ac081dc73e",
     "semantic_hash": ""
   },
   "modulos/incidencias/dominio/seguimiento.ts": {
     "mtime": 1791021824.665015,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763686,
+=======
+    "seen": 1791324849.7628338,
+>>>>>>> Stashed changes
     "ast_hash": "365ba042ae41d23bee6399b8d8b69637",
     "semantic_hash": ""
   },
   "modulos/incidencias/infraestructura/identidadProtegida.ts": {
     "mtime": 1791021824.665015,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763696,
+=======
+    "seen": 1791324849.7628348,
+>>>>>>> Stashed changes
     "ast_hash": "52a0a347348d8ddf1572267e14c34ed8",
     "semantic_hash": ""
   },
   "modulos/incidencias/infraestructura/repositorioQuejas.ts": {
     "mtime": 1791021824.6656811,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763705,
+=======
+    "seen": 1791324849.7628355,
+>>>>>>> Stashed changes
     "ast_hash": "ea3b15da5d4bf44ddbd1643fb980104e",
     "semantic_hash": ""
   },
   "modulos/incidencias/infraestructura/repositorioSeguimiento.ts": {
     "mtime": 1791021824.6656811,
+<<<<<<< Updated upstream
     "seen": 1791022341.7763715,
+=======
+    "seen": 1791324849.7628365,
+>>>>>>> Stashed changes
     "ast_hash": "3c6fb9a755c56d677daee3bab8b06aec",
     "semantic_hash": ""
   },
   "pruebas/claveDeCifrado.ts": {
     "mtime": 1791021824.6663158,
+<<<<<<< Updated upstream
     "seen": 1791022341.77676,
+=======
+    "seen": 1791324849.7632213,
+>>>>>>> Stashed changes
     "ast_hash": "6f7518739444ca091052730fc6fff154",
     "semantic_hash": ""
   },
   "pruebas/e2e/accesibilidad/guia-seccion.cy.ts": {
     "mtime": 1791021824.6663158,
+<<<<<<< Updated upstream
     "seen": 1791022341.7768714,
+=======
+    "seen": 1791324849.7633648,
+>>>>>>> Stashed changes
     "ast_hash": "9eb827e62f7d74c5d13db2afce4f87eb",
     "semantic_hash": ""
   },
   "pruebas/e2e/incidencias/anonimo.cy.ts": {
     "mtime": 1791021824.6673026,
+<<<<<<< Updated upstream
     "seen": 1791022341.7771993,
+=======
+    "seen": 1791324849.7637367,
+>>>>>>> Stashed changes
     "ast_hash": "30e1b320fd78c125ae3142fcedc04f56",
     "semantic_hash": ""
   },
   "pruebas/e2e/incidencias/asistida.cy.ts": {
     "mtime": 1791021824.6675634,
+<<<<<<< Updated upstream
     "seen": 1791022341.7772005,
+=======
+    "seen": 1791324849.7637384,
+>>>>>>> Stashed changes
     "ast_hash": "c0caaa04e871b3ee428707c56aad993c",
     "semantic_hash": ""
   },
   "pruebas/e2e/incidencias/gestion.cy.ts": {
     "mtime": 1791021824.6675634,
+<<<<<<< Updated upstream
     "seen": 1791022341.777202,
+=======
+    "seen": 1791324849.763739,
+>>>>>>> Stashed changes
     "ast_hash": "4698f576117dd79f1a5f6dc12f602544",
     "semantic_hash": ""
   },
   "pruebas/e2e/incidencias/mapa.cy.ts": {
     "mtime": 1791021824.6675634,
+<<<<<<< Updated upstream
     "seen": 1791022341.7772028,
+=======
+    "seen": 1791324849.7637403,
+>>>>>>> Stashed changes
     "ast_hash": "c86ee1b709389d8db9d899ca7637d495",
     "semantic_hash": ""
   },
   "pruebas/e2e/incidencias/reportar.cy.ts": {
     "mtime": 1791021824.6675634,
+<<<<<<< Updated upstream
     "seen": 1791022341.777204,
+=======
+    "seen": 1791324849.7637413,
+>>>>>>> Stashed changes
     "ast_hash": "4f97f591b60f86b9e49f529fa25aca9f",
     "semantic_hash": ""
   },
   "pruebas/e2e/incidencias/seguimiento.cy.ts": {
     "mtime": 1791021824.6675634,
+<<<<<<< Updated upstream
     "seen": 1791022341.7772048,
+=======
+    "seen": 1791324849.763742,
+>>>>>>> Stashed changes
     "ast_hash": "a9d39662e8433ff3caca4125d728fb37",
     "semantic_hash": ""
   },
   "pruebas/integracion/accesibilidad/guias.test.ts": {
     "mtime": 1791021824.6687272,
+<<<<<<< Updated upstream
     "seen": 1791022341.7773585,
+=======
+    "seen": 1791324849.7639043,
+>>>>>>> Stashed changes
     "ast_hash": "217f6e15dbbbba53b9ddb5cc92fc37dc",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/admisibilidad.test.ts": {
     "mtime": 1791021824.6687272,
+<<<<<<< Updated upstream
     "seen": 1791022341.777727,
+=======
+    "seen": 1791324849.7641592,
+>>>>>>> Stashed changes
     "ast_hash": "05b77ce70285148186d49d62a8835c14",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/anonimato.test.ts": {
     "mtime": 1791021824.669936,
+<<<<<<< Updated upstream
     "seen": 1791022341.7777283,
+=======
+    "seen": 1791324849.7641602,
+>>>>>>> Stashed changes
     "ast_hash": "369fce365601f2809c87ef28754895f6",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/asistida.test.ts": {
     "mtime": 1791021824.669936,
+<<<<<<< Updated upstream
     "seen": 1791022341.7777293,
+=======
+    "seen": 1791324849.7641616,
+>>>>>>> Stashed changes
     "ast_hash": "fb7683ccdfc2afaa1f10289e72fbe968",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/cierreM3.test.ts": {
     "mtime": 1791021824.6704204,
+<<<<<<< Updated upstream
     "seen": 1791022341.7777305,
+=======
+    "seen": 1791324849.7641623,
+>>>>>>> Stashed changes
     "ast_hash": "19c486913257df0e5a40f417ec9395e6",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/derivacion.test.ts": {
     "mtime": 1791021824.6709187,
+<<<<<<< Updated upstream
     "seen": 1791022341.7777314,
+=======
+    "seen": 1791324849.7641633,
+>>>>>>> Stashed changes
     "ast_hash": "5369f05eab8f4c9a91ee7c5e99e76770",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/mapa.test.ts": {
     "mtime": 1791021824.6709187,
+<<<<<<< Updated upstream
     "seen": 1791022341.7777324,
+=======
+    "seen": 1791324849.7641642,
+>>>>>>> Stashed changes
     "ast_hash": "56623576d814c2d93c1af7b154ce92b5",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/quejas.test.ts": {
     "mtime": 1791021824.6709187,
+<<<<<<< Updated upstream
     "seen": 1791022341.777733,
+=======
+    "seen": 1791324849.7641652,
+>>>>>>> Stashed changes
     "ast_hash": "f61ad4c55c6a8238e0d174c267aea3f2",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/resolver.test.ts": {
     "mtime": 1791021824.6709187,
+<<<<<<< Updated upstream
     "seen": 1791022341.777734,
+=======
+    "seen": 1791324849.764166,
+>>>>>>> Stashed changes
     "ast_hash": "ee097efe707b0ada0180ebca9b56ce3e",
     "semantic_hash": ""
   },
   "pruebas/integracion/incidencias/seguimiento.test.ts": {
     "mtime": 1791021824.6709187,
+<<<<<<< Updated upstream
     "seen": 1791022341.7777352,
     "ast_hash": "0f14903cbe84b304632001037932a9e7",
     "semantic_hash": ""
@@ -3470,360 +3971,611 @@
   "pruebas/unitarias/accesibilidad/onboardingGuiado.test.ts": {
     "mtime": 1791021824.6709187,
     "seen": 1791022341.7780704,
+=======
+    "seen": 1791324849.764167,
+    "ast_hash": "0f14903cbe84b304632001037932a9e7",
+    "semantic_hash": ""
+  },
+  "pruebas/relojFijo.ts": {
+    "mtime": 1791324839.2683184,
+    "seen": 1791324849.7643933,
+    "ast_hash": "9565485c6754a210a00404bf30f0339b",
+    "semantic_hash": ""
+  },
+  "pruebas/unitarias/accesibilidad/onboardingGuiado.test.ts": {
+    "mtime": 1791021824.6709187,
+    "seen": 1791324849.7644773,
+>>>>>>> Stashed changes
     "ast_hash": "3426089bcdfd008eb6d1f9932e4e3d85",
     "semantic_hash": ""
   },
   "pruebas/unitarias/identidad/vehiculo.test.ts": {
     "mtime": 1791021824.6728196,
+<<<<<<< Updated upstream
     "seen": 1791022341.7783144,
+=======
+    "seen": 1791324849.764691,
+>>>>>>> Stashed changes
     "ast_hash": "4033ecf25252d3ee2a68d23227e2f28b",
     "semantic_hash": ""
   },
   "pruebas/unitarias/incidencias/gestion.test.ts": {
     "mtime": 1791021824.6728196,
+<<<<<<< Updated upstream
     "seen": 1791022341.7783153,
+=======
+    "seen": 1791324849.7646923,
+>>>>>>> Stashed changes
     "ast_hash": "c6f0a2ee061a56f122526edcd5cadd23",
     "semantic_hash": ""
   },
   "pruebas/unitarias/incidencias/identidadProtegida.test.ts": {
     "mtime": 1791021824.6730876,
+<<<<<<< Updated upstream
     "seen": 1791022341.7783165,
+=======
+    "seen": 1791324849.7646933,
+>>>>>>> Stashed changes
     "ast_hash": "864e112ec54e3e18c54f0ef6bdac8f06",
     "semantic_hash": ""
   },
   "pruebas/unitarias/incidencias/mapa.test.ts": {
     "mtime": 1791021824.6730876,
+<<<<<<< Updated upstream
     "seen": 1791022341.7783172,
+=======
+    "seen": 1791324849.764694,
+>>>>>>> Stashed changes
     "ast_hash": "1cbbda351298cdb794cf92c05dc35e7c",
     "semantic_hash": ""
   },
   "pruebas/unitarias/incidencias/queja.test.ts": {
     "mtime": 1791021824.6730876,
+<<<<<<< Updated upstream
     "seen": 1791022341.7783184,
+=======
+    "seen": 1791324849.7646947,
+>>>>>>> Stashed changes
     "ast_hash": "780565c666fbf3074639aa68fe64b5b2",
     "semantic_hash": ""
   },
   "pruebas/unitarias/incidencias/seguimiento.test.ts": {
     "mtime": 1791021824.6730876,
+<<<<<<< Updated upstream
     "seen": 1791022341.7783191,
+=======
+    "seen": 1791324849.7646956,
+>>>>>>> Stashed changes
     "ast_hash": "d0be360b56d0f54243038de0c77075d8",
     "semantic_hash": ""
   },
   "docs/evidencias/M3.md": {
     "mtime": 1791022335.5397525,
+<<<<<<< Updated upstream
     "seen": 1791022341.7789927,
+=======
+    "seen": 1791324849.7653928,
+>>>>>>> Stashed changes
     "ast_hash": "89ca1ce18a811567458b05b01efee54d",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-ini-01-normal.png": {
     "mtime": 1791022335.5397525,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817304,
+=======
+    "seen": 1791324849.768505,
+>>>>>>> Stashed changes
     "ast_hash": "70efed6f1f6edce11c037706d84f7955",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-ini-01-senior.png": {
     "mtime": 1791022335.540115,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817316,
+=======
+    "seen": 1791324849.7685065,
+>>>>>>> Stashed changes
     "ast_hash": "5cca2e88eb1621dfc2340b2e2daa3c2c",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-ini-02-normal.png": {
     "mtime": 1791022335.5407743,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817323,
+=======
+    "seen": 1791324849.7685077,
+>>>>>>> Stashed changes
     "ast_hash": "1b2a94942b39d4d0b655f890891562a9",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-ini-02-senior.png": {
     "mtime": 1791022335.5433059,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817333,
+=======
+    "seen": 1791324849.7685084,
+>>>>>>> Stashed changes
     "ast_hash": "3d7ca56aa187e78c4999644adfa608fb",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-01-normal.png": {
     "mtime": 1791022335.5469193,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817342,
+=======
+    "seen": 1791324849.7685094,
+>>>>>>> Stashed changes
     "ast_hash": "b246fc0ab4832b5e6314db220bb3651b",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-01-senior.png": {
     "mtime": 1791022335.5473902,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817352,
+=======
+    "seen": 1791324849.7685106,
+>>>>>>> Stashed changes
     "ast_hash": "7f1ac7e00897a958af674624e46c47b8",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-02-normal.png": {
     "mtime": 1791022335.5480688,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817361,
+=======
+    "seen": 1791324849.7685115,
+>>>>>>> Stashed changes
     "ast_hash": "95789c2434cec7bb6fa9b07f3d8c4806",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-02-senior.png": {
     "mtime": 1791022335.5484986,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817373,
+=======
+    "seen": 1791324849.7685122,
+>>>>>>> Stashed changes
     "ast_hash": "0c9af7496a452dc9cc3215c864c1c79c",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-03-normal.png": {
     "mtime": 1791022335.5489569,
+<<<<<<< Updated upstream
     "seen": 1791022341.781738,
+=======
+    "seen": 1791324849.7685132,
+>>>>>>> Stashed changes
     "ast_hash": "ab129dfcab110fb40db799b6fc69a05d",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-03-senior.png": {
     "mtime": 1791022335.549328,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817388,
+=======
+    "seen": 1791324849.7685142,
+>>>>>>> Stashed changes
     "ast_hash": "ec90aec39a567000f2002a156eb1caec",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-04-normal.png": {
     "mtime": 1791022335.5498917,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817395,
+=======
+    "seen": 1791324849.7685149,
+>>>>>>> Stashed changes
     "ast_hash": "0673ad6a3efea0f395cda5ca37770a75",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-04-senior.png": {
     "mtime": 1791022335.5506294,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817404,
+=======
+    "seen": 1791324849.7685158,
+>>>>>>> Stashed changes
     "ast_hash": "ccca4886401104b740e8e85f4fe122c4",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-05-normal.png": {
     "mtime": 1791022335.5511878,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817414,
+=======
+    "seen": 1791324849.7685168,
+>>>>>>> Stashed changes
     "ast_hash": "393536cb3c160a024d9a22499c37f781",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-05-senior.png": {
     "mtime": 1791022335.5517483,
+<<<<<<< Updated upstream
     "seen": 1791022341.781742,
+=======
+    "seen": 1791324849.768518,
+>>>>>>> Stashed changes
     "ast_hash": "7fd57cb7affe91b15dafbedf014af038",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-06-normal.png": {
     "mtime": 1791022335.5523248,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817426,
+=======
+    "seen": 1791324849.7685187,
+>>>>>>> Stashed changes
     "ast_hash": "e1e18315d373cff30996d0c6f18a481e",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-06-senior.png": {
     "mtime": 1791022335.5527742,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817435,
+=======
+    "seen": 1791324849.7685196,
+>>>>>>> Stashed changes
     "ast_hash": "5accdf5b97bba09ababb180cddba1c57",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-07-normal.png": {
     "mtime": 1791022335.5532343,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817447,
+=======
+    "seen": 1791324849.7685206,
+>>>>>>> Stashed changes
     "ast_hash": "8c9437180ce858cb3850834d8e86e812",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-07-senior.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817457,
+=======
+    "seen": 1791324849.7685218,
+>>>>>>> Stashed changes
     "ast_hash": "20c84830be8ee1e640ed604423be94d3",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-08-normal.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817464,
+=======
+    "seen": 1791324849.768523,
+>>>>>>> Stashed changes
     "ast_hash": "ea69fb7621fe078ed56ee6578c1bcd15",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-08-senior.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.781747,
+=======
+    "seen": 1791324849.768524,
+>>>>>>> Stashed changes
     "ast_hash": "6499d95f31f4026f005d4564ff5075c0",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-09-normal.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817483,
+=======
+    "seen": 1791324849.7685251,
+>>>>>>> Stashed changes
     "ast_hash": "156a43ee3a6386aeaa4fc42b7f0547c5",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-09-senior.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817492,
+=======
+    "seen": 1791324849.7685258,
+>>>>>>> Stashed changes
     "ast_hash": "536b8514697fcec44db2e95bfaa758fd",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-10-normal.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.78175,
+=======
+    "seen": 1791324849.7685266,
+>>>>>>> Stashed changes
     "ast_hash": "58d1c44b2e5693cc7dcc4c834d290c67",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/dir-que-10-senior.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817507,
+=======
+    "seen": 1791324849.768528,
+>>>>>>> Stashed changes
     "ast_hash": "9e088da8bb79d5bc1a2d69b3f93e5f3f",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-acc-08-normal.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817519,
+=======
+    "seen": 1791324849.7685287,
+>>>>>>> Stashed changes
     "ast_hash": "87d93b9a88990a856b9fef5236a96dc7",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-acc-08-senior.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817526,
+=======
+    "seen": 1791324849.7685294,
+>>>>>>> Stashed changes
     "ast_hash": "0317ab7238594d893102e8dc970195d0",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-acc-09-normal.png": {
     "mtime": 1791022335.5545352,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817533,
+=======
+    "seen": 1791324849.7685304,
+>>>>>>> Stashed changes
     "ast_hash": "57c211764a4e63335358110d809d85a0",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-acc-09-senior.png": {
     "mtime": 1791022335.5551403,
+<<<<<<< Updated upstream
     "seen": 1791022341.781754,
+=======
+    "seen": 1791324849.768531,
+>>>>>>> Stashed changes
     "ast_hash": "7ced0b37ff2adf2d82e5c57c393f5025",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-acc-11-normal.png": {
     "mtime": 1791022335.5590231,
+<<<<<<< Updated upstream
     "seen": 1791022341.781755,
+=======
+    "seen": 1791324849.7685325,
+>>>>>>> Stashed changes
     "ast_hash": "5333ab73584967183561be8395966677",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-acc-11-senior.png": {
     "mtime": 1791022335.561909,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817557,
+=======
+    "seen": 1791324849.7685332,
+>>>>>>> Stashed changes
     "ast_hash": "fcf505697a9d671ba030e1a531c635f9",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-ayu-03-normal.png": {
     "mtime": 1791022335.5631402,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817564,
+=======
+    "seen": 1791324849.768534,
+>>>>>>> Stashed changes
     "ast_hash": "5fe9fa9b344258c4f36bc440ee4f3f46",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-ayu-03-senior.png": {
     "mtime": 1791022335.5667157,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817569,
+=======
+    "seen": 1791324849.7685344,
+>>>>>>> Stashed changes
     "ast_hash": "01e367763c16395d66ba45d21d9b50a5",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-01-normal.png": {
     "mtime": 1791022335.5672529,
+<<<<<<< Updated upstream
     "seen": 1791022341.781758,
+=======
+    "seen": 1791324849.7685356,
+>>>>>>> Stashed changes
     "ast_hash": "993ebff0ecebe1557b8850ebae285d35",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-01-senior.png": {
     "mtime": 1791022335.5676653,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817588,
+=======
+    "seen": 1791324849.7685366,
+>>>>>>> Stashed changes
     "ast_hash": "4817b4850b005934f5d5bfb877f3029f",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-02-normal.png": {
     "mtime": 1791022335.5681598,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817597,
+=======
+    "seen": 1791324849.7685373,
+>>>>>>> Stashed changes
     "ast_hash": "2e52fbf1d660e97c22af1dcbd4d4d872",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-02-senior.png": {
     "mtime": 1791022335.5686634,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817605,
+=======
+    "seen": 1791324849.768538,
+>>>>>>> Stashed changes
     "ast_hash": "7bf1c1680e96c650fe94d880eeef9a70",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-03-normal.png": {
     "mtime": 1791022335.5692978,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817616,
+=======
+    "seen": 1791324849.7685392,
+>>>>>>> Stashed changes
     "ast_hash": "62f45fd01bfc62d242a79106254395e5",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-03-senior.png": {
     "mtime": 1791022335.5697336,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817621,
+=======
+    "seen": 1791324849.7685401,
+>>>>>>> Stashed changes
     "ast_hash": "642d6f936c829d36b7e4922f2d83fcd7",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-04-normal.png": {
     "mtime": 1791022335.5703197,
+<<<<<<< Updated upstream
     "seen": 1791022341.781763,
+=======
+    "seen": 1791324849.768541,
+>>>>>>> Stashed changes
     "ast_hash": "b6e9b1f4ecbc00dfeab61d21fa94dfe1",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-04-senior.png": {
     "mtime": 1791022335.570724,
+<<<<<<< Updated upstream
     "seen": 1791022341.781764,
+=======
+    "seen": 1791324849.7685423,
+>>>>>>> Stashed changes
     "ast_hash": "e73b7859f113d635f8f733da4454b78d",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-05-normal.png": {
     "mtime": 1791022335.5711453,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817647,
+=======
+    "seen": 1791324849.768543,
+>>>>>>> Stashed changes
     "ast_hash": "f1ba87a0dd9626502b15e28a428103dc",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-05-senior.png": {
     "mtime": 1791022335.5714638,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817657,
+=======
+    "seen": 1791324849.7685437,
+>>>>>>> Stashed changes
     "ast_hash": "5db43bbf38a47eda0b103bdf53a59a70",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-06-normal.png": {
     "mtime": 1791022335.571913,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817662,
+=======
+    "seen": 1791324849.7685447,
+>>>>>>> Stashed changes
     "ast_hash": "68aa35771ba3dc9185ac53e69a6df540",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-06-senior.png": {
     "mtime": 1791022335.5723617,
+<<<<<<< Updated upstream
     "seen": 1791022341.781767,
+=======
+    "seen": 1791324849.7685456,
+>>>>>>> Stashed changes
     "ast_hash": "efb3b2a4b92f004c68304141f64ed5df",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-07-normal.png": {
     "mtime": 1791022335.5728285,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817676,
+=======
+    "seen": 1791324849.7685463,
+>>>>>>> Stashed changes
     "ast_hash": "7fe59662928b700230f8b15f36797ebe",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-07-senior.png": {
     "mtime": 1791022335.5731258,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817686,
+=======
+    "seen": 1791324849.7685475,
+>>>>>>> Stashed changes
     "ast_hash": "e642002f74562f11ee7aa6d221393524",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-08-normal.png": {
     "mtime": 1791022335.5734375,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817693,
+=======
+    "seen": 1791324849.7685483,
+>>>>>>> Stashed changes
     "ast_hash": "a6e1b2fd3d03faa02dc8e4885d08832a",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-08-senior.png": {
     "mtime": 1791022335.573822,
+<<<<<<< Updated upstream
     "seen": 1791022341.78177,
+=======
+    "seen": 1791324849.7685497,
+>>>>>>> Stashed changes
     "ast_hash": "7b727529d314389814fcaaea1697e54b",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-09-normal.png": {
     "mtime": 1791022335.5743346,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817707,
+=======
+    "seen": 1791324849.7685504,
+>>>>>>> Stashed changes
     "ast_hash": "1f8a1803ac7ab355f386147cbab0353c",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-09-senior.png": {
     "mtime": 1791022335.5748074,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817714,
+=======
+    "seen": 1791324849.768551,
+>>>>>>> Stashed changes
     "ast_hash": "5824f1e253f041c5f15abacd262c4211",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-10-normal.png": {
     "mtime": 1791022335.5752568,
+<<<<<<< Updated upstream
     "seen": 1791022341.7817724,
+=======
+    "seen": 1791324849.7685518,
+>>>>>>> Stashed changes
     "ast_hash": "674bdb21df918d8bb9ed35c015677cf4",
     "semantic_hash": ""
   },
   "docs/evidencias/capturas/M3/vec-que-10-senior.png": {
     "mtime": 1791022335.5758688,
+<<<<<<< Updated upstream
     "seen": 1791022341.781773,
+=======
+    "seen": 1791324849.768553,
+>>>>>>> Stashed changes
     "ast_hash": "831d4413cca75e2f94d56d1ed7f7d2f0",
     "semantic_hash": ""
   }
