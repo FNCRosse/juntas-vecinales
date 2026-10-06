@@ -141,7 +141,7 @@ describe("@HU-GAR-21 Crear el acceso de equipo con la invitación", () => {
       .then((url) => {
         cy.clearCookies();
         cy.visit(new URL(String(url)).pathname);
-        cy.get("h1").should("contain.text", "Gloria");
+        cy.get("h1").should("have.text", "Crear su acceso de equipo");
         cy.guardarModo("normal");
       });
   });
