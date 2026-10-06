@@ -26,6 +26,7 @@ import { direccion } from "@/modulos/identidad/dominio/predio";
 import {
   bloquearEnlace,
   buscarEnlacePorHash,
+  guardarEnlace,
   marcarEnlaceUsado,
 } from "@/modulos/identidad/infraestructura/repositorioEnlaces";
 import {
@@ -266,6 +267,54 @@ export async function quitarAcceso(
     );
   });
   return { nombre: usuario.nombreCompleto, sigueSiendoVecino: roles.length > 0 };
+}
+
+/**
+ * Un enlace de invitación nuevo para que el administrador lo copie y se lo entregue a la persona
+ * (HU-GAR-21 CA2), sirve cuando el WhatsApp no llega o todavía es el simulador. Anula la invitación
+ * anterior, se audita y el enlace no se guarda en ningún lado: solo se devuelve esta vez.
+ */
+export async function generarEnlaceDeInvitacion(
+  sesion: SesionDto,
+  usuarioId: string,
+  origen: string,
+  ahora = new Date(),
+) {
+  exigirRol(sesion, "ADMINISTRADOR");
+  const { usuario } = await miembroGestionable(usuarioId);
+  const credencial = await prisma.credencialRespaldo.findUnique({ where: { usuarioId } });
+  if (credencial) {
+    throw new ErrorReglaNegocio(
+      "Esta persona ya creó su acceso. Si olvidó su clave, quítele el acceso y vuelva a agregarla.",
+    );
+  }
+  const { token, hash } = nuevoToken();
+  const vence = venceEn(ahora, "EQUIPO");
+  await prisma.$transaction(async (tx) => {
+    await guardarEnlace(tx, {
+      usuarioId,
+      tokenHash: hash,
+      emitidoEn: ahora,
+      expiraEn: vence,
+      proposito: "EQUIPO",
+    });
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "generar_enlace_equipo",
+        entidad: "Usuario",
+        entidadId: usuarioId,
+        antes: null,
+        despues: { vence: vence.toISOString() },
+      },
+      tx,
+    );
+  });
+  return {
+    nombre: usuario.nombreCompleto,
+    enlace: `${origen}/entrar/equipo/crear/${token}`,
+    vence: vence.toISOString(),
+  };
 }
 
 /** Lo que muestra la invitación (ADM-ENT-02) sin gastarla: nombre, rol y DNI, que será su usuario. */
