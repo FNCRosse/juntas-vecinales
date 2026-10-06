@@ -112,6 +112,8 @@ describe("@HU-GAR-21 Crear el acceso de equipo con la invitación", () => {
   });
 
   it("@HU-GAR-21 CA2 el administrador genera un enlace para copiar y la persona crea su clave con él", () => {
+    cy.clearCookies();
+    entrarComoAna();
     cy.request("POST", "/api/admin/cuentas", {
       persona: {
         tipo: "afuera",
