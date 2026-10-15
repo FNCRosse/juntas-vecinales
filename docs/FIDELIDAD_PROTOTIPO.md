@@ -31,7 +31,7 @@ Las reglas que mandan son estas (R-03 ya estaba en la [guía visual](guia-visual
 | Barra del administrador (teléfono) | Inicio · Padrón · Equipo · Más. Desde tablet, Privacidad y Auditoría en lugar de Más | 5 destinos | ídem |
 | Garita | Inicio · Consultar · Visitas · Bitácora | Igual | — |
 | Etiquetas de la barra | Una línea, sin partir palabras | `hyphens-auto` y `break-words` parten palabras | ídem |
-| Menú "Más" del vecino | Lista plana: Mis visitas · Transparencia · Mi perfil y privacidad · Ayuda y accesibilidad · Cerrar sesión (más "Volver al selector", solo demostración, que no se implementa) | 8 filas: Mis visitas, Noticias, Actas y balances, Avisos, Qué avisos recibo, Mi perfil y privacidad, Ayuda y accesibilidad, Guía rápida. Pasa el límite de R-11 en Senior (6) | `app/(vecino)/mas/page.tsx` |
+| Menú "Más" del vecino | Lista plana: Mis visitas · Transparencia · Mi perfil y privacidad · Ayuda y accesibilidad · Cerrar sesión (más "Volver al selector", solo demostración, que no se implementa) | Hecho: 4 filas (Mis visitas, Transparencia, Mi perfil y privacidad, Ayuda y accesibilidad), sin descripciones, como el prototipo. Noticias y Avisos se abren desde el inicio, "Qué avisos recibo" desde Avisos y la guía rápida desde Ayuda y accesibilidad | `app/(vecino)/mas/page.tsx` |
 | Botón del encabezado | **"Vista grande"** (antes "Letra grande") junto a "Pedir ayuda"; mismo lugar en todas las pantallas. Se cambia el texto visible y el nombre accesible; los nombres internos (`modoSenior`, rutas de la API) no se renombran | "Letra grande" (también en `Boton.tsx`, `modo.ts`, la ruta de perfil y los e2e `letra-grande.cy.ts`, `teclado.cy.ts`) | `componentes/a11y/Encabezado.tsx`, `InterruptorLetraGrande.tsx` |
 | Primer ingreso | La guía pregunta "¿Cómo prefiere ver la aplicación?" con dos vistas previas; la grande viene marcada | Perfil por defecto en Normal; sin pregunta | `app/(vecino)/guia/`, `modulos/accesibilidad/` |
 | Empadronar | Interruptor "Empezar con la vista grande (adulto mayor)" | No existe | `app/(administrador)/administracion/padron/empadronar/` |
@@ -44,7 +44,7 @@ Las reglas que mandan son estas (R-03 ya estaba en la [guía visual](guia-visual
 
 La lista no es exhaustiva: es el punto de partida. La comparación pantalla por pantalla (sección 4) la completa.
 
-**Hecho en el marco común (rama `hu/marco-comun-fidelidad`):** barras de 4 destinos en el teléfono para vecino, directiva y administrador (con más destinos desde la tablet), etiquetas sin partir (los destinos se reparten el ancho según su texto, con el token `text-barra`), botón "Vista grande", tokens `text-barra` y `spacing-opuestas`, prueba unitaria `barraNavegacion.test.ts` y e2e `barra-navegacion.cy.ts`. Pendiente de esa fila: el menú "Más" del vecino (8 filas) y de la directiva (le falta "Asambleas" cuando exista su ruta).
+**Hecho en el marco común (rama `hu/marco-comun-fidelidad`):** barras de 4 destinos en el teléfono para vecino, directiva y administrador (con más destinos desde la tablet), etiquetas sin partir (los destinos se reparten el ancho según su texto, con el token `text-barra`), botón "Vista grande", tokens `text-barra` y `spacing-opuestas`, prueba unitaria `barraNavegacion.test.ts` y e2e `barra-navegacion.cy.ts`. El menú "Más" del vecino quedó en 4 filas. Pendiente de esa fila: la directiva (le falta "Asambleas" cuando exista su ruta) y comprobar a mano, con sesión, el Más del vecino a 360 px en Senior.
 
 ## 3. Orden de trabajo
 

@@ -49,8 +49,8 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
         { tipo: "GARITA", titulo: "Llegó una visita", texto: "Pedro pregunta por usted en la puerta." },
       ],
     });
-    cy.visit("/mas");
-    cy.contains("a", "Avisos").should("contain.text", "2 avisos nuevos").click();
+    cy.visit("/");
+    cy.contains("a", "Mis avisos").should("contain.text", "2 nuevos").click();
     cy.get("h1").should("have.text", "Avisos");
     cy.contains("p", "2 sin leer").should("exist");
     cy.get('ul[aria-label="Avisos"] h2').first().should("have.text", "Llegó una visita");
@@ -65,8 +65,8 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
     cy.contains("a", "Todos").click();
     cy.esperarHidratacion("Marcar todos como leídos").click();
     cy.contains("p", "0 sin leer").should("exist");
-    cy.visit("/mas");
-    cy.contains("a", "Avisos").should("contain.text", "No tiene avisos nuevos");
+    cy.visit("/");
+    cy.contains("a", "Mis avisos").should("contain.text", "No tiene avisos nuevos");
   });
 
   it("@HU-GAR-18 CA1 CA2 CA3 elige qué avisos recibe; los de la reja y la seguridad no se apagan", () => {
