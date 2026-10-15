@@ -44,6 +44,8 @@ Las reglas que mandan son estas (R-03 ya estaba en la [guía visual](guia-visual
 
 La lista no es exhaustiva: es el punto de partida. La comparación pantalla por pantalla (sección 4) la completa.
 
+**Hecho en el marco común (rama `hu/marco-comun-fidelidad`):** barras de 4 destinos en el teléfono para vecino, directiva y administrador (con más destinos desde la tablet), etiquetas sin partir (los destinos se reparten el ancho según su texto, con el token `text-barra`), botón "Vista grande", tokens `text-barra` y `spacing-opuestas`, prueba unitaria `barraNavegacion.test.ts` y e2e `barra-navegacion.cy.ts`. Pendiente de esa fila: el menú "Más" del vecino (8 filas) y de la directiva (le falta "Asambleas" cuando exista su ruta).
+
 ## 3. Orden de trabajo
 
 Una HU o un grupo pequeño de pantallas por rama y por PR, como siempre ([FLUJO_TRABAJO.md](FLUJO_TRABAJO.md)).

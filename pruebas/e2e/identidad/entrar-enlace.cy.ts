@@ -37,9 +37,9 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
     });
   });
 
-  it("@HU-GAR-02 CA1 CA2 CA3 @HU-ACC-01 @HU-GAR-03 entra sin clave, acepta la política, crea su clave y conserva Letra grande", () => {
+  it("@HU-GAR-02 CA1 CA2 CA3 @HU-ACC-01 @HU-GAR-03 entra sin clave, acepta la política, crea su clave y conserva Vista grande", () => {
     empadronar(`1${sufijo.slice(-3)}`, `6${sufijo}1`, `9${sufijo}01`).then((ruta) => {
-      // Antes de entrar elige Letra grande en este dispositivo (HU-ACC-01).
+      // Antes de entrar elige Vista grande en este dispositivo (HU-ACC-01).
       cy.guardarModo("senior");
       // La página envía el enlace sola; el primer intento se simula fallido para ver la
       // bienvenida y el botón de respaldo.

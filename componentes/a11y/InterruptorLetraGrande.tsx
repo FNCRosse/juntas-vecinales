@@ -6,8 +6,10 @@ import { clasesBotonBarra } from "./Boton";
 import { MensajeEstado } from "./MensajeEstado";
 import { COOKIE_MODO_DISPOSITIVO, RUTA_PERFIL } from "./modo";
 
-// "Letra grande" (guía visual §5.8, HU-ACC-01): cambia el modo al instante en <html> y lo guarda en
-// el perfil del servidor. Si no se pudo guardar, el modo se mantiene en este dispositivo y se avisa.
+// "Vista grande" (guía visual §5.8, HU-ACC-01; antes "Letra grande": cambia letra, botones, separación y
+// cantidad de opciones): cambia el modo al instante en <html> y lo guarda en el perfil del servidor.
+// Si no se pudo guardar, el modo se mantiene en este dispositivo y se avisa. El nombre del archivo y
+// del componente no cambian: solo el texto visible.
 
 const UN_ANIO_SEGUNDOS = 400 * 24 * 60 * 60;
 
@@ -52,7 +54,7 @@ export function InterruptorLetraGrande({ activoAlInicio }: { activoAlInicio: boo
     <>
       <button type="button" aria-pressed={activo} onClick={alternar} className={clasesBotonBarra(activo)}>
         <AArrowUp aria-hidden className="size-icono shrink-0" />
-        <span>Letra grande</span>
+        <span>Vista grande</span>
         {activo && <Check aria-hidden className="size-icono shrink-0" />}
       </button>
       {noGuardado && (

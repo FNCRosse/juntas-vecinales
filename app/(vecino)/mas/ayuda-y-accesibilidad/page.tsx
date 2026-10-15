@@ -27,7 +27,7 @@ export default async function AyudaYAccesibilidad() {
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Ayuda y accesibilidad</h1>
       <Tarjeta titulo="Cómo se ve">
-        <p>La letra grande también agranda los botones y sube el contraste. Se guarda en su cuenta.</p>
+        <p>La vista grande agranda la letra y los botones, deja menos opciones por pantalla y sube el contraste. Se guarda en su cuenta.</p>
         <div className="self-start">
           <InterruptorLetraGrande activoAlInicio={senior} />
         </div>

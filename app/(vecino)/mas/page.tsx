@@ -40,7 +40,7 @@ export default async function MasOpciones() {
           <span>Sus datos, corregir un dato y bajar una copia de lo que la junta tiene de usted.</span>
         </TarjetaEnlace>
         <TarjetaEnlace href="/mas/ayuda-y-accesibilidad" titulo="Ayuda y accesibilidad">
-          <span>Letra grande y el estado de sus pedidos de ayuda.</span>
+          <span>Vista grande y el estado de sus pedidos de ayuda.</span>
         </TarjetaEnlace>
         <TarjetaEnlace href="/guia" titulo="Guía rápida">
           <span>Tres pasos para conocer la plataforma y tenerla en su pantalla de inicio.</span>

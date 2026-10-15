@@ -19,7 +19,7 @@ export async function datosPersonales(usuarioId: string): Promise<SeccionPdf[]> 
     {
       titulo: "Accesibilidad y pedidos de ayuda",
       filas: [
-        ["Letra grande (modo Senior)", datos?.modoSeniorActivo ? "Activada" : "Desactivada"],
+        ["Vista grande (modo Senior)", datos?.modoSeniorActivo ? "Activada" : "Desactivada"],
         ["Tamaño de letra", ESCALAS[datos?.escalaTipografica ?? "NORMAL"]],
         ["Lectura en voz alta", datos?.sintesisVozActiva ? "Activada" : "Desactivada"],
         ["Pedidos de ayuda a una persona", String(pedidos.length)],

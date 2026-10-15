@@ -9,25 +9,25 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 | Grupo | URL | Actor y dispositivo | Barra de navegación (Anexo M, Tabla M2) |
 | --- | --- | --- | --- |
 | `app/(acceso)/` | `/entrar`, `/entrar/[token]`, `/entrar/equipo`, `/entrar/privacidad`, `/entrar/clave-respaldo`, `/entrar/enlace-nuevo`, `/privacidad`, `/clave`, `/clave/nueva`, `/clave/nueva/[token]`, `/seguimiento` | Sin sesión (la política y la clave de respaldo, recién entrado) | — |
-| `app/(vecino)/` | `/`, `/cuota`, `/asambleas`, `/incidentes`, `/mas/...` | Vecino (incluye adulto mayor y denunciante), teléfono | Inicio · Mi cuota · Asambleas · Incidentes · Más |
-| `app/(directiva)/directiva/` | `/directiva/...` | Directiva y directivo mediador, teléfono y escritorio | Resumen · Cobros · Incidentes · Asambleas · Más |
-| `app/(administrador)/administracion/` | `/administracion/...` | Administrador, escritorio | Inicio · Padrón · Equipo · Privacidad · Más |
+| `app/(vecino)/` | `/`, `/cuota`, `/asambleas`, `/incidentes`, `/mas/...` | Vecino (incluye adulto mayor y denunciante), teléfono | Teléfono: Inicio · Mi cuota · Asambleas · Más. Desde tablet se suma Incidentes (en el teléfono, "Mis reportes" es un atajo del inicio) |
+| `app/(directiva)/directiva/` | `/directiva/...` | Directiva y directivo mediador, teléfono y escritorio | Teléfono: Resumen · Cobros · Incidentes · Más. Desde tablet se suman Asambleas y Ayuda pedida |
+| `app/(administrador)/administracion/` | `/administracion/...` | Administrador, escritorio | Teléfono: Inicio · Padrón · Equipo · Más. Desde tablet: Privacidad y Auditoría en lugar de Más |
 | `app/(garita)/garita/` | `/garita/...` | Vigilante, tablet de garita | Inicio · Consultar · Visitas · Bitácora |
 | `app/api/` | `/api/...` | Route handlers (ver [BACKEND.md](BACKEND.md)) | — |
 
 - El layout del vecino exige además la política de privacidad vigente aceptada (HU-GAR-02 CA2); si falta, lleva a `/entrar/privacidad`.
 - La directiva y el administrador también son vecinos: el selector "Mi casa / Directiva" (pantalla `DIR-INI-03`) lleva a `/` sin cerrar sesión.
-- En modo Senior la barra del vecino muestra Inicio · Mi cuota · Asambleas · Más (Incidentes pasa a "Más").
+- La barra del teléfono tiene como máximo cuatro destinos, en normal y en Senior (R-11); la de la tablet puede tener más. Ver [FIDELIDAD_PROTOTIPO.md](FIDELIDAD_PROTOTIPO.md).
 - Dos niveles como máximo bajo el inicio (AC-2). Los pasos de un trámite ("paso 1 de 2") no cuentan como nivel.
 - No se implementa lo que el prototipo marca como demostración: la opción "Volver al selector de actor" y los controles de la sección "Demostración".
 
 ## 2. Componentes de servidor por defecto
 
-- Toda página es Server Component y obtiene sus datos llamando a la `aplicacion` de los módulos. Se añade `"use client"` solo en la hoja que lo necesita: el switch "Letra grande", formularios con validación en vivo, el mapa, la lectura en voz alta y las colas sin conexión.
+- Toda página es Server Component y obtiene sus datos llamando a la `aplicacion` de los módulos. Se añade `"use client"` solo en la hoja que lo necesita: el switch "Vista grande", formularios con validación en vivo, el mapa, la lectura en voz alta y las colas sin conexión.
 - El panel de inicio del vecino (HU-GAR-19) se compone en `app/(vecino)/page.tsx` llamando a la `aplicacion` de cada módulo: así M1 no importa M3–M5 ([ARQUITECTURA.md §3](ARQUITECTURA.md#3-dependencias-permitidas-entre-módulos)).
 - Las páginas entregan HTML semántico completo: un `<h1>` por pantalla, `<main id="contenido">`, enlace "Saltar al contenido" como primer elemento, `<nav aria-label>` por barra.
 - Al cambiar de ruta en el cliente, el foco va al `<h1>` y una región `aria-live="polite"` anuncia el título.
-- Todo eso lo pinta `componentes/a11y/MarcoActor.tsx`, que usan los `layout.tsx` de los grupos: `Encabezado` ("Letra grande" y "Pedir ayuda"), `BarraNavegacion` (inferior en el teléfono, superior desde 768 px; en Senior las opciones marcadas `ocultaEnSenior` pasan a "Más"), `<main id="contenido">` y `AnunciadorRuta`. Los layouts todavía no exigen sesión ni rol: lo añade M1.
+- Todo eso lo pinta `componentes/a11y/MarcoActor.tsx`, que usan los `layout.tsx` de los grupos: `Encabezado` ("Vista grande" y "Pedir ayuda"), `BarraNavegacion` (inferior en el teléfono, superior desde 768 px; en el teléfono solo caben cuatro destinos y las opciones marcadas con `clase` aparecen desde la tablet), `<main id="contenido">` y `AnunciadorRuta`. Los layouts todavía no exigen sesión ni rol: lo añade M1.
 - **Catálogo interno** (`/catalogo` y `/catalogo/[actor]`): muestra cada primitiva de `componentes/a11y` y el marco de cada actor. Responde 404 cuando `VERCEL_ENV=production`; existe en local, en el CI y en las previews. Lo recorren los e2e de `pruebas/e2e/accesibilidad/`.
 
 ## 3. Perfil de accesibilidad al renderizar (ADR-004)
@@ -35,7 +35,7 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 - El layout raíz lee la sesión y el `PerfilAccesibilidad` en el servidor y pinta `<html lang="es" data-mode="senior">` cuando corresponde. Sin parpadeo, porque el documento llega ya ajustado.
 - Sin sesión (pantallas de acceso) se usa el perfil por defecto (modo Normal).
 - **Fase 0b (sin `Usuario` todavía):** el perfil se guarda igual en el servidor (`accesibilidad_perfiles`) y se identifica por la cookie `perfil` (HttpOnly, id del perfil) que deja el `PUT`. `modoSeniorAlRenderizar()` (`app/_accesibilidad/perfil.ts`) lo lee una vez por petición; si la BD no responde, la página sale en Normal. **M1** lo enlaza con la cuenta: al autenticar, el perfil del dispositivo pasa al `usuarioId` (o se toma el de la cuenta) y se busca por la sesión, no por la cookie.
-- El botón "Letra grande" de la barra superior (prototipo C-08, `aria-pressed`; `componentes/a11y/InterruptorLetraGrande.tsx`) cambia `document.documentElement.dataset.mode` al instante y guarda con `PUT /api/accesibilidad/perfil`. Si no se pudo guardar, el modo se mantiene en el dispositivo con la cookie `modo_dispositivo` (nunca `localStorage`), que el servidor respeta al renderizar hasta el siguiente guardado correcto, y aparece el aviso "No pudimos guardar su preferencia. Se mantendrá en este teléfono."
+- El botón "Vista grande" de la barra superior (prototipo C-08, `aria-pressed`; `componentes/a11y/InterruptorLetraGrande.tsx`) cambia `document.documentElement.dataset.mode` al instante y guarda con `PUT /api/accesibilidad/perfil`. Si no se pudo guardar, el modo se mantiene en el dispositivo con la cookie `modo_dispositivo` (nunca `localStorage`), que el servidor respeta al renderizar hasta el siguiente guardado correcto, y aparece el aviso "No pudimos guardar su preferencia. Se mantendrá en este teléfono."
 - Componentes y pantallas leen siempre tokens; nunca valores fijos de color, tamaño o espaciado.
 
 ## 4. Estilos: tokens, Tailwind v4 y Radix
@@ -53,7 +53,7 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 2. Abre la pantalla en `docs/prototipo/prototipo.html` en teléfono (360 px) y en modo Senior. El sitio debe quedar igual o muy parecido; qué se compara y cómo está en [FIDELIDAD_PROTOTIPO.md](FIDELIDAD_PROTOTIPO.md).
 3. Arma la pantalla con lo que ya existe en `componentes/a11y/`. Crea un componente nuevo solo cuando lo usen dos pantallas; si lo usa una, vive junto a su página (`_componentes/`).
 4. Copia los textos tal cual: trato de usted, botones que nombran la acción y su objeto ("Ya pagué, enviar mi comprobante"). Hacia el vecino se dice "Con retraso", nunca "moroso".
-5. Un solo botón primario por pantalla. "Letra grande" y "Pedir ayuda" siempre en la misma posición de la barra superior.
+5. Un solo botón primario por pantalla. "Vista grande" y "Pedir ayuda" siempre en la misma posición de la barra superior.
 6. Los estados de error, confirmación y éxito del prototipo son parte de la HU: se implementan y se prueban.
 
 ## 6. PWA

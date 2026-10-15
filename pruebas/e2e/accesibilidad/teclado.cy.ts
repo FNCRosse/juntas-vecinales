@@ -41,7 +41,7 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
     tab();
     cy.focused().should("have.text", "Saltar al contenido");
     tab();
-    cy.focused().should("contain.text", "Letra grande");
+    cy.focused().should("contain.text", "Vista grande");
     tab();
     cy.focused().should("contain.text", "Pedir ayuda");
     ["Inicio", "Mi cuota", "Asambleas", "Incidentes", "Más", "Ver mis recibos"].forEach((texto) => {
@@ -78,7 +78,7 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
 
   it("@HU-ACC-06 CA2 cada control anuncia nombre, función y estado", () => {
     cy.visit("/catalogo");
-    cy.contains("button", "Letra grande").should("have.attr", "aria-pressed", "false");
+    cy.contains("button", "Vista grande").should("have.attr", "aria-pressed", "false");
     cy.get('nav[aria-label="Principal"]').should("exist");
     cy.get("input").each(($input) => {
       const id = $input.attr("id");
