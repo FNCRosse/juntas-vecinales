@@ -9,7 +9,7 @@ window.JV_PANTALLAS_VIG = [
   { id: 'VIG-VIS-01', p: 'VVI01', n: 'Llegó una visita (lista blanca)', hu: 'HU-GAR-07 CA1 · HU-GAR-04 CA3 · HU-GAR-05 CA2 (efecto)' },
   { id: 'VIG-VIS-02', p: 'VVI02', n: 'Visita anunciada: puede pasar', hu: 'HU-GAR-07 CA1 · WCAG 3.3.7' },
   { id: 'VIG-VIS-03', p: 'VVI03', n: 'Visita no anunciada · paso 1 de 2', hu: 'HU-GAR-07 CA2 · WCAG 3.3.7' },
-  { id: 'VIG-VIS-04', p: 'VVI04', n: 'Esperando la respuesta de la vecina', hu: 'HU-GAR-07 CA2 · genera el aviso de VEC-GAR-05 y VEC-ACC-09' },
+  { id: 'VIG-VIS-04', p: 'VVI04', n: 'Esperando la respuesta de la vecina (Sí / No apilados a 24 px)', hu: 'HU-GAR-07 CA2 · genera el aviso de VEC-GAR-05 y VEC-ACC-09' },
   { id: 'VIG-VIS-05', p: 'VVI05', n: 'La vecina autorizó: anotar la entrada', hu: 'HU-GAR-07 CA3 · HU-GAR-08 CA1' },
   { id: 'VIG-BIT-01', p: 'VBI01', n: 'Bitácora de la garita', hu: 'HU-GAR-08 CA1–CA3' }
 ];

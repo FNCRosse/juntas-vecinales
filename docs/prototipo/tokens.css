@@ -100,6 +100,10 @@
   --spacing-tactil: 48px;
   --spacing-control: 48px;
   --spacing-separacion: 8px;
+  --spacing-opuestas: 24px;
+  --text-barra: 16px;
+  --grid-vistas: repeat(2,auto);
+  --radius-vistas: var(--radius-pastilla);
   --spacing-icono: 24px;
   --spacing-icono-pequeno: 20px;
   --radius-control: 12px;
@@ -142,6 +146,10 @@
   --spacing-tactil: 56px;
   --spacing-control: 56px;
   --spacing-separacion: 12px;
+  --spacing-opuestas: 32px;
+  --text-barra: 18px;
+  --grid-vistas: minmax(0,1fr);
+  --radius-vistas: var(--radius-tarjeta);
   --spacing-icono: 32px;
   --spacing-icono-pequeno: 24px;
   --foco-ancho: 4px;

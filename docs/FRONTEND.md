@@ -50,7 +50,7 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 ## 5. De una pantalla del prototipo a código
 
 1. Busca el id de la pantalla (`VEC-COB-01`) en la tabla de HU del `modulos/<m>/CLAUDE.md` y en `docs/prototipo/` ([LEEME](prototipo/LEEME.md)). En `trazabilidad-*.js` está cómo cumple cada criterio de aceptación.
-2. Abre la pantalla en `docs/prototipo/prototipo.html` en teléfono (360 px) y en modo Senior.
+2. Abre la pantalla en `docs/prototipo/prototipo.html` en teléfono (360 px) y en modo Senior. El sitio debe quedar igual o muy parecido; qué se compara y cómo está en [FIDELIDAD_PROTOTIPO.md](FIDELIDAD_PROTOTIPO.md).
 3. Arma la pantalla con lo que ya existe en `componentes/a11y/`. Crea un componente nuevo solo cuando lo usen dos pantallas; si lo usa una, vive junto a su página (`_componentes/`).
 4. Copia los textos tal cual: trato de usted, botones que nombran la acción y su objeto ("Ya pagué, enviar mi comprobante"). Hacia el vecino se dice "Con retraso", nunca "moroso".
 5. Un solo botón primario por pantalla. "Letra grande" y "Pedir ayuda" siempre en la misma posición de la barra superior.
