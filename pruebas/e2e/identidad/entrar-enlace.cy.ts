@@ -79,14 +79,19 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
 
       // HU-GAR-03 CA1: la guía opcional, paso a paso, con el acceso directo al final.
       cy.location("pathname").should("eq", "/guia");
-      cy.get("h1").should("have.text", "Su cuota, siempre a la vista");
-      cy.revisarAccesibilidad("guia-paso1-senior");
+      // HU-ACC-01 CA4: el primer paso pregunta cómo prefiere ver la aplicación, con la vista grande marcada.
+      cy.get("h1").should("have.text", "¿Cómo prefiere ver la aplicación?");
+      cy.get("input[name=vista][value=grande]").should("be.checked");
+      cy.revisarAccesibilidad("guia-paso1-vista-senior");
       cy.esperarHidratacion("Siguiente").click();
+      cy.get("h1").should("have.text", "Su cuota, siempre a la vista");
+      cy.revisarAccesibilidad("guia-paso2-senior");
+      cy.contains("button", "Siguiente").click();
       cy.focused().should("have.text", "Si algo se le complica, pida ayuda");
       cy.contains("button", "Siguiente").click();
       cy.get("h1").should("have.text", "Tenga la app en su pantalla");
       cy.contains("p", "Agregar a inicio").should("exist");
-      cy.revisarAccesibilidad("guia-paso3-senior");
+      cy.revisarAccesibilidad("guia-paso4-senior");
       cy.contains("a", "Terminar e ir al inicio").click();
 
       cy.location("pathname").should("eq", "/");

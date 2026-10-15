@@ -50,5 +50,7 @@ export const esquemaEmpadronamiento = z.object({
   vivienda,
   placas: esquemaPlacas.optional(),
   titular: titular.optional(),
+  /** "Empezar con la vista grande": el perfil de la cuenta del titular nace con la vista grande (HU-ACC-01 CA4). */
+  vistaGrandeTitular: z.boolean().optional(),
   otros: z.array(otro).max(20).optional(),
 });

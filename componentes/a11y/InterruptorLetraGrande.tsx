@@ -3,22 +3,15 @@
 import { AArrowUp, Check } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { clasesBotonBarra } from "./Boton";
+import { cambiarVista } from "./cambiarVista";
 import { MensajeEstado } from "./MensajeEstado";
-import { COOKIE_MODO_DISPOSITIVO, RUTA_PERFIL } from "./modo";
 
 // "Vista grande" (guía visual §5.8, HU-ACC-01; antes "Letra grande": cambia letra, botones, separación y
 // cantidad de opciones): cambia el modo al instante en <html> y lo guarda en el perfil del servidor.
 // Si no se pudo guardar, el modo se mantiene en este dispositivo y se avisa. El nombre del archivo y
 // del componente no cambian: solo el texto visible.
 
-const UN_ANIO_SEGUNDOS = 400 * 24 * 60 * 60;
-
-function aplicarModo(senior: boolean) {
-  if (senior) document.documentElement.dataset.mode = "senior";
-  else delete document.documentElement.dataset.mode;
-}
-
-/** El estado vive en <html data-mode>: todos los "Letra grande" de la página muestran lo mismo. */
+/** El estado vive en <html data-mode>: todos los "Vista grande" de la página muestran lo mismo. */
 function suscribir(alCambiar: () => void) {
   const observador = new MutationObserver(alCambiar);
   observador.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] });
@@ -31,23 +24,7 @@ export function InterruptorLetraGrande({ activoAlInicio }: { activoAlInicio: boo
   const [noGuardado, setNoGuardado] = useState(false);
 
   async function alternar() {
-    const nuevo = !activo;
-    aplicarModo(nuevo);
-    let guardado = false;
-    try {
-      const respuesta = await fetch(RUTA_PERFIL, {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ modoSeniorActivo: nuevo }),
-      });
-      guardado = respuesta.ok;
-    } catch {
-      guardado = false;
-    }
-    document.cookie = guardado
-      ? `${COOKIE_MODO_DISPOSITIVO}=; Path=/; Max-Age=0; SameSite=Lax`
-      : `${COOKIE_MODO_DISPOSITIVO}=${nuevo ? "senior" : "normal"}; Path=/; Max-Age=${UN_ANIO_SEGUNDOS}; SameSite=Lax`;
-    setNoGuardado(!guardado);
+    setNoGuardado(!(await cambiarVista(!activo)));
   }
 
   return (

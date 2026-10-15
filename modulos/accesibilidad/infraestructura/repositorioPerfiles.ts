@@ -39,6 +39,11 @@ export async function guardarPerfil(perfil: PerfilAccesibilidad) {
   return PerfilAccesibilidad.reconstruir(fila);
 }
 
+/** Crea el perfil de una cuenta nueva dentro de la transacción que la creó (HU-ACC-01 CA4). */
+export async function crearPerfilEn(tx: Transaccion, perfil: PerfilAccesibilidad) {
+  await tx.perfilAccesibilidad.create({ data: { ...perfil.aDatos(), id: undefined } });
+}
+
 /** Cancelación aprobada (HU-GAR-14 CA3): el perfil de la cuenta se borra. */
 export async function borrarPerfilDe(tx: Transaccion, usuarioId: string) {
   await tx.perfilAccesibilidad.deleteMany({ where: { usuarioId } });

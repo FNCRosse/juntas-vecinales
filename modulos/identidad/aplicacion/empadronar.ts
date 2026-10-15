@@ -1,5 +1,6 @@
 // @HU-GAR-01
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
+import { activarVistaGrandeAlEmpadronar } from "@/modulos/accesibilidad/aplicacion/cambiarModoSenior";
 import { prisma } from "@/compartido/bd/cliente";
 import { ErrorConflicto, ErrorValidacion } from "@/compartido/errores";
 import {
@@ -25,6 +26,8 @@ export type DatosEmpadronamiento = {
   /** Una placa por cada auto y moto declarados (HU-GAR-06 las busca en la garita). */
   placas?: Placas;
   titular?: Omit<PersonaNueva, "relacion" | "cuentaPropia">;
+  /** El perfil de la cuenta del titular nace con la vista grande activada (HU-ACC-01 CA4). */
+  vistaGrandeTitular?: boolean;
   otros?: (Omit<PersonaNueva, "relacion"> & { relacion: Exclude<PersonaNueva["relacion"], "TITULAR"> })[];
 };
 
@@ -114,6 +117,7 @@ export async function empadronar(
   try {
     return await prisma.$transaction(async (tx) => {
       const { predioId, usuarios } = await crearVivienda(tx, predio, conTelefono, vehiculos);
+      if (datos.vistaGrandeTitular) await activarVistaGrandeAlEmpadronar(tx, usuarios[0].id);
       const enviados = [];
       for (const [i, usuario] of usuarios.entries()) {
         if (!conTelefono[i].cuentaPropia) continue;
@@ -134,6 +138,7 @@ export async function empadronar(
           despues: {
             ...predio,
             placas: vehiculos.map((v) => v.placa),
+            vistaGrandeTitular: datos.vistaGrandeTitular === true,
             residentes: usuarios.map((usuario, i) => ({
               usuarioId: usuario.id,
               relacion: conTelefono[i].relacion,
