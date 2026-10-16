@@ -2,6 +2,8 @@
 
 Orden cerrado: fase 0 → fase 0b → M1 → M2 → M3 → M4 → M5. Se implementan las 76 HU; cada una tiene **una sola casilla** en este plan, en la fase donde se cierra o se inicia. Dentro de cada módulo, el orden de la lista es el orden de trabajo (dependencias primero). Criterios y detalle de cada HU: `modulos/<m>/CLAUDE.md`.
 
+> **Ajuste motriz de octubre:** R-03b, R-11 y R-12 rigen en todo el sitio; ver [FIDELIDAD_PROTOTIPO.md](FIDELIDAD_PROTOTIPO.md). Cada pantalla nueva sale ya igual al prototipo.
+
 Leyenda de la casilla: `[ ]` pendiente · `[x]` cerrada (anotar el número de PR) · `[~]` implementada en parte, se cierra en el módulo que indica su nota · `[-]` diferida, no se empieza antes del módulo que indica su nota. Una HU con nota `[~]` pasa a `[~]` al terminar su parte y a `[x]` en el módulo de cierre.
 
 | Fase | HU asignadas | PR estimados |
