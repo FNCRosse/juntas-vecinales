@@ -16,11 +16,36 @@ describe("@HU-ACC-03 Confirmación en dos pasos", () => {
       cy.contains("h2", "Revise su pago antes de enviarlo");
       cy.contains("dt", "Qué paga").next("dd").should("have.text", "Cuota semanal");
       cy.contains("dt", "Monto").next("dd").should("have.text", "S/ 12.50");
-      cy.contains("button", "Enviar mi comprobante");
+      cy.contains("button", "Sí, enviar mi comprobante");
       cy.contains("button", "Cancelar");
     });
     cy.revisarAccesibilidad("confirmacion-normal-telefono");
     cy.contains("[role=status]", "Recibimos su comprobante").should("not.exist");
+  });
+
+  // R-03b y R-12: una sola confirmación; "Sí, …" y "Cancelar" apilados a 24 px (32 en vista grande).
+  [
+    { modo: "normal", separacion: 24 },
+    { modo: "senior", separacion: 32 },
+  ].forEach(({ modo, separacion }) => {
+    it(`@HU-ACC-03 CA1 en modo ${modo}: "Sí, …" y "Cancelar" van apilados a ${separacion} px`, () => {
+      cy.viewport(360, 800);
+      cy.guardarModo(modo as "normal" | "senior");
+      cy.visit("/catalogo");
+      cy.esperarHidratacion("Revisar y enviar mi comprobante");
+      cy.contains("button", "Revisar y enviar mi comprobante").click();
+      cy.get("[role=dialog]").within(() => {
+        cy.contains("button", "Sí, enviar mi comprobante").then(($si) => {
+          cy.contains("button", "Cancelar").then(($no) => {
+            const a = $si[0].getBoundingClientRect();
+            const b = $no[0].getBoundingClientRect();
+            expect(Math.abs(a.left - b.left), "alineados en columna").to.be.lessThan(1);
+            expect(b.top - a.bottom, "separación vertical").to.be.at.least(separacion - 0.5);
+          });
+        });
+        cy.get("button").not("[aria-label='Cerrar']").should("have.length", 2);
+      });
+    });
   });
 
   it("@HU-ACC-03 CA3 Cancelar sale sin perder lo que ya escribió", () => {
@@ -41,7 +66,7 @@ describe("@HU-ACC-03 Confirmación en dos pasos", () => {
     cy.esperarHidratacion("Revisar y enviar mi comprobante");
     cy.contains("button", "Revisar y enviar mi comprobante").click();
     cy.revisarAccesibilidad("confirmacion-senior-telefono");
-    cy.get("[role=dialog]").contains("button", "Enviar mi comprobante").click();
+    cy.get("[role=dialog]").contains("button", "Sí, enviar mi comprobante").click();
     cy.get("[role=dialog]").should("not.exist");
     cy.contains("[role=status]", "Recibimos su comprobante").should("be.visible");
     cy.wait(3000);

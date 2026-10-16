@@ -6,7 +6,7 @@ import { Campo } from "@/componentes/a11y/Campo";
 import { Confirmacion } from "@/componentes/a11y/Confirmacion";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 
-// Ejemplo de acción crítica con confirmación en dos pasos (HU-ACC-03): Cancelar no borra lo escrito.
+// Ejemplo de acción crítica con una sola confirmación (HU-ACC-03, R-12): Cancelar no borra lo escrito.
 export function DemoConfirmacion() {
   const [monto, setMonto] = useState("5.00");
   const [enviado, setEnviado] = useState(false);
@@ -29,7 +29,7 @@ export function DemoConfirmacion() {
           { etiqueta: "Para", valor: "Junta Vecinal · Mz. C, lote 7" },
         ]}
         aviso="Al enviarlo, la directiva revisará su comprobante. Si algo no está bien, puede corregirlo o cancelar ahora."
-        textoConfirmar="Enviar mi comprobante"
+        textoConfirmar="Sí, enviar mi comprobante"
         alConfirmar={() => setEnviado(true)}
       />
       {enviado && (
