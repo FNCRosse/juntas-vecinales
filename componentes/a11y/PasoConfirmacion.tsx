@@ -1,14 +1,15 @@
 "use client";
 // @HU-ACC-03
 
-import { Check, ChevronLeft, Pencil, TriangleAlert } from "lucide-react";
+import { Check, ChevronLeft, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import type { RefObject } from "react";
 import { Boton } from "./Boton";
 import { MensajeEstado } from "./MensajeEstado";
 
-// Paso 2 de 2 de una acción de la administración (prototipo XCF01 a XCF04): resumen, qué pasará,
-// "Sí, …", "Corregir algo" (vuelve sin borrar nada) y "Cancelar, no guardar nada" (HU-ACC-03, WCAG 3.3.4).
+// Paso 2 de 2 de una acción de la administración (prototipo XCF01 a XCF04): resumen, qué pasará y dos
+// salidas, "Sí, …" y "Cancelar, no guardar nada", a 24 px una de otra (R-03b, R-12). Corregir un dato es
+// "Volver y corregir", arriba: vuelve sin borrar nada. Una sola confirmación por acción (HU-ACC-03, WCAG 3.3.4).
 
 export function PasoConfirmacion({
   referencia,
@@ -78,7 +79,7 @@ export function PasoConfirmacion({
           <p>{error}</p>
         </MensajeEstado>
       )}
-      <div className="flex flex-col gap-separacion">
+      <div className="flex flex-col gap-opuestas">
         <Boton
           variante={peligro ? "peligro" : "primario"}
           icono={peligro ? TriangleAlert : Check}
@@ -87,9 +88,6 @@ export function PasoConfirmacion({
           onClick={alConfirmar}
         >
           {textoConfirmar}
-        </Boton>
-        <Boton variante="secundario" icono={Pencil} anchoCompleto onClick={alCorregir}>
-          Corregir algo
         </Boton>
         <Link
           href={hrefCancelar}

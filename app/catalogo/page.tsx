@@ -2,6 +2,8 @@ import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
 import { Boton } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
 import { Dialogo } from "@/componentes/a11y/Dialogo";
+import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MarcoActor } from "@/componentes/a11y/MarcoActor";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
@@ -107,6 +109,29 @@ export default async function Catalogo() {
           <TarjetaEnlace href="/catalogo/directiva" titulo="Próxima asamblea">
             <p>Sábado 18 de octubre, 7:00 p. m.</p>
           </TarjetaEnlace>
+        </section>
+
+        <section className="flex flex-col gap-4" aria-labelledby="titulo-listas">
+          <h2 id="titulo-listas" className="text-titulo-2">
+            Lista con filtro y Ver más
+          </h2>
+          <FiltroEnHoja
+            actual="Todos los avisos"
+            titulo="Mostrar avisos de"
+            opciones={["Todos los avisos", "Pagos", "Asambleas"].map((etiqueta, i) => ({
+              etiqueta,
+              href: "/catalogo",
+              activa: i === 0,
+            }))}
+          />
+          <ListaVerMas
+            etiqueta="Avisos de ejemplo"
+            elementos={Array.from({ length: 7 }, (_, i) => (
+              <Tarjeta key={i} titulo={`Aviso de ejemplo ${i + 1}`} nivel={3}>
+                <p>Un aviso de la lista.</p>
+              </Tarjeta>
+            ))}
+          />
         </section>
 
         <Tarjeta titulo="Diálogo y confirmación">
