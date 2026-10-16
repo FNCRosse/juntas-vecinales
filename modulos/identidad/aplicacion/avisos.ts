@@ -16,7 +16,7 @@ export type { Preferencias };
 
 /** Filtros del centro (prototipo VEC-ACC-11) y el módulo de origen de cada tipo (CA1). */
 export const FILTROS = {
-  todos: { etiqueta: "Todos", tipos: undefined },
+  todos: { etiqueta: "Todos los avisos", tipos: undefined },
   pagos: { etiqueta: "Pagos", tipos: ["PAGOS"] },
   asambleas: { etiqueta: "Asambleas", tipos: ["ASAMBLEAS"] },
   reportes: { etiqueta: "Reportes", tipos: ["REPORTES"] },

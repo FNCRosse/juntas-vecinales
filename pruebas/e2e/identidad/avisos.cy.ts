@@ -56,13 +56,15 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
     cy.get('ul[aria-label="Avisos"] h2').first().should("have.text", "Llegó una visita");
     cy.revisarAccesibilidad("avisos-normal");
 
+    cy.esperarHidratacion("Filtrar").click();
     cy.contains("a", "Pagos").click();
     cy.get('ul[aria-label="Avisos"] li')
       .should("have.length", 1)
       .and("contain.text", "Su recibo ya está listo");
     cy.esperarHidratacion("Marcar como leído").click();
     cy.contains("p", "1 sin leer").should("exist");
-    cy.contains("a", "Todos").click();
+    cy.contains("button", "Filtrar").click();
+    cy.contains("a", "Todos los avisos").click();
     cy.esperarHidratacion("Marcar todos como leídos").click();
     cy.contains("p", "0 sin leer").should("exist");
     cy.visit("/");
