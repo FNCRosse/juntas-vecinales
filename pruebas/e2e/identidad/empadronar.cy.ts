@@ -69,7 +69,7 @@ describe("@HU-GAR-01 Empadronar una vivienda", () => {
     cy.contains("label", "Esposo o esposa").click();
     porId("campo-nuevo.dniVisto").check();
     porId("campo-nuevo.dni").type(DNI_OTRO);
-    cy.get('[role="switch"]').should("have.attr", "aria-checked", "true");
+    cy.contains('[role="switch"]', "Tendrá su propia cuenta").should("have.attr", "aria-checked", "true");
     porId("campo-nuevo.telefono").type("912345678");
     cy.contains("button", "Agregar a esta persona").click();
     porId("campo-nuevo.telefono-error").should("contain.text", "Cada cuenta necesita su propio WhatsApp");
@@ -77,12 +77,18 @@ describe("@HU-GAR-01 Empadronar una vivienda", () => {
     cy.revisarAccesibilidad("empadronar-otra-persona-normal");
     cy.contains("button", "Agregar a esta persona").click();
     cy.contains("h3", "Manuel Castro Ríos").should("exist");
+    // HU-ACC-01 CA4: la administración puede dejar la vista grande para la primera entrada del titular.
+    cy.contains('[role="switch"]', "Empezar con la vista grande")
+      .should("have.attr", "aria-checked", "false")
+      .click()
+      .should("have.attr", "aria-checked", "true");
     cy.contains("button", "Revisar todo").click();
 
     // Paso 3: confirmación con el resumen; "Corregir algo" vuelve sin borrar nada.
     cy.get("h1").should("have.text", `¿Desea empadronar Mz. C, lote ${LOTE}?`);
     cy.contains("dd", "Sofía: 912 345 678 · Manuel: 912 345 700").should("exist");
     cy.contains("dt", "Placas").next("dd").should("contain.text", PLACA);
+    cy.contains("dt", "Primera entrada").next("dd").should("have.text", "Con la vista grande");
     cy.revisarAccesibilidad("empadronar-confirmar-normal");
     cy.contains("button", "Corregir algo").click();
     porId("campo-titular.nombreCompleto").should("have.value", "Sofía Castro Ríos");

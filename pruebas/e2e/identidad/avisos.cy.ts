@@ -49,8 +49,8 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
         { tipo: "GARITA", titulo: "Llegó una visita", texto: "Pedro pregunta por usted en la puerta." },
       ],
     });
-    cy.visit("/mas");
-    cy.contains("a", "Avisos").should("contain.text", "2 avisos nuevos").click();
+    cy.visit("/");
+    cy.contains("a", "Mis avisos").should("contain.text", "2 nuevos").click();
     cy.get("h1").should("have.text", "Avisos");
     cy.contains("p", "2 sin leer").should("exist");
     cy.get('ul[aria-label="Avisos"] h2').first().should("have.text", "Llegó una visita");
@@ -65,8 +65,8 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
     cy.contains("a", "Todos").click();
     cy.esperarHidratacion("Marcar todos como leídos").click();
     cy.contains("p", "0 sin leer").should("exist");
-    cy.visit("/mas");
-    cy.contains("a", "Avisos").should("contain.text", "No tiene avisos nuevos");
+    cy.visit("/");
+    cy.contains("a", "Mis avisos").should("contain.text", "No tiene avisos nuevos");
   });
 
   it("@HU-GAR-18 CA1 CA2 CA3 elige qué avisos recibe; los de la reja y la seguridad no se apagan", () => {
@@ -87,5 +87,27 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
     cy.revisarAccesibilidad("avisos-preferencias-senior-360");
     cy.reload();
     cy.contains('[role="switch"]', "Recordatorios de pago").should("have.attr", "aria-checked", "false");
+  });
+
+  it("@HU-ACC-03 CA4 el cambio se aplica sin confirmar y Deshacer lo revierte en el servidor (R-12)", () => {
+    cy.viewport(360, 800);
+    cy.guardarModo("normal");
+    cy.visit("/avisos/preferencias");
+    cy.esperarHidratacion("Recordatorios de pago");
+    const interruptor = () => cy.contains('[role="switch"]', "Recordatorios de pago");
+    // Parte del estado que haya dejado la prueba anterior: lo que importa es que Deshacer lo devuelva.
+    interruptor()
+      .invoke("attr", "aria-checked")
+      .then((antes) => {
+        interruptor().click();
+        cy.get("[role=dialog]").should("not.exist");
+        cy.contains('[role="status"]', "Listo.").should("exist");
+        interruptor().should("not.have.attr", "aria-checked", antes);
+        cy.contains("button", "Deshacer").click();
+        interruptor().should("have.attr", "aria-checked", antes);
+        cy.contains('[role="status"]', "Listo.").should("not.exist");
+        cy.reload();
+        interruptor().should("have.attr", "aria-checked", antes);
+      });
   });
 });

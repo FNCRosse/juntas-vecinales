@@ -27,7 +27,10 @@ export default async function AyudaYAccesibilidad() {
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Ayuda y accesibilidad</h1>
       <Tarjeta titulo="Cómo se ve">
-        <p>La letra grande también agranda los botones y sube el contraste. Se guarda en su cuenta.</p>
+        <p>
+          La vista grande agranda la letra y los botones, deja menos opciones por pantalla y sube el
+          contraste. Se guarda en su cuenta.
+        </p>
         <div className="self-start">
           <InterruptorLetraGrande activoAlInicio={senior} />
         </div>
@@ -38,6 +41,17 @@ export default async function AyudaYAccesibilidad() {
       </Tarjeta>
       <Tarjeta titulo="Guías de uso">
         <ul className="flex flex-col gap-3">
+          <li className="flex flex-wrap items-center justify-between gap-2 border-b border-borde-sutil pb-3">
+            <span className="flex flex-col">
+              <strong>Primeros pasos</strong>
+              <span className="text-pequeno text-texto-secundario">
+                Cómo ver la aplicación y cómo tenerla en su pantalla
+              </span>
+            </span>
+            <BotonEnlace href="/guia" variante="secundario" icono={BookOpen}>
+              Ver la guía de primeros pasos
+            </BotonEnlace>
+          </li>
           {guias.map((g) => (
             <li
               key={g.seccion}

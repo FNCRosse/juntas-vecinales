@@ -7,6 +7,7 @@ import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { Tarjeta, TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
 import { DemoConfirmacion } from "./_componentes/DemoConfirmacion";
+import { DemoDeshacer } from "./_componentes/DemoDeshacer";
 
 // Catálogo interno (fase 0b): cada primitiva de componentes/a11y en sus estados, con los textos del
 // prototipo. Cypress + axe lo recorre en Normal y Senior, en teléfono y escritorio.
@@ -121,6 +122,7 @@ export default async function Catalogo() {
             </ul>
           </Dialogo>
           <DemoConfirmacion />
+          <DemoDeshacer />
         </Tarjeta>
       </div>
     </MarcoActor>

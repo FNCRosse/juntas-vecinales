@@ -20,7 +20,7 @@ Repo público: `github.com/FNCRosse/juntas-vecinales`. Todo lo que se escribe aq
 2. **Capas:** `dominio` no importa Prisma, Next, React, zod ni infraestructura. Ningún módulo importa el `dominio` ni la `infraestructura` de otro: todo pasa por `aplicacion`. `app/` y `worker/` solo importan `aplicacion`. Matriz de módulos permitidos: `docs/ARQUITECTURA.md §3`. Lo verifica `npm run lint`.
 3. **Una HU por rama y por PR** (`hu/<id>-<slug>`). Pruebas primero, desde los criterios de la v7. Merge solo con el CI verde. Procedimiento: `docs/FLUJO_TRABAJO.md`.
 4. **Pruebas:** cada prueba lleva `@HU-XXX-nn`. Cobertura de líneas de Jest ≥ 80 % global (bloquea). Toda HU cerrada tiene al menos un e2e con 0 violaciones axe WCAG 2.2 AA.
-5. **Accesibilidad:** nada por debajo de 16 px; objetivos de 48 px (56 en Senior); solo tokens, ningún hexadecimal; ningún estado solo con color; confirmación en dos pasos para dinero, voto, queja y bajas; textos del prototipo con trato de usted y lenguaje llano.
+5. **Accesibilidad:** nada por debajo de 16 px; objetivos de 48 px (56 en Senior); solo tokens, ningún hexadecimal; ningún estado solo con color; una sola confirmación para dinero, voto, queja y bajas (R-12; lo reversible se aplica con "Deshacer"); como máximo 8 objetivos de contenido por pantalla de teléfono, 6 en Senior (R-11); cada pantalla igual o muy parecida a la del prototipo ([docs/FIDELIDAD_PROTOTIPO.md](docs/FIDELIDAD_PROTOTIPO.md)); textos del prototipo con trato de usted y lenguaje llano.
 6. **Calidad del Anexo H:** idempotencia por `idOperacion` (AC-5), auditoría de toda acción crítica en la misma transacción (AC-6), un vecino nunca ve datos de otro predio: 404 (AC-7).
 7. **Sin sobreingeniería:** nada "para después"; ninguna abstracción sin un segundo uso real; ninguna interfaz con una sola implementación salvo los adaptadores externos (WhatsApp, R2, mapas, PDF); ninguna dependencia nueva para lo que resuelven la plataforma o unas pocas líneas.
 8. Montos en céntimos enteros; fechas en UTC y mostradas en `America/Lima`.
@@ -86,6 +86,7 @@ Las carpetas se crean cuando tienen su primer archivo real.
 | [PLAN.md](docs/PLAN.md) | Fases, orden de HU, casillas, riesgos |
 | [guia-visual/](docs/guia-visual/guia-visual.md) | Tokens (fuente única), tipografía, íconos, componentes, reglas A1–A12 |
 | [prototipo/](docs/prototipo/LEEME.md) | Prototipo navegable y trazabilidad pantalla → criterio |
+| [FIDELIDAD_PROTOTIPO.md](docs/FIDELIDAD_PROTOTIPO.md) | Qué es "igual o muy parecido" al prototipo, qué falta en el sitio y orden de trabajo |
 | [evidencias/](docs/evidencias/PLANTILLA.md) | Evidencia de cierre de cada módulo |
 
 Cada módulo tiene su `modulos/<m>/CLAUDE.md` con responsabilidad, entidades, reglas de negocio y **la tabla completa de sus HU** (criterios, clases, endpoint y pantallas). No hace falta otra fuente.

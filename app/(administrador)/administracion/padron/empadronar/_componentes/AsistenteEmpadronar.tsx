@@ -86,6 +86,7 @@ export function AsistenteEmpadronar() {
   const [vivienda, setVivienda] = useState(VIVIENDA);
   const [placas, setPlacas] = useState<PlacasEscritas>({ autos: [], motos: [] });
   const [titular, setTitular] = useState(TITULAR);
+  const [vistaGrandeTitular, setVistaGrandeTitular] = useState(false);
   const [otros, setOtros] = useState<Otro[]>([]);
   const [nuevo, setNuevo] = useState<Otro | null>(null);
   const [errores, setErrores] = useState<Errores>({});
@@ -105,7 +106,12 @@ export function AsistenteEmpadronar() {
     window.scrollTo({ top: 0 });
   }, [paso]);
 
-  const cuerpo = (extra: { titular?: Titular; otros?: Otro[] } = {}) => ({ vivienda, placas, ...extra });
+  const cuerpo = (extra: { titular?: Titular; otros?: Otro[] } = {}) => ({
+    vivienda,
+    placas,
+    vistaGrandeTitular,
+    ...extra,
+  });
 
   /** Revisa en el servidor sin guardar: los errores por campo, vacío si está bien, o null si no hubo respuesta. */
   async function revisar(datos: object): Promise<Errores | null> {
@@ -245,6 +251,7 @@ export function AsistenteEmpadronar() {
           .map((p) => p.trim().toUpperCase())
           .join(" · ") || "Ninguna",
       ],
+      ["Primera entrada", vistaGrandeTitular ? "Con la vista grande" : "Con la vista normal"],
       [
         "Enlaces de entrada",
         [titular, ...conCuenta]
@@ -324,6 +331,12 @@ export function AsistenteEmpadronar() {
             value={titular.telefono}
             error={eTitular.telefono}
             onChange={(e) => setTitular({ ...titular, telefono: e.target.value })}
+          />
+          <Interruptor
+            etiqueta="Empezar con la vista grande (adulto mayor)"
+            descripcion="Su primera entrada se abrirá con letra, botones y espacios más grandes. Lo puede cambiar con el botón Vista grande."
+            activo={vistaGrandeTitular}
+            alCambiar={setVistaGrandeTitular}
           />
         </section>
 

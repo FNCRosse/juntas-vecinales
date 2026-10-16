@@ -1,6 +1,6 @@
 # Prototipo de referencia
 
-Copia de trabajo del prototipo navegable de alta fidelidad del Resultado R2.3 (170 pantallas, cuatro actores). Es la referencia visual y de textos para implementar cada pantalla; no es código de la aplicación y no se importa desde `app/` ni `componentes/`. El original es el prototipo en Figma (R2.3), de solo lectura: <https://www.figma.com/design/D8ENPs7zwoO5YBbbJvmvgu/Plataforma-Junta-Vecinal-%C2%B7-Prototipos-R2.3>.
+Copia de trabajo del prototipo navegable de alta fidelidad del Resultado R2.3 (170 pantallas, cuatro actores), versión del 15 de octubre de 2026, con los ajustes de usabilidad motriz y táctil (reglas R-03b, R-11 y R-12; botón "Vista grande"; barra de 4 destinos en el teléfono). Es la referencia visual y de textos para implementar cada pantalla; no es código de la aplicación y no se importa desde `app/` ni `componentes/`. El original es el prototipo en Figma (R2.3), de solo lectura: <https://www.figma.com/design/D8ENPs7zwoO5YBbbJvmvgu/Plataforma-Junta-Vecinal-%C2%B7-Prototipos-R2.3>.
 
 | Archivo | Qué es |
 | --- | --- |

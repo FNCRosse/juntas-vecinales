@@ -211,6 +211,26 @@ describe("@HU-GAR-01 Empadronar residentes", () => {
     expect(vivienda.registradoPor).toBe("Ana Flores");
   });
 
+  it("@HU-ACC-01 CA4 con 'Empezar con la vista grande', solo la cuenta del titular nace con ese perfil", async () => {
+    await empadronar(ana, datos({ vistaGrandeTitular: true }), ORIGEN, T0);
+    const perfiles = await prisma.perfilAccesibilidad.findMany({
+      where: { usuario: { dni: { in: ["45678123", "45678999", "71234567"] } } },
+      select: { modoSeniorActivo: true, areaTactilAmpliada: true, usuario: { select: { dni: true } } },
+    });
+    expect(perfiles).toEqual([
+      { modoSeniorActivo: true, areaTactilAmpliada: true, usuario: { dni: "45678123" } },
+    ]);
+  });
+
+  it("@HU-ACC-01 CA4 sin marcarlo, nadie del alta recibe perfil: entra en vista normal", async () => {
+    await empadronar(ana, datos(), ORIGEN, T0);
+    expect(
+      await prisma.perfilAccesibilidad.count({
+        where: { usuario: { dni: { in: ["45678123", "45678999", "71234567"] } } },
+      }),
+    ).toBe(0);
+  });
+
   it("@HU-GAR-01 CA3 bloquea un DNI que ya está en el padrón y dice dónde vive", async () => {
     const conDuplicado = datos({
       titular: { nombreCompleto: "Otra", dni: "40000006", dniVisto: true, telefono: "912345678" },

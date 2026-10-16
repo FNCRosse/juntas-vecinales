@@ -8,7 +8,7 @@ window.JV_TRAZA_VIG = [
   ['HU-GAR-07','CA2','VIG-VIS-03, VIG-VIS-04','Badge "No está en la lista de visitas"; "Preguntar a Carmen" envía el aviso que ve en su inicio y en VEC-GAR-05; también "Llamar a Carmen".'],
   ['HU-GAR-07','CA3','VIG-VIS-05, VIG-BIT-01','Con la respuesta de Carmen (en la app o por teléfono) se anota la entrada como "autorizó Carmen Huamán".'],
   ['HU-GAR-08','CA1','VIG-BIT-01','Cada fila: hora, placa o "a pie", persona, vivienda de destino y tipo de ingreso.'],
-  ['HU-GAR-08','CA2','VIG-BIT-01, VIG-INI-01','Filtro "Dentro ahora" y alerta "LMN-908 lleva más de 6 horas dentro"; "Marcar salida".'],
+  ['HU-GAR-08','CA2','VIG-BIT-01, VIG-INI-01','Inicio: acceso por la tarjeta "Bitácora" (se quitó el enlace repetido "Ver la bitácora"). Filtro "Dentro ahora" y alerta "LMN-908 lleva más de 6 horas dentro"; "Marcar salida".'],
   ['HU-GAR-08','CA3','VIG-BIT-01','Candado en cada fila y texto "No se pueden editar ni borrar"; no hay edición.'],
   ['HU-COB-06','CA2','VIG-CON-02','La tablet usa la lista de la garita del padrón: la casa con 8 semanas o más no tiene apertura automática.'],
   ['HU-COB-07','CA3','VIG-CON-01, VIG-CON-02','Si Marta pone al día a Julio (DIR-COB-17), la misma consulta pasa a verde: "Se puso al día hoy a las 10:52 a. m."'],
@@ -18,7 +18,7 @@ window.JV_TRAZA_VIG = [
   ['Sin conexión','—','VIG-CON-03, todas','Siempre responde con la lista guardada; indica la hora del dato y que "puede estar desactualizado si hubo pagos o cambios después".'],
   ['WCAG 3.3.7','—','VIG-VIS-02, VIG-VIS-03','La visita anunciada no se vuelve a preguntar; en la no anunciada, el nombre buscado pasa al formulario.'],
   ['WCAG 3.3.8','—','VIG-ENT-01','Llave de acceso de la tablet; la clave admite pegar, autocompletar y mostrarse.'],
-  ['HU-ACC-01, HU-ACC-09','—','Todas','Letra grande y Pedir ayuda en la misma posición; objetivos de 48 px o más; 4 destinos de navegación.']
+  ['HU-ACC-01, HU-ACC-09','—','Todas','Vista grande y Pedir ayuda en la misma posición; objetivos de 48 px o más; 4 destinos de navegación.']
 ];
 window.JV_NO_CUBIERTAS_VIG = [
   ['Apertura real de la reja', 'El prototipo solo registra la acción; la conexión con el motor de la reja es de hardware (fuera de R2.3).'],

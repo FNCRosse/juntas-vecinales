@@ -6,7 +6,7 @@ import { TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
 
 export const metadata: Metadata = { title: "Más opciones" };
 
-// Más opciones (prototipo XMA01): lo que no cabe en la barra (en Senior, Privacidad) y "Cerrar sesión".
+// Más opciones (prototipo XMA01): lo que no cabe en la barra del teléfono (Privacidad y Auditoría) y "Cerrar sesión".
 export default async function MasOpciones() {
   const sesion = await exigirActor(["ADMINISTRADOR"], "/entrar/equipo");
   return (
