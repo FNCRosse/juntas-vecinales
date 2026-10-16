@@ -35,9 +35,7 @@ export default async function Inicio() {
           {vivienda && ` · ${vivienda}`}
         </p>
       </div>
-      <div className="flex flex-col gap-separacion md:flex-row">
-        <CambiarDePerfil sesion={sesion} actual="vecino" estilo="boton" />
-      </div>
+      <CambiarDePerfil sesion={sesion} actual="vecino" estilo="boton" />
       <Link
         href="/avisos"
         className="flex min-h-tactil items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 senior:p-6 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte"
