@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { OfertaDeGuia } from "@/app/_guias/OfertaDeGuia";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { fechaLarga } from "@/compartido/fechas";
 import { guiaDeSeccion } from "@/modulos/accesibilidad/aplicacion/guias";
 import { mapaDeIncidentes } from "@/modulos/incidencias/aplicacion/mapa";
@@ -36,30 +37,30 @@ export default async function Incidentes({ searchParams }: { searchParams: Promi
           Mis reportes
         </h2>
         {reportes.length ? (
-          <ul className="flex flex-col gap-separacion">
-            {reportes.map((r) => (
-              <li key={r.id}>
-                <Link
-                  href={`/incidentes/${r.id}`}
-                  className="flex items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
-                >
-                  <div className="flex flex-1 flex-col gap-1">
-                    <strong>
-                      {r.numero} · {r.categoria}
-                    </strong>
-                    <span className="text-texto-secundario">
-                      {r.lugar} · {fechaLarga(new Date(r.fechaRegistro))}
-                    </span>
-                    <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                      <Info aria-hidden className="size-icono-pequeno" />
-                      {r.estadoTexto}
-                    </span>
-                  </div>
-                  <ChevronRight aria-hidden className="size-icono shrink-0" />
-                </Link>
-              </li>
+          <ListaVerMas
+            etiqueta="Mis reportes"
+            elementos={reportes.map((r) => (
+              <Link
+                key={r.id}
+                href={`/incidentes/${r.id}`}
+                className="flex items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+              >
+                <div className="flex flex-1 flex-col gap-1">
+                  <strong>
+                    {r.numero} · {r.categoria}
+                  </strong>
+                  <span className="text-texto-secundario">
+                    {r.lugar} · {fechaLarga(new Date(r.fechaRegistro))}
+                  </span>
+                  <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
+                    <Info aria-hidden className="size-icono-pequeno" />
+                    {r.estadoTexto}
+                  </span>
+                </div>
+                <ChevronRight aria-hidden className="size-icono shrink-0" />
+              </Link>
             ))}
-          </ul>
+          />
         ) : (
           <div role="status" className="flex flex-col gap-1 rounded-control bg-fondo-suave p-4">
             <strong>Todavía no ha hecho reportes</strong>

@@ -14,6 +14,8 @@ declare global {
       guardarModo(modo: "normal" | "senior"): Chainable<void>;
       /** Espera a que React haya hidratado el botón: antes, la página es solo HTML y no responde. */
       esperarHidratacion(textoDelBoton: string): Chainable<JQuery<HTMLButtonElement>>;
+      /** Despliega "Ver más" si la lista lo muestra (R-11 deja pocos elementos a la vista). */
+      verTodos(): Chainable<void>;
       /**
        * Empadrona a una vecina ficticia nueva y entra con su enlace: para las pruebas que cambian o
        * borran los datos de la persona, sin tocar las semillas que usan las demás.
@@ -60,6 +62,15 @@ Cypress.Commands.add("esperarHidratacion", (textoDelBoton: string) =>
     ).to.eq(true),
   ),
 );
+
+Cypress.Commands.add("verTodos", () => {
+  cy.get("main").then(($main) => {
+    const hay = $main
+      .find("button[aria-expanded=false]")
+      .filter((_, el) => /^Ver más/.test(el.textContent?.trim() ?? "") && el.offsetParent !== null);
+    if (hay.length) cy.esperarHidratacion("Ver más").click();
+  });
+});
 
 Cypress.Commands.add("entrarComoVecinaNueva", (nombre: string) => {
   const sufijo = String(Date.now()).slice(-6);

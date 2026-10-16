@@ -1,8 +1,10 @@
-import { Check, ChevronRight, Info, UserRoundPlus } from "lucide-react";
+import { ChevronRight, Info, UserRoundPlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { fechaYHora } from "@/compartido/fechas";
 import {
   bandejaDeQuejas,
@@ -23,6 +25,12 @@ export default async function BandejaIncidentes({
   const { estado } = await searchParams;
   const filtro: FiltroBandeja = estado && estado in FILTROS_BANDEJA ? (estado as FiltroBandeja) : "todos";
   const { conteo, quejas } = await bandejaDeQuejas(sesion, filtro);
+  const etiquetaFiltro = (clave: FiltroBandeja) =>
+    clave === "porEvaluar"
+      ? `Por evaluar (${conteo.porEvaluar})`
+      : clave === "enRevision"
+        ? `En revisión (${conteo.enRevision})`
+        : FILTROS_BANDEJA[clave].etiqueta;
   const cerrados = conteo.total - conteo.porEvaluar - conteo.enRevision;
 
   return (
@@ -39,55 +47,42 @@ export default async function BandejaIncidentes({
           Registrar un reporte por un vecino
         </BotonEnlace>
       )}
-      <nav aria-label="Filtrar por estado" className="flex flex-wrap gap-separacion">
-        {(Object.keys(FILTROS_BANDEJA) as FiltroBandeja[]).map((clave) => {
-          const activo = clave === filtro;
-          const etiqueta =
-            clave === "porEvaluar"
-              ? `Por evaluar (${conteo.porEvaluar})`
-              : clave === "enRevision"
-                ? `En revisión (${conteo.enRevision})`
-                : FILTROS_BANDEJA[clave].etiqueta;
-          return (
-            <Link
-              key={clave}
-              href={clave === "todos" ? "/directiva/incidentes" : `/directiva/incidentes?estado=${clave}`}
-              aria-current={activo ? "true" : undefined}
-              className={`inline-flex min-h-tactil items-center gap-2 rounded-pastilla border-(length:--borde-ancho-control) px-4 font-bold no-underline ${activo ? "border-accion-primaria bg-accion-primaria text-texto-invertido" : "border-borde-control bg-fondo-superficie text-accion-primaria hover:bg-accion-secundaria-hover"}`}
-            >
-              {activo && <Check aria-hidden className="size-icono-pequeno" />}
-              {etiqueta}
-            </Link>
-          );
-        })}
-      </nav>
+      <FiltroEnHoja
+        actual={etiquetaFiltro(filtro)}
+        titulo="Mostrar reportes"
+        opciones={(Object.keys(FILTROS_BANDEJA) as FiltroBandeja[]).map((clave) => ({
+          etiqueta: etiquetaFiltro(clave),
+          href: clave === "todos" ? "/directiva/incidentes" : `/directiva/incidentes?estado=${clave}`,
+          activa: clave === filtro,
+        }))}
+      />
       {quejas.length ? (
-        <ul className="flex flex-col gap-separacion" aria-label="Reportes">
-          {quejas.map((q) => (
-            <li key={q.id}>
-              <Link
-                href={`/directiva/incidentes/${q.id}`}
-                className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
-              >
-                <span className="text-pequeno text-texto-secundario">
-                  {q.numero} · {fechaYHora(new Date(q.fechaRegistro))}
-                </span>
-                <strong className="text-titulo-3">{q.categoriaTexto}</strong>
-                <span>
-                  {q.lugar} · {q.quien}
-                </span>
-                <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                  <Info aria-hidden className="size-icono-pequeno" />
-                  {q.estadoTexto}
-                </span>
-                <span className="inline-flex items-center gap-1 font-bold text-texto-enlace">
-                  {q.estado === "RECIBIDO" ? "Evaluar" : "Ver el reporte"}
-                  <ChevronRight aria-hidden className="size-icono" />
-                </span>
-              </Link>
-            </li>
+        <ListaVerMas
+          etiqueta="Reportes"
+          elementos={quejas.map((q) => (
+            <Link
+              key={q.id}
+              href={`/directiva/incidentes/${q.id}`}
+              className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+            >
+              <span className="text-pequeno text-texto-secundario">
+                {q.numero} · {fechaYHora(new Date(q.fechaRegistro))}
+              </span>
+              <strong className="text-titulo-3">{q.categoriaTexto}</strong>
+              <span>
+                {q.lugar} · {q.quien}
+              </span>
+              <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
+                <Info aria-hidden className="size-icono-pequeno" />
+                {q.estadoTexto}
+              </span>
+              <span className="inline-flex items-center gap-1 font-bold text-texto-enlace">
+                {q.estado === "RECIBIDO" ? "Evaluar" : "Ver el reporte"}
+                <ChevronRight aria-hidden className="size-icono" />
+              </span>
+            </Link>
           ))}
-        </ul>
+        />
       ) : (
         <div role="status" className="flex flex-col gap-1 rounded-control bg-fondo-suave p-4">
           <strong>No hay reportes en esta lista</strong>

@@ -18,6 +18,7 @@ export function FiltroEnHoja({
   titulo,
   opciones,
   pie,
+  etiquetaBoton = "Filtrar",
 }: {
   /** Lo que está aplicado hoy, para el botón: "Filtrar: Todos los avisos". */
   actual: string;
@@ -25,6 +26,8 @@ export function FiltroEnHoja({
   opciones: OpcionFiltro[];
   /** Enlace o texto al final de la hoja (por ejemplo "Elegir qué avisos recibo"). */
   pie?: ReactNode;
+  /** Qué dice el botón antes de lo aplicado: "Filtrar" por omisión; "Ver como" para cambiar la vista. */
+  etiquetaBoton?: string;
 }) {
   return (
     <Dialogo
@@ -33,7 +36,9 @@ export function FiltroEnHoja({
       disparador={
         <button type="button" className={clasesBoton("secundario", true)}>
           <ListFilter aria-hidden className="size-icono shrink-0" />
-          <span>Filtrar: {actual}</span>
+          <span>
+            {etiquetaBoton}: {actual}
+          </span>
         </button>
       }
     >

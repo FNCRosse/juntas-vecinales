@@ -50,7 +50,8 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
     cy.contains("a", "Solicitudes de privacidad").click();
     cy.get("h1").should("have.text", "Solicitudes de privacidad");
     cy.revisarAccesibilidad("privacidad-normal");
-    cy.contains("a", "Rectificación").click();
+    cy.esperarHidratacion("Filtrar").click();
+    cy.get("[role=dialog]").contains("a", "Rectificación").click();
     cy.contains("li", "Corregir el DNI")
       .should("contain.text", "Marta Rojas · Mz. A, lote 12")
       .and("contain.text", "Van 0 de 10 días hábiles")

@@ -1,8 +1,10 @@
-import { Check, ChevronLeft, ChevronRight, Filter, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter, Lock } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { clasesBoton } from "@/componentes/a11y/Boton";
+import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import {
   auditoriaGlobal,
   type FiltrosAuditoria,
@@ -30,6 +32,15 @@ export default async function Auditoria({ searchParams }: { searchParams: Promis
   const filtros = { modulo, accion, responsable };
   const { filas, siguiente, responsables, acciones } = await auditoriaGlobal(sesion, { ...filtros, antes });
 
+  const descripcionDelFiltro =
+    [
+      modulo && MODULOS_AUDITORIA.some((x) => x === modulo) ? modulo : null,
+      responsables.find((r) => r.valor === responsable)?.texto,
+      acciones.find((a) => a.valor === accion)?.texto,
+    ]
+      .filter(Boolean)
+      .join(" · ") || "Todas";
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -40,61 +51,55 @@ export default async function Auditoria({ searchParams }: { searchParams: Promis
         </p>
       </div>
 
-      <nav aria-label="Filtrar por módulo" className="flex flex-wrap gap-separacion">
-        {[undefined, ...MODULOS_AUDITORIA].map((m) => {
-          const activo = modulo === m || (!m && !MODULOS_AUDITORIA.some((x) => x === modulo));
-          return (
-            <Link
-              key={m ?? "todos"}
-              href={enlace({}, { modulo: m, responsable })}
-              aria-current={activo ? "page" : undefined}
-              className={clasesBoton(activo ? "primario" : "secundario")}
-            >
-              {activo && <Check aria-hidden className="size-icono shrink-0" />}
-              <span>{m ?? "Todos"}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      <form method="get" className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
-        {modulo && <input type="hidden" name="modulo" value={modulo} />}
-        <div className="flex flex-col gap-3">
-          <label htmlFor="filtro-responsable" className="font-bold">
-            Responsable
-          </label>
-          <select
-            id="filtro-responsable"
-            name="responsable"
-            defaultValue={responsable ?? ""}
-            className={CLASE_SELECT}
-          >
-            <option value="">Todas las personas</option>
-            {responsables.map((r) => (
-              <option key={r.valor} value={r.valor}>
-                {r.texto}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-3">
-          <label htmlFor="filtro-accion" className="font-bold">
-            Tipo de acción
-          </label>
-          <select id="filtro-accion" name="accion" defaultValue={accion ?? ""} className={CLASE_SELECT}>
-            <option value="">Todas las acciones</option>
-            {acciones.map((a) => (
-              <option key={a.valor} value={a.valor}>
-                {a.texto}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button type="submit" className={clasesBoton("secundario")}>
-          <Filter aria-hidden className="size-icono shrink-0" />
-          <span>Filtrar</span>
-        </button>
-      </form>
+      <FiltroEnHoja
+        actual={descripcionDelFiltro}
+        titulo="Mostrar acciones de"
+        opciones={[undefined, ...MODULOS_AUDITORIA].map((m) => ({
+          etiqueta: m ?? "Todos los módulos",
+          href: enlace({}, { modulo: m, responsable }),
+          activa: modulo === m || (!m && !MODULOS_AUDITORIA.some((x) => x === modulo)),
+        }))}
+        pie={
+          <form method="get" className="flex flex-col gap-4">
+            {modulo && <input type="hidden" name="modulo" value={modulo} />}
+            <div className="flex flex-col gap-3">
+              <label htmlFor="filtro-responsable" className="font-bold">
+                Responsable
+              </label>
+              <select
+                id="filtro-responsable"
+                name="responsable"
+                defaultValue={responsable ?? ""}
+                className={CLASE_SELECT}
+              >
+                <option value="">Todas las personas</option>
+                {responsables.map((r) => (
+                  <option key={r.valor} value={r.valor}>
+                    {r.texto}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-3">
+              <label htmlFor="filtro-accion" className="font-bold">
+                Tipo de acción
+              </label>
+              <select id="filtro-accion" name="accion" defaultValue={accion ?? ""} className={CLASE_SELECT}>
+                <option value="">Todas las acciones</option>
+                {acciones.map((a) => (
+                  <option key={a.valor} value={a.valor}>
+                    {a.texto}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button type="submit" className={clasesBoton("primario", true)}>
+              <Filter aria-hidden className="size-icono shrink-0" />
+              <span>Aplicar responsable y acción</span>
+            </button>
+          </form>
+        }
+      />
 
       <p role="status" className="text-texto-secundario">
         {filas.length === 1 ? "1 registro" : `${filas.length} registros`}
@@ -102,9 +107,10 @@ export default async function Auditoria({ searchParams }: { searchParams: Promis
       </p>
 
       {filas.length ? (
-        <ul aria-label="Acciones registradas" className="flex flex-col gap-separacion">
-          {filas.map((f) => (
-            <li
+        <ListaVerMas
+          etiqueta="Acciones registradas"
+          elementos={filas.map((f) => (
+            <div
               key={f.id}
               className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
             >
@@ -120,9 +126,9 @@ export default async function Auditoria({ searchParams }: { searchParams: Promis
                 <Lock aria-hidden className="size-icono-pequeno shrink-0" />
                 Solo lectura
               </span>
-            </li>
+            </div>
           ))}
-        </ul>
+        />
       ) : (
         <p>No hay acciones con esos filtros.</p>
       )}

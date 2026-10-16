@@ -20,6 +20,8 @@ describe("@HU-GAR-21 @HU-GAR-22 @HU-GAR-23 Cuentas del equipo", () => {
   it("@HU-GAR-21 CA1 CA2 CA3 da acceso a un vecino del padrón y la persona crea su clave de equipo", () => {
     cy.visit("/administracion/equipo");
     cy.get("h1").should("have.text", "Cuentas del equipo");
+    cy.verTodos();
+    cy.get("h1").should("have.text", "Cuentas del equipo");
     cy.get("table caption").should("contain.text", "Sí: el rol lo puede hacer.");
     cy.revisarAccesibilidad("equipo-normal");
     cy.contains("a", "Agregar a una persona").click();
@@ -46,6 +48,8 @@ describe("@HU-GAR-21 @HU-GAR-22 @HU-GAR-23 Cuentas del equipo", () => {
 
   it("@HU-GAR-23 CA1 CA2 CA3 cambia el rol mostrando qué permisos gana y pierde", () => {
     cy.visit("/administracion/equipo");
+    cy.get("h1").should("have.text", "Cuentas del equipo");
+    cy.verTodos();
     cy.contains("li", "Pedro Chávez").contains("a", "Cambiar rol").click();
     cy.get("h1").should("have.text", "Cambiar el rol de Pedro Chávez");
     cy.esperarHidratacion("Revisar el cambio").click();
@@ -71,6 +75,8 @@ describe("@HU-GAR-21 @HU-GAR-22 @HU-GAR-23 Cuentas del equipo", () => {
       .its("status")
       .should("eq", 201);
     cy.visit("/administracion/equipo");
+    cy.get("h1").should("have.text", "Cuentas del equipo");
+    cy.verTodos();
     cy.contains("li", "Raúl Vega")
       .should("contain.text", "Personal externo")
       .and("contain.text", "Invitación enviada");
@@ -126,6 +132,8 @@ describe("@HU-GAR-21 Crear el acceso de equipo con la invitación", () => {
     cy.viewport(360, 800);
     cy.guardarModo("senior");
     cy.visit("/administracion/equipo");
+    cy.get("h1").should("have.text", "Cuentas del equipo");
+    cy.verTodos();
     cy.contains("li", "Gloria Paz Rey").within(() => {
       cy.esperarHidratacion("Generar enlace para copiar (Gloria Paz Rey)").click();
     });
@@ -158,6 +166,8 @@ describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () =>
     cy.clearCookies();
     entrarComoAna();
     cy.visit("/administracion/equipo");
+    cy.get("h1").should("have.text", "Cuentas del equipo");
+    cy.verTodos();
     cy.contains("li", "Ana Flores")
       .contains("a", "Roles de directiva")
       .invoke("attr", "href")
@@ -175,6 +185,8 @@ describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () =>
     cy.viewport(360, 800);
     cy.guardarModo("senior");
     cy.visit("/administracion/equipo");
+    cy.get("h1").should("have.text", "Cuentas del equipo");
+    cy.verTodos();
     cy.contains("li", "Ana Flores").contains("a", "Roles de directiva").click();
     cy.get("h1").should("have.text", "Sus roles de directiva");
     cy.esperarHidratacion("Revisar el cambio").click();
@@ -203,6 +215,8 @@ describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () =>
 
   it("@HU-GAR-23 CA1 en modo normal quita el rol y la cuenta sigue siendo de administración", () => {
     cy.visit("/administracion/equipo");
+    cy.get("h1").should("have.text", "Cuentas del equipo");
+    cy.verTodos();
     cy.contains("li", "Ana Flores").contains("a", "Roles de directiva").click();
     cy.esperarHidratacion("Revisar el cambio");
     cy.contains("label", "Directivo mediador").click();

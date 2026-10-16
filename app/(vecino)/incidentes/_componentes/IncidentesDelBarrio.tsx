@@ -1,7 +1,8 @@
 // @HU-QUE-08 @HU-ACC-07
-import { Car, Check, CircleHelp, Info, List, Map, ShieldAlert, Table, Trash2, Volume2 } from "lucide-react";
-import Link from "next/link";
+import { Car, CircleHelp, Info, List, Map, ShieldAlert, Table, Trash2, Volume2 } from "lucide-react";
 import { fechaLarga } from "@/compartido/fechas";
+import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import type { MapaDto } from "@/modulos/incidencias/aplicacion/mapa";
 
 // VEC-QUE-01, 02 y 03: los incidentes del barrio como lista, como mapa por manzanas o como tabla. El mapa
@@ -48,28 +49,16 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
       <h2 id="titulo-barrio" className="text-titulo-2">
         En el barrio · último mes
       </h2>
-      <nav aria-label="Ver incidentes como" className="grid grid-cols-3 gap-separacion">
-        {(Object.keys(VISTAS) as Vista[]).map((clave) => {
-          const { etiqueta, Icono } = VISTAS[clave];
-          const activa = clave === vista;
-          return (
-            <Link
-              key={clave}
-              href={`/incidentes?vista=${clave}`}
-              scroll={false}
-              aria-current={activa ? "true" : undefined}
-              className={`inline-flex min-h-tactil items-center justify-center gap-1 rounded-control border-(length:--borde-ancho-control) px-1 font-bold no-underline ${activa ? "border-accion-primaria bg-accion-primaria text-texto-invertido" : "border-borde-control bg-fondo-superficie text-accion-primaria hover:bg-accion-secundaria-hover"}`}
-            >
-              {activa ? (
-                <Check aria-hidden className="size-icono-pequeno" />
-              ) : (
-                <Icono aria-hidden className="size-icono-pequeno" />
-              )}
-              {etiqueta}
-            </Link>
-          );
-        })}
-      </nav>
+      <FiltroEnHoja
+        actual={VISTAS[vista].etiqueta}
+        titulo="Ver incidentes como"
+        etiquetaBoton="Ver como"
+        opciones={(Object.keys(VISTAS) as Vista[]).map((clave) => ({
+          etiqueta: VISTAS[clave].etiqueta,
+          href: `/incidentes?vista=${clave}`,
+          activa: clave === vista,
+        }))}
+      />
       <p>
         {cantidad(totales.total, "reporte", "reportes")}:{" "}
         {cantidad(totales.resueltos, "resuelto", "resueltos")},{" "}
@@ -79,11 +68,12 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
 
       {vista === "lista" &&
         (mapa.recientes.length ? (
-          <ul className="flex flex-col gap-separacion" aria-label="Incidentes del último mes">
-            {mapa.recientes.map((r, i) => {
+          <ListaVerMas
+            etiqueta="Incidentes del último mes"
+            elementos={mapa.recientes.map((r, i) => {
               const Icono = ICONOS[r.categoria];
               return (
-                <li
+                <div
                   key={`${r.fecha}-${i}`}
                   className="flex gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 senior:p-6"
                 >
@@ -98,10 +88,10 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
                       {r.estado}
                     </span>
                   </span>
-                </li>
+                </div>
               );
             })}
-          </ul>
+          />
         ) : (
           <p role="status">No hay reportes validados en el último mes.</p>
         ))}
