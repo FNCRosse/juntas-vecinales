@@ -7,6 +7,7 @@ import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
+import { AccionesDePersona } from "./AccionesDePersona";
 import { GenerarEnlace } from "./GenerarEnlace";
 import {
   listarEquipo,
@@ -86,25 +87,27 @@ export default async function Equipo({
             )}
             {m.gestionable && !m.tieneAcceso && <GenerarEnlace usuarioId={m.id} nombre={m.nombre} />}
             {m.esUsted && <span className="font-bold text-texto-secundario">Es usted</span>}
-            {m.esAdministrador && (
-              <div className="flex flex-wrap gap-separacion">
-                <Link href={`/administracion/equipo/${m.id}/roles`} className={ACCION}>
-                  <Repeat aria-hidden className="size-icono" />
-                  Roles de directiva<span className="sr-only"> de {m.nombre}</span>
-                </Link>
-              </div>
-            )}
-            {m.gestionable && (
-              <div className="flex flex-wrap gap-separacion">
-                <Link href={`/administracion/equipo/${m.id}/rol`} className={ACCION}>
-                  <Repeat aria-hidden className="size-icono" />
-                  Cambiar rol<span className="sr-only"> de {m.nombre}</span>
-                </Link>
-                <Link href={`/administracion/equipo/${m.id}/quitar`} className={ACCION}>
-                  <UserX aria-hidden className="size-icono" />
-                  Quitar acceso<span className="sr-only"> de {m.nombre}</span>
-                </Link>
-              </div>
+            {(m.esAdministrador || m.gestionable) && (
+              <AccionesDePersona nombre={m.nombre}>
+                {m.esAdministrador && (
+                  <Link href={`/administracion/equipo/${m.id}/roles`} className={ACCION}>
+                    <Repeat aria-hidden className="size-icono" />
+                    Roles de directiva
+                  </Link>
+                )}
+                {m.gestionable && (
+                  <>
+                    <Link href={`/administracion/equipo/${m.id}/rol`} className={ACCION}>
+                      <Repeat aria-hidden className="size-icono" />
+                      Cambiar rol
+                    </Link>
+                    <Link href={`/administracion/equipo/${m.id}/quitar`} className={ACCION}>
+                      <UserX aria-hidden className="size-icono" />
+                      Quitar acceso
+                    </Link>
+                  </>
+                )}
+              </AccionesDePersona>
             )}
           </div>
         ))}

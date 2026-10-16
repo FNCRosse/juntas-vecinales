@@ -59,17 +59,13 @@ export default async function ResumenDirectiva() {
           </Link>
         </section>
       )}
-      <div className="pt-4">
+      <div className="flex flex-col items-start gap-separacion pt-4">
         <BotonEnlace href="/directiva/comunicados/nuevo" variante="secundario" icono={Megaphone}>
           Publicar un comunicado
         </BotonEnlace>
-      </div>
-      <div>
         <BotonEnlace href="/directiva/actas/nueva" variante="secundario" icono={FileText}>
           Publicar un acta
         </BotonEnlace>
-      </div>
-      <div>
         <BotonEnlace href="/directiva/balances/nuevo" variante="secundario" icono={Landmark}>
           Publicar un balance
         </BotonEnlace>

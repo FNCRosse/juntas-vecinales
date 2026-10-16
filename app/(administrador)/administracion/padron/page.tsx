@@ -33,6 +33,10 @@ export default async function Padron({ searchParams }: { searchParams: Parametro
     ...manzanas.map((m) => ({ etiqueta: `Mz. ${m}`, valor: m })),
   ];
 
+  const descripcionDelFiltro =
+    [filtros.find(({ valor }) => valor === mz)?.etiqueta, q && `«${q}»`].filter(Boolean).join(" · ") ||
+    "Todas";
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -46,29 +50,30 @@ export default async function Padron({ searchParams }: { searchParams: Parametro
         Empadronar una vivienda
       </BotonEnlace>
 
-      <search>
-        <form method="get" className="flex flex-col gap-3">
-          {mz && <input type="hidden" name="mz" value={mz} />}
-          <Campo
-            name="q"
-            etiqueta="Buscar por nombre, DNI o lote"
-            ayuda="Ejemplo: Carmen Huamán, 08123478 o Mz. C lote 7"
-            defaultValue={q}
-          />
-          <Boton type="submit" variante="secundario" icono={Search} className="self-start">
-            Buscar
-          </Boton>
-        </form>
-      </search>
-
       <FiltroEnHoja
-        actual={filtros.find(({ valor }) => valor === mz)?.etiqueta ?? "Todas"}
-        titulo="Mostrar viviendas de"
+        actual={descripcionDelFiltro}
+        titulo="Buscar y filtrar viviendas"
         opciones={filtros.map(({ etiqueta, valor }) => ({
           etiqueta,
           href: enlaceFiltro(q, valor),
           activa: mz === valor || (!mz && !valor),
         }))}
+        pie={
+          <search>
+            <form method="get" className="flex flex-col gap-3">
+              {mz && <input type="hidden" name="mz" value={mz} />}
+              <Campo
+                name="q"
+                etiqueta="Buscar por nombre, DNI o lote"
+                ayuda="Ejemplo: Carmen Huamán, 08123478 o Mz. C lote 7"
+                defaultValue={q}
+              />
+              <Boton type="submit" icono={Search} anchoCompleto>
+                Buscar
+              </Boton>
+            </form>
+          </search>
+        }
       />
 
       {viviendas.length ? (

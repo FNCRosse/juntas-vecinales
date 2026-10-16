@@ -37,7 +37,7 @@ export function AnularVisita({ id, nombre, cuando }: { id: string; nombre: strin
           <p>{falla}</p>
         </MensajeEstado>
       )}
-      <div className="flex flex-col gap-separacion">
+      <div className="flex flex-col gap-opuestas">
         <BotonEnlace href="/visitas" variante="secundario">
           No, mantener la visita
         </BotonEnlace>
