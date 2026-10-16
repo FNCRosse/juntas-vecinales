@@ -63,3 +63,36 @@ describe("@HU-ACC-03 Confirmación en dos pasos", () => {
       });
   });
 });
+
+// Acciones reversibles (R-12): sin confirmación, con "Listo" y "Deshacer", sin desaparecer solas.
+describe("@HU-ACC-03 Listo con Deshacer", () => {
+  ["normal", "senior"].forEach((modo) => {
+    it(`@HU-ACC-03 CA4 en modo ${modo}: se aplica sin confirmar, no desaparece solo y Deshacer lo revierte`, () => {
+      cy.viewport(360, 800);
+      cy.guardarModo(modo as "normal" | "senior");
+      cy.visit("/catalogo");
+      cy.esperarHidratacion("Revisar y enviar mi comprobante");
+      cy.contains('[role="switch"]', "Recordatorios de pago")
+        .should("have.attr", "aria-checked", "false")
+        .click();
+      cy.get("[role=dialog]").should("not.exist");
+      cy.contains("[role=status]", "Listo.").should("be.visible");
+      cy.contains('[role="switch"]', "Recordatorios de pago").should("have.attr", "aria-checked", "true");
+      cy.revisarAccesibilidad(`listo-deshacer-${modo}-telefono`);
+      cy.wait(6000);
+      cy.contains("[role=status]", "Listo.").should("exist");
+      cy.contains("button", "Deshacer").click();
+      cy.contains('[role="switch"]', "Recordatorios de pago").should("have.attr", "aria-checked", "false");
+      cy.contains("[role=status]", "Listo.").should("not.exist");
+    });
+  });
+
+  it("@HU-ACC-03 CA4 Cerrar quita el aviso y deja el cambio hecho", () => {
+    cy.visit("/catalogo");
+    cy.esperarHidratacion("Revisar y enviar mi comprobante");
+    cy.contains('[role="switch"]', "Recordatorios de pago").click();
+    cy.contains("button", "Cerrar").click();
+    cy.contains("[role=status]", "Listo.").should("not.exist");
+    cy.contains('[role="switch"]', "Recordatorios de pago").should("have.attr", "aria-checked", "true");
+  });
+});

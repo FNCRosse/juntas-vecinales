@@ -69,7 +69,7 @@ describe("@HU-ACC-02 Escuchar en voz alta los comunicados del feed", () => {
     cy.contains("[role='switch']", "Leer en voz alta las noticias").as("interruptor");
     cy.get("@interruptor").should("have.attr", "aria-checked", "false");
     cy.revisarAccesibilidad("ayuda-voz-360");
-    cy.esperarHidratacion("Letra grande");
+    cy.esperarHidratacion("Vista grande");
     cy.get("@interruptor").click();
     cy.get("@interruptor").should("have.attr", "aria-checked", "true").and("contain.text", "Sí");
     cy.visit("/mas/ayuda-y-accesibilidad", conVoces(VOZ_PERUANA));

@@ -1,7 +1,7 @@
 import { EnlaceAyuda } from "./EnlaceAyuda";
 import { InterruptorLetraGrande } from "./InterruptorLetraGrande";
 
-// Barra superior de todas las pantallas (prototipo C-09): nombre de la junta, "Letra grande" y
+// Barra superior de todas las pantallas (prototipo C-09): nombre de la junta, "Vista grande" y
 // "Pedir ayuda" siempre en la misma posición (WCAG 3.2.6, regla A12).
 
 function Isologo() {

@@ -85,6 +85,7 @@
   --leading-texto: 1.5;
   --leading-titulo: 1.25;
   --text-pequeno: 1rem;
+  --text-barra: 1rem;
   --text-base: 1.125rem;
   --text-grande: 1.25rem;
   --text-titulo-3: 1.375rem;
@@ -102,6 +103,7 @@
   --spacing-tactil: 3rem;
   --spacing-control: 3rem;
   --spacing-separacion: 0.5rem;
+  --spacing-opuestas: 1.5rem;
   --spacing-icono: 1.5rem;
   --spacing-icono-pequeno: 1.25rem;
   --radius-control: 12px;
@@ -137,6 +139,7 @@
   --color-accion-deshabilitada: var(--color-paleta-arena-100);
   --color-foco-anillo: var(--color-paleta-azul-800);
   --text-pequeno: 1.25rem;
+  --text-barra: 1.125rem;
   --text-base: 1.375rem;
   --text-grande: 1.5rem;
   --text-titulo-3: 1.625rem;
@@ -146,6 +149,7 @@
   --spacing-tactil: 3.5rem;
   --spacing-control: 3.5rem;
   --spacing-separacion: 0.75rem;
+  --spacing-opuestas: 2rem;
   --spacing-icono: 2rem;
   --spacing-icono-pequeno: 1.5rem;
   --foco-ancho: 4px;
@@ -207,6 +211,7 @@
   --leading-texto: var(--leading-texto);
   --leading-titulo: var(--leading-titulo);
   --text-pequeno: var(--text-pequeno);
+  --text-barra: var(--text-barra);
   --text-base: var(--text-base);
   --text-grande: var(--text-grande);
   --text-titulo-3: var(--text-titulo-3);
@@ -224,6 +229,7 @@
   --spacing-tactil: var(--spacing-tactil);
   --spacing-control: var(--spacing-control);
   --spacing-separacion: var(--spacing-separacion);
+  --spacing-opuestas: var(--spacing-opuestas);
   --spacing-icono: var(--spacing-icono);
   --spacing-icono-pequeno: var(--spacing-icono-pequeno);
   --radius-control: var(--radius-control);

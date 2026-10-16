@@ -109,7 +109,8 @@ describe("@HU-GAR-21 Crear cuentas internas con rol", () => {
       { nombreCompleto: "Raúl Vega", dni: "41234567", telefono: "912345601" },
       "VIGILANTE",
       ORIGEN,
-      T0,
+      // Hora real: crearAccesoHttp valida con la hora de ahora, y con T0 (5 de octubre) la invitación de 48 h ya venció.
+      new Date(),
     );
     const token = await invitacionEnCola();
 

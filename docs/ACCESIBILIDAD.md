@@ -9,11 +9,11 @@ La accesibilidad es la base del sistema, no una capa final. Objetivo: **WCAG 2.2
 | AC-1 Accesibilidad | 0 violaciones WCAG 2.2 AA detectadas por axe en el CI | `cy.checkA11y` en cada estado de cada e2e ([PRUEBAS.md](PRUEBAS.md)) |
 | AC-2 Baja carga cognitiva | ≤ 3 interacciones desde el ingreso hasta **la deuda, el próximo evento y el estado de la queja**, desde una sola pantalla de inicio | Un e2e (`pruebas/e2e/identidad/ac2-interacciones.cy.ts`) cuenta clics y teclas desde `/` hasta cada dato. El panel los muestra en la primera pantalla (0 interacciones); el detalle queda a 1 toque |
 
-## 2. Modo Senior ("Letra grande")
+## 2. Modo Senior ("Vista grande")
 
 - Se activa con el switch de la barra superior o desde Perfil; se guarda en el servidor y se aplica al renderizar (ADR-004, [FRONTEND.md §3](FRONTEND.md#3-perfil-de-accesibilidad-al-renderizar-adr-004)).
 - Con el modo activo (HU-ACC-01 CA2–CA3): cuerpo de 22 px, contraste de texto ≥ 7:1, objetivos de 56 × 56 px con 12 px de separación, íconos de 32 px, una sola columna, navegación lineal y sin adornos (`senior:hidden`).
-- Se llama "Letra grande": no se etiqueta a la persona por su edad. No se activa solo por la edad (ADR-004).
+- Se llama "Vista grande": no se etiqueta a la persona por su edad. No se activa solo por la edad (ADR-004).
 
 ## 3. Tamaños mínimos
 
@@ -47,7 +47,7 @@ Va en cada PR ([plantilla](../.github/pull_request_template.md)) y en la evidenc
 - [ ] 1.4.1 Ningún estado solo con color: color + ícono + palabra.
 - [ ] 1.3.3 Ninguna instrucción depende de la forma, el color o la posición ("Toque Sí, asistiré").
 - [ ] 2.5.7 Nada exige arrastrar.
-- [ ] 3.2.3 / 3.2.4 / 3.2.6 Misma barra, mismos íconos y palabras, "Letra grande" y "Pedir ayuda" en la misma posición.
+- [ ] 3.2.3 / 3.2.4 / 3.2.6 Misma barra, mismos íconos y palabras, "Vista grande" y "Pedir ayuda" en la misma posición.
 - [ ] 3.3.1 / 3.3.2 / 3.3.3 Etiqueta visible; error junto al campo que dice cómo corregir; no se borra lo escrito.
 - [ ] 3.3.4 Dinero, voto, queja y bajas piden confirmación con resumen y salida.
 - [ ] 3.3.7 No se pide de nuevo un dato ya entregado; 3.3.8 entrar no exige recordar una clave ni resolver acertijos.

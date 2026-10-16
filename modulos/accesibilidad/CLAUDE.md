@@ -22,7 +22,7 @@ Enums: `EscalaTipografica` (NORMAL, GRANDE, MUY_GRANDE) · `TonoMensaje` (CORDIA
 
 - El perfil se guarda en el servidor y se aplica al renderizar; nunca en `localStorage`. Sin cuenta, perfil por defecto (Normal).
 - El modo Senior no se activa por la edad: `esPredeterminadoPara(edad)` del diagrama no se implementa porque ADR-004 descarta la detección automática.
-- El switch se llama "Letra grande" y está siempre en la barra superior y en Perfil. Si no se pudo guardar, el modo se mantiene en el dispositivo y se avisa ([FRONTEND.md §3](../../docs/FRONTEND.md#3-perfil-de-accesibilidad-al-renderizar-adr-004)).
+- El switch se llama "Vista grande" y está siempre en la barra superior y en Perfil. Si no se pudo guardar, el modo se mantiene en el dispositivo y se avisa ([FRONTEND.md §3](../../docs/FRONTEND.md#3-perfil-de-accesibilidad-al-renderizar-adr-004)).
 - "Pedir ayuda" está en la misma posición en toda pantalla con sesión. La solicitud guarda quién la pide (lo compone `app/`), la pantalla (ruta e id de pantalla) y su estado (PENDIENTE, EN_ATENCION, ATENDIDA); se avisa al mediador de turno. El teléfono de soporte y el mediador de turno vienen de la semilla; no hay pantalla para editarlos mientras ninguna HU la pida.
 - Tutorial: se ofrece la primera vez que se entra a Incidentes, Asambleas o Mi cuota; cinco pasos como máximo, una acción resaltada por paso; se puede omitir, pausar y volver a activar desde Ayuda; un tutorial completado no se vuelve a ofrecer solo.
 - Lectura en voz alta: la preferencia vive en el perfil; la voz es del navegador (`es-PE`, si no `es`); controles de reproducir, pausar y detener con el área táctil de R-03.

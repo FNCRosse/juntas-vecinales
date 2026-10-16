@@ -37,9 +37,9 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
     });
   });
 
-  it("@HU-GAR-02 CA1 CA2 CA3 @HU-ACC-01 @HU-GAR-03 entra sin clave, acepta la política, crea su clave y conserva Letra grande", () => {
+  it("@HU-GAR-02 CA1 CA2 CA3 @HU-ACC-01 @HU-GAR-03 entra sin clave, acepta la política, crea su clave y conserva Vista grande", () => {
     empadronar(`1${sufijo.slice(-3)}`, `6${sufijo}1`, `9${sufijo}01`).then((ruta) => {
-      // Antes de entrar elige Letra grande en este dispositivo (HU-ACC-01).
+      // Antes de entrar elige Vista grande en este dispositivo (HU-ACC-01).
       cy.guardarModo("senior");
       // La página envía el enlace sola; el primer intento se simula fallido para ver la
       // bienvenida y el botón de respaldo.
@@ -79,14 +79,19 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
 
       // HU-GAR-03 CA1: la guía opcional, paso a paso, con el acceso directo al final.
       cy.location("pathname").should("eq", "/guia");
-      cy.get("h1").should("have.text", "Su cuota, siempre a la vista");
-      cy.revisarAccesibilidad("guia-paso1-senior");
+      // HU-ACC-01 CA4: el primer paso pregunta cómo prefiere ver la aplicación, con la vista grande marcada.
+      cy.get("h1").should("have.text", "¿Cómo prefiere ver la aplicación?");
+      cy.get("input[name=vista][value=grande]").should("be.checked");
+      cy.revisarAccesibilidad("guia-paso1-vista-senior");
       cy.esperarHidratacion("Siguiente").click();
+      cy.get("h1").should("have.text", "Su cuota, siempre a la vista");
+      cy.revisarAccesibilidad("guia-paso2-senior");
+      cy.contains("button", "Siguiente").click();
       cy.focused().should("have.text", "Si algo se le complica, pida ayuda");
       cy.contains("button", "Siguiente").click();
       cy.get("h1").should("have.text", "Tenga la app en su pantalla");
       cy.contains("p", "Agregar a inicio").should("exist");
-      cy.revisarAccesibilidad("guia-paso3-senior");
+      cy.revisarAccesibilidad("guia-paso4-senior");
       cy.contains("a", "Terminar e ir al inicio").click();
 
       cy.location("pathname").should("eq", "/");

@@ -209,7 +209,7 @@ En Figma, cada Text Style tiene el tamaño enlazado a la variable `text/*` y el 
 3. Si un ícono transmite un estado, ese estado también aparece en texto: "Al día", "Debe S/ 12.50". → WCAG 1.4.1, HU-ACC-05 CA2
 4. En Figma, la capa de cada instancia de ícono se nombra con su texto alternativo o con "decorativo". → La matriz de trazabilidad puede comprobarlo
 
-**Íconos canónicos** (siempre el mismo ícono para el mismo concepto): Inicio `House` · Mi cuota `Wallet` · Pagos/recibo `Receipt` · Asambleas `CalendarDays` · Incidentes `MapPin` · Transparencia `FileText` · Avisos `Bell` · Perfil `CircleUser` · Ayuda humana `LifeBuoy` · Escuchar (voz) `Volume2`, `Pause`, `Square` · Letra grande `AArrowUp` · Éxito `CircleCheck` · Error `CircleX` · Aviso `TriangleAlert` · Info `Info` · Cerrar `X` · Desplegar `ChevronDown`. → WCAG 3.2.4 (identificación coherente)
+**Íconos canónicos** (siempre el mismo ícono para el mismo concepto): Inicio `House` · Mi cuota `Wallet` · Pagos/recibo `Receipt` · Asambleas `CalendarDays` · Incidentes `MapPin` · Transparencia `FileText` · Avisos `Bell` · Perfil `CircleUser` · Ayuda humana `LifeBuoy` · Escuchar (voz) `Volume2`, `Pause`, `Square` · Vista grande `AArrowUp` · Éxito `CircleCheck` · Error `CircleX` · Aviso `TriangleAlert` · Info `Info` · Cerrar `X` · Desplegar `ChevronDown`. → WCAG 3.2.4 (identificación coherente)
 
 ---
 
@@ -410,16 +410,16 @@ Toast: lo mismo más `shadow-elevada fixed inset-x-4 bottom-24` (queda encima de
 - **El toast no desaparece solo**: se queda hasta que la persona lo cierra. → WCAG 2.2.1 (tiempo suficiente); HU-ACC-03
 - Después de una acción crítica, el éxito se confirma con una alerta en la página y no solo con un toast → la confirmación tiene que ser un comprobante reconocible (Anexo K, P6).
 
-### 5.8 Switch del modo senior ("Letra grande")
+### 5.8 Switch del modo senior ("Vista grande")
 
 | | Normal | Senior |
 | --- | --- | --- |
 | Fila pulsable | alto mínimo de 48 px (`min-h-tactil`), etiqueta + switch + estado | 56 px |
 | Riel | 56 × 32 px (`w-14 h-8`) | 72 × 40 px (`senior:w-18 senior:h-10`) |
 | Perilla | 24 px (`size-6`) | 32 px (`senior:size-8`) |
-| Texto | "Letra grande" `text-base font-bold` + estado "Sí"/"No" | 22 px |
+| Texto | "Vista grande" `text-base font-bold` + estado "Sí"/"No" | 22 px |
 
-Marcado: `<button role="switch" aria-checked="false" class="flex items-center gap-3 min-h-tactil">` con el ícono `AArrowUp`, el texto "Letra grande", el riel y la palabra de estado.
+Marcado: `<button role="switch" aria-checked="false" class="flex items-center gap-3 min-h-tactil">` con el ícono `AArrowUp`, el texto "Vista grande", el riel y la palabra de estado.
 
 | Estado | Riel / perilla |
 | --- | --- |
@@ -433,7 +433,7 @@ Marcado: `<button role="switch" aria-checked="false" class="flex items-center ga
 
 - Está siempre en la barra superior y también en Perfil. → HU-ACC-01 CA1, WCAG 3.2.6 (misma posición)
 - El estado se dice con palabra ("Sí"/"No") y con la posición, no solo con el color. → WCAG 1.4.1
-- Se llama "Letra grande" y no "Modo accesible senior" → es lenguaje llano, sin etiquetar a la persona por su edad (HU-ACC-08; así ya se usa en el prototipo de Figma).
+- Se llama "Vista grande" y no "Modo accesible senior" → es lenguaje llano, sin etiquetar a la persona por su edad (HU-ACC-08; así ya se usa en el prototipo de Figma).
 
 ---
 
@@ -452,7 +452,7 @@ Marcado: `<button role="switch" aria-checked="false" class="flex items-center ga
 | A9 | Toda acción crítica o de peligro pide confirmación en lenguaje llano y se puede cancelar | Recorrido de pago, delegación de voto y queja | HU-ACC-03 CA1 y CA3; WCAG 3.3.4 |
 | A10 | Los mensajes emergentes no desaparecen solos | Revisión de código: sin `setTimeout` que cierre avisos | WCAG 2.2.1 |
 | A11 | Etiqueta visible en todo campo; error junto al campo que dice cómo corregir | axe "label"; revisión de textos | WCAG 3.3.1, 3.3.2, 3.3.3; HU-ACC-08 |
-| A12 | El botón de ayuda humana y el switch "Letra grande" están en la misma posición en todas las pantallas | Comparar frames | WCAG 3.2.6; HU-ACC-04 CA1; HU-ACC-01 CA1 |
+| A12 | El botón de ayuda humana y el switch "Vista grande" están en la misma posición en todas las pantallas | Comparar frames | WCAG 3.2.6; HU-ACC-04 CA1; HU-ACC-01 CA1 |
 
 ---
 
