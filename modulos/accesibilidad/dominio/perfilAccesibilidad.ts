@@ -39,7 +39,7 @@ export class PerfilAccesibilidad {
     return new PerfilAccesibilidad({ ...datos });
   }
 
-  /** "Letra grande": texto de 22 px, contraste ≥ 7:1 y objetivos de 56 px, todo por token (HU-ACC-01 CA2). */
+  /** "Vista grande": texto de 22 px, contraste ≥ 7:1 y objetivos de 56 px, todo por token (HU-ACC-01 CA2). */
   activarModoSenior() {
     Object.assign(this.datos, {
       modoSeniorActivo: true,

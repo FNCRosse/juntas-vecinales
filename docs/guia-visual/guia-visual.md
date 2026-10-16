@@ -233,6 +233,7 @@ En Figma, cada Text Style tiene el tamaño enlazado a la variable `text/*` y el 
 | `spacing/tactil` | 48 px | 56 px | `min-h-tactil min-w-tactil` | Lado mínimo de todo objetivo táctil → HU-ACC-09 CA1 (48 px incluso en Normal), HU-ACC-01 CA2 |
 | `spacing/control` | 48 px | 56 px | `h-control` | Alto de botón, campo y select |
 | `spacing/separacion` | 8 px | 12 px | `gap-separacion` | Espacio mínimo entre controles contiguos → HU-ACC-09 CA2; §9 del alcance |
+| `spacing/opuestas` | 24 px | 32 px | `gap-opuestas` | Entre acciones de resultado opuesto (aprobar y observar, sí y no, confirmar y cancelar), apiladas en el teléfono → R-03b |
 
 - Las acciones destructivas van separadas al menos por `spacing/12` (48 px) o en otra tarjeta. → HU-ACC-09 CA3
 
@@ -449,10 +450,13 @@ Marcado: `<button role="switch" aria-checked="false" class="flex items-center ga
 | A6 | Todo ícono informativo e imagen tiene texto alternativo; lo decorativo lleva `alt=""` o `aria-hidden`; el mapa tiene una vista de lista | axe sin errores "image-alt" ni "svg-img-alt"; en Figma, capas nombradas | WCAG 1.1.1; HU-ACC-07 CA1 a CA3 |
 | A7 | Texto base ≥ 18 px (≥ 22 en Senior), nada menor de 16 px, unidades en rem | Zoom del navegador al 200 %: sin cortes ni scroll horizontal a 360 px | WCAG 1.4.4, 1.4.10; HU-ACC-01 CA2 |
 | A8 | Modo Senior: tipografía, objetivos, íconos y contraste suben por token; decoración e ilustraciones se ocultan (`senior:hidden`); navegación lineal en una columna | Cambiar `data-mode` en `<html>` y comparar; en Figma, cambiar el modo del frame a Senior | HU-ACC-01 CA2 y CA3 |
-| A9 | Toda acción crítica o de peligro pide confirmación en lenguaje llano y se puede cancelar | Recorrido de pago, delegación de voto y queja | HU-ACC-03 CA1 y CA3; WCAG 3.3.4 |
+| A9 | Toda acción con dinero, voto, delegación, denuncia o baja pide **una sola** confirmación, en lenguaje llano: resumen, "Sí, …" y "Cancelar", sin diálogos extra ni "Corregir algo" (R-12) | Recorrido de pago, delegación de voto, queja y bajas: una pantalla de confirmación por acción | HU-ACC-03 CA1 y CA3; WCAG 3.3.4 |
 | A10 | Los mensajes emergentes no desaparecen solos | Revisión de código: sin `setTimeout` que cierre avisos | WCAG 2.2.1 |
 | A11 | Etiqueta visible en todo campo; error junto al campo que dice cómo corregir | axe "label"; revisión de textos | WCAG 3.3.1, 3.3.2, 3.3.3; HU-ACC-08 |
 | A12 | El botón de ayuda humana y el switch "Vista grande" están en la misma posición en todas las pantallas | Comparar frames | WCAG 3.2.6; HU-ACC-04 CA1; HU-ACC-01 CA1 |
+| A13 | Las acciones de resultado opuesto (aprobar/observar, sí/no, confirmar/cancelar) van apiladas en el teléfono, a ≥ 24 px una de otra (≥ 32 px en Senior), con el token `spacing/opuestas` (R-03b) | `area-tactil.cy.ts` mide la separación en pantallas reales; en Figma, medir entre las dos capas pulsables | HU-ACC-09 CA2 |
+| A14 | Como máximo 8 objetivos de contenido por pantalla de teléfono en Normal y 6 en Senior; no cuentan la barra, el encabezado ("Vista grande", "Pedir ayuda") ni el selector de perfil. Las listas muestran 5 elementos (3 en Senior) con "Ver más"; los filtros van detrás de un solo botón "Filtrar" que abre una hoja; la barra del teléfono tiene como máximo 4 destinos (R-11) | `densidad.cy.ts` cuenta los objetivos de las rutas reales de los cuatro actores (`pruebas/e2e/soporte/actores.ts`) | HU-ACC-09 CA2; carga cognitiva (AC-2) |
+| A15 | Lo reversible se aplica al instante y muestra "Listo." con "Deshacer", sin pedir confirmación y sin desaparecer por tiempo (R-12) | `AvisoDeshacer`; los e2e de cada acción reversible comprueban que Deshacer la revierte en el servidor | HU-ACC-03 CA4; WCAG 2.2.1 |
 
 ---
 

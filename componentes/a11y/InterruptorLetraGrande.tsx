@@ -6,8 +6,8 @@ import { clasesBotonBarra } from "./Boton";
 import { cambiarVista } from "./cambiarVista";
 import { MensajeEstado } from "./MensajeEstado";
 
-// "Vista grande" (guía visual §5.8, HU-ACC-01; antes "Letra grande": cambia letra, botones, separación y
-// cantidad de opciones): cambia el modo al instante en <html> y lo guarda en el perfil del servidor.
+// "Vista grande" (guía visual §5.8, HU-ACC-01): cambia letra, botones, separación y
+// cantidad de opciones: cambia el modo al instante en <html> y lo guarda en el perfil del servidor.
 // Si no se pudo guardar, el modo se mantiene en este dispositivo y se avisa. El nombre del archivo y
 // del componente no cambian: solo el texto visible.
 

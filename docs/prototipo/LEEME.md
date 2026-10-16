@@ -14,7 +14,7 @@ Copia de trabajo del prototipo navegable de alta fidelidad del Resultado R2.3 (1
 
 1. Abre `docs/prototipo/prototipo.html` con doble clic (Chrome o Edge) o en el navegador integrado de Claude Code con `file:///C:/dev/juntas-vecinales/docs/prototipo/prototipo.html`.
 2. Elige el actor en el selector inicial (vecino, directiva, administrador o vigilante).
-3. Usa "Letra grande" en la barra superior para ver la variante Senior, y reduce el ancho de la ventana a 360 px para ver la de teléfono.
+3. Usa "Vista grande" en la barra superior para ver la variante Senior, y reduce el ancho de la ventana a 360 px para ver la de teléfono.
 4. La sección "Demostración" (semanas pendientes, hora de la asamblea, sin conexión) cambia el estado de los datos ficticios; no forma parte del producto.
 
 ## Cómo encontrar una pantalla por id
