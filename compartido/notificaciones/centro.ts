@@ -25,9 +25,21 @@ export async function marcarLeida(destinatarioId: string, id: string, ahora = ne
   if (!count) throw new ErrorNoEncontrado();
 }
 
+/** Devuelve cuáles eran, para poder deshacerlo (HU-ACC-03 CA4). */
 export async function marcarTodasLeidas(destinatarioId: string, ahora = new Date()) {
+  return prisma.$transaction(async (tx) => {
+    const ids = (
+      await tx.notificacion.findMany({ where: { destinatarioId, leidaEn: null }, select: { id: true } })
+    ).map((n) => n.id);
+    await tx.notificacion.updateMany({ where: { id: { in: ids } }, data: { leidaEn: ahora } });
+    return ids;
+  });
+}
+
+/** Deshacer "marcar como leído": solo las de quien pregunta; las demás se ignoran (AC-7). */
+export async function marcarNoLeidas(destinatarioId: string, ids: string[]) {
   await prisma.notificacion.updateMany({
-    where: { destinatarioId, leidaEn: null },
-    data: { leidaEn: ahora },
+    where: { id: { in: ids }, destinatarioId },
+    data: { leidaEn: null },
   });
 }

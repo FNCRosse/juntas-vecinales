@@ -1,6 +1,7 @@
 import { GET as listarHttp } from "@/app/api/notificaciones/route";
 import { PATCH as leidoHttp } from "@/app/api/notificaciones/[id]/route";
 import { POST as todosHttp } from "@/app/api/notificaciones/leidas/route";
+import { POST as noLeidosHttp } from "@/app/api/notificaciones/no-leidas/route";
 import { PUT as preferenciasHttp } from "@/app/api/perfil/notificaciones/route";
 import { prisma } from "@/compartido/bd/cliente";
 import { sembrar } from "@/compartido/bd/semillas";
@@ -13,6 +14,7 @@ import {
   avisosSinLeer,
   cambiarPreferencias,
   marcarAvisoLeido,
+  marcarAvisosNoLeidos,
   misPreferencias,
   verAvisos,
 } from "@/modulos/identidad/aplicacion/avisos";
@@ -101,9 +103,29 @@ describe("@HU-GAR-20 Centro de notificaciones unificado", () => {
     expect(await avisosSinLeer(marta)).toBe(2);
     await expect(marcarAvisoLeido(ana, primero.id)).rejects.toBeInstanceOf(ErrorNoEncontrado);
 
-    expect((await todosHttp(pedir("/api/notificaciones/leidas", "POST"), undefined)).status).toBe(204);
+    expect((await todosHttp(pedir("/api/notificaciones/leidas", "POST"), undefined)).status).toBe(200);
     // CA3: el contador se lee en cada carga, ya en cero.
     expect(await avisosSinLeer(marta)).toBe(0);
+  });
+});
+
+describe("@HU-ACC-03 Deshacer marcar como leído (R-12)", () => {
+  it("@HU-ACC-03 CA4 marcar todos responde cuáles eran y Deshacer los devuelve a sin leer, solo los propios", async () => {
+    await enviar({ tipo: "PAGOS", titulo: "Recibo listo", texto: "Su recibo ya está." }, T0);
+    await enviar({ tipo: "GARITA", titulo: "Visita en la puerta", texto: "Llegó Pedro." }, minutos(1));
+    const { ids } = await (await todosHttp(pedir("/api/notificaciones/leidas", "POST"), undefined)).json();
+    expect(ids).toHaveLength(2);
+    expect(await avisosSinLeer(marta)).toBe(0);
+
+    // AC-7: otra persona no puede cambiar los avisos de Marta.
+    await marcarAvisosNoLeidos(ana, ids);
+    expect(await avisosSinLeer(marta)).toBe(0);
+
+    const respuesta = await noLeidosHttp(pedir("/api/notificaciones/no-leidas", "POST", { ids }), undefined);
+    expect(respuesta.status).toBe(204);
+    expect(await avisosSinLeer(marta)).toBe(2);
+    const vacio = await noLeidosHttp(pedir("/api/notificaciones/no-leidas", "POST", { ids: [] }), undefined);
+    expect(vacio.status).toBe(400);
   });
 });
 
