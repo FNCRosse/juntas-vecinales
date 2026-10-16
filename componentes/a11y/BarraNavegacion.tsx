@@ -29,7 +29,6 @@ export type Actor = "vecino" | "directiva" | "administrador" | "garita";
 type Opcion = { etiqueta: string; href: string; Icono: LucideIcon; clase?: string };
 
 const DESDE_TABLET = "hidden md:block";
-const SOLO_TELEFONO = "md:hidden";
 
 export const OPCIONES_POR_ACTOR: Record<Actor, Opcion[]> = {
   vecino: [
@@ -53,7 +52,7 @@ export const OPCIONES_POR_ACTOR: Record<Actor, Opcion[]> = {
     { etiqueta: "Equipo", href: "/administracion/equipo", Icono: Users },
     { etiqueta: "Privacidad", href: "/administracion/privacidad", Icono: ShieldCheck, clase: DESDE_TABLET },
     { etiqueta: "Auditoría", href: "/administracion/auditoria", Icono: ScrollText, clase: DESDE_TABLET },
-    { etiqueta: "Más", href: "/administracion/mas", Icono: Ellipsis, clase: SOLO_TELEFONO },
+    { etiqueta: "Más", href: "/administracion/mas", Icono: Ellipsis },
   ],
   garita: [
     { etiqueta: "Inicio", href: "/garita", Icono: DoorOpen },

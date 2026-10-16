@@ -11,7 +11,7 @@ Los actores son los cuatro del Anexo M (prefijos de pantalla `VEC`, `DIR`, `ADM`
 | `app/(acceso)/` | `/entrar`, `/entrar/[token]`, `/entrar/equipo`, `/entrar/privacidad`, `/entrar/clave-respaldo`, `/entrar/enlace-nuevo`, `/privacidad`, `/clave`, `/clave/nueva`, `/clave/nueva/[token]`, `/seguimiento` | Sin sesión (la política y la clave de respaldo, recién entrado) | — |
 | `app/(vecino)/` | `/`, `/cuota`, `/asambleas`, `/incidentes`, `/mas/...` | Vecino (incluye adulto mayor y denunciante), teléfono | Teléfono: Inicio · Mi cuota · Asambleas · Más. Desde tablet se suma Incidentes (en el teléfono, "Mis reportes" es un atajo del inicio) |
 | `app/(directiva)/directiva/` | `/directiva/...` | Directiva y directivo mediador, teléfono y escritorio | Teléfono: Resumen · Cobros · Incidentes · Más. Desde tablet se suman Asambleas y Ayuda pedida |
-| `app/(administrador)/administracion/` | `/administracion/...` | Administrador, escritorio | Teléfono: Inicio · Padrón · Equipo · Más. Desde tablet: Privacidad y Auditoría en lugar de Más |
+| `app/(administrador)/administracion/` | `/administracion/...` | Administrador, escritorio | Teléfono: Inicio · Padrón · Equipo · Más. Desde tablet se suman Privacidad y Auditoría (Más, con "Cerrar sesión", queda en todos los tamaños) |
 | `app/(garita)/garita/` | `/garita/...` | Vigilante, tablet de garita | Inicio · Consultar · Visitas · Bitácora |
 | `app/api/` | `/api/...` | Route handlers (ver [BACKEND.md](BACKEND.md)) | — |
 

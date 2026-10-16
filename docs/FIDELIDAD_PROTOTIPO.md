@@ -28,7 +28,7 @@ Las reglas que mandan son estas (R-03 ya estaba en la [guía visual](guia-visual
 | --- | --- | --- | --- |
 | Barra del vecino (teléfono) | Inicio · Mi cuota · Asambleas · Más, en normal y en Senior. "Mis reportes" y "Mis avisos" son atajos del inicio. Desde tablet se suma Incidentes | 5 destinos en normal; Incidentes solo se oculta en Senior | `componentes/a11y/BarraNavegacion.tsx` |
 | Barra de la directiva (teléfono) | Resumen · Cobros · Incidentes · Más. Desde tablet suma Asambleas y Ayuda pedida; en escritorio, Cuentas | 5 destinos | ídem |
-| Barra del administrador (teléfono) | Inicio · Padrón · Equipo · Más. Desde tablet, Privacidad y Auditoría en lugar de Más | 5 destinos | ídem |
+| Barra del administrador (teléfono) | Inicio · Padrón · Equipo · Más. Desde tablet se suman Privacidad y Auditoría; Más queda en todos los tamaños, porque ahí está "Cerrar sesión" (el prototipo lo quita en tablet y escritorio: falta corregirlo allí) | 5 destinos | ídem |
 | Garita | Inicio · Consultar · Visitas · Bitácora | Igual | — |
 | Etiquetas de la barra | Una línea, sin partir palabras | `hyphens-auto` y `break-words` parten palabras | ídem |
 | Menú "Más" del vecino | Lista plana: Mis visitas · Transparencia · Mi perfil y privacidad · Ayuda y accesibilidad · Cerrar sesión (más "Volver al selector", solo demostración, que no se implementa) | Hecho: 4 filas (Mis visitas, Transparencia, Mi perfil y privacidad, Ayuda y accesibilidad), sin descripciones, como el prototipo. Noticias y Avisos se abren desde el inicio, "Qué avisos recibo" desde Avisos y la guía rápida desde Ayuda y accesibilidad | `app/(vecino)/mas/page.tsx` |
