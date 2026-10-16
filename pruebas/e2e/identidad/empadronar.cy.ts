@@ -84,13 +84,21 @@ describe("@HU-GAR-01 Empadronar una vivienda", () => {
       .should("have.attr", "aria-checked", "true");
     cy.contains("button", "Revisar todo").click();
 
-    // Paso 3: confirmación con el resumen; "Corregir algo" vuelve sin borrar nada.
+    // Paso 3: confirmación con el resumen; "Volver y corregir" vuelve sin borrar nada.
     cy.get("h1").should("have.text", `¿Desea empadronar Mz. C, lote ${LOTE}?`);
     cy.contains("dd", "Sofía: 912 345 678 · Manuel: 912 345 700").should("exist");
     cy.contains("dt", "Placas").next("dd").should("contain.text", PLACA);
     cy.contains("dt", "Primera entrada").next("dd").should("have.text", "Con la vista grande");
     cy.revisarAccesibilidad("empadronar-confirmar-normal");
-    cy.contains("button", "Corregir algo").click();
+    // R-12: una sola confirmación, con dos salidas separadas al menos 24 px (R-03b) y sin "Corregir algo".
+    cy.contains("button", "Corregir algo").should("not.exist");
+    cy.contains("button", "Sí, empadronar").then(($si) => {
+      cy.contains("a", "Cancelar, no guardar nada").then(($no) => {
+        const separacion = $no[0].getBoundingClientRect().top - $si[0].getBoundingClientRect().bottom;
+        expect(separacion, "separación entre Sí y Cancelar").to.be.gte(24);
+      });
+    });
+    cy.contains("button", "Volver y corregir").click();
     porId("campo-titular.nombreCompleto").should("have.value", "Sofía Castro Ríos");
     cy.contains("button", "Revisar todo").click();
     cy.contains("button", "Sí, empadronar").click();
