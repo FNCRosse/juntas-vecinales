@@ -6,7 +6,7 @@ import { Boton } from "./Boton";
 import { CerrarDialogo, Dialogo } from "./Dialogo";
 
 // RetroalimentacionNoPunitiva (HU-ACC-03, WCAG 3.3.4): antes de consumar una acción crítica
-// (dinero, voto, queja, bajas) muestra qué se hará y con qué datos, con Confirmar y Cancelar.
+// (dinero, voto, queja, bajas) muestra qué se hará y con qué datos, con "Sí, …" y "Cancelar", apilados a 24 px (R-03b, R-12): una sola confirmación.
 // Cancelar solo cierra: lo que la persona ya escribió sigue en el formulario (CA3).
 
 export type FilaResumen = { etiqueta: string; valor: string };
@@ -25,7 +25,7 @@ export function Confirmacion({
   resumen: FilaResumen[];
   /** Qué pasará después, en lenguaje llano. */
   aviso?: string;
-  /** Verbo y objeto: "Enviar mi comprobante", nunca "Aceptar". */
+  /** Empieza con "Sí, " y nombra la acción y su objeto: "Sí, enviar mi comprobante", nunca "Aceptar". */
   textoConfirmar: string;
   alConfirmar: () => void | Promise<void>;
   /** Acción destructiva o irreversible: el botón usa la variante de peligro. */
@@ -55,7 +55,7 @@ export function Confirmacion({
         ))}
       </dl>
       {aviso && <p>{aviso}</p>}
-      <div className="flex flex-col gap-separacion">
+      <div className="flex flex-col gap-opuestas">
         <Boton
           variante={peligro ? "peligro" : "primario"}
           anchoCompleto
