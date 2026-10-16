@@ -1,9 +1,10 @@
-import { Check, HousePlus, Search } from "lucide-react";
+import { HousePlus, Search } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
+import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
 import { listarPadron } from "@/modulos/identidad/aplicacion/consultarPadron";
 
@@ -60,39 +61,31 @@ export default async function Padron({ searchParams }: { searchParams: Parametro
         </form>
       </search>
 
-      <nav aria-label="Filtrar por manzana" className="flex flex-wrap gap-separacion">
-        {filtros.map(({ etiqueta, valor }) => {
-          const activo = mz === valor || (!mz && !valor);
-          return (
-            <Link
-              key={etiqueta}
-              href={enlaceFiltro(q, valor)}
-              aria-current={activo ? "true" : undefined}
-              className={`inline-flex min-h-tactil items-center gap-2 rounded-pastilla border-(length:--borde-ancho-control) px-4 font-bold no-underline ${activo ? "border-accion-primaria bg-accion-primaria text-texto-invertido" : "border-borde-control bg-fondo-superficie text-accion-primaria hover:bg-accion-secundaria-hover"}`}
-            >
-              {activo && <Check aria-hidden className="size-icono-pequeno" />}
-              {etiqueta}
-            </Link>
-          );
-        })}
-      </nav>
+      <FiltroEnHoja
+        actual={filtros.find(({ valor }) => valor === mz)?.etiqueta ?? "Todas"}
+        titulo="Mostrar viviendas de"
+        opciones={filtros.map(({ etiqueta, valor }) => ({
+          etiqueta,
+          href: enlaceFiltro(q, valor),
+          activa: mz === valor || (!mz && !valor),
+        }))}
+      />
 
       {viviendas.length ? (
-        <ul className="flex flex-col gap-separacion" aria-label="Viviendas">
-          {viviendas.map((v) => (
-            <li key={v.id}>
-              <TarjetaEnlace href={`/administracion/padron/${v.id}`} titulo={v.direccion}>
-                <span>
-                  {v.titular} · {plural(v.numeroResidentes, "residente", "residentes")}
-                </span>
-                <span className="text-texto-secundario">
-                  {v.uso}
-                  {v.ocupacion && ` · ${v.ocupacion}`}
-                </span>
-              </TarjetaEnlace>
-            </li>
+        <ListaVerMas
+          etiqueta="Viviendas"
+          elementos={viviendas.map((v) => (
+            <TarjetaEnlace key={v.id} href={`/administracion/padron/${v.id}`} titulo={v.direccion}>
+              <span>
+                {v.titular} · {plural(v.numeroResidentes, "residente", "residentes")}
+              </span>
+              <span className="text-texto-secundario">
+                {v.uso}
+                {v.ocupacion && ` · ${v.ocupacion}`}
+              </span>
+            </TarjetaEnlace>
           ))}
-        </ul>
+        />
       ) : (
         <p role="status">
           {q || mz

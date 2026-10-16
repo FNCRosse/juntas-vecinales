@@ -16,9 +16,11 @@ describe("@HU-GAR-26 Auditoría global", () => {
       .and("contain.text", "Solo lectura");
     cy.revisarAccesibilidad("auditoria-normal");
 
-    cy.get('nav[aria-label="Filtrar por módulo"]').contains("a", "Privacidad").click();
+    cy.esperarHidratacion("Filtrar").click();
+    cy.get("[role=dialog]").contains("a", "Privacidad").click();
+    cy.esperarHidratacion("Filtrar").click();
     cy.get("#filtro-responsable").select("Rita Gómez Sol");
-    cy.contains("button", "Filtrar").click();
+    cy.contains("button", "Aplicar responsable y acción").click();
     cy.location("search").should("contain", "modulo=Privacidad");
     cy.get('ul[aria-label="Acciones registradas"] > li')
       .should("have.length", 1)

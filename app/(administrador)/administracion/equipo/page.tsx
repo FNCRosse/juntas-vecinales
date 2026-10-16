@@ -4,6 +4,7 @@ import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaYHora } from "@/compartido/fechas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { GenerarEnlace } from "./GenerarEnlace";
@@ -59,9 +60,10 @@ export default async function Equipo({
         Agregar a una persona
       </BotonEnlace>
 
-      <ul className="flex flex-col gap-separacion" aria-label="Personas del equipo">
-        {miembros.map((m) => (
-          <li
+      <ListaVerMas
+        etiqueta="Personas del equipo"
+        elementos={miembros.map((m) => (
+          <div
             key={m.id}
             className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 senior:p-6 shadow-tarjeta"
           >
@@ -104,9 +106,9 @@ export default async function Equipo({
                 </Link>
               </div>
             )}
-          </li>
+          </div>
         ))}
-      </ul>
+      />
 
       <Tarjeta titulo="Qué puede hacer cada rol">
         {/* En el teléfono la tabla se desplaza de lado: la región recibe el foco para moverla con el teclado. */}

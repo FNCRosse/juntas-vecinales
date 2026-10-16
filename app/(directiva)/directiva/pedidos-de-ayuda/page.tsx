@@ -2,6 +2,7 @@ import { CircleCheck, Clock, Phone } from "lucide-react";
 import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaYHora } from "@/compartido/fechas";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { solicitudesPorAtender } from "@/modulos/accesibilidad/aplicacion/mediacion";
 import { CambiarEstado } from "./CambiarEstado";
 
@@ -27,9 +28,10 @@ export default async function PedidosDeAyuda() {
         </p>
       </div>
       {pedidos.length ? (
-        <ul className="flex flex-col gap-separacion" aria-label="Pedidos de ayuda">
-          {pedidos.map((p) => (
-            <li
+        <ListaVerMas
+          etiqueta="Pedidos de ayuda"
+          elementos={pedidos.map((p) => (
+            <div
               key={p.id}
               className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 senior:p-6 shadow-tarjeta"
             >
@@ -53,9 +55,9 @@ export default async function PedidosDeAyuda() {
                 {p.estadoTexto}
               </span>
               {p.estado !== "ATENDIDA" && <CambiarEstado id={p.id} estado={p.estado} quien={p.quien} />}
-            </li>
+            </div>
           ))}
-        </ul>
+        />
       ) : (
         <p role="status" className="inline-flex items-center gap-2">
           <Phone aria-hidden className="size-icono" />

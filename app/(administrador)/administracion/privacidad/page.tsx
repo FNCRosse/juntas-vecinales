@@ -1,8 +1,10 @@
-import { Check, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { clasesBoton } from "@/componentes/a11y/Boton";
+import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { bandejaArco, type FilaArco, TIPOS_ARCO, type TipoArco } from "@/modulos/identidad/aplicacion/arco";
 
@@ -46,26 +48,20 @@ export default async function SolicitudesDePrivacidad({
           <p>Quedó en la auditoría y le avisamos al vecino.</p>
         </MensajeEstado>
       )}
-      <nav aria-label="Filtrar por tipo" className="flex flex-wrap gap-separacion">
-        {FILTROS.map((f) => {
-          const activo = filtro === f.valor;
-          return (
-            <Link
-              key={f.texto}
-              href={f.valor ? `/administracion/privacidad?tipo=${f.valor}` : "/administracion/privacidad"}
-              aria-current={activo ? "page" : undefined}
-              className={clasesBoton(activo ? "primario" : "secundario")}
-            >
-              {activo && <Check aria-hidden className="size-icono shrink-0" />}
-              <span>{f.texto}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      <FiltroEnHoja
+        actual={FILTROS.find((f) => f.valor === filtro)?.texto ?? "Todas"}
+        titulo="Mostrar solicitudes de"
+        opciones={FILTROS.map((f) => ({
+          etiqueta: f.texto,
+          href: f.valor ? `/administracion/privacidad?tipo=${f.valor}` : "/administracion/privacidad",
+          activa: filtro === f.valor,
+        }))}
+      />
       {filas.length ? (
-        <ul className="flex flex-col gap-separacion">
-          {filas.map((f) => (
-            <li
+        <ListaVerMas
+          etiqueta="Solicitudes"
+          elementos={filas.map((f) => (
+            <div
               key={f.id}
               className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
             >
@@ -91,9 +87,9 @@ export default async function SolicitudesDePrivacidad({
                   <ChevronRight aria-hidden className="size-icono shrink-0" />
                 </Link>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        />
       ) : (
         <p>No hay solicitudes{filtro ? ` de ${TIPOS_ARCO[filtro].toLowerCase()}` : ""}.</p>
       )}
