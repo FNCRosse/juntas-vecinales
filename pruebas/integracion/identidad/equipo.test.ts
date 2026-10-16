@@ -2,6 +2,7 @@ import { POST as agregarHttp } from "@/app/api/admin/cuentas/route";
 import { DELETE as quitarHttp } from "@/app/api/admin/cuentas/[usuarioId]/route";
 import { POST as enlaceHttp } from "@/app/api/admin/cuentas/[usuarioId]/enlace/route";
 import { PATCH as rolHttp } from "@/app/api/admin/cuentas/[usuarioId]/rol/route";
+import { PATCH as rolesHttp } from "@/app/api/admin/cuentas/[usuarioId]/roles/route";
 import { POST as buscarHttp } from "@/app/api/admin/cuentas/buscar/route";
 import { POST as crearAccesoHttp } from "@/app/api/auth/equipo/crear/route";
 import { prisma } from "@/compartido/bd/cliente";
@@ -15,15 +16,17 @@ import {
 import {
   agregarAlEquipo,
   cambiarRol,
+  cambiarRolesDeDirectiva,
   consultarInvitacion,
   crearAccesoEquipo,
   diferenciaDePermisos,
   generarEnlaceDeInvitacion,
   listarEquipo,
   quitarAcceso,
+  verAdministrador,
 } from "@/modulos/identidad/aplicacion/equipo";
 import { iniciarSesionConClave } from "@/modulos/identidad/aplicacion/iniciarSesionConClave";
-import { obtenerSesion, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
+import { aSesionDto, exigirRol, obtenerSesion, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 
 jest.mock("next/server", () => ({ after: jest.fn() }));
 
@@ -262,6 +265,109 @@ describe("@HU-GAR-23 Reasignar el rol", () => {
       ],
       mantiene: ["Registrar por un vecino y atender pedidos de ayuda"],
     });
+  });
+});
+
+describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () => {
+  const rolesDe = async (dni: string) =>
+    (await prisma.usuario.findUniqueOrThrow({ where: { dni } })).roles.sort();
+  const otraAdministradora = async () =>
+    aSesionDto(
+      await prisma.usuario.create({
+        data: {
+          nombreCompleto: "Rita Salas",
+          dni: "40000090",
+          telefonoWhatsApp: "51900000090",
+          roles: ["ADMINISTRADOR"],
+        },
+      }),
+    );
+
+  it("@HU-GAR-23 CA1 CA2 CA3 la administradora se suma los dos roles de directiva en su misma cuenta, con los permisos al instante y el antes y después auditados", async () => {
+    const respuesta = await rolesHttp(
+      pedir("PATCH", { roles: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] }),
+      conId(ana.usuarioId),
+    );
+    expect(respuesta.status).toBe(200);
+    expect(await respuesta.json()).toEqual({
+      nombre: "Ana Flores",
+      rolTexto: "Administración, Directiva y Directivo mediador",
+    });
+    expect(await rolesDe("40000001")).toEqual(["ADMINISTRADOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"]);
+    // Misma sesión: ya puede hacer lo de la directiva y sigue administrando.
+    const sesion = (await obtenerSesion(tokenAna))!;
+    expect(() => exigirRol(sesion, "DIRECTIVA")).not.toThrow();
+    expect(() => exigirRol(sesion, "ADMINISTRADOR")).not.toThrow();
+    expect(
+      await prisma.registroAuditoria.findFirstOrThrow({
+        where: { accion: "cambiar_roles", entidadId: ana.usuarioId },
+      }),
+    ).toMatchObject({
+      actorId: ana.usuarioId,
+      antes: { roles: ["ADMINISTRADOR"] },
+      despues: { roles: ["ADMINISTRADOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"] },
+    });
+    // Quien se cambia a sí misma no recibe un aviso de lo que acaba de hacer.
+    expect(await prisma.avisoEnCola.count({ where: { plantilla: "rol_cambiado" } })).toBe(0);
+    expect((await listarEquipo(ana)).find((m) => m.esUsted)).toMatchObject({
+      rolTexto: "Administración, Directiva y Directivo mediador",
+      esAdministrador: true,
+      gestionable: false,
+    });
+  });
+
+  it("@HU-GAR-23 CA1 se puede quitar un rol sin tocar el otro, y quitar todos deja la administración", async () => {
+    await cambiarRolesDeDirectiva(ana, ana.usuarioId, ["DIRECTIVA", "DIRECTIVO_MEDIADOR"]);
+    await cambiarRolesDeDirectiva(ana, ana.usuarioId, ["DIRECTIVO_MEDIADOR"]);
+    expect(await rolesDe("40000001")).toEqual(["ADMINISTRADOR", "DIRECTIVO_MEDIADOR"]);
+    expect(await verAdministrador(ana, ana.usuarioId)).toMatchObject({
+      nombre: "Ana Flores",
+      rolesDeDirectiva: ["DIRECTIVO_MEDIADOR"],
+      esUsted: true,
+    });
+    // Nunca queda el sistema sin administración: este cambio no puede quitar ADMINISTRADOR.
+    await cambiarRolesDeDirectiva(ana, ana.usuarioId, []);
+    expect(await rolesDe("40000001")).toEqual(["ADMINISTRADOR"]);
+    expect((await listarEquipo(ana)).filter((m) => m.rolTexto === "Administración")).toHaveLength(1);
+    await expect(cambiarRolesDeDirectiva(ana, ana.usuarioId, [])).rejects.toThrow(
+      "Ya tiene esos roles. Elija otros para cambiarlos.",
+    );
+  });
+
+  it("@HU-GAR-23 CA3 otra administradora le cambia los roles: la persona recibe el aviso por WhatsApp", async () => {
+    const rita = await otraAdministradora();
+    await cambiarRolesDeDirectiva(rita, ana.usuarioId, ["DIRECTIVA"]);
+    expect(await prisma.avisoEnCola.findFirstOrThrow({ where: { plantilla: "rol_cambiado" } })).toMatchObject(
+      {
+        destinatarioId: ana.usuarioId,
+        parametros: ["Ana", "Administración y Directiva"],
+      },
+    );
+    expect(
+      await prisma.registroAuditoria.findFirstOrThrow({
+        where: { accion: "cambiar_roles", entidadId: ana.usuarioId },
+      }),
+    ).toMatchObject({ actorId: rita.usuarioId, antes: { roles: ["ADMINISTRADOR"] } });
+  });
+
+  it("@HU-GAR-23 solo la administración, y solo a cuentas de administración", async () => {
+    const { sesion: marta } = await iniciarSesionConClave({ dni: "40000002", clave: CLAVE });
+    await expect(cambiarRolesDeDirectiva(marta, marta.usuarioId, ["DIRECTIVA"])).rejects.toBeInstanceOf(
+      ErrorNoAutorizado,
+    );
+    await expect(verAdministrador(marta, ana.usuarioId)).rejects.toBeInstanceOf(ErrorNoAutorizado);
+    // Un vigilante o un directivo no son cuentas de administración: su rol se cambia con «Cambiar rol».
+    for (const dni of ["40000002", "40000003", "40000004"]) {
+      await expect(cambiarRolesDeDirectiva(ana, await idDe(dni), ["DIRECTIVA"])).rejects.toBeInstanceOf(
+        ErrorNoEncontrado,
+      );
+    }
+    const invalido = await rolesHttp(pedir("PATCH", { roles: ["VIGILANTE"] }), conId(ana.usuarioId));
+    expect(invalido.status).toBe(400);
+    expect((await invalido.json()).campos).toEqual({ "roles.0": "Elija un rol de la lista." });
+    expect(
+      await prisma.registroAuditoria.count({ where: { accion: "cambiar_roles", entidadId: ana.usuarioId } }),
+    ).toBe(0);
   });
 });
 

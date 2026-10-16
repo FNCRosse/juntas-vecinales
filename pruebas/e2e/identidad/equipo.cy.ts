@@ -146,3 +146,79 @@ describe("@HU-GAR-21 Crear el acceso de equipo con la invitación", () => {
       });
   });
 });
+
+describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () => {
+  beforeEach(() => {
+    cy.clearCookies();
+    entrarComoAna();
+  });
+
+  // Deja a Ana como estaba aunque la prueba falle a la mitad.
+  afterEach(() => {
+    cy.clearCookies();
+    entrarComoAna();
+    cy.visit("/administracion/equipo");
+    cy.contains("li", "Ana Flores")
+      .contains("a", "Roles de directiva")
+      .invoke("attr", "href")
+      .then((href) =>
+        cy.request({
+          method: "PATCH",
+          url: String(href).replace("/administracion/equipo/", "/api/admin/cuentas/"),
+          body: { roles: [] },
+          failOnStatusCode: false,
+        }),
+      );
+  });
+
+  it("@HU-GAR-23 CA1 CA2 CA3 se suma el rol de directiva en su misma cuenta, en teléfono y en modo Senior, y sigue pudiendo pasar a su perfil de administración", () => {
+    cy.viewport(360, 800);
+    cy.guardarModo("senior");
+    cy.visit("/administracion/equipo");
+    cy.contains("li", "Ana Flores").contains("a", "Roles de directiva").click();
+    cy.get("h1").should("have.text", "Sus roles de directiva");
+    cy.esperarHidratacion("Revisar el cambio").click();
+    cy.contains('[role="status"]', "Marque o desmarque un rol para cambiarlo.").should("exist");
+    cy.contains("label", "Directiva").click();
+    cy.contains("h3", "Podrá hacer desde ahora").should("exist");
+    cy.revisarAccesibilidad("equipo-roles-senior-360");
+    cy.contains("button", "Revisar el cambio").click();
+    cy.get("h1").should("have.text", "¿Desea cambiar sus roles?");
+    cy.focused().should("match", "h1");
+    cy.contains("dd", "Administración y Directiva").should("exist");
+    cy.revisarAccesibilidad("equipo-roles-confirmar-senior-360");
+    cy.contains("button", "Sí, cambiar los roles").click();
+    cy.location("pathname").should("eq", "/administracion/equipo");
+    cy.contains('[role="status"]', "Ana Flores ahora tiene estos roles: Administración y Directiva").should(
+      "exist",
+    );
+    cy.contains("li", "Ana Flores").should("contain.text", "Administración y Directiva");
+
+    // Hace lo de la directiva con la misma sesión y puede volver a administración sin cerrar sesión.
+    cy.visit("/directiva");
+    cy.location("pathname").should("eq", "/directiva");
+    cy.contains("a", "Pasar a mi perfil de administración").should("exist");
+    cy.guardarModo("normal");
+  });
+
+  it("@HU-GAR-23 CA1 en modo normal quita el rol y la cuenta sigue siendo de administración", () => {
+    cy.visit("/administracion/equipo");
+    cy.contains("li", "Ana Flores").contains("a", "Roles de directiva").click();
+    cy.esperarHidratacion("Revisar el cambio");
+    cy.contains("label", "Directivo mediador").click();
+    cy.revisarAccesibilidad("equipo-roles-normal");
+    cy.contains("button", "Revisar el cambio").click();
+    cy.contains("button", "Sí, cambiar los roles").click();
+    cy.contains('[role="status"]', "Administración y Directivo mediador").should("exist");
+    cy.contains("li", "Ana Flores").contains("a", "Roles de directiva").click();
+    cy.esperarHidratacion("Revisar el cambio");
+    cy.contains("label", "Directivo mediador").click();
+    cy.contains("button", "Revisar el cambio").click();
+    cy.contains("button", "Sí, cambiar los roles").click();
+    cy.contains("li", "Ana Flores")
+      .should("contain.text", "Administración")
+      .and("not.contain.text", "Directivo");
+    cy.visit("/directiva");
+    cy.location("pathname").should("eq", "/administracion");
+  });
+});
