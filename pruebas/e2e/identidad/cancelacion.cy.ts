@@ -11,13 +11,22 @@ describe("@HU-GAR-14 @HU-GAR-15 Cancelación de la cuenta y oposición", () => {
     cy.visit("/mas/perfil");
     cy.get('[role="switch"]').should("have.attr", "aria-checked", "false");
     cy.esperarHidratacion("No mostrar mi ubicación exacta en el mapa").click();
-    cy.contains('[role="status"]', "Guardado").should("contain.text", "también los anteriores");
+    cy.contains('[role="status"]', "Listo.").should("contain.text", "también los anteriores");
     cy.get('[role="switch"]').should("have.attr", "aria-checked", "true");
     cy.revisarAccesibilidad("perfil-oposicion-normal");
     cy.reload();
     cy.get('[role="switch"]').should("have.attr", "aria-checked", "true");
     cy.esperarHidratacion("No mostrar mi ubicación exacta en el mapa").click();
     cy.contains('[role="status"]', "volverán a mostrarse en el punto exacto").should("exist");
+    // R-12: Deshacer lo deja como estaba, también en el servidor.
+    cy.contains("button", "Deshacer").click();
+    cy.get('[role="switch"]').should("have.attr", "aria-checked", "true");
+    cy.contains('[role="status"]', "Listo.").should("not.exist");
+    cy.reload();
+    cy.get('[role="switch"]').should("have.attr", "aria-checked", "true");
+    // La prueba termina como empezó: sin oposición.
+    cy.esperarHidratacion("No mostrar mi ubicación exacta en el mapa").click();
+    cy.get('[role="switch"]').should("have.attr", "aria-checked", "false");
   });
 
   it("@HU-GAR-14 CA1 CA2 CA3 pide la cancelación; la administración la aprueba y la cuenta se cierra", () => {

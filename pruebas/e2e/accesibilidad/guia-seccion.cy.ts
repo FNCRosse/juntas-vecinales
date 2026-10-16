@@ -38,4 +38,22 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     cy.esperarHidratacion("Saltar la guía (no se volverá a mostrar)");
     cy.guardarModo("normal");
   });
+
+  it("@HU-ACC-03 CA4 Ahora no muestra Listo y Deshacer; sin deshacer, la guía no se vuelve a ofrecer (R-12)", () => {
+    cy.entrarComoVecinaNueva("Rita Soto León");
+    cy.viewport(360, 800);
+    cy.visit("/incidentes");
+    cy.esperarHidratacion("Ahora no").click();
+    cy.contains('[role="status"]', "Listo.").should("contain.text", "No le volveremos a ofrecer");
+    cy.contains('[role="note"]', "¿Quiere ver cómo funciona").should("not.exist");
+    cy.contains("button", "Deshacer").click();
+    cy.get('[role="note"]').should("exist");
+    cy.reload();
+    cy.get('[role="note"]').should("exist");
+
+    cy.esperarHidratacion("Ahora no").click();
+    cy.contains('[role="status"]', "Listo.").should("exist");
+    cy.reload();
+    cy.get('[role="note"]').should("not.exist");
+  });
 });

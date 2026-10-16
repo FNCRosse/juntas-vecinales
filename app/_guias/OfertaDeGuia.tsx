@@ -5,12 +5,35 @@ import { Info } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
+import { AvisoDeshacer } from "@/componentes/a11y/AvisoDeshacer";
 
 // Al entrar por primera vez a una sección se ofrece su guía (CA1); "Ahora no" la omite y no se vuelve a
-// ofrecer sola (CA3). En pausa, ofrece seguir donde quedó.
-export function OfertaDeGuia({ seccion, enPausa }: { seccion: string; enPausa: boolean }) {
-  const [visible, setVisible] = useState(true);
-  if (!visible) return null;
+// ofrecer sola (CA3). En pausa, ofrece seguir donde quedó. "Ahora no" es reversible: muestra "Listo" con
+// "Deshacer" (R-12), que la deja en pausa en el paso en que estaba; así se sigue ofreciendo.
+export function OfertaDeGuia({
+  seccion,
+  enPausa,
+  paso = 0,
+}: {
+  seccion: string;
+  enPausa: boolean;
+  paso?: number;
+}) {
+  const [estado, setEstado] = useState<"oferta" | "omitida" | "cerrada">("oferta");
+  const accion = (accion: string, alPaso?: number) =>
+    enviarJson("/api/accesibilidad/onboarding", "POST", { seccion, accion, paso: alPaso });
+  if (estado === "cerrada") return null;
+  if (estado === "omitida")
+    return (
+      <AvisoDeshacer
+        texto="No le volveremos a ofrecer esta guía. Puede verla cuando quiera en Más, en «Ayuda y accesibilidad»."
+        alDeshacer={() => {
+          setEstado("oferta");
+          void accion("pausar", paso);
+        }}
+        alCerrar={() => setEstado("cerrada")}
+      />
+    );
   return (
     <div
       role="note"
@@ -32,8 +55,8 @@ export function OfertaDeGuia({ seccion, enPausa }: { seccion: string; enPausa: b
           <button
             type="button"
             onClick={() => {
-              setVisible(false);
-              void enviarJson("/api/accesibilidad/onboarding", "POST", { seccion, accion: "omitir" });
+              setEstado("omitida");
+              void accion("omitir");
             }}
             className="inline-flex min-h-tactil items-center px-4 font-bold text-texto-enlace underline underline-offset-4 cursor-pointer"
           >

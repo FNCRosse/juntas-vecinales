@@ -3,6 +3,7 @@ import {
   contarNoLeidas,
   listarNotificaciones,
   marcarLeida,
+  marcarNoLeidas,
   marcarTodasLeidas,
 } from "@/compartido/notificaciones/centro";
 import {
@@ -60,6 +61,8 @@ export const avisosSinLeer = (sesion: SesionDto) => contarNoLeidas(sesion.usuari
 
 export const marcarAvisoLeido = (sesion: SesionDto, id: string) => marcarLeida(sesion.usuarioId, id);
 export const marcarTodosLeidos = (sesion: SesionDto) => marcarTodasLeidas(sesion.usuarioId);
+export const marcarAvisosNoLeidos = (sesion: SesionDto, ids: string[]) =>
+  marcarNoLeidas(sesion.usuarioId, ids);
 
 /** Qué avisos recibe por WhatsApp (HU-GAR-18 CA1); se aplica desde el próximo envío (CA2). */
 export const misPreferencias = (sesion: SesionDto) => leerPreferencias(sesion.usuarioId);

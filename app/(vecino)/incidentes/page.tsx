@@ -25,7 +25,9 @@ export default async function Incidentes({ searchParams }: { searchParams: Promi
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Incidentes del barrio</h1>
-      {guia.ofrecer && <OfertaDeGuia seccion="INCIDENTES" enPausa={guia.estado === "PAUSADA"} />}
+      {guia.ofrecer && (
+        <OfertaDeGuia seccion="INCIDENTES" enPausa={guia.estado === "PAUSADA"} paso={guia.paso} />
+      )}
       <BotonEnlace href="/incidentes/reportar" icono={Megaphone} anchoCompleto>
         Reportar un problema
       </BotonEnlace>

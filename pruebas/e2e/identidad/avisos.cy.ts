@@ -71,6 +71,36 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
     cy.contains("a", "Mis avisos").should("contain.text", "No tiene avisos nuevos");
   });
 
+  it("@HU-ACC-03 CA4 marcar como leído y marcar todos se aplican sin confirmar y Deshacer los devuelve a sin leer (R-12)", () => {
+    cy.task("avisosDePrueba", {
+      dni: DNI,
+      avisos: [
+        { tipo: "PAGOS", titulo: "Aviso uno de prueba", texto: "Primero." },
+        { tipo: "GARITA", titulo: "Aviso dos de prueba", texto: "Segundo." },
+      ],
+    });
+    cy.viewport(360, 800);
+    cy.guardarModo("normal");
+    cy.visit("/avisos");
+    cy.contains("p", "2 sin leer").should("exist");
+    cy.esperarHidratacion("Marcar como leído").click();
+    cy.get("[role=dialog]").should("not.exist");
+    cy.contains('[role="status"]', "Listo.").should("exist");
+    cy.contains("p", "1 sin leer").should("exist");
+    cy.revisarAccesibilidad("avisos-listo-deshacer-360");
+    cy.contains("button", "Deshacer").click();
+    cy.contains("p", "2 sin leer").should("exist");
+    cy.contains('[role="status"]', "Listo.").should("not.exist");
+
+    cy.contains("button", "Marcar todos como leídos").click();
+    cy.contains("p", "0 sin leer").should("exist");
+    cy.contains('[role="status"]', "Listo.").should("contain.text", "Todos sus avisos");
+    cy.contains("button", "Deshacer").click();
+    cy.contains("p", "2 sin leer").should("exist");
+    cy.reload();
+    cy.contains("p", "2 sin leer").should("exist");
+  });
+
   it("@HU-GAR-18 CA1 CA2 CA3 elige qué avisos recibe; los de la reja y la seguridad no se apagan", () => {
     cy.viewport(360, 800);
     cy.guardarModo("senior");

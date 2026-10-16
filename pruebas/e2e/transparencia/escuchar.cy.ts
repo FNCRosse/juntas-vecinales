@@ -80,6 +80,25 @@ describe("@HU-ACC-02 Escuchar en voz alta los comunicados del feed", () => {
     );
   });
 
+  it("@HU-ACC-03 CA4 activar la lectura en voz alta muestra Listo y Deshacer la apaga (R-12)", () => {
+    cy.request("PUT", "/api/accesibilidad/perfil", { sintesisVozActiva: false });
+    cy.viewport(360, 800);
+    cy.visit("/mas/ayuda-y-accesibilidad", conVoces(VOZ_PERUANA));
+    cy.esperarHidratacion("Vista grande");
+    cy.contains("[role='switch']", "Leer en voz alta las noticias").as("interruptor").click();
+    cy.contains("[role=status]", "Listo.").should("contain.text", "botón Escuchar");
+    cy.get("@interruptor").should("have.attr", "aria-checked", "true");
+    cy.contains("button", "Deshacer").click();
+    cy.get("@interruptor").should("have.attr", "aria-checked", "false");
+    cy.contains("[role=status]", "Listo.").should("not.exist");
+    cy.visit("/mas/ayuda-y-accesibilidad", conVoces(VOZ_PERUANA));
+    cy.contains("[role='switch']", "Leer en voz alta las noticias").should(
+      "have.attr",
+      "aria-checked",
+      "false",
+    );
+  });
+
   it("@HU-ACC-02 CA2 CA3 en modo Senior cada noticia tiene Escuchar, Pausar y Detener de 64 px", () => {
     cy.request("PUT", "/api/accesibilidad/perfil", { sintesisVozActiva: true });
     cy.viewport(360, 800);
