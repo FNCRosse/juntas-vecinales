@@ -84,7 +84,7 @@ Las carpetas se crean cuando tienen su primer archivo real.
 | [DESPLIEGUE.md](docs/DESPLIEGUE.md) | Entornos, variables (sin valores), pasos de la autora, rollback, cron, límites gratuitos |
 | [FLUJO_TRABAJO.md](docs/FLUJO_TRABAJO.md) | Procedimiento por HU, Definition of Done, commits, cierre de módulo |
 | [PLAN.md](docs/PLAN.md) | Fases, orden de HU, casillas, riesgos |
-| [guia-visual/](docs/guia-visual/guia-visual.md) | Tokens (fuente única), tipografía, íconos, componentes, reglas A1–A12 |
+| [guia-visual/](docs/guia-visual/guia-visual.md) | Tokens (fuente única), tipografía, íconos, componentes, reglas A1–A15 |
 | [prototipo/](docs/prototipo/LEEME.md) | Prototipo navegable y trazabilidad pantalla → criterio |
 | [FIDELIDAD_PROTOTIPO.md](docs/FIDELIDAD_PROTOTIPO.md) | Qué es "igual o muy parecido" al prototipo, qué falta en el sitio y orden de trabajo |
 | [evidencias/](docs/evidencias/PLANTILLA.md) | Evidencia de cierre de cada módulo |

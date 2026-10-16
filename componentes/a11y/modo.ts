@@ -1,4 +1,4 @@
-// Nombres que comparten el layout raíz, el route handler del perfil y el switch "Letra grande".
+// Nombres que comparten el layout raíz, el route handler del perfil y el switch "Vista grande".
 
 /** Cookie HttpOnly con el id del PerfilAccesibilidad guardado en el servidor (ADR-004). */
 export const COOKIE_PERFIL = "perfil";

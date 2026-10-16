@@ -4,7 +4,7 @@ import {
   buscarPerfilPorUsuario,
 } from "@/modulos/accesibilidad/infraestructura/repositorioPerfiles";
 
-/** DTO del perfil: es lo que leen el layout raíz y el switch "Letra grande". */
+/** DTO del perfil: es lo que leen el layout raíz y el switch "Vista grande". */
 export type PerfilAccesibilidadDto = {
   id: string | null;
   modoSeniorActivo: boolean;

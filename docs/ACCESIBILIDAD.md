@@ -1,6 +1,6 @@
 # Accesibilidad
 
-La accesibilidad es la base del sistema, no una capa final. Objetivo: **WCAG 2.2 nivel AA** en todas las pantallas, con las reglas propias del proyecto que lo superan. Valores exactos: [guía visual](guia-visual/guia-visual.md) (§6, reglas A1–A12).
+La accesibilidad es la base del sistema, no una capa final. Objetivo: **WCAG 2.2 nivel AA** en todas las pantallas, con las reglas propias del proyecto que lo superan. Valores exactos: [guía visual](guia-visual/guia-visual.md) (§6, reglas A1–A15).
 
 ## 1. Atributos de calidad que se miden
 
@@ -23,6 +23,8 @@ La accesibilidad es la base del sistema, no una capa final. Objetivo: **WCAG 2.2
 | Texto de cuerpo | 18 px | 22 px | En `rem`, crece con el zoom hasta 200 % |
 | Objetivo táctil | 48 × 48 px | 56 × 56 px | R-03; supera los 24 × 24 px de WCAG 2.5.8 |
 | Separación entre objetivos | 8 px | 12 px | R-03 |
+| Separación entre acciones opuestas | 24 px | 32 px | R-03b: apiladas en el teléfono (`gap-opuestas`) |
+| Objetivos de contenido por pantalla de teléfono | 8 | 6 | R-11: sin contar barra, encabezado ni selector de perfil |
 | Contraste de texto | ≥ 4.5:1 | ≥ 7:1 | `verificar-contraste.mjs` convertido en prueba de Jest |
 | Contraste de ícono, borde de control y foco | ≥ 3:1 | ≥ 3:1 | WCAG 1.4.11 |
 | Ancho de lectura | 720 px máx. | 720 px máx. | Escritorio centrado |
@@ -49,7 +51,9 @@ Va en cada PR ([plantilla](../.github/pull_request_template.md)) y en la evidenc
 - [ ] 2.5.7 Nada exige arrastrar.
 - [ ] 3.2.3 / 3.2.4 / 3.2.6 Misma barra, mismos íconos y palabras, "Vista grande" y "Pedir ayuda" en la misma posición.
 - [ ] 3.3.1 / 3.3.2 / 3.3.3 Etiqueta visible; error junto al campo que dice cómo corregir; no se borra lo escrito.
-- [ ] 3.3.4 Dinero, voto, queja y bajas piden confirmación con resumen y salida.
+- [ ] 3.3.4 Dinero, voto, delegación, denuncia y bajas piden **una sola** confirmación, con resumen, "Sí, …" y "Cancelar" (R-12). Lo reversible se aplica al instante con "Listo." y "Deshacer".
+- [ ] R-03b Las acciones opuestas van apiladas en el teléfono a 24 px (32 en Senior).
+- [ ] R-11 La pantalla tiene como máximo 8 objetivos de contenido (6 en Senior); listas de 5 (3) con "Ver más" y filtros en una hoja. La ruta está en `pruebas/e2e/soporte/actores.ts`.
 - [ ] 3.3.7 No se pide de nuevo un dato ya entregado; 3.3.8 entrar no exige recordar una clave ni resolver acertijos.
 - [ ] Un solo botón primario; textos idénticos al prototipo, con trato de usted.
 - [ ] Los avisos no desaparecen solos; se respeta `prefers-reduced-motion`.

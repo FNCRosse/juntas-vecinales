@@ -15,7 +15,7 @@ export async function activarVistaGrandeAlEmpadronar(tx: Transaccion, usuarioId:
   await crearPerfilEn(tx, perfil);
 }
 
-/** Activa o desactiva "Letra grande" y lo guarda; crea el perfil la primera vez. */
+/** Activa o desactiva "Vista grande" y lo guarda; crea el perfil la primera vez. */
 export async function cambiarModoSenior(dueno: DuenoPerfil, activo: boolean) {
   const perfil = await cargarPerfil(dueno);
   if (activo) perfil.activarModoSenior();

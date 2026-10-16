@@ -9,7 +9,7 @@ import { ATRIBUTOS_COOKIE, UN_ANIO_SEGUNDOS } from "@/app/_sesion/sesion";
 
 const MENSAJE_FALTA = "Indique si quiere la letra grande: sí o no.";
 
-// Se cambia una preferencia por vez o las dos: "Letra grande" (HU-ACC-01) y la lectura en voz alta (HU-ACC-02).
+// Se cambia una preferencia por vez o las dos: "Vista grande" (HU-ACC-01) y la lectura en voz alta (HU-ACC-02).
 const esquema = z
   .object({
     modoSeniorActivo: z.boolean({ error: MENSAJE_FALTA }).optional(),
@@ -20,7 +20,7 @@ const esquema = z
     error: MENSAJE_FALTA,
   });
 
-/** Guarda "Letra grande" o la lectura en voz alta en el perfil (HU-ACC-01, HU-ACC-02, ADR-004) y deja el id en una cookie. */
+/** Guarda "Vista grande" o la lectura en voz alta en el perfil (HU-ACC-01, HU-ACC-02, ADR-004) y deja el id en una cookie. */
 export const PUT = manejar(async (peticion) => {
   const { modoSeniorActivo, sintesisVozActiva } = esquema.parse(await leerJson(peticion));
   // Con sesión se guarda en la cuenta; sin ella, en el perfil de este dispositivo.

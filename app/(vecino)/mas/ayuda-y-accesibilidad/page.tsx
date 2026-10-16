@@ -13,7 +13,7 @@ import { misSolicitudes } from "@/modulos/accesibilidad/aplicacion/mediacion";
 
 export const metadata: Metadata = { title: "Ayuda y accesibilidad" };
 
-// VEC-AYU-03 (HU-ACC-01, HU-ACC-02 CA1, HU-ACC-04 CA3, HU-ACC-10 CA2): "Letra grande", la lectura en voz alta,
+// VEC-AYU-03 (HU-ACC-01, HU-ACC-02 CA1, HU-ACC-04 CA3, HU-ACC-10 CA2): "Vista grande", la lectura en voz alta,
 // las guías de uso de cada sección y el estado de sus pedidos de ayuda.
 export default async function AyudaYAccesibilidad() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
