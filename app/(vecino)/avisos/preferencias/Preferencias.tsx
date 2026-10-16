@@ -5,6 +5,7 @@ import { ArrowLeft, Lock } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
+import { AvisoDeshacer } from "@/componentes/a11y/AvisoDeshacer";
 import { Interruptor } from "@/componentes/a11y/Interruptor";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import type { Preferencias as Prefs } from "@/modulos/identidad/aplicacion/avisos";
@@ -18,23 +19,37 @@ const OPCIONES: [keyof Prefs, string, string][] = [
   ["noticias", "Noticias de la junta", "Comunicados generales del barrio."],
 ];
 
-// Cada cambio se guarda solo y vale desde el próximo aviso (CA2). Si no se pudo guardar, el
-// interruptor vuelve a como estaba y se avisa.
+// Cada cambio se guarda solo y vale desde el próximo aviso (CA2): es una acción reversible, así que
+// no pide confirmación y muestra "Listo" con "Deshacer" (R-12). Si no se pudo guardar, el interruptor
+// vuelve a como estaba y se avisa.
 export function Preferencias({ iniciales }: { iniciales: Prefs }) {
   const [prefs, setPrefs] = useState(iniciales);
-  const [mensaje, setMensaje] = useState<{ ok: boolean; texto: string } | null>(null);
+  // "deshacer" guarda cómo estaba el interruptor que se acaba de cambiar.
+  const [mensaje, setMensaje] = useState<
+    { ok: true; deshacer: { campo: keyof Prefs; valor: boolean } } | { ok: false; texto: string } | null
+  >(null);
 
-  async function cambiar(campo: keyof Prefs, valor: boolean) {
+  async function guardar(campo: keyof Prefs, valor: boolean) {
     const antes = prefs;
     setPrefs({ ...prefs, [campo]: valor });
     const r = await enviarJson<Prefs>("/api/perfil/notificaciones", "PUT", { [campo]: valor });
     if (r.ok) {
       setPrefs(r.datos);
-      setMensaje({ ok: true, texto: "El cambio se aplica desde el próximo aviso." });
-    } else {
-      setPrefs(antes);
-      setMensaje({ ok: false, texto: r.error });
+      return true;
     }
+    setPrefs(antes);
+    setMensaje({ ok: false, texto: r.error });
+    return false;
+  }
+
+  async function cambiar(campo: keyof Prefs, valor: boolean) {
+    const antes = prefs[campo];
+    if (await guardar(campo, valor)) setMensaje({ ok: true, deshacer: { campo, valor: antes } });
+  }
+
+  async function deshacer() {
+    if (mensaje?.ok) await guardar(mensaje.deshacer.campo, mensaje.deshacer.valor);
+    setMensaje((actual) => (actual?.ok ? null : actual));
   }
 
   return (
@@ -52,11 +67,15 @@ export function Preferencias({ iniciales }: { iniciales: Prefs }) {
           Cada cambio se guarda solo y vale desde el próximo aviso. Todos los avisos se ven siempre en Avisos.
         </p>
       </div>
-      {mensaje && (
-        <MensajeEstado
-          tipo={mensaje.ok ? "exito" : "error"}
-          titulo={mensaje.ok ? "Guardado" : "No se guardó"}
-        >
+      {mensaje?.ok && (
+        <AvisoDeshacer
+          texto="El cambio se aplica desde el próximo aviso."
+          alDeshacer={deshacer}
+          alCerrar={() => setMensaje(null)}
+        />
+      )}
+      {mensaje && !mensaje.ok && (
+        <MensajeEstado tipo="error" titulo="No se guardó">
           <p>{mensaje.texto}</p>
         </MensajeEstado>
       )}

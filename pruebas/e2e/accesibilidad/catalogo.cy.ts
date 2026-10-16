@@ -51,14 +51,17 @@ describe("@HU-ACC-05 Catálogo de componentes sin violaciones WCAG 2.2 AA", () =
     });
   });
 
-  it("@HU-ACC-05 en Senior, la barra del vecino muestra Inicio, Mi cuota, Asambleas y Más", () => {
-    cy.viewport(360, 800);
-    cy.guardarModo("senior");
-    cy.visit("/catalogo");
-    cy.get('nav[aria-label="Principal"] a:visible')
-      .then(($a) => [...$a].map((a) => a.textContent))
-      .should("deep.equal", ["Inicio", "Mi cuota", "Asambleas", "Más"]);
-    cy.guardarModo("normal");
+  it("@HU-ACC-05 R-11 la barra del vecino en el teléfono tiene cuatro destinos, en normal y en Senior; la tablet suma Incidentes", () => {
+    const destinos = ["Inicio", "Mi cuota", "Asambleas", "Más"];
+    (["senior", "normal"] as const).forEach((modo) => {
+      cy.viewport(360, 800);
+      cy.guardarModo(modo);
+      cy.visit("/catalogo");
+      cy.get('nav[aria-label="Principal"] a:visible')
+        .then(($a) => [...$a].map((a) => a.textContent))
+        .should("deep.equal", destinos);
+    });
+    cy.viewport(1280, 800);
     cy.visit("/catalogo");
     cy.get('nav[aria-label="Principal"] a:visible').should("have.length", 5);
   });

@@ -88,4 +88,26 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
     cy.reload();
     cy.contains('[role="switch"]', "Recordatorios de pago").should("have.attr", "aria-checked", "false");
   });
+
+  it("@HU-ACC-03 CA4 el cambio se aplica sin confirmar y Deshacer lo revierte en el servidor (R-12)", () => {
+    cy.viewport(360, 800);
+    cy.guardarModo("normal");
+    cy.visit("/avisos/preferencias");
+    cy.esperarHidratacion("Recordatorios de pago");
+    const interruptor = () => cy.contains('[role="switch"]', "Recordatorios de pago");
+    // Parte del estado que haya dejado la prueba anterior: lo que importa es que Deshacer lo devuelva.
+    interruptor()
+      .invoke("attr", "aria-checked")
+      .then((antes) => {
+        interruptor().click();
+        cy.get("[role=dialog]").should("not.exist");
+        cy.contains('[role="status"]', "Listo.").should("exist");
+        interruptor().should("not.have.attr", "aria-checked", antes);
+        cy.contains("button", "Deshacer").click();
+        interruptor().should("have.attr", "aria-checked", antes);
+        cy.contains('[role="status"]', "Listo.").should("not.exist");
+        cy.reload();
+        interruptor().should("have.attr", "aria-checked", antes);
+      });
+  });
 });
