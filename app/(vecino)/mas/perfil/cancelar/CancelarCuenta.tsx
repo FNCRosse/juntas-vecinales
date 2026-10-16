@@ -77,7 +77,7 @@ export function CancelarCuenta({ motivos }: { motivos: Record<MotivoCancelacion,
           <p>{falla}</p>
         </MensajeEstado>
       )}
-      <div className="flex flex-col gap-separacion">
+      <div className="flex flex-col gap-opuestas">
         <BotonEnlace href="/mas/perfil" variante="secundario">
           No, mantener mi cuenta
         </BotonEnlace>

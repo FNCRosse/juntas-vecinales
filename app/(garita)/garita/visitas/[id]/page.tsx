@@ -154,7 +154,7 @@ export default async function VisitaEnGarita({ params }: { params: Promise<{ id:
             ))}
           <section className="flex flex-col gap-4">
             <h2 className="text-titulo-3">Si le respondieron por teléfono, marque qué dijeron</h2>
-            <div className="flex flex-col gap-separacion md:flex-row">
+            <div className="flex flex-col gap-opuestas md:flex-row">
               <AccionGarita
                 ruta={`/api/garita/visitas/${v.id}`}
                 metodo="PATCH"

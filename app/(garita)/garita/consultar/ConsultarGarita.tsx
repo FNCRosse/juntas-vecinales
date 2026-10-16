@@ -185,7 +185,7 @@ export function ConsultarGarita() {
             <p>{falla}</p>
           </MensajeEstado>
         )}
-        <div className="flex flex-col gap-separacion md:flex-row">
+        <div className="flex flex-col gap-opuestas md:flex-row">
           <Boton type="submit" icono={DoorOpen} cargando={enviando}>
             Sí, abrir la reja ahora
           </Boton>

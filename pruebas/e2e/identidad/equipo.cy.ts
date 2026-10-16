@@ -11,6 +11,14 @@ const TELEFONO_EXTERNO = `9${sufijo}55`;
 const entrarComoAna = () =>
   cy.request("POST", "/api/auth/clave", { dni: "40000001", clave: CLAVE }).its("status").should("eq", 200);
 
+// R-11: las acciones de cada persona están detrás de su botón "Acciones", que abre una hoja.
+function abrirAcciones(nombre: string) {
+  cy.esperarHidratacion("Acciones");
+  cy.contains("li", nombre).contains("button", "Acciones").click();
+  return cy.get("[role=dialog]");
+}
+const accion = (nombre: string, enlace: string) => abrirAcciones(nombre).contains("a", enlace).click();
+
 describe("@HU-GAR-21 @HU-GAR-22 @HU-GAR-23 Cuentas del equipo", () => {
   beforeEach(() => {
     cy.clearCookies();
@@ -50,7 +58,7 @@ describe("@HU-GAR-21 @HU-GAR-22 @HU-GAR-23 Cuentas del equipo", () => {
     cy.visit("/administracion/equipo");
     cy.get("h1").should("have.text", "Cuentas del equipo");
     cy.verTodos();
-    cy.contains("li", "Pedro Chávez").contains("a", "Cambiar rol").click();
+    accion("Pedro Chávez", "Cambiar rol");
     cy.get("h1").should("have.text", "Cambiar el rol de Pedro Chávez");
     cy.esperarHidratacion("Revisar el cambio").click();
     cy.contains('[role="status"]', "Elija otro rol para cambiarlo.").should("exist");
@@ -81,7 +89,7 @@ describe("@HU-GAR-21 @HU-GAR-22 @HU-GAR-23 Cuentas del equipo", () => {
       .should("contain.text", "Personal externo")
       .and("contain.text", "Invitación enviada");
     cy.revisarAccesibilidad("equipo-senior-360");
-    cy.contains("li", "Raúl Vega").contains("a", "Quitar acceso").click();
+    accion("Raúl Vega", "Quitar acceso");
     cy.esperarHidratacion("Revisar").click();
     cy.get("#campo-motivo-error").should("have.text", "Elija por qué se le quita el acceso.");
     cy.contains("label", "Terminó su contrato").click();
@@ -168,7 +176,7 @@ describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () =>
     cy.visit("/administracion/equipo");
     cy.get("h1").should("have.text", "Cuentas del equipo");
     cy.verTodos();
-    cy.contains("li", "Ana Flores")
+    abrirAcciones("Ana Flores")
       .contains("a", "Roles de directiva")
       .invoke("attr", "href")
       .then((href) =>
@@ -187,7 +195,7 @@ describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () =>
     cy.visit("/administracion/equipo");
     cy.get("h1").should("have.text", "Cuentas del equipo");
     cy.verTodos();
-    cy.contains("li", "Ana Flores").contains("a", "Roles de directiva").click();
+    accion("Ana Flores", "Roles de directiva");
     cy.get("h1").should("have.text", "Sus roles de directiva");
     cy.esperarHidratacion("Revisar el cambio").click();
     cy.contains('[role="status"]', "Marque o desmarque un rol para cambiarlo.").should("exist");
@@ -217,14 +225,14 @@ describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () =>
     cy.visit("/administracion/equipo");
     cy.get("h1").should("have.text", "Cuentas del equipo");
     cy.verTodos();
-    cy.contains("li", "Ana Flores").contains("a", "Roles de directiva").click();
+    accion("Ana Flores", "Roles de directiva");
     cy.esperarHidratacion("Revisar el cambio");
     cy.contains("label", "Directivo mediador").click();
     cy.revisarAccesibilidad("equipo-roles-normal");
     cy.contains("button", "Revisar el cambio").click();
     cy.contains("button", "Sí, cambiar los roles").click();
     cy.contains('[role="status"]', "Administración y Directivo mediador").should("exist");
-    cy.contains("li", "Ana Flores").contains("a", "Roles de directiva").click();
+    accion("Ana Flores", "Roles de directiva");
     cy.esperarHidratacion("Revisar el cambio");
     cy.contains("label", "Directivo mediador").click();
     cy.contains("button", "Revisar el cambio").click();

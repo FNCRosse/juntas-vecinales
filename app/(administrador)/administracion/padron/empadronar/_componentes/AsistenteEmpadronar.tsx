@@ -666,7 +666,7 @@ function FormularioOtro({
           después.
         </p>
       )}
-      <div className="flex flex-col gap-separacion md:flex-row">
+      <div className="flex flex-col gap-opuestas md:flex-row">
         <Boton icono={Check} cargando={enviando} onClick={alGuardar}>
           Agregar a esta persona
         </Boton>

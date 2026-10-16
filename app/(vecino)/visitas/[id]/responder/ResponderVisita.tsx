@@ -70,7 +70,7 @@ export function ResponderVisita({ visita }: { visita: Visita }) {
           <p>{yaRespondida}</p>
         </MensajeEstado>
       ) : (
-        <div className="flex flex-col gap-separacion">
+        <div className="flex flex-col gap-opuestas">
           <Boton icono={Check} cargando={enviando === true} onClick={() => responder(true)}>
             Sí, dejarla pasar
           </Boton>
