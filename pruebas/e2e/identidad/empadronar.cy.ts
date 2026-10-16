@@ -69,7 +69,7 @@ describe("@HU-GAR-01 Empadronar una vivienda", () => {
     cy.contains("label", "Esposo o esposa").click();
     porId("campo-nuevo.dniVisto").check();
     porId("campo-nuevo.dni").type(DNI_OTRO);
-    cy.get('[role="switch"]').should("have.attr", "aria-checked", "true");
+    cy.contains('[role="switch"]', "Tendrá su propia cuenta").should("have.attr", "aria-checked", "true");
     porId("campo-nuevo.telefono").type("912345678");
     cy.contains("button", "Agregar a esta persona").click();
     porId("campo-nuevo.telefono-error").should("contain.text", "Cada cuenta necesita su propio WhatsApp");
