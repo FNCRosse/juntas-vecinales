@@ -7,6 +7,10 @@ type NombreRol = RolEquipo | "VECINO" | "VECINO_ADULTO_MAYOR" | "ADMINISTRADOR";
 
 export const ROLES_EQUIPO: RolEquipo[] = ["DIRECTIVA", "DIRECTIVO_MEDIADOR", "VIGILANTE"];
 
+/** Los roles que la cuenta de administración puede sumarse en la misma cuenta (HU-GAR-23). */
+export type RolDeDirectiva = "DIRECTIVA" | "DIRECTIVO_MEDIADOR";
+export const ROLES_DE_DIRECTIVA: RolDeDirectiva[] = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"];
+
 export const NOMBRE_ROL: Record<RolEquipo | "ADMINISTRADOR", string> = {
   DIRECTIVA: "Directiva",
   DIRECTIVO_MEDIADOR: "Directivo mediador",
@@ -30,10 +34,10 @@ export const PERMISOS_POR_ROL: Record<RolEquipo, Permiso[]> = {
   VIGILANTE: [PERMISOS[5]],
 };
 
-/** Qué gana, qué pierde y qué mantiene al pasar de un rol a otro (HU-GAR-23 CA2). */
-export function diferenciaDePermisos(actual: RolEquipo, nuevo: RolEquipo) {
-  const antes = PERMISOS_POR_ROL[actual];
-  const despues = PERMISOS_POR_ROL[nuevo];
+/** Qué gana, qué pierde y qué mantiene al pasar de unos roles a otros (HU-GAR-23 CA2). */
+export function diferenciaDeRoles(actuales: RolEquipo[], nuevos: RolEquipo[]) {
+  const antes = actuales.flatMap((rol) => PERMISOS_POR_ROL[rol]);
+  const despues = PERMISOS.filter((p) => nuevos.some((rol) => PERMISOS_POR_ROL[rol].includes(p)));
   return {
     gana: despues.filter((p) => !antes.includes(p)),
     pierde: antes.filter((p) => !despues.includes(p)),
@@ -41,7 +45,10 @@ export function diferenciaDePermisos(actual: RolEquipo, nuevo: RolEquipo) {
   };
 }
 
-/** El rol de equipo de una cuenta, si tiene uno (una persona tiene un solo rol de equipo). */
+export const diferenciaDePermisos = (actual: RolEquipo, nuevo: RolEquipo) =>
+  diferenciaDeRoles([actual], [nuevo]);
+
+/** El rol de equipo de una cuenta, si tiene uno (un solo rol de equipo por persona; la cuenta de administración además puede sumar los de directiva, ver rolesDeDirectiva). */
 export function rolDeEquipo(roles: NombreRol[]): RolEquipo | null {
   return ROLES_EQUIPO.find((rol) => roles.includes(rol)) ?? null;
 }
@@ -50,6 +57,26 @@ export function rolDeEquipo(roles: NombreRol[]): RolEquipo | null {
 export function conRolDeEquipo(roles: NombreRol[], nuevo: RolEquipo | null): NombreRol[] {
   const sinEquipo = roles.filter((rol) => !(ROLES_EQUIPO as NombreRol[]).includes(rol));
   return nuevo ? [...sinEquipo, nuevo] : sinEquipo;
+}
+
+/** Los roles de directiva de una cuenta, en el orden de ROLES_DE_DIRECTIVA. */
+export function rolesDeDirectiva(roles: NombreRol[]): RolDeDirectiva[] {
+  return ROLES_DE_DIRECTIVA.filter((rol) => roles.includes(rol));
+}
+
+/** Pone exactamente estos roles de directiva y deja los demás (administración, vecino) como estaban. */
+export function conRolesDeDirectiva(roles: NombreRol[], nuevos: RolDeDirectiva[]): NombreRol[] {
+  const resto = roles.filter((rol) => !(ROLES_DE_DIRECTIVA as NombreRol[]).includes(rol));
+  return [...resto, ...ROLES_DE_DIRECTIVA.filter((rol) => nuevos.includes(rol))];
+}
+
+/** «Administración, Directiva y Directivo mediador»: los roles de equipo de una cuenta en lenguaje llano. */
+export function textoDeRoles(roles: NombreRol[]): string {
+  const nombres = [
+    ...(roles.includes("ADMINISTRADOR") ? [NOMBRE_ROL.ADMINISTRADOR] : []),
+    ...ROLES_EQUIPO.filter((rol) => roles.includes(rol)).map((rol) => NOMBRE_ROL[rol]),
+  ];
+  return nombres.length > 1 ? `${nombres.slice(0, -1).join(", ")} y ${nombres.at(-1)}` : (nombres[0] ?? "");
 }
 
 /** La clave de equipo es más larga que la de respaldo del vecino (prototipo ADM-ENT-02). */

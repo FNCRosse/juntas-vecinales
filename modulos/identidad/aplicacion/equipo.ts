@@ -10,16 +10,22 @@ import { pasarPerfilALaCuenta } from "@/modulos/accesibilidad/aplicacion/pasarPe
 import { telefonoCompleto } from "@/modulos/identidad/dominio/empadronamiento";
 import {
   conRolDeEquipo,
+  conRolesDeDirectiva,
   diferenciaDePermisos,
+  diferenciaDeRoles,
   LARGO_MINIMO_CLAVE_EQUIPO,
   MOTIVOS_BAJA,
   type MotivoBaja,
   NOMBRE_ROL,
   PERMISOS,
   PERMISOS_POR_ROL,
+  type RolDeDirectiva,
   type RolEquipo,
+  ROLES_DE_DIRECTIVA,
   ROLES_EQUIPO,
   rolDeEquipo,
+  rolesDeDirectiva,
+  textoDeRoles,
 } from "@/modulos/identidad/dominio/equipo";
 import { estadoDelEnlace, venceEn } from "@/modulos/identidad/dominio/magicLink";
 import { direccion } from "@/modulos/identidad/dominio/predio";
@@ -44,8 +50,18 @@ import { emitirEnlace } from "./emitirEnlace";
 import { MENSAJE_ENLACE_NO_SIRVE } from "./entrarConEnlace";
 import { aSesionDto, exigirRol, type SesionDto } from "./sesion";
 
-export { MOTIVOS_BAJA, NOMBRE_ROL, PERMISOS, PERMISOS_POR_ROL, ROLES_EQUIPO, diferenciaDePermisos };
-export type { MotivoBaja, RolEquipo };
+export {
+  MOTIVOS_BAJA,
+  NOMBRE_ROL,
+  PERMISOS,
+  PERMISOS_POR_ROL,
+  ROLES_DE_DIRECTIVA,
+  ROLES_EQUIPO,
+  diferenciaDePermisos,
+  diferenciaDeRoles,
+  textoDeRoles,
+};
+export type { MotivoBaja, RolDeDirectiva, RolEquipo };
 
 const telefonoLegible = (telefono: string | null) =>
   telefono?.replace(/^51(\d{3})(\d{3})(\d{3})$/, "$1 $2 $3") ?? null;
@@ -61,7 +77,8 @@ export async function listarEquipo(sesion: SesionDto) {
       id: m.id,
       nombre: m.nombreCompleto,
       rol,
-      rolTexto: rol ? NOMBRE_ROL[rol] : "",
+      rolTexto: textoDeRoles(m.roles),
+      esAdministrador: m.roles.includes("ADMINISTRADOR"),
       vivienda: residencia ? direccion(residencia.predio) : null,
       tieneAcceso: m.credencial !== null,
       ultimoAcceso: m.sesiones[0]?.ultimoUsoEn.toISOString() ?? null,
@@ -177,6 +194,28 @@ async function miembroGestionable(usuarioId: string) {
   return { usuario, rol };
 }
 
+/** Una cuenta de administración activa: la única a la que se le suman roles de directiva. */
+async function administradorActivo(usuarioId: string) {
+  const usuario = await prisma.usuario.findFirst({
+    where: { id: usuarioId, estado: "ACTIVA", roles: { has: "ADMINISTRADOR" } },
+  });
+  if (!usuario) throw new ErrorNoEncontrado();
+  return usuario;
+}
+
+/** Para la pantalla de roles de directiva de una cuenta de administración (ADM-EQU-05). */
+export async function verAdministrador(sesion: SesionDto, usuarioId: string) {
+  exigirRol(sesion, "ADMINISTRADOR");
+  const usuario = await administradorActivo(usuarioId);
+  return {
+    id: usuario.id,
+    nombre: usuario.nombreCompleto,
+    rolTexto: textoDeRoles(usuario.roles),
+    rolesDeDirectiva: rolesDeDirectiva(usuario.roles),
+    esUsted: usuario.id === sesion.usuarioId,
+  };
+}
+
 /** Para las pantallas de cambiar rol y quitar acceso (ADM-EQU-05, ADM-EQU-07). */
 export async function verMiembro(sesion: SesionDto, usuarioId: string) {
   exigirRol(sesion, "ADMINISTRADOR");
@@ -229,6 +268,57 @@ export async function cambiarRol(sesion: SesionDto, usuarioId: string, nuevo: Ro
     );
   });
   return { nombre: usuario.nombreCompleto, rolTexto: NOMBRE_ROL[nuevo] };
+}
+
+/**
+ * Suma o quita roles de directiva y de directivo mediador en una cuenta de administración, sin
+ * crear otra cuenta (HU-GAR-23). La administración puede cambiar la suya: ADMINISTRADOR no se toca
+ * desde aquí, así que el sistema nunca se queda sin quien administre. Se audita con la lista de
+ * roles antes y después, y se le avisa a la persona salvo que se lo haya hecho ella misma.
+ */
+export async function cambiarRolesDeDirectiva(
+  sesion: SesionDto,
+  usuarioId: string,
+  nuevos: RolDeDirectiva[],
+) {
+  exigirRol(sesion, "ADMINISTRADOR");
+  const usuario = await administradorActivo(usuarioId);
+  const roles = conRolesDeDirectiva(usuario.roles, nuevos);
+  if (rolesDeDirectiva(roles).join() === rolesDeDirectiva(usuario.roles).join()) {
+    throw new ErrorReglaNegocio("Ya tiene esos roles. Elija otros para cambiarlos.");
+  }
+  const rolTexto = textoDeRoles(roles);
+  await prisma.$transaction(async (tx) => {
+    await guardarRoles(tx, usuario.id, roles);
+    if (usuario.id !== sesion.usuarioId) {
+      await encolarAviso(
+        {
+          destinatarioId: usuario.id,
+          titulo: `Sus roles ahora son ${rolTexto}`,
+          texto: "Sus permisos en el equipo ya cambiaron. Entra con la misma cuenta.",
+          whatsapp: usuario.telefonoWhatsApp
+            ? {
+                telefono: usuario.telefonoWhatsApp,
+                ...plantillaRolCambiado(primerNombre(usuario.nombreCompleto), rolTexto),
+              }
+            : undefined,
+        },
+        tx,
+      );
+    }
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "cambiar_roles",
+        entidad: "Usuario",
+        entidadId: usuario.id,
+        antes: { roles: usuario.roles },
+        despues: { roles },
+      },
+      tx,
+    );
+  });
+  return { nombre: usuario.nombreCompleto, rolTexto };
 }
 
 /**

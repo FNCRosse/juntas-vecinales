@@ -23,6 +23,7 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   generar_enlace_equipo: { modulo: "Equipo", texto: "Generó un enlace de invitación para copiar" },
   crear_acceso_equipo: { modulo: "Equipo", texto: "Creó su acceso de equipo" },
   cambiar_rol: { modulo: "Equipo", texto: "Cambió un rol del equipo" },
+  cambiar_roles: { modulo: "Equipo", texto: "Cambió los roles de una cuenta de administración" },
   quitar_acceso_equipo: { modulo: "Equipo", texto: "Quitó un acceso de equipo" },
   reenviar_enlace: { modulo: "Acceso", texto: "Reenvió un enlace de entrada" },
   crear_clave_respaldo: { modulo: "Acceso", texto: "Creó su clave de respaldo" },

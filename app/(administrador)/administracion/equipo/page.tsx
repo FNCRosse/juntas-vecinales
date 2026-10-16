@@ -43,6 +43,13 @@ export default async function Equipo({
           </p>
         </MensajeEstado>
       )}
+      {aviso === "roles" && nombre && rol && (
+        <MensajeEstado tipo="exito" titulo="Roles cambiados">
+          <p>
+            {nombre} ahora tiene estos roles: {rol}. Sus permisos ya se actualizaron.
+          </p>
+        </MensajeEstado>
+      )}
       {aviso === "quitado" && nombre && (
         <MensajeEstado tipo="exito" titulo={`Quitamos el acceso a ${nombre}`}>
           <p>Cerramos su sesión en todos sus equipos.</p>
@@ -77,6 +84,14 @@ export default async function Equipo({
             )}
             {m.gestionable && !m.tieneAcceso && <GenerarEnlace usuarioId={m.id} nombre={m.nombre} />}
             {m.esUsted && <span className="font-bold text-texto-secundario">Es usted</span>}
+            {m.esAdministrador && (
+              <div className="flex flex-wrap gap-separacion">
+                <Link href={`/administracion/equipo/${m.id}/roles`} className={ACCION}>
+                  <Repeat aria-hidden className="size-icono" />
+                  Roles de directiva<span className="sr-only"> de {m.nombre}</span>
+                </Link>
+              </div>
+            )}
             {m.gestionable && (
               <div className="flex flex-wrap gap-separacion">
                 <Link href={`/administracion/equipo/${m.id}/rol`} className={ACCION}>
