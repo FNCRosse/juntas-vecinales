@@ -12,6 +12,7 @@ import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
 import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
+import { fechaHoraEnPalabras, SelectorFechaHora } from "@/componentes/a11y/SelectorFechaHora";
 import type { AsambleaDto } from "@/modulos/asambleas/aplicacion/convocatorias";
 
 type TipoAsamblea = "ORDINARIA" | "EXTRAORDINARIA";
@@ -23,30 +24,6 @@ const TIPOS: { valor: TipoAsamblea; etiqueta: string; detalle: string }[] = [
     detalle: "Para un tema puntual que no puede esperar a la ordinaria.",
   },
 ];
-
-/** "2026-11-14" y "18:00" → "Sábado 14 de noviembre de 2026, 6:00 p. m." para la revisión. */
-function enPalabras(fecha: string, hora: string) {
-  if (!fecha || !hora) return "";
-  const cuando = new Date(`${fecha}T${hora}:00-05:00`);
-  if (Number.isNaN(cuando.getTime())) return "";
-  const dia = new Intl.DateTimeFormat("es-PE", {
-    timeZone: "America/Lima",
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  })
-    .format(cuando)
-    .replace(",", "");
-  const horaTexto = new Intl.DateTimeFormat("es-PE", {
-    timeZone: "America/Lima",
-    timeStyle: "short",
-    hour12: true,
-  })
-    .format(cuando)
-    .replace(/[  ]/g, " ");
-  return `${dia.charAt(0).toUpperCase()}${dia.slice(1)}, ${horaTexto}`;
-}
 
 export function NuevaConvocatoria() {
   const [paso, setPaso] = useState<"redactar" | "confirmar" | "publicada">("redactar");
@@ -111,7 +88,7 @@ export function NuevaConvocatoria() {
             "Tipo",
             datos.tipoAsamblea === "EXTRAORDINARIA" ? "Asamblea extraordinaria" : "Asamblea ordinaria",
           ],
-          ["Fecha y hora", enPalabras(datos.fecha, datos.hora)],
+          ["Fecha y hora", fechaHoraEnPalabras(datos.fecha, datos.hora)],
           ["Lugar", datos.lugar.trim()],
           ["Llega a", "Todos los vecinos"],
         ]}
@@ -162,23 +139,13 @@ export function NuevaConvocatoria() {
         alElegir={(tipoAsamblea) => setDatos({ ...datos, tipoAsamblea })}
         error={errores.tipoAsamblea}
       />
-      <div className="flex flex-col gap-3">
-        <Campo
-          type="date"
-          name="fecha"
-          etiqueta="Fecha"
-          value={datos.fecha}
-          error={errores.fechaHora}
-          onChange={(e) => setDatos({ ...datos, fecha: e.target.value })}
-        />
-        <Campo
-          type="time"
-          name="hora"
-          etiqueta="Hora"
-          value={datos.hora}
-          onChange={(e) => setDatos({ ...datos, hora: e.target.value })}
-        />
-      </div>
+      <SelectorFechaHora
+        id="campo-fecha"
+        fecha={datos.fecha}
+        hora={datos.hora}
+        alCambiar={(c) => setDatos({ ...datos, ...c })}
+        error={errores.fechaHora}
+      />
       <Campo
         name="lugar"
         etiqueta="Lugar"

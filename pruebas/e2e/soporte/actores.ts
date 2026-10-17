@@ -36,6 +36,7 @@ export const ACTORES: Actor[] = [
       "/mas/ayuda",
       "/noticias",
       "/incidentes/reportar",
+      "/asambleas",
     ],
   },
   {
@@ -49,6 +50,10 @@ export const ACTORES: Actor[] = [
       "/directiva/alertas",
       "/directiva/mas",
       "/directiva/ayuda",
+      "/directiva/crear",
+      "/directiva/asambleas",
+      "/directiva/asambleas/nueva",
+      "/directiva/asambleas/asistencia",
     ],
   },
   {

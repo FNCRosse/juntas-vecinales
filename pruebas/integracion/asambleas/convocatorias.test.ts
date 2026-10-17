@@ -22,9 +22,12 @@ async function sesionDe(dni: string): Promise<SesionDto> {
   return { usuarioId: u.id, nombreCompleto: u.nombreCompleto, roles: u.roles, politicaAceptada: true };
 }
 
+// Siempre a futuro: una asamblea debe ser posterior a hoy.
+const enDias = (n: number) => new Date(Date.now() + n * 86_400_000);
+
 const CONVOCATORIA = {
   tipoAsamblea: "ORDINARIA" as const,
-  fecha: "2026-11-14",
+  fecha: enDias(30).toISOString().slice(0, 10),
   hora: "18:00",
   lugar: "Local comunal del Parque Central",
   motivo: "Aprobar el presupuesto para cámaras de seguridad en las entradas del barrio.",
@@ -132,7 +135,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     await expect(
       publicarConvocatoria(vecino, {
         ...CONVOCATORIA,
-        fechaHora: new Date("2026-11-14T23:00:00Z"),
+        fechaHora: enDias(30),
         idOperacion: randomUUID(),
       }),
     ).rejects.toThrow();
@@ -141,7 +144,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
 
   it("@HU-ASA-01 la próxima asamblea es la convocada", async () => {
     const asamblea = await (await publicar({ ...CONVOCATORIA, idOperacion: randomUUID() })).json();
-    const proxima = await proximaAsamblea(directiva, new Date("2026-10-20T12:00:00Z"));
+    const proxima = await proximaAsamblea(directiva);
     expect(proxima?.id).toBe(asamblea.id);
   });
 });

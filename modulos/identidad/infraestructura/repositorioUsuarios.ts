@@ -49,6 +49,21 @@ export async function marcarPoliticaAceptada(
 }
 
 /** Los vecinos con cuenta activa: a quienes llega un comunicado a toda la comunidad. */
+/** Vecinos con vivienda cuyo nombre o DNI coincide con el texto (un mediador que asienta una asistencia). */
+export async function vecinosPorNombreODni(texto: string) {
+  return prisma.residencia.findMany({
+    where: {
+      fechaFin: null,
+      usuario: {
+        OR: [{ nombreCompleto: { contains: texto, mode: "insensitive" } }, { dni: { startsWith: texto } }],
+      },
+    },
+    include: { usuario: true, predio: true },
+    take: 8,
+    orderBy: { usuario: { nombreCompleto: "asc" } },
+  });
+}
+
 export async function idsDeVecinosActivos(tx: Transaccion) {
   const vecinos = await tx.usuario.findMany({
     where: { estado: "ACTIVA", anonimizadaEn: null, roles: { hasSome: ["VECINO", "VECINO_ADULTO_MAYOR"] } },
