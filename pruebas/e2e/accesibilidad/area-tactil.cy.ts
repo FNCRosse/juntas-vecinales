@@ -40,6 +40,11 @@ function verificar(documento: Document, ruta: string, minimo: number, separacion
     .filter((c) => c.ancho < minimo - 0.5 || c.alto < minimo - 0.5)
     .map((c) => `${c.texto} (${c.ancho}×${c.alto})`);
   expect(pequenos, `${ruta}: objetivos pequeños`).to.deep.equal([]);
+  // El texto de un botón o enlace nunca se sale de su caja (ni se parte en medio de una palabra).
+  const desbordados = lista
+    .filter((c) => c.el.scrollWidth > c.el.clientWidth + 1 && getComputedStyle(c.el).display !== "inline")
+    .map((c) => `${c.texto} (texto ${c.el.scrollWidth} px en una caja de ${c.el.clientWidth} px)`);
+  expect(desbordados, `${ruta}: texto que se sale del objetivo`).to.deep.equal([]);
   const juntos: string[] = [];
   lista.forEach((a, i) =>
     lista.slice(i + 1).forEach((b) => {

@@ -27,7 +27,7 @@ export function Interruptor({
       className="flex min-h-tactil w-full items-center gap-3 rounded-control border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie p-3 text-left text-base text-texto-principal cursor-pointer hover:border-borde-fuerte"
     >
       {icono}
-      <span className="flex flex-1 flex-col">
+      <span className="flex min-w-0 flex-1 flex-col">
         <strong>{etiqueta}</strong>
         {descripcion && <span className="text-pequeno text-texto-secundario">{descripcion}</span>}
       </span>
@@ -37,7 +37,7 @@ export function Interruptor({
       >
         <span className="size-4 rounded-pastilla bg-fondo-superficie shadow-tarjeta" />
       </span>
-      <strong className="w-6">{activo ? "Sí" : "No"}</strong>
+      <strong className="min-w-8 shrink-0">{activo ? "Sí" : "No"}</strong>
     </button>
   );
 }

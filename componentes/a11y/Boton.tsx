@@ -27,7 +27,7 @@ const VARIANTES: Record<VarianteBoton, string> = {
 /** Botones de la barra superior ("Vista grande", "Pedir ayuda"), iguales al prototipo C-08 y C-11. */
 export function clasesBotonBarra(activo = false) {
   return (
-    "inline-flex w-full md:w-auto md:whitespace-nowrap min-h-control min-w-tactil items-center justify-center gap-2 rounded-control px-3 py-1 " +
+    "inline-flex w-full md:w-auto md:whitespace-nowrap min-h-control min-w-tactil items-center justify-center gap-1 rounded-control px-2 py-1 " +
     "border-(length:--borde-ancho-control) border-accion-primaria text-base font-bold leading-titulo text-center no-underline cursor-pointer " +
     (activo
       ? "bg-accion-primaria text-texto-invertido hover:bg-accion-primaria-hover active:bg-accion-primaria-presionada"

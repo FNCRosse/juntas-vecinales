@@ -217,7 +217,11 @@ describe("@HU-GAR-23 La cuenta de administración con roles de directiva", () =>
     // Hace lo de la directiva con la misma sesión y puede volver a administración sin cerrar sesión.
     cy.visit("/directiva");
     cy.location("pathname").should("eq", "/directiva");
-    cy.contains("a", "Pasar a mi perfil de administración").should("exist");
+    // Selector "Ver como": el texto cabe en el botón y el botón mide 56 px o más en vista grande.
+    cy.contains("a", "Pasar a mi perfil de administración").then(($a) => {
+      expect($a[0].scrollWidth, "el texto cabe").to.be.at.most($a[0].clientWidth + 1);
+      expect($a.outerHeight(), "alto del botón").to.be.gte(56);
+    });
     cy.guardarModo("normal");
   });
 
