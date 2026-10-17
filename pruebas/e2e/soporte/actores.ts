@@ -4,13 +4,21 @@
 // Los cuatro actores con sus rutas reales, para las pruebas de densidad (R-11) y de área táctil (R-03):
 // la misma lista las recorre con las semillas, así una pantalla nueva solo se agrega aquí.
 
-export type Actor = { nombre: string; dni: string; politica: boolean; rutas: string[] };
+export type Actor = {
+  nombre: string;
+  dni: string;
+  politica: boolean;
+  /** La densidad se mide con una vecina nueva: sin reportes ni avisos que dependan de qué prueba corrió antes. */
+  vecinaNueva?: boolean;
+  rutas: string[];
+};
 
 export const ACTORES: Actor[] = [
   {
     nombre: "vecino",
     dni: "40000002",
     politica: true,
+    vecinaNueva: true,
     rutas: [
       "/mas",
       "/avisos",
@@ -56,6 +64,7 @@ export const ACTORES: Actor[] = [
       "/administracion/mas",
       "/administracion/ayuda",
       "/administracion/padron/empadronar",
+      "/administracion/equipo/agregar",
       "/administracion/padron > Mz. A, lote 12",
       "/administracion/padron > Mz. A, lote 12 > Actualizar los datos del predio",
       "/administracion/padron > Mz. A, lote 12 > Dar de baja a un residente",
@@ -70,7 +79,12 @@ export const ACTORES: Actor[] = [
 ];
 
 /** Entra como el actor con la clave de las semillas y deja su vista (normal o grande). */
-export function entrarComo(actor: Actor, modo: "normal" | "senior") {
+export function entrarComo(actor: Actor, modo: "normal" | "senior", conVecinaNueva = false) {
+  if (conVecinaNueva && actor.vecinaNueva) {
+    cy.entrarComoVecinaNueva("Vecina de Prueba");
+    cy.guardarModo(modo);
+    return;
+  }
   cy.clearCookies();
   cy.request("POST", "/api/auth/clave", { dni: actor.dni, clave: "clave-de-prueba" });
   if (actor.politica) cy.request("POST", "/api/auth/politica", { acepto: true });

@@ -11,10 +11,10 @@ const TELEFONO_EXTERNO = `9${sufijo}55`;
 const entrarComoAna = () =>
   cy.request("POST", "/api/auth/clave", { dni: "40000001", clave: CLAVE }).its("status").should("eq", 200);
 
-// R-11: las acciones de cada persona están detrás de su botón "Acciones", que abre una hoja.
+// R-11: las acciones de cada persona están detrás de su botón "Gestionar acceso", que abre una hoja.
 function abrirAcciones(nombre: string) {
-  cy.esperarHidratacion("Acciones");
-  cy.contains("li", nombre).contains("button", "Acciones").click();
+  cy.esperarHidratacion("Gestionar acceso");
+  cy.contains("li", nombre).contains("button", "Gestionar acceso").click();
   return cy.get("[role=dialog]");
 }
 const accion = (nombre: string, enlace: string) => abrirAcciones(nombre).contains("a", enlace).click();
@@ -40,7 +40,8 @@ describe("@HU-GAR-21 @HU-GAR-22 @HU-GAR-23 Cuentas del equipo", () => {
     cy.contains("button", "Buscar en el padrón").click();
     cy.contains("h2", "Julio Mendoza").should("exist");
     cy.contains("dd", "Mz. A, lote 3").should("exist");
-    cy.contains("label", "Directivo mediador").click();
+    cy.get("#campo-rol").click();
+    cy.get("[role=dialog]").contains("button", "Directivo mediador").click();
     cy.contains("li", "Registrar por un vecino y atender pedidos de ayuda").should("exist");
     cy.revisarAccesibilidad("equipo-agregar-normal");
     cy.contains("button", "Revisar").click();

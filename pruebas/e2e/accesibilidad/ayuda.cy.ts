@@ -21,7 +21,7 @@ describe("@HU-ACC-04 Pedir ayuda humana desde cualquier pantalla", () => {
     cy.get("#campo-detalle").type("No encuentro mis avisos de pago.");
     cy.esperarHidratacion("Pedir ayuda").click();
     cy.get("h1").should("have.text", "Ya pedimos ayuda por usted");
-    cy.contains('[role="status"]', "Pedido enviado a Pedro Chávez").should(
+    cy.contains('[role="status"]', /Pedido enviado a [^,]+, de la directiva/).should(
       "contain.text",
       "le escribirá por WhatsApp",
     );

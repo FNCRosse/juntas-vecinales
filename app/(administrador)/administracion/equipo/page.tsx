@@ -89,7 +89,10 @@ export default async function Equipo({
             <div className="flex flex-col items-start gap-separacion">
               {m.gestionable && !m.tieneAcceso && <GenerarEnlace usuarioId={m.id} nombre={m.nombre} />}
               {(m.esAdministrador || m.gestionable) && (
-                <AccionesDePersona nombre={m.nombre}>
+                <AccionesDePersona
+                  nombre={m.nombre}
+                  cargo={`${m.rolTexto} · ${m.vivienda ? `Vive en ${m.vivienda}` : "Personal externo"}`}
+                >
                   {m.esAdministrador && (
                     <Link href={`/administracion/equipo/${m.id}/roles`} className={ACCION}>
                       <Repeat aria-hidden className="size-icono" />

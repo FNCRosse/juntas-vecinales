@@ -12,12 +12,8 @@ export default async function MasOpciones() {
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-titulo-1">Más opciones</h1>
-      <TarjetaEnlace href="/administracion/privacidad" titulo="Solicitudes de privacidad">
-        <span>Acceso, rectificación, cancelación y oposición de los vecinos.</span>
-      </TarjetaEnlace>
-      <TarjetaEnlace href="/administracion/auditoria" titulo="Auditoría">
-        <span>Las acciones importantes de todo el sistema, de solo lectura.</span>
-      </TarjetaEnlace>
+      <TarjetaEnlace href="/administracion/privacidad" titulo="Solicitudes de privacidad" />
+      <TarjetaEnlace href="/administracion/auditoria" titulo="Auditoría" />
       <CambiarDePerfil sesion={sesion} actual="administracion" estilo="tarjeta" />
       <BotonCerrarSesion destino="/entrar/equipo" />
     </div>

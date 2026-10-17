@@ -53,7 +53,7 @@ export default async function Auditoria({ searchParams }: { searchParams: Promis
 
       <FiltroEnHoja
         actual={descripcionDelFiltro}
-        titulo="Mostrar acciones de"
+        titulo="Filtrar auditoría"
         opciones={[undefined, ...MODULOS_AUDITORIA].map((m) => ({
           etiqueta: m ?? "Todos los módulos",
           href: enlace({}, { modulo: m, responsable }),

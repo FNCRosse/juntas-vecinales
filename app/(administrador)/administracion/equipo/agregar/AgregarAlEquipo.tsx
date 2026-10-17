@@ -9,7 +9,7 @@ import { fechaYHora } from "@/compartido/fechas";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
-import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
@@ -177,28 +177,19 @@ export function AgregarAlEquipo({
         errores={Object.entries(errores).map(([campo, mensaje]) => ({ campo: `campo-${campo}`, mensaje }))}
       />
 
-      <GrupoOpciones id="campo-vive" pregunta="¿Vive en el barrio?">
-        <Opcion
-          tipo="radio"
-          name="vive"
-          etiqueta="Sí, ya está en el padrón: sus datos se toman de ahí"
-          checked={vive === "padron"}
-          onChange={() => {
-            setVive("padron");
-            setErrores({});
-          }}
-        />
-        <Opcion
-          tipo="radio"
-          name="vive"
-          etiqueta="No, es de afuera: por ejemplo, un vigilante contratado"
-          checked={vive === "afuera"}
-          onChange={() => {
-            setVive("afuera");
-            setErrores({});
-          }}
-        />
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-vive"
+        pregunta="¿Vive en el barrio?"
+        opciones={[
+          { valor: "padron", etiqueta: "Sí, ya está en el padrón: sus datos se toman de ahí" },
+          { valor: "afuera", etiqueta: "No, es de afuera: por ejemplo, un vigilante contratado" },
+        ]}
+        valor={vive}
+        alElegir={(elegido) => {
+          setVive(elegido);
+          setErrores({});
+        }}
+      />
 
       {vive === "padron" ? (
         <div className="flex flex-col gap-4">
@@ -275,18 +266,14 @@ export function AgregarAlEquipo({
         </div>
       )}
 
-      <GrupoOpciones id="campo-rol" pregunta="¿Qué rol tendrá?" error={errores.rol}>
-        {roles.map((r) => (
-          <Opcion
-            key={r.rol}
-            tipo="radio"
-            name="rol"
-            etiqueta={r.nombre}
-            checked={rol === r.rol}
-            onChange={() => setRol(r.rol)}
-          />
-        ))}
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-rol"
+        pregunta="¿Qué rol tendrá?"
+        opciones={roles.map((r) => ({ valor: r.rol, etiqueta: r.nombre }))}
+        valor={rol}
+        alElegir={setRol}
+        error={errores.rol}
+      />
 
       <section
         aria-labelledby="titulo-permisos"

@@ -18,7 +18,7 @@ const OBJETIVOS =
     ACTORES.forEach((actor) =>
       actor.rutas.forEach((ruta) => {
         it(`@HU-ACC-09 CA2 ${actor.nombre} ${ruta}: como máximo ${LIMITE[modo]} objetivos de contenido`, () => {
-          entrarComo(actor, modo);
+          entrarComo(actor, modo, true);
           visitarRuta(ruta);
           cy.get("main").then(($main) => {
             // Un campo con su etiqueta es un solo objetivo; una opción de radio o casilla, uno por opción.
