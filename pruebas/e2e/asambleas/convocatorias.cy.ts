@@ -4,6 +4,8 @@ export {};
 // Marta es directiva y vecina, así que una sola sesión convoca y luego ve la asamblea como vecina.
 
 const sufijo = String(Date.now()).slice(-6);
+// Fechas siempre a futuro: la asamblea debe ser posterior a hoy, así que se cuentan desde hoy.
+const enDias = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
 const LUGAR = `Local comunal ${sufijo}`;
 const MOTIVO = "Aprobar el presupuesto para cámaras de seguridad en las entradas del barrio.";
 
@@ -37,8 +39,10 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
 
     cy.contains("button", "Elegir el tipo").click();
     cy.contains("button", "Ordinaria").click();
-    cy.get("#campo-fecha").type("2026-12-12");
-    cy.get("#campo-hora").type("18:00");
+    cy.contains("button", "Elegir fecha y hora").click();
+    cy.get("#campo-fecha-fecha").type(enDias(60));
+    cy.get("#campo-fecha-hora").type("18:00");
+    cy.contains("button", "Listo").click();
     cy.get("#campo-lugar").type(LUGAR);
     cy.get("#campo-motivo").type(MOTIVO);
     cy.contains("button", "Revisar la convocatoria").click();
@@ -63,7 +67,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
   it("@HU-ASA-01 CA1 en modo Senior el vecino ve la asamblea convocada y su quórum", () => {
     cy.request("POST", "/api/asambleas", {
       tipoAsamblea: "ORDINARIA",
-      fecha: "2026-12-20",
+      fecha: enDias(61),
       hora: "18:00",
       lugar: LUGAR,
       motivo: MOTIVO,
@@ -86,7 +90,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
   it("@HU-ASA-02 CA1 CA3 el vecino confirma su asistencia y puede cambiar la respuesta", () => {
     cy.request("POST", "/api/asambleas", {
       tipoAsamblea: "ORDINARIA",
-      fecha: "2026-12-27",
+      fecha: enDias(62),
       hora: "18:00",
       lugar: LUGAR,
       motivo: MOTIVO,
@@ -104,5 +108,35 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
 
     cy.contains("button", "Cambiar mi respuesta: ya no podré ir").click();
     cy.contains("button", "Sí, asistiré").should("exist");
+  });
+
+  it("@HU-ASA-03 CA1 CA2 CA3 el mediador busca a un vecino y asienta su asistencia", () => {
+    cy.request("POST", "/api/asambleas", {
+      tipoAsamblea: "ORDINARIA",
+      fecha: enDias(63),
+      hora: "18:00",
+      lugar: LUGAR,
+      motivo: MOTIVO,
+      idOperacion: crypto.randomUUID(),
+    })
+      .its("status")
+      .should("eq", 201);
+    cy.clearCookies();
+    cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
+    cy.viewport(360, 800);
+
+    cy.visit("/directiva/asambleas/asistencia");
+    cy.get("h1").should("have.text", "Registrar la asistencia de un vecino");
+    cy.get("#campo-buscar").type("Carmen");
+    cy.contains("button", "Buscar").click();
+    cy.contains("li", "terminado en 78").should("exist");
+    cy.revisarAccesibilidad("asistencia-mediador-buscar-360");
+
+    cy.contains("button", "Registrar que asistirá").click();
+    cy.contains("Asistirá · gestionado en persona").should("exist");
+    cy.revisarAccesibilidad("asistencia-mediador-registrada-360");
+
+    cy.contains("button", "Anular este registro").click();
+    cy.contains("Todavía no confirma").should("exist");
   });
 });

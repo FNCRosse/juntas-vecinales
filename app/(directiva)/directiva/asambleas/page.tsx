@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, UserCheck } from "lucide-react";
 import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
@@ -14,9 +14,14 @@ export default async function AsambleasDirectiva() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Asambleas y actividades</h1>
-      <BotonEnlace href="/directiva/asambleas/nueva" icono={CalendarDays}>
-        Convocar una asamblea
-      </BotonEnlace>
+      <div className="flex flex-col items-start gap-separacion">
+        <BotonEnlace href="/directiva/asambleas/nueva" icono={CalendarDays}>
+          Convocar una asamblea
+        </BotonEnlace>
+        <BotonEnlace href="/directiva/asambleas/asistencia" variante="secundario" icono={UserCheck}>
+          Registrar la asistencia de un vecino
+        </BotonEnlace>
+      </div>
       <section aria-labelledby="titulo-proxima" className="flex flex-col gap-4">
         <h2 id="titulo-proxima" className="text-titulo-2">
           Próxima asamblea

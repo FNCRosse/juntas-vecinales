@@ -5,6 +5,7 @@ import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compart
 import { fechaEnFrase, fechaLarga, horaCorta, visperaALasOchoPm } from "@/compartido/fechas";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
 import {
+  buscarVecinos,
   predioDelVecino,
   totalDePredios,
   vecinosDeLaComunidad,
@@ -194,6 +195,94 @@ export async function cancelarAsistencia(sesion: SesionDto, asambleaId: string, 
         entidad: "Asamblea",
         entidadId: asambleaId,
         antes: { predioId: predio.id },
+        despues: null,
+      },
+      tx,
+    );
+  });
+  return verAsamblea(sesion, asambleaId);
+}
+
+/**
+ * Un mediador busca al vecino por nombre o DNI y ve si su casa ya confirmó (HU-ASA-03 CA1). Un vecino
+ * puede estar confirmado en la app o ya asentado por un mediador; el resultado lo dice (CA2).
+ */
+export async function buscarParaAsistencia(sesion: SesionDto, asambleaId: string, texto: string) {
+  exigirRol(sesion, "DIRECTIVA", "DIRECTIVO_MEDIADOR");
+  const vecinos = await buscarVecinos(texto);
+  return Promise.all(
+    vecinos.map(async (v) => {
+      const confirmacion = await confirmacionDePredio(asambleaId, v.predioId);
+      return {
+        ...v,
+        confirmacion: confirmacion
+          ? { modo: confirmacion.modo, registradaPor: confirmacion.registradaPor }
+          : null,
+      };
+    }),
+  );
+}
+
+/**
+ * El mediador asienta la confirmación de un vecino (adulto mayor) que no usa la app (HU-ASA-03 CA2): queda
+ * ASISTIDA y acreditada al predio, con quién la registró. Suma al indicador de asistencia preliminar (CA3).
+ */
+export async function registrarAsistenciaAsistida(
+  sesion: SesionDto,
+  asambleaId: string,
+  predioId: string,
+  ahora = new Date(),
+) {
+  exigirRol(sesion, "DIRECTIVA", "DIRECTIVO_MEDIADOR");
+  await asambleaVigente(asambleaId, ahora);
+  const previa = await confirmacionDePredio(asambleaId, predioId);
+  // Si el vecino ya confirmó por su cuenta, esa confirmación manda y no se pisa (ADR-005).
+  if (previa?.modo === "DIGITAL") return verAsamblea(sesion, asambleaId);
+
+  await prisma.$transaction(async (tx) => {
+    await guardarConfirmacion(tx, {
+      convocatoriaId: asambleaId,
+      predioId,
+      modo: "ASISTIDA",
+      registradaPor: sesion.usuarioId,
+    });
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "registrar_asistencia_asistida",
+        entidad: "Asamblea",
+        entidadId: asambleaId,
+        antes: null,
+        despues: { predioId, modo: "ASISTIDA" },
+      },
+      tx,
+    );
+  });
+  return verAsamblea(sesion, asambleaId);
+}
+
+/** El mediador anula un registro que él asentó (HU-ASA-03): la asistencia del vecino vuelve a "sin confirmar". */
+export async function anularAsistenciaAsistida(
+  sesion: SesionDto,
+  asambleaId: string,
+  predioId: string,
+  ahora = new Date(),
+) {
+  exigirRol(sesion, "DIRECTIVA", "DIRECTIVO_MEDIADOR");
+  await asambleaVigente(asambleaId, ahora);
+  const previa = await confirmacionDePredio(asambleaId, predioId);
+  if (!previa || previa.modo !== "ASISTIDA") {
+    throw new ErrorReglaNegocio("Solo se puede anular un registro hecho por un mediador.");
+  }
+  await prisma.$transaction(async (tx) => {
+    await cancelarConfirmacion(tx, asambleaId, predioId);
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "anular_asistencia_asistida",
+        entidad: "Asamblea",
+        entidadId: asambleaId,
+        antes: { predioId, modo: "ASISTIDA" },
         despues: null,
       },
       tx,
