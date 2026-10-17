@@ -6,7 +6,6 @@ import { exigirActor } from "@/app/_sesion/sesion";
 import { GraficoBalance } from "@/componentes/a11y/GraficoBalance";
 import { soles } from "@/compartido/dinero";
 import { ErrorNoEncontrado } from "@/compartido/errores";
-import { fechaYHora } from "@/compartido/fechas";
 import { verBalance } from "@/modulos/transparencia/aplicacion/balances";
 
 export const metadata: Metadata = { title: "Balance de una actividad" };
@@ -30,9 +29,9 @@ export default async function Balance({ params }: { params: Promise<{ id: string
       <div className="flex flex-col gap-2">
         <h1 className="text-titulo-1">{balance.titulo}</h1>
         <p className="text-texto-secundario">
-          Actividad del {balance.fechaActividad.toLowerCase()} · publicado el{" "}
-          {fechaYHora(new Date(balance.fecha))}
+          {balance.fechaActividad} · publicado por la directiva, no se puede modificar
         </p>
+        <p className="font-bold">Saldo final: {soles(balance.totales.utilidadNeta)}</p>
       </div>
       <GraficoBalance totales={balance.totales} />
       <section aria-labelledby="titulo-ingresos" className="flex flex-col gap-2">
@@ -67,9 +66,6 @@ export default async function Balance({ params }: { params: Promise<{ id: string
           <p>No hubo gastos.</p>
         )}
       </section>
-      <p className="text-pequeno text-texto-secundario">
-        Publicado por {balance.autor}. Este balance ya no se puede modificar.
-      </p>
     </div>
   );
 }

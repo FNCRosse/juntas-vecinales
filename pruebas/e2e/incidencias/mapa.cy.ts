@@ -29,13 +29,13 @@ describe("@HU-QUE-08 @HU-ACC-07 Mapa de incidentes", () => {
     cy.viewport(360, 800);
     cy.guardarModo("senior");
     cy.visit("/incidentes");
-    cy.contains("button", "Ver como").should("contain.text", "Lista");
+    cy.get("#vista-incidentes").should("contain.text", "Lista");
     cy.contains("li", "Cocheras o autos mal estacionados").should("contain.text", "Mz. B");
     cy.get('section[aria-labelledby="titulo-barrio"]').should("not.contain.text", "lote 5");
     cy.revisarAccesibilidad("incidentes-lista-senior-360");
 
-    cy.esperarHidratacion("Ver como").click();
-    cy.get("[role=dialog]").contains("a", "Mapa").click();
+    cy.esperarHidratacion("Cambiar").click();
+    cy.get("[role=dialog]").contains("button", "Mapa").click();
     cy.location("search").should("eq", "?vista=mapa");
     cy.get('[role="img"]')
       .should("have.attr", "aria-label")
@@ -45,8 +45,8 @@ describe("@HU-QUE-08 @HU-ACC-07 Mapa de incidentes", () => {
     cy.get('[role="img"] svg').each(($svg) => expect($svg.attr("aria-hidden")).to.eq("true"));
     cy.revisarAccesibilidad("incidentes-mapa-senior-360");
 
-    cy.esperarHidratacion("Ver como").click();
-    cy.get("[role=dialog]").contains("a", "Resumen").click();
+    cy.esperarHidratacion("Cambiar").click();
+    cy.get("[role=dialog]").contains("button", "Resumen").click();
     cy.contains("caption", "Reportes del último mes por zona y tipo").should("exist");
     cy.contains("th", "Todo el barrio").should("exist");
     cy.revisarAccesibilidad("incidentes-resumen-senior-360");

@@ -2,7 +2,8 @@ import { Newspaper } from "lucide-react";
 import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { obtenerPerfil } from "@/modulos/accesibilidad/aplicacion/obtenerPerfil";
-import { InterruptorVoz } from "@/app/_accesibilidad/InterruptorVoz";
+import { AvisoSinVoz } from "@/app/_accesibilidad/AvisoSinVoz";
+import { ActivarVoz } from "./ActivarVoz";
 import { verNoticias } from "@/modulos/transparencia/aplicacion/comunicados";
 import { TarjetaNoticia } from "./TarjetaNoticia";
 
@@ -18,11 +19,8 @@ export default async function Noticias() {
   ]);
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-titulo-1">Noticias de la junta</h1>
-        <p className="text-texto-secundario">Los urgentes aparecen primero.</p>
-      </div>
-      <InterruptorVoz activoAlInicio={perfil.sintesisVozActiva} />
+      <h1 className="text-titulo-1">Noticias de la junta</h1>
+      {perfil.sintesisVozActiva ? <AvisoSinVoz /> : <ActivarVoz />}
       {noticias.length ? (
         <ul className="flex flex-col gap-separacion" aria-label="Noticias">
           {noticias.map((n) => (
