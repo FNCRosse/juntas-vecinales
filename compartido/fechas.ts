@@ -58,6 +58,15 @@ export function desdeHoraDeLima(fecha: string, hora: string) {
   return new Date(`${fecha}T${hora}:00-05:00`);
 }
 
+/** La víspera de una fecha a las 8:00 p. m. de Lima, en UTC: el plazo para confirmar asistencia (HU-ASA-01). */
+export function visperaALasOchoPm(fecha: Date) {
+  const dia = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA }).format(fecha);
+  const vispera = new Date(`${dia}T00:00:00-05:00`);
+  vispera.setUTCDate(vispera.getUTCDate() - 1);
+  const diaVispera = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA }).format(vispera);
+  return new Date(`${diaVispera}T20:00:00-05:00`);
+}
+
 /** Las 0:00 de hoy en Lima, en UTC: desde ahí se cuentan "las entradas de hoy". */
 export function inicioDelDiaEnLima(ahora: Date) {
   const dia = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA }).format(ahora);

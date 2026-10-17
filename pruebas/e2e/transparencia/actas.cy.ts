@@ -18,7 +18,7 @@ describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
 
   it("@HU-ASA-11 CA1 CA2 CA3 la directiva redacta, ve el PDF, revisa y publica el acta en teléfono", () => {
     cy.viewport(360, 800);
-    cy.visit("/directiva");
+    cy.visit("/directiva/crear");
     cy.contains("a", "Publicar un acta").click();
     cy.get("h1").should("have.text", "Acta de la asamblea");
     cy.contains("p", "Paso 1 de 2").should("exist");

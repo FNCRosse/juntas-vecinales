@@ -25,7 +25,7 @@ describe("@HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos", (
       cy.intercept("PUT", R2_SIMULADO, { statusCode: 200 }).as("subir");
     });
     cy.viewport(360, 800);
-    cy.visit("/directiva");
+    cy.visit("/directiva/crear");
     cy.contains("a", "Publicar un balance").click();
     cy.get("h1").should("have.text", "Balance de una actividad");
     cy.contains("p", "Paso 1 de 2").should("exist");
