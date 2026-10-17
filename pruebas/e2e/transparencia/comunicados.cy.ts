@@ -20,7 +20,7 @@ describe("@HU-ASA-15 Comunicados generales y feed comunitario", () => {
 
   it("@HU-ASA-15 CA1 CA2 CA3 la directiva redacta, revisa y publica un comunicado urgente en teléfono", () => {
     cy.viewport(360, 800);
-    cy.visit("/directiva");
+    cy.visit("/directiva/crear");
     cy.contains("a", "Publicar un comunicado").click();
     cy.get("h1").should("have.text", "Comunicado a la comunidad");
     cy.contains("p", "Paso 1 de 2").should("exist");
