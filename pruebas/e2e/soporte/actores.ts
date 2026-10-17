@@ -37,6 +37,7 @@ export const ACTORES: Actor[] = [
       "/noticias",
       "/incidentes/reportar",
       "/asambleas",
+      "/asambleas/delegar",
     ],
   },
   {

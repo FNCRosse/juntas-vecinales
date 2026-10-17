@@ -143,7 +143,8 @@ export async function verAsamblea(sesion: SesionDto, id: string): Promise<Asambl
 const MENSAJE_SIN_PREDIO =
   "No encontramos su vivienda en el padrón. Pida ayuda a la administración para confirmar su asistencia.";
 
-async function asambleaVigente(id: string, ahora: Date) {
+/** La asamblea si sigue abierta a confirmaciones y delegaciones (no cerrada, antes del plazo); si no, el error. */
+export async function asambleaVigente(id: string, ahora: Date) {
   const fila = await buscarAsamblea(id);
   if (!fila || !fila.asamblea) throw new ErrorNoEncontrado();
   if (fila.estado === "CERRADA") throw new ErrorReglaNegocio("Esta asamblea ya está cerrada.");
