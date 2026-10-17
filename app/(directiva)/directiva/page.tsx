@@ -1,10 +1,11 @@
-import { Bell, ChevronRight, FileText, Info, Landmark, MapPin, Megaphone } from "lucide-react";
+import { Bell, ChevronRight, Info, MapPin, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
-import { fechaLarga, primerNombre, saludo } from "@/compartido/fechas";
+import { fechaLarga, horaCorta, primerNombre, saludo } from "@/compartido/fechas";
+import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 import { quejasPorAtender } from "@/modulos/incidencias/aplicacion/quejas";
 
 export const metadata: Metadata = { title: "Resumen de la directiva" };
@@ -14,6 +15,7 @@ export default async function ResumenDirectiva() {
   const sesion = await sesionActual();
   const ahora = new Date();
   const quejas = sesion && (await quejasPorAtender(sesion));
+  const proxima = sesion ? await proximaAsamblea(sesion, ahora) : null;
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-titulo-1">
@@ -59,17 +61,39 @@ export default async function ResumenDirectiva() {
           </Link>
         </section>
       )}
-      <div className="flex flex-col items-start gap-separacion pt-4">
-        <BotonEnlace href="/directiva/comunicados/nuevo" variante="secundario" icono={Megaphone}>
-          Publicar un comunicado
-        </BotonEnlace>
-        <BotonEnlace href="/directiva/actas/nueva" variante="secundario" icono={FileText}>
-          Publicar un acta
-        </BotonEnlace>
-        <BotonEnlace href="/directiva/balances/nuevo" variante="secundario" icono={Landmark}>
-          Publicar un balance
-        </BotonEnlace>
-      </div>
+      <section aria-labelledby="titulo-proxima-asamblea" className="flex flex-col gap-4 pt-4">
+        <h2 id="titulo-proxima-asamblea" className="text-titulo-2">
+          Próxima asamblea
+        </h2>
+        {proxima ? (
+          <Link
+            href="/directiva/asambleas"
+            className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+          >
+            <span className="font-bold">{proxima.titulo}</span>
+            <span>{fechaLarga(new Date(proxima.fechaHora))}</span>
+            <span className="text-texto-secundario">
+              {horaCorta(new Date(proxima.fechaHora))} · {proxima.lugar}
+            </span>
+            <span className="pt-1">
+              Quórum proyectado: {proxima.confirmados.total} de {proxima.padronTotal} casas
+            </span>
+          </Link>
+        ) : (
+          <p>No hay ninguna asamblea convocada.</p>
+        )}
+      </section>
+      <section aria-labelledby="titulo-crear" className="flex flex-col gap-2 pt-4">
+        <h2 id="titulo-crear" className="text-titulo-2">
+          Crear o registrar
+        </h2>
+        <p className="text-texto-secundario">Asambleas, comunicados, actas y balances de la junta.</p>
+        <div className="flex flex-col items-start gap-separacion pt-2">
+          <BotonEnlace href="/directiva/crear" variante="secundario" icono={Plus}>
+            Crear o registrar
+          </BotonEnlace>
+        </div>
+      </section>
     </div>
   );
 }

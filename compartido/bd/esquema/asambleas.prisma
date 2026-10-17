@@ -1,0 +1,55 @@
+// Tablas del módulo asambleas (M4), prefijo asambleas_. Diagrama 02c.
+
+enum TipoConvocatoria {
+  ASAMBLEA
+  EVENTO_PRO_FONDOS
+}
+
+enum EstadoConvocatoria {
+  BORRADOR
+  PUBLICADA
+  REPROGRAMADA
+  INFORMATIVA
+  CERRADA
+}
+
+enum TipoAsamblea {
+  ORDINARIA
+  EXTRAORDINARIA
+}
+
+// Convocatoria de la junta (diagrama 02c, abstracta). La versión imprimible (afiche A4) se arma de esta
+// misma fila: fecha, hora, lugar y motivo nunca se escriben dos veces (HU-ASA-01 CA3). idOperacion lo
+// genera el dispositivo y evita publicar dos veces al reintentar (AC-5). El autor se guarda tal como
+// figuraba al publicar.
+model Convocatoria {
+  id               String             @id @default(uuid())
+  tipo             TipoConvocatoria
+  titulo           String
+  fechaHora        DateTime
+  lugar            String
+  motivo           String
+  estado           EstadoConvocatoria @default(PUBLICADA)
+  autorId          String
+  autor            String
+  fechaPublicacion DateTime           @default(now())
+  idOperacion      String             @unique
+  asamblea         Asamblea?
+
+  @@index([fechaHora])
+  @@map("asambleas_convocatorias")
+}
+
+// Datos propios de una asamblea (HU-ASA-01). El quórum requerido y el total del padrón se fijan al
+// publicar (un voto por predio); el conteo real de confirmaciones llega en HU-ASA-02/04. Una sesión
+// informativa (sin quórum, HU-ASA-05) no tendrá votaciones ni acuerdos resolutivos.
+model Asamblea {
+  convocatoriaId     String       @id
+  convocatoria       Convocatoria @relation(fields: [convocatoriaId], references: [id])
+  tipoAsamblea       TipoAsamblea
+  padronTotal        Int
+  quorumRequerido    Int
+  confirmacionesHasta DateTime
+
+  @@map("asambleas_asambleas")
+}
