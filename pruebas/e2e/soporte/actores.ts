@@ -56,6 +56,8 @@ export const ACTORES: Actor[] = [
       "/directiva/asambleas/nueva",
       "/directiva/asambleas/asistencia",
       "/directiva/asambleas/sin-quorum",
+      "/directiva/asambleas/pase-de-lista",
+      "/directiva/asambleas/poderes",
     ],
   },
   {

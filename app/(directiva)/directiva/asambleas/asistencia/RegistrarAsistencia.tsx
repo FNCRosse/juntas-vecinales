@@ -7,6 +7,7 @@ import { useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { Boton } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 
 type Resultado = {
@@ -77,9 +78,12 @@ export function RegistrarAsistencia({ asambleaId }: { asambleaId: string }) {
         <p>No encontramos a ese vecino. Revise el nombre o escriba el DNI.</p>
       )}
       {resultados && resultados.length > 0 && (
-        <ul className="flex flex-col gap-4" aria-label="Vecinos encontrados">
-          {resultados.map((v) => (
-            <li
+        <ListaVerMas
+          etiqueta="Vecinos encontrados"
+          normal={3}
+          senior={1}
+          elementos={resultados.map((v) => (
+            <div
               key={v.predioId}
               className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
             >
@@ -117,9 +121,9 @@ export function RegistrarAsistencia({ asambleaId }: { asambleaId: string }) {
               {v.confirmacion?.modo === "DIGITAL" && (
                 <p className="font-bold">Asistirá · confirmó en la app</p>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        />
       )}
     </div>
   );
