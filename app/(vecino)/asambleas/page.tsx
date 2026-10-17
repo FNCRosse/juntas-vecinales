@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
 import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
+import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { miAsistencia, proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 import { ConfirmarAsistencia } from "./ConfirmarAsistencia";
 
@@ -20,6 +21,16 @@ export default async function AsambleasVecino() {
       <h1 className="text-titulo-1">Asambleas</h1>
       {proxima ? (
         <>
+          {proxima.estado === "REPROGRAMADA" && (
+            <MensajeEstado tipo="info" titulo="Asamblea reprogramada">
+              <p>La directiva cambió la fecha. Confirme de nuevo su asistencia si va a poder ir.</p>
+            </MensajeEstado>
+          )}
+          {proxima.estado === "INFORMATIVA" && (
+            <MensajeEstado tipo="info" titulo="Será una sesión informativa">
+              <p>En esta reunión no se votará ni se tomarán acuerdos.</p>
+            </MensajeEstado>
+          )}
           <section
             aria-labelledby="titulo-asamblea"
             className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
