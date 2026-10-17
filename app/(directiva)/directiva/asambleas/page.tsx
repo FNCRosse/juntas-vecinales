@@ -2,12 +2,13 @@ import { CalendarDays, UserCheck } from "lucide-react";
 import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
-import { fechaLarga, horaCorta } from "@/compartido/fechas";
+import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
+import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
 import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 
 export const metadata: Metadata = { title: "Asambleas y actividades" };
 
-// DIR-ASA-01 (HU-ASA-01): la próxima asamblea con su quórum proyectado y el acceso para convocar.
+// DIR-ASA-01 (HU-ASA-01, HU-ASA-04): la próxima asamblea con su quórum proyectado y el acceso para convocar.
 export default async function AsambleasDirectiva() {
   const sesion = await sesionActual();
   const proxima = sesion ? await proximaAsamblea(sesion) : null;
@@ -33,10 +34,24 @@ export default async function AsambleasDirectiva() {
             <p className="text-texto-secundario">
               {horaCorta(new Date(proxima.fechaHora))} · {proxima.lugar}
             </p>
-            <p className="pt-2 font-bold">Quórum proyectado</p>
+            <p className="text-texto-secundario">
+              Confirmaciones hasta {fechaEnFrase(new Date(proxima.confirmacionesHasta))} a las{" "}
+              {horaCorta(new Date(proxima.confirmacionesHasta))}
+            </p>
+            <h3 className="pt-2 text-titulo-3">Quórum proyectado</h3>
             <p className="text-texto-secundario">Se actualiza cada vez que alguien confirma.</p>
             <p className="text-dato font-bold">
-              {proxima.confirmados.total} de {proxima.padronTotal} casas
+              {proxima.quorum.confirmados} de {proxima.padronTotal} casas
+            </p>
+            <BarraQuorum
+              confirmados={proxima.quorum.confirmados}
+              padronTotal={proxima.padronTotal}
+              requerido={proxima.quorumRequerido}
+              alcanza={proxima.quorum.alcanza}
+              texto={proxima.quorum.texto}
+            />
+            <p className="text-texto-secundario">
+              La línea marca el mínimo: {proxima.quorumRequerido} casas (la mitad del padrón más una).
             </p>
             <dl className="flex flex-col gap-1 pt-2">
               <div className="flex justify-between gap-4">
@@ -49,11 +64,12 @@ export default async function AsambleasDirectiva() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt>Total</dt>
-                <dd className="font-bold">{proxima.confirmados.total}</dd>
+                <dd className="font-bold">{proxima.quorum.confirmados}</dd>
               </div>
             </dl>
             <p className="pt-2 text-texto-secundario">
-              La línea marca el mínimo: {proxima.quorumRequerido} casas (la mitad del padrón más una).
+              Al corte le avisaremos si alcanza. Si no, tendrá que decidir: reprogramar o hacer una sesión
+              informativa.
             </p>
           </div>
         ) : (

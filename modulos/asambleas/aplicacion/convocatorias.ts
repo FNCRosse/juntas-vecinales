@@ -1,4 +1,4 @@
-// @HU-ASA-01 @HU-ASA-02
+// @HU-ASA-01 @HU-ASA-02 @HU-ASA-04
 import { prisma } from "@/compartido/bd/cliente";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
@@ -16,6 +16,7 @@ import {
   prepararConvocatoria,
   quorumRequerido,
 } from "@/modulos/asambleas/dominio/convocatoria";
+import { proyectarQuorum, textoDelQuorum } from "@/modulos/asambleas/dominio/quorum";
 import {
   buscarAsamblea,
   buscarPorIdOperacion,
@@ -28,9 +29,13 @@ import {
 
 type Fila = NonNullable<Awaited<ReturnType<typeof buscarPorIdOperacion>>>;
 
-const aDto = (c: Fila) => {
+export const aDto = (c: Fila) => {
   const digital = c.confirmaciones.filter((f) => f.modo === "DIGITAL").length;
   const asistida = c.confirmaciones.filter((f) => f.modo === "ASISTIDA").length;
+  const padronTotal = c.asamblea?.padronTotal ?? 0;
+  const requerido = c.asamblea?.quorumRequerido ?? 0;
+  // Se recalcula en cada lectura a partir de las confirmaciones, así siempre refleja la última (HU-ASA-04 CA1).
+  const quorum = proyectarQuorum({ padronTotal, requerido, digital, asistida });
   return {
     id: c.id,
     titulo: c.titulo,
@@ -40,9 +45,10 @@ const aDto = (c: Fila) => {
     motivo: c.motivo,
     estado: c.estado,
     confirmacionesHasta: (c.asamblea?.confirmacionesHasta ?? c.fechaHora).toISOString(),
-    padronTotal: c.asamblea?.padronTotal ?? 0,
-    quorumRequerido: c.asamblea?.quorumRequerido ?? 0,
-    confirmados: { digital, asistida, total: digital + asistida },
+    padronTotal,
+    quorumRequerido: requerido,
+    confirmados: { digital, asistida, total: quorum.confirmados },
+    quorum: { ...quorum, texto: textoDelQuorum(quorum) },
   };
 };
 

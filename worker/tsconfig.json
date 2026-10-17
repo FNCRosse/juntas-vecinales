@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "rootDir": "..",
+    "paths": { "@/*": ["../*"] },
     "outDir": "../dist/worker"
   },
   "files": ["servidor.ts"]

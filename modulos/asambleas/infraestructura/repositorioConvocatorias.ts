@@ -81,3 +81,28 @@ export async function confirmarAsistencia(
 export async function cancelarConfirmacion(tx: Transaccion, convocatoriaId: string, predioId: string) {
   await tx.confirmacionAsistencia.deleteMany({ where: { convocatoriaId, predioId } });
 }
+
+/** Asambleas publicadas cuyo plazo para confirmar ya cerró y a las que aún no se avisó el resultado. */
+export async function asambleasEnElCorte(ahora: Date) {
+  return prisma.convocatoria.findMany({
+    where: {
+      tipo: "ASAMBLEA",
+      estado: { in: ["PUBLICADA", "REPROGRAMADA"] },
+      asamblea: { is: { confirmacionesHasta: { lte: ahora }, avisoCorteEn: null } },
+    },
+    include: conAsamblea,
+    orderBy: { fechaHora: "asc" },
+  });
+}
+
+/**
+ * Reclama el aviso de corte: solo uno de los que intenten a la vez lo logra, porque el UPDATE exige que
+ * siga sin marcar. Devuelve si este intento lo obtuvo.
+ */
+export async function reclamarAvisoDeCorte(tx: Transaccion, convocatoriaId: string, ahora: Date) {
+  const { count } = await tx.asamblea.updateMany({
+    where: { convocatoriaId, avisoCorteEn: null },
+    data: { avisoCorteEn: ahora },
+  });
+  return count === 1;
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
+import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
 import { miAsistencia, proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 import { ConfirmarAsistencia } from "./ConfirmarAsistencia";
 
@@ -46,12 +47,20 @@ export default async function AsambleasVecino() {
             </h2>
             <p>
               <span className="text-dato font-bold">
-                {proxima.confirmados.total} de {proxima.padronTotal} casas
+                {proxima.quorum.confirmados} de {proxima.padronTotal} casas
               </span>{" "}
               confirmaron. Se necesitan {proxima.quorumRequerido} para que la asamblea pueda decidir.
             </p>
+            <BarraQuorum
+              confirmados={proxima.quorum.confirmados}
+              padronTotal={proxima.padronTotal}
+              requerido={proxima.quorumRequerido}
+              alcanza={proxima.quorum.alcanza}
+              texto={proxima.quorum.texto}
+            />
             <p className="text-texto-secundario">
               El quórum es el mínimo de casas presentes para que la asamblea tome acuerdos: la mitad más una.
+              La línea marca ese mínimo.
             </p>
           </section>
         </>
