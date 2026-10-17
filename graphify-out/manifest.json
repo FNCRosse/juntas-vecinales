@@ -66,9 +66,9 @@
     "semantic_hash": "d528fa18b7114da316d02e97f8588e2b"
   },
   "CLAUDE.md": {
-    "mtime": 1792117010.070295,
-    "seen": 1792117451.1895487,
-    "ast_hash": "ec156a0c83cdf0977ce186a791109102",
+    "mtime": 1792193191.2113938,
+    "seen": 1792195756.9155412,
+    "ast_hash": "a9d129d6134bd436f204f3392eee095c",
     "semantic_hash": ""
   },
   "README.md": {
@@ -78,9 +78,9 @@
     "semantic_hash": "0460f39a774c06e834f05353f86612c9"
   },
   "docs/ACCESIBILIDAD.md": {
-    "mtime": 1792117010.1171584,
-    "seen": 1792117451.1895523,
-    "ast_hash": "bd2ae285209a704ab0868dceb870f79b",
+    "mtime": 1792193191.2372007,
+    "seen": 1792195756.9157841,
+    "ast_hash": "3b1ef9a1e77d3dc0dad4a7cf5d10edf0",
     "semantic_hash": ""
   },
   "docs/ARQUITECTURA.md": {
@@ -120,9 +120,9 @@
     "semantic_hash": ""
   },
   "docs/PLAN.md": {
-    "mtime": 1792092196.554324,
-    "seen": 1792117451.1895692,
-    "ast_hash": "f76b707fb1b522fc5d1b32b4f1f630f2",
+    "mtime": 1792117902.8479538,
+    "seen": 1792195756.917015,
+    "ast_hash": "ddf1ceea6ca97a3ed0e9ca71938fd7ce",
     "semantic_hash": ""
   },
   "docs/PRUEBAS.md": {
@@ -138,15 +138,15 @@
     "semantic_hash": "50e432047a7137716c6f72fdc4201bc4"
   },
   "docs/guia-visual/guia-visual.md": {
-    "mtime": 1792117010.1201615,
-    "seen": 1792117451.1895847,
-    "ast_hash": "eaf325b951bb0c03fe2cba1e3190b3ad",
+    "mtime": 1792193191.2396488,
+    "seen": 1792195756.9183476,
+    "ast_hash": "a0336073a2b2380c62c42df0a9c05243",
     "semantic_hash": ""
   },
   "docs/prototipo/LEEME.md": {
-    "mtime": 1792117010.1231613,
-    "seen": 1792117451.1895866,
-    "ast_hash": "e7f91bb5bf9aa8f4fa9fd9e66ae3ca79",
+    "mtime": 1792193191.2406466,
+    "seen": 1792195756.918351,
+    "ast_hash": "f2f3888914e5a6d9de386a18217f55c9",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/CLAUDE.md": {
@@ -270,9 +270,9 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/soporte/e2e.ts": {
-    "mtime": 1792092196.847199,
-    "seen": 1792117451.189382,
-    "ast_hash": "1c558bd1922dc52fc848279cd845aed2",
+    "mtime": 1792123903.157031,
+    "seen": 1792195756.8947237,
+    "ast_hash": "e7123a43d189f35c223c09d0bec89578",
     "semantic_hash": ""
   },
   "pruebas/e2e/tsconfig.json": {
@@ -384,9 +384,9 @@
     "semantic_hash": ""
   },
   "app/api/accesibilidad/perfil/route.ts": {
-    "mtime": 1792092196.3522575,
-    "seen": 1792117451.188611,
-    "ast_hash": "9a59be2be86470371673fac506dd60a9",
+    "mtime": 1792193191.2192552,
+    "seen": 1792195756.8280983,
+    "ast_hash": "fd16eba40f092c752dc9a0875da1ed4a",
     "semantic_hash": ""
   },
   "app/catalogo/[actor]/page.tsx": {
@@ -396,9 +396,9 @@
     "semantic_hash": ""
   },
   "app/catalogo/_componentes/DemoConfirmacion.tsx": {
-    "mtime": 1792092196.4568477,
-    "seen": 1792117451.1889677,
-    "ast_hash": "1d0d658ba87c855af9e2710550141acb",
+    "mtime": 1792119367.3559887,
+    "seen": 1792195756.8464565,
+    "ast_hash": "a59bf859e010a5a0e709c324467ba586",
     "semantic_hash": ""
   },
   "app/catalogo/layout.tsx": {
@@ -474,9 +474,9 @@
     "semantic_hash": ""
   },
   "componentes/a11y/Boton.tsx": {
-    "mtime": 1792117010.10562,
-    "seen": 1792117451.1890693,
-    "ast_hash": "22f345ac2b95fc4e878dc0347ff26b88",
+    "mtime": 1792195721.7861204,
+    "seen": 1792195756.8557847,
+    "ast_hash": "191aa19cf67e96c3c86ff97f93513244",
     "semantic_hash": ""
   },
   "componentes/a11y/Campo.tsx": {
@@ -486,9 +486,9 @@
     "semantic_hash": ""
   },
   "componentes/a11y/Confirmacion.tsx": {
-    "mtime": 1792092196.5334725,
-    "seen": 1792117451.1890757,
-    "ast_hash": "554f299051f5a9d3728a39597dac0000",
+    "mtime": 1792119367.3570154,
+    "seen": 1792195756.8565037,
+    "ast_hash": "71b700ebee8295ced19901b023ab95db",
     "semantic_hash": ""
   },
   "componentes/a11y/Dialogo.tsx": {
@@ -504,9 +504,9 @@
     "semantic_hash": ""
   },
   "componentes/a11y/InterruptorLetraGrande.tsx": {
-    "mtime": 1792117010.1084974,
-    "seen": 1792117451.1890924,
-    "ast_hash": "45df30b46b765324caef75822c753063",
+    "mtime": 1792195721.7889667,
+    "seen": 1792195756.8578634,
+    "ast_hash": "acdc94a486ee6afdf38e223b400f0d94",
     "semantic_hash": ""
   },
   "componentes/a11y/MarcoActor.tsx": {
@@ -534,9 +534,9 @@
     "semantic_hash": ""
   },
   "componentes/a11y/modo.ts": {
-    "mtime": 1792092196.5420618,
-    "seen": 1792117451.1891112,
-    "ast_hash": "5aafd9960d9f42cd6041abb7a59b8905",
+    "mtime": 1792193191.2356894,
+    "seen": 1792195756.8598557,
+    "ast_hash": "1a79aa48a55b479fa7c953a94303a800",
     "semantic_hash": ""
   },
   "componentes/tokens/contraste.ts": {
@@ -564,9 +564,9 @@
     "semantic_hash": ""
   },
   "modulos/accesibilidad/aplicacion/cambiarModoSenior.ts": {
-    "mtime": 1792117010.1481695,
-    "seen": 1792117451.18915,
-    "ast_hash": "90f6d5665ac77dc3e78c8e2be2b03096",
+    "mtime": 1792193191.2426467,
+    "seen": 1792195756.8638797,
+    "ast_hash": "aba9e6acd1d4b888b793b7ae4db44178",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/aplicacion/obtenerPerfil.ts": {
@@ -576,15 +576,15 @@
     "semantic_hash": ""
   },
   "modulos/accesibilidad/aplicacion/perfilDto.ts": {
-    "mtime": 1792092196.769246,
-    "seen": 1792117451.1891654,
-    "ast_hash": "13ccfbfdbacd091c4ef6da4f8f57089e",
+    "mtime": 1792193191.2436404,
+    "seen": 1792195756.8650928,
+    "ast_hash": "2a21c2b5e51c570b8510442faf877be9",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/dominio/perfilAccesibilidad.ts": {
-    "mtime": 1792092196.7722466,
-    "seen": 1792117451.1891732,
-    "ast_hash": "c3b5e8bfbd3a6ca66f300407a374dc7f",
+    "mtime": 1792193191.2456405,
+    "seen": 1792195756.8657103,
+    "ast_hash": "78ba23c228991c78bca556d67eb24f20",
     "semantic_hash": ""
   },
   "modulos/accesibilidad/infraestructura/repositorioPerfiles.ts": {
@@ -594,9 +594,9 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/accesibilidad/area-tactil.cy.ts": {
-    "mtime": 1792092196.825875,
-    "seen": 1792117451.1893225,
-    "ast_hash": "9bd52f1feda4793d1c718541346f6df5",
+    "mtime": 1792195721.791154,
+    "seen": 1792195756.888679,
+    "ast_hash": "a1cc26e30ed3c4c7bb7a8d5a49c0694a",
     "semantic_hash": ""
   },
   "pruebas/e2e/accesibilidad/catalogo.cy.ts": {
@@ -606,9 +606,9 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/accesibilidad/confirmacion.cy.ts": {
-    "mtime": 1792117010.1560142,
-    "seen": 1792117451.1893306,
-    "ast_hash": "9b866e58e629ea6b967fedcbffd03cf5",
+    "mtime": 1792119367.3620691,
+    "seen": 1792195756.890272,
+    "ast_hash": "be74fe0be4c77b0be9b50dc814138a63",
     "semantic_hash": ""
   },
   "pruebas/e2e/accesibilidad/lenguaje.cy.ts": {
@@ -834,9 +834,9 @@
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/padron/empadronar/_componentes/AsistenteEmpadronar.tsx": {
-    "mtime": 1792117010.0818162,
-    "seen": 1792117451.1877325,
-    "ast_hash": "b3e37ab2a015e33a12c630dee6075278",
+    "mtime": 1792192207.825969,
+    "seen": 1792195756.8077404,
+    "ast_hash": "132b38665ff41d92b392b2b07d8caba4",
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/padron/empadronar/page.tsx": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/padron/page.tsx": {
-    "mtime": 1792092196.2096488,
-    "seen": 1792117451.1877584,
-    "ast_hash": "5040a4cd506ff9e6574c57c973c952b2",
+    "mtime": 1792192207.8274753,
+    "seen": 1792195756.80805,
+    "ast_hash": "4fe31e1dd4ec0b853a1a197fdb5cf585",
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/page.tsx": {
@@ -864,9 +864,9 @@
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/page.tsx": {
-    "mtime": 1792092196.234994,
-    "seen": 1792117451.188025,
-    "ast_hash": "c766be0a33ea44f219eed2bd0d2b14c8",
+    "mtime": 1792192207.8295088,
+    "seen": 1792195756.812983,
+    "ast_hash": "c673b68175cedf4454ccf0c908fa294b",
     "semantic_hash": ""
   },
   "app/(garita)/garita/page.tsx": {
@@ -882,9 +882,9 @@
     "semantic_hash": ""
   },
   "app/(vecino)/page.tsx": {
-    "mtime": 1792092196.3112862,
-    "seen": 1792117451.188393,
-    "ast_hash": "ea3c142d8dcf06e436319889c5149c48",
+    "mtime": 1792195721.7851193,
+    "seen": 1792195756.823909,
+    "ast_hash": "39ebff7937002672c65756d325ce035e",
     "semantic_hash": ""
   },
   "app/_formularios/enviar.ts": {
@@ -1008,9 +1008,9 @@
     "semantic_hash": ""
   },
   "componentes/a11y/Interruptor.tsx": {
-    "mtime": 1792092196.5380394,
-    "seen": 1792117451.1890905,
-    "ast_hash": "1141a87cebf5a6e1e363da7c58915017",
+    "mtime": 1792195721.7876246,
+    "seen": 1792195756.8578594,
+    "ast_hash": "7028c349bc8b5ee3f729f482e88155c6",
     "semantic_hash": ""
   },
   "componentes/a11y/ResumenErrores.tsx": {
@@ -1242,9 +1242,9 @@
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/auditoria/page.tsx": {
-    "mtime": 1792092196.1845665,
-    "seen": 1792117451.1875148,
-    "ast_hash": "6594df72b1204622fd3be12adca3ec1e",
+    "mtime": 1792123903.123391,
+    "seen": 1792195756.8002806,
+    "ast_hash": "67b22c3928d562458b7b97bdcfcd9c0f",
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/ayuda/page.tsx": {
@@ -1290,9 +1290,9 @@
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/equipo/page.tsx": {
-    "mtime": 1792117412.9516895,
-    "seen": 1792117451.187613,
-    "ast_hash": "c58ce0568a855cf7d8e315ab81182531",
+    "mtime": 1792195721.784119,
+    "seen": 1792195756.8039925,
+    "ast_hash": "3525a5f54e10db6518b319d99b87522d",
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/padron/[predioId]/_componentes/BotonReenviar.tsx": {
@@ -1338,9 +1338,9 @@
     "semantic_hash": ""
   },
   "app/(administrador)/administracion/privacidad/page.tsx": {
-    "mtime": 1792092196.212808,
-    "seen": 1792117451.187811,
-    "ast_hash": "1e83f68b5f27de1a5cf0b5701947db46",
+    "mtime": 1792123903.1261735,
+    "seen": 1792195756.8088748,
+    "ast_hash": "7f01fd3feaa1b884e1598d11811d8a83",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/ayuda/page.tsx": {
@@ -1356,9 +1356,9 @@
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/pedidos-de-ayuda/page.tsx": {
-    "mtime": 1792092196.2375026,
-    "seen": 1792117451.1880455,
-    "ast_hash": "03e0fe9c080932b93e776b140341a918",
+    "mtime": 1792123903.1343627,
+    "seen": 1792195756.8132286,
+    "ast_hash": "c623637f455b20560dcc698cdbbb20dc",
     "semantic_hash": ""
   },
   "app/(garita)/garita/_componentes/RefrescarSolo.tsx": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   "app/(garita)/garita/consultar/ConsultarGarita.tsx": {
-    "mtime": 1792092196.2454627,
-    "seen": 1792117451.1880786,
-    "ast_hash": "d21c28ed5186bec04b19d83f3ff9916c",
+    "mtime": 1792192207.830511,
+    "seen": 1792195756.8140712,
+    "ast_hash": "eaf69df743faf4cc635440de6f423f93",
     "semantic_hash": ""
   },
   "app/(garita)/garita/consultar/instantaneaLocal.ts": {
@@ -1398,9 +1398,9 @@
     "semantic_hash": ""
   },
   "app/(garita)/garita/visitas/[id]/page.tsx": {
-    "mtime": 1792092196.2545733,
-    "seen": 1792117451.1881201,
-    "ast_hash": "e463b8ac391161d00a268887f673fe74",
+    "mtime": 1792192207.8315086,
+    "seen": 1792195756.8151836,
+    "ast_hash": "6dabe3b967e748b9c14e77ee07584c94",
     "semantic_hash": ""
   },
   "app/(garita)/garita/visitas/_componentes/AccionGarita.tsx": {
@@ -1440,15 +1440,15 @@
     "semantic_hash": ""
   },
   "app/(vecino)/avisos/Marcar.tsx": {
-    "mtime": 1792092196.2706804,
-    "seen": 1792117451.1881707,
-    "ast_hash": "591034535c204d4782412607469f95d4",
+    "mtime": 1792121463.2143564,
+    "seen": 1792195756.816598,
+    "ast_hash": "79b8f2eef509d90c294fd87bdd2be53f",
     "semantic_hash": ""
   },
   "app/(vecino)/avisos/page.tsx": {
-    "mtime": 1792117010.083804,
-    "seen": 1792117451.1881828,
-    "ast_hash": "c381cade4353ab3aae5a63a1c8be97c9",
+    "mtime": 1792121463.2153523,
+    "seen": 1792195756.816601,
+    "ast_hash": "c33ed3a315b2449f7be7524ae30ffa24",
     "semantic_hash": ""
   },
   "app/(vecino)/avisos/preferencias/Preferencias.tsx": {
@@ -1476,9 +1476,9 @@
     "semantic_hash": ""
   },
   "app/(vecino)/mas/ayuda-y-accesibilidad/page.tsx": {
-    "mtime": 1792117010.0954394,
-    "seen": 1792117451.1882763,
-    "ast_hash": "e99b339199e927c49baf4b8aa138f126",
+    "mtime": 1792193191.216221,
+    "seen": 1792195756.8198903,
+    "ast_hash": "d73245e2f35a51b5ebb0ee3042890541",
     "semantic_hash": ""
   },
   "app/(vecino)/mas/ayuda/PedirAyuda.tsx": {
@@ -1500,15 +1500,15 @@
     "semantic_hash": ""
   },
   "app/(vecino)/mas/perfil/OposicionUbicacion.tsx": {
-    "mtime": 1792092196.3015845,
-    "seen": 1792117451.1883123,
-    "ast_hash": "84eb6c72c32be516b16253ff8489a418",
+    "mtime": 1792121463.2173536,
+    "seen": 1792195756.8216658,
+    "ast_hash": "5dfa0f3d6d8f9902029c18359cc0e366",
     "semantic_hash": ""
   },
   "app/(vecino)/mas/perfil/cancelar/CancelarCuenta.tsx": {
-    "mtime": 1792092196.3026059,
-    "seen": 1792117451.188323,
-    "ast_hash": "d9bef27c905e26424a2bda3c488ec630",
+    "mtime": 1792192207.833508,
+    "seen": 1792195756.8216698,
+    "ast_hash": "eb09c39eb452b5b97739989afe32dccd",
     "semantic_hash": ""
   },
   "app/(vecino)/mas/perfil/cancelar/page.tsx": {
@@ -1536,9 +1536,9 @@
     "semantic_hash": ""
   },
   "app/(vecino)/visitas/[id]/anular/AnularVisita.tsx": {
-    "mtime": 1792092196.3247082,
-    "seen": 1792117451.1884232,
-    "ast_hash": "b90d2cfbcf7cd6c58dceb5cddf1582b3",
+    "mtime": 1792192207.8345077,
+    "seen": 1792195756.8242733,
+    "ast_hash": "053d37362d05fb15b5b660c15d7a31ae",
     "semantic_hash": ""
   },
   "app/(vecino)/visitas/[id]/anular/page.tsx": {
@@ -1548,9 +1548,9 @@
     "semantic_hash": ""
   },
   "app/(vecino)/visitas/[id]/responder/ResponderVisita.tsx": {
-    "mtime": 1792092196.3272214,
-    "seen": 1792117451.188438,
-    "ast_hash": "aacef8ac8d2be4acee75fa9239ba4801",
+    "mtime": 1792192207.835508,
+    "seen": 1792195756.824453,
+    "ast_hash": "70eb58dc685e7f81f9e633d88708b9fa",
     "semantic_hash": ""
   },
   "app/(vecino)/visitas/[id]/responder/page.tsx": {
@@ -1758,9 +1758,9 @@
     "semantic_hash": ""
   },
   "app/api/notificaciones/leidas/route.ts": {
-    "mtime": 1792092196.4170725,
-    "seen": 1792117451.1888704,
-    "ast_hash": "62c8f778500a99c8d3dad82ed57270f1",
+    "mtime": 1792121463.2193542,
+    "seen": 1792195756.8396676,
+    "ast_hash": "736af8b6ab07924a0d39ee01cc8dd1a0",
     "semantic_hash": ""
   },
   "app/api/notificaciones/route.ts": {
@@ -1812,9 +1812,9 @@
     "semantic_hash": ""
   },
   "compartido/notificaciones/centro.ts": {
-    "mtime": 1792092196.522833,
-    "seen": 1792117451.18904,
-    "ast_hash": "5449bf88387373bf00c1cd8809ea27e6",
+    "mtime": 1792121463.2232437,
+    "seen": 1792195756.851254,
+    "ast_hash": "6293545bb255710e7634ca14a8f45baa",
     "semantic_hash": ""
   },
   "compartido/notificaciones/preferencias.ts": {
@@ -1878,9 +1878,9 @@
     "semantic_hash": ""
   },
   "modulos/identidad/aplicacion/avisos.ts": {
-    "mtime": 1792117010.1511672,
-    "seen": 1792117451.189189,
-    "ast_hash": "553a95ab2d49d857f5716943c6cb1baa",
+    "mtime": 1792121463.2272513,
+    "seen": 1792195756.8671052,
+    "ast_hash": "fea82ca180e9c6586979cfd6292fa029",
     "semantic_hash": ""
   },
   "modulos/identidad/aplicacion/datosParaAyuda.ts": {
@@ -1986,21 +1986,21 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/auditoria.cy.ts": {
-    "mtime": 1792092196.8302436,
-    "seen": 1792117451.1893427,
-    "ast_hash": "a7bb7d56990671d13c36db7b0f8e2d6f",
+    "mtime": 1792123903.1483378,
+    "seen": 1792195756.891216,
+    "ast_hash": "99c3cff55490f26f9abc51b586e4eb08",
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/avisos.cy.ts": {
-    "mtime": 1792117010.161034,
-    "seen": 1792117451.1893444,
-    "ast_hash": "94c333b9d559e11fca3bb264c47b588f",
+    "mtime": 1792121463.2302496,
+    "seen": 1792195756.8912194,
+    "ast_hash": "185859d07b127aa50598cfe2c762463f",
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/cancelacion.cy.ts": {
-    "mtime": 1792092196.832241,
-    "seen": 1792117451.1893487,
-    "ast_hash": "3708b0298e568e127fb32457e3e31d61",
+    "mtime": 1792121463.2302496,
+    "seen": 1792195756.891476,
+    "ast_hash": "216845541314ea887a7759540c6665c1",
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/entrada-alterna.cy.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/equipo.cy.ts": {
-    "mtime": 1792117412.9611323,
-    "seen": 1792117451.1893578,
-    "ast_hash": "6fe4b2d37e97f36fd8aa389055270c66",
+    "mtime": 1792195721.7941606,
+    "seen": 1792195756.8923757,
+    "ast_hash": "891886dce8241e8f69ad6a9f09c9bd90",
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/garita.cy.ts": {
@@ -2034,9 +2034,9 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/privacidad.cy.ts": {
-    "mtime": 1792092196.8412416,
-    "seen": 1792117451.1893651,
-    "ast_hash": "56959df6b9a609a79c4957bafa61545e",
+    "mtime": 1792123903.1525989,
+    "seen": 1792195756.8930402,
+    "ast_hash": "e0b2ed8c3d488bcde2860a93fecb81c7",
     "semantic_hash": ""
   },
   "pruebas/e2e/identidad/visitas.cy.ts": {
@@ -2064,9 +2064,9 @@
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/avisos.test.ts": {
-    "mtime": 1792092196.8572562,
-    "seen": 1792117451.189405,
-    "ast_hash": "139a096426c6d1141434746155d64d41",
+    "mtime": 1792121463.2332504,
+    "seen": 1792195756.8976457,
+    "ast_hash": "94b2d54b7d262a814bf1659729da08ce",
     "semantic_hash": ""
   },
   "pruebas/integracion/identidad/cancelacion.test.ts": {
@@ -2532,9 +2532,9 @@
     "semantic_hash": ""
   },
   "app/_accesibilidad/InterruptorVoz.tsx": {
-    "mtime": 1792092196.3332956,
-    "seen": 1792117451.1884754,
-    "ast_hash": "93e28063ffb9e428d559d3b61a48bd74",
+    "mtime": 1792121463.218354,
+    "seen": 1792195756.8252542,
+    "ast_hash": "1cb06a6f3baeed8ae836ec88a8066bd7",
     "semantic_hash": ""
   },
   "app/_accesibilidad/voces.ts": {
@@ -2598,9 +2598,9 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/transparencia/escuchar.cy.ts": {
-    "mtime": 1792117010.1656227,
-    "seen": 1792117451.1893902,
-    "ast_hash": "3dea13e4485d5f60c7c3f9bedad6ec10",
+    "mtime": 1792121463.2312486,
+    "seen": 1792195756.895701,
+    "ast_hash": "6478d43c37ac3d52b3f7f4478522511b",
     "semantic_hash": ""
   },
   "pruebas/integracion/transparencia/comunicados.test.ts": {
@@ -3006,9 +3006,9 @@
     "semantic_hash": ""
   },
   "app/_sesion/CambiarDePerfil.tsx": {
-    "mtime": 1792092196.344273,
-    "seen": 1792117451.1885772,
-    "ast_hash": "bc4035052900f42bcc04584d38ca8690",
+    "mtime": 1792195721.7851193,
+    "seen": 1792195756.826944,
+    "ast_hash": "b3ecea2a3e477e38947bada61f69bf91",
     "semantic_hash": ""
   },
   "modulos/identidad/aplicacion/perfiles.ts": {
@@ -3066,9 +3066,9 @@
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/alertas/page.tsx": {
-    "mtime": 1792092196.2181425,
-    "seen": 1792117451.1878538,
-    "ast_hash": "d43f5742b1a884334d18118398573b0f",
+    "mtime": 1792123903.1281872,
+    "seen": 1792195756.8094933,
+    "ast_hash": "9debcbe1882982cb4d3ae8c3cdb015f7",
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/[id]/EvaluarReporte.tsx": {
@@ -3114,9 +3114,9 @@
     "semantic_hash": ""
   },
   "app/(directiva)/directiva/incidentes/page.tsx": {
-    "mtime": 1792092196.2329962,
-    "seen": 1792117451.1879995,
-    "ast_hash": "563ac3623aab1b2dc5aacd92deb541b6",
+    "mtime": 1792123903.1311893,
+    "seen": 1792195756.8125136,
+    "ast_hash": "ce87cceaffba3132858c76f6d9caa144",
     "semantic_hash": ""
   },
   "app/(vecino)/guia/[seccion]/GuiaDeSeccion.tsx": {
@@ -3138,15 +3138,15 @@
     "semantic_hash": ""
   },
   "app/(vecino)/incidentes/_componentes/IncidentesDelBarrio.tsx": {
-    "mtime": 1792092196.2809505,
-    "seen": 1792117451.1882432,
-    "ast_hash": "8691587bbfe76f2fcef57d60d35bdfac",
+    "mtime": 1792123903.1380405,
+    "seen": 1792195756.8181965,
+    "ast_hash": "3ad124de87ed134c70d4ed2b025ee063",
     "semantic_hash": ""
   },
   "app/(vecino)/incidentes/page.tsx": {
-    "mtime": 1792092196.2834656,
-    "seen": 1792117451.188249,
-    "ast_hash": "134b1b3a4666719fd786b3fc3c364148",
+    "mtime": 1792123903.1401815,
+    "seen": 1792195756.8181999,
+    "ast_hash": "b7afd998c203e265fdaaabf51e3feb33",
     "semantic_hash": ""
   },
   "app/(vecino)/incidentes/reportar/ReportarProblema.tsx": {
@@ -3162,9 +3162,9 @@
     "semantic_hash": ""
   },
   "app/_guias/OfertaDeGuia.tsx": {
-    "mtime": 1792092196.340278,
-    "seen": 1792117451.1885543,
-    "ast_hash": "e954071d1be974c29adb3fe1be09df43",
+    "mtime": 1792121463.218354,
+    "seen": 1792195756.8264656,
+    "ast_hash": "b2d2d558c57fc2e113f51409508d5c0d",
     "semantic_hash": ""
   },
   "app/_incidentes/AvanceReporte.tsx": {
@@ -3276,9 +3276,9 @@
     "semantic_hash": ""
   },
   "componentes/a11y/FiltroEnHoja.tsx": {
-    "mtime": 1792117010.1074328,
-    "seen": 1792117451.1890862,
-    "ast_hash": "d601abeb13c7af91b7e32c275b110245",
+    "mtime": 1792123903.1424289,
+    "seen": 1792195756.857603,
+    "ast_hash": "c838f5e375a018388e1906ec6351d1b6",
     "semantic_hash": ""
   },
   "componentes/a11y/ListaVerMas.tsx": {
@@ -3432,15 +3432,15 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/accesibilidad/densidad.cy.ts": {
-    "mtime": 1792117010.1560142,
-    "seen": 1792117451.1893322,
-    "ast_hash": "12b5c608e3b92af7bb64cb258487f9ca",
+    "mtime": 1792192207.8448591,
+    "seen": 1792195756.8902812,
+    "ast_hash": "d8484536374e9475ab0dcfcfa6053502",
     "semantic_hash": ""
   },
   "pruebas/e2e/accesibilidad/guia-seccion.cy.ts": {
-    "mtime": 1792092196.826875,
-    "seen": 1792117451.189334,
-    "ast_hash": "9eb827e62f7d74c5d13db2afce4f87eb",
+    "mtime": 1792121463.2282488,
+    "seen": 1792195756.890285,
+    "ast_hash": "c866d0e645e59a347e78494238608532",
     "semantic_hash": ""
   },
   "pruebas/e2e/accesibilidad/lista-filtro.cy.ts": {
@@ -3468,9 +3468,9 @@
     "semantic_hash": ""
   },
   "pruebas/e2e/incidencias/mapa.cy.ts": {
-    "mtime": 1792092196.8438225,
-    "seen": 1792117451.1893742,
-    "ast_hash": "c86ee1b709389d8db9d899ca7637d495",
+    "mtime": 1792123903.1554272,
+    "seen": 1792195756.8940475,
+    "ast_hash": "5470ee823c96daafdd982df78d6b8e1a",
     "semantic_hash": ""
   },
   "pruebas/e2e/incidencias/reportar.cy.ts": {
@@ -3606,9 +3606,9 @@
     "semantic_hash": ""
   },
   "docs/FIDELIDAD_PROTOTIPO.md": {
-    "mtime": 1792117010.1181576,
-    "seen": 1792117451.1895633,
-    "ast_hash": "76162519d41d54dba633490d4e61a6fc",
+    "mtime": 1792192207.8393345,
+    "seen": 1792195756.9165933,
+    "ast_hash": "7c113ba54ad3975445767071b5049ea2",
     "semantic_hash": ""
   },
   "docs/evidencias/M3.md": {
@@ -3927,6 +3927,30 @@
     "mtime": 1792092196.7370665,
     "seen": 1792117451.1898623,
     "ast_hash": "831d4413cca75e2f94d56d1ed7f7d2f0",
+    "semantic_hash": ""
+  },
+  "app/(administrador)/administracion/equipo/AccionesDePersona.tsx": {
+    "mtime": 1792192207.8207297,
+    "seen": 1792195756.8005624,
+    "ast_hash": "a6da320a5d9edb7c38bec8c29a11607d",
+    "semantic_hash": ""
+  },
+  "app/api/notificaciones/no-leidas/route.ts": {
+    "mtime": 1792121463.2222364,
+    "seen": 1792195756.839673,
+    "ast_hash": "707328faca606b96df8ed7e9337e1a83",
+    "semantic_hash": ""
+  },
+  "pruebas/e2e/soporte/actores.ts": {
+    "mtime": 1792192207.8453982,
+    "seen": 1792195756.8947196,
+    "ast_hash": "517af467a65f49f00d5b186768576d11",
+    "semantic_hash": ""
+  },
+  "cypress/downloads/mis-datos-S-0006.pdf": {
+    "mtime": 1792194876.8101847,
+    "seen": 1792195756.9208674,
+    "ast_hash": "98520aece8c225b4f5af9e8d45796925",
     "semantic_hash": ""
   }
 }
