@@ -95,6 +95,36 @@ export default defineConfig({
             await cliente.end();
           }
         },
+        // Deja sin asambleas la BD de pruebas: la spec de asambleas no depende de lo que dejó una corrida
+        // anterior ni de que el plazo de una ya haya vencido. Solo la BD de pruebas.
+        async reiniciarAsambleas() {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            await cliente.query(
+              "TRUNCATE asambleas_confirmaciones, asambleas_asambleas, asambleas_convocatorias CASCADE",
+            );
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
+        // Adelanta el plazo para confirmar de las asambleas que siguen vigentes, para probar lo que pasa al
+        // corte sin esperar a la víspera (HU-ASA-04, HU-ASA-05). Solo la BD de pruebas.
+        async vencerCorteDeAsambleas() {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            await cliente.query(
+              `UPDATE asambleas_asambleas SET "confirmacionesHasta" = now() - interval '1 minute'
+               WHERE "convocatoriaId" IN (
+                 SELECT id FROM asambleas_convocatorias WHERE estado IN ('PUBLICADA', 'REPROGRAMADA'))`,
+            );
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
         // Un archivo ya "subido" por esa persona (un comprobante o la evidencia de una queja): el CI no
         // habla con R2 (docs/PRUEBAS.md §2), así que la prueba simula la subida y usa este. Solo la BD de pruebas.
         async archivoDePrueba({ dni, uso = "comprobante_egreso" }: { dni: string; uso?: string }) {

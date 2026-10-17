@@ -18,6 +18,7 @@ const entrarComoMarta = () => {
 };
 
 describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
+  before(() => cy.task("reiniciarAsambleas"));
   beforeEach(entrarComoMarta);
 
   it("@HU-ASA-01 CA1 CA2 CA3 la directiva convoca, revisa y publica el afiche en teléfono", () => {
@@ -161,5 +162,58 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
 
     cy.contains("button", "Anular este registro").click();
     cy.contains("Todavía no confirma").should("exist");
+  });
+
+  // Las dos últimas vencen el plazo para confirmar de las asambleas vigentes: van al final.
+  it("@HU-ASA-05 CA1 CA2 la directiva reprograma una asamblea sin quórum, en dos pasos y en teléfono", () => {
+    cy.task("vencerCorteDeAsambleas");
+    cy.viewport(360, 800);
+
+    cy.visit("/directiva/asambleas");
+    cy.contains("No se llegó al quórum").should("exist");
+    cy.revisarAccesibilidad("sin-quorum-directiva-360");
+    cy.contains("a", "Decidir qué hacer").click();
+
+    cy.get("h1").should("have.text", "No se llegó al quórum");
+    cy.contains("p", "Paso 1 de 2").should("exist");
+    cy.revisarAccesibilidad("sin-quorum-paso1-360");
+
+    cy.contains("button", "Revisar la decisión").click();
+    cy.contains("Indique la nueva fecha y la hora de la asamblea.").should("exist");
+    cy.contains("button", "Elegir fecha y hora").click();
+    cy.get("#campo-nueva-fecha-fecha").type(enDias(90));
+    cy.get("#campo-nueva-fecha-hora").type("18:00");
+    cy.contains("button", "Listo").click();
+    cy.contains("button", "Revisar la decisión").click();
+
+    cy.get("h1").should("have.text", "¿Desea registrar esta decisión?");
+    cy.focused().should("match", "h1");
+    cy.contains("dd", "Reprogramar la asamblea").should("exist");
+    cy.revisarAccesibilidad("sin-quorum-confirmar-360");
+    cy.contains("button", "Sí, registrar la decisión").click();
+
+    cy.contains('[role="status"]', "Decisión registrada").should("exist");
+    cy.revisarAccesibilidad("sin-quorum-hecho-360");
+  });
+
+  it("@HU-ASA-05 CA3 en modo Senior la directiva convierte la asamblea en sesión informativa y el vecino lo ve", () => {
+    cy.task("vencerCorteDeAsambleas");
+    cy.viewport(360, 800);
+    cy.guardarModo("senior");
+
+    cy.visit("/directiva/asambleas/sin-quorum");
+    cy.contains("label", "Convertirla en sesión informativa").click();
+    cy.contains("Sin votaciones").should("exist");
+    cy.revisarAccesibilidad("sin-quorum-informativa-senior-360");
+    cy.contains("button", "Revisar la decisión").click();
+
+    cy.contains("dd", "Sesión informativa").should("exist");
+    cy.contains("button", "Sí, registrar la decisión").click();
+    cy.contains('[role="status"]', "Decisión registrada").should("exist");
+
+    cy.visit("/asambleas");
+    cy.contains("Será una sesión informativa").should("exist");
+    cy.contains("no se votará ni se tomarán acuerdos").should("exist");
+    cy.revisarAccesibilidad("asambleas-vecino-informativa-senior-360");
   });
 });
