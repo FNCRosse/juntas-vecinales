@@ -81,7 +81,10 @@ export const ACTORES: Actor[] = [
 /** Entra como el actor con la clave de las semillas y deja su vista (normal o grande). */
 export function entrarComo(actor: Actor, modo: "normal" | "senior", conVecinaNueva = false) {
   if (conVecinaNueva && actor.vecinaNueva) {
-    cy.entrarComoVecinaNueva("Vecina de Prueba");
+    // Una sola vecina para toda la corrida: crear una por prueba llena el padrón y choca con otros e2e.
+    cy.session("vecina-densidad", () => {
+      cy.entrarComoVecinaNueva("Vecina de Prueba");
+    });
     cy.guardarModo(modo);
     return;
   }

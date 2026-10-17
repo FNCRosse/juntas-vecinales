@@ -34,11 +34,11 @@ describe("@HU-GAR-06 Consultar placas o DNI con el semáforo", () => {
 
     cy.get("#campo-texto").type("JLM-314");
     cy.contains("button", "Buscar").click();
-    cy.contains("article", "Vecino atrasado: la reja no se abre sola")
+    cy.contains("article", "Vecino atrasado: no abrir")
       .should("contain.text", "Julio Mendoza")
       .and("not.contain.text", "S/");
     cy.revisarAccesibilidad("consultar-rojo-normal");
-    cy.contains("button", "Abrir por emergencia").click();
+    cy.contains("button", "Es una emergencia: abrir la reja igual").click();
     cy.get("h1").should("have.text", "¿Abrir la reja por una emergencia?");
     cy.contains("Paso 2 de 2").should("exist");
     cy.contains("button", "Sí, abrir la reja ahora").click();

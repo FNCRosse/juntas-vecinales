@@ -2,6 +2,7 @@ import { ChevronLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { visitasDeHoy } from "@/modulos/identidad/aplicacion/garita";
 import { RefrescarSolo } from "../_componentes/RefrescarSolo";
@@ -32,18 +33,21 @@ export default async function LlegoUnaVisita() {
       <BuscarVisita />
       <Tarjeta titulo="Visitas anunciadas">
         {anunciadas.length ? (
-          <ul className="flex flex-col gap-4">
-            {anunciadas.map((a) => (
-              <li key={a.id} className="flex flex-col gap-2 border-b border-borde-sutil pb-4 last:border-b-0">
+          <ListaVerMas
+            etiqueta="Visitas anunciadas"
+            normal={4}
+            senior={2}
+            elementos={anunciadas.map((a) => (
+              <div key={a.id} className="flex flex-col gap-2 border-b border-borde-sutil pb-4">
                 <strong>{a.nombre}</strong>
                 <span>Para {a.vivienda}</span>
                 <span className="text-texto-secundario">
                   {a.cuando} · {a.vehiculo}
                 </span>
                 <EnlaceLlego id={a.id} nombre={a.nombre} />
-              </li>
+              </div>
             ))}
-          </ul>
+          />
         ) : (
           <p>No hay visitas anunciadas para hoy.</p>
         )}
