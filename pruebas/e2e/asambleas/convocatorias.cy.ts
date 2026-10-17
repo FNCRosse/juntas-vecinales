@@ -110,6 +110,29 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("button", "Sí, asistiré").should("exist");
   });
 
+  it("@HU-ASA-04 CA2 la directiva ve el quórum proyectado con la barra y si alcanza el mínimo", () => {
+    cy.request("POST", "/api/asambleas", {
+      tipoAsamblea: "ORDINARIA",
+      fecha: enDias(64),
+      hora: "18:00",
+      lugar: LUGAR,
+      motivo: MOTIVO,
+      idOperacion: crypto.randomUUID(),
+    })
+      .its("status")
+      .should("eq", 201);
+    cy.viewport(360, 800);
+    cy.guardarModo("senior");
+
+    cy.visit("/directiva/asambleas");
+    cy.contains("h3", "Quórum proyectado").should("exist");
+    cy.get('[role="img"][aria-label^="Barra de quórum"]').should("exist");
+    cy.contains(/Falta(n)? \d+ casas? para el mínimo/).should("exist");
+    cy.contains("Todavía no alcanza el quórum").should("exist");
+    cy.contains("Confirmaron en la app").should("exist");
+    cy.revisarAccesibilidad("quorum-directiva-senior-360");
+  });
+
   it("@HU-ASA-03 CA1 CA2 CA3 el mediador busca a un vecino y asienta su asistencia", () => {
     cy.request("POST", "/api/asambleas", {
       tipoAsamblea: "ORDINARIA",

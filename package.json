@@ -15,7 +15,7 @@
     "test:e2e": "npm run build && node guiones/e2e.mjs",
     "lint": "eslint",
     "tipos": "tsc --noEmit",
-    "worker:construir": "tsc -p worker/tsconfig.json",
+    "worker:construir": "tsc -p worker/tsconfig.json && node guiones/alias-worker.mjs",
     "worker:iniciar": "node dist/worker/worker/servidor.js",
     "estilos": "bash guiones/revisar-estilos.sh",
     "matriz": "node guiones/matriz-hu.mjs",

@@ -73,6 +73,9 @@ model Asamblea {
   padronTotal        Int
   quorumRequerido    Int
   confirmacionesHasta DateTime
+  // Cuándo el worker avisó a la directiva si el quórum proyectado alcanza al corte (HU-ASA-04 CA3). Se
+  // reclama con un UPDATE condicionado a que siga vacío, así el aviso sale una sola vez aunque corran dos.
+  avisoCorteEn       DateTime?
 
   @@map("asambleas_asambleas")
 }
