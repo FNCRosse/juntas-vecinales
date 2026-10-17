@@ -1,10 +1,10 @@
 export {};
 
-// Inicio del vecino (VEC-ACC-09). En M1 tiene el saludo, la vivienda y "Mis avisos"; M3 suma "Mis
+// Inicio del vecino (VEC-ACC-09). En M1 tiene el saludo y "Mis avisos"; M3 suma "Mis
 // reportes" y M4 y M5, sus bloques. Marta es directiva y vecina de Mz. A, lote 12.
 
 describe("@HU-GAR-19 Panel de inicio", () => {
-  it("@HU-GAR-19 CA1 CA2 CA3 saluda, muestra la vivienda y lleva a sus avisos nuevos", () => {
+  it("@HU-GAR-19 CA1 CA2 CA3 saluda como el prototipo y lleva a sus avisos nuevos", () => {
     cy.clearCookies();
     cy.request("POST", "/api/auth/clave", { dni: "40000002", clave: "clave-de-prueba" });
     cy.request("POST", "/api/auth/politica", { acepto: true });
@@ -15,8 +15,7 @@ describe("@HU-GAR-19 Panel de inicio", () => {
     cy.viewport(360, 800);
     cy.guardarModo("senior");
     cy.visit("/");
-    cy.get("h1").should("contain.text", "Marta");
-    cy.contains("p", "Mz. A, lote 12").should("exist");
+    cy.get("h1").should("have.text", "Hola, Marta");
     cy.contains("a", "Mis avisos").should("contain.text", "nuevo");
     cy.contains("a", "Mis reportes").should("have.attr", "href", "/incidentes");
     cy.revisarAccesibilidad("inicio-vecino-senior-360");

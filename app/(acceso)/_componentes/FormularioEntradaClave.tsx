@@ -16,10 +16,15 @@ type Errores = { dni?: string; clave?: string; general?: string; pausa?: string 
 export function FormularioEntradaClave({
   etiquetaClave,
   ayudaClave,
+  ayudaDni = "Son 8 números.",
+  textoBoton = "Entrar con mi clave",
   siguePausa,
 }: {
   etiquetaClave: string;
-  ayudaClave: string;
+  ayudaClave?: string;
+  /** Ayuda bajo el DNI; el vecino (VEC-ACC-05) no lleva ninguna. */
+  ayudaDni?: string;
+  textoBoton?: string;
   /** Qué hacer mientras la entrada con clave está en pausa. */
   siguePausa: ReactNode;
 }) {
@@ -55,7 +60,7 @@ export function FormularioEntradaClave({
       <Campo
         name="dni"
         etiqueta="Su DNI"
-        ayuda="Son 8 números."
+        ayuda={ayudaDni || undefined}
         inputMode="numeric"
         autoComplete="username"
         error={errores.dni}
@@ -68,7 +73,7 @@ export function FormularioEntradaClave({
         error={errores.clave}
       />
       <Boton type="submit" icono={LogIn} anchoCompleto cargando={enviando}>
-        Entrar con mi clave
+        {textoBoton}
       </Boton>
     </form>
   );

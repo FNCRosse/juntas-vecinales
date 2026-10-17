@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Volver, OpcionEntrada } from "../../_componentes/Opciones";
+import Link from "next/link";
+import { Volver } from "../../_componentes/Opciones";
 import { FormularioPedirEnlace } from "../../_componentes/FormularioPedirEnlace";
 
 export const metadata: Metadata = { title: "Pedir un enlace nuevo" };
@@ -21,12 +22,12 @@ export default function EnlaceNuevo() {
         textoBoton="Enviar un enlace nuevo"
         textoEnviado="Revise su WhatsApp. El enlace anterior ya no sirve."
       />
-      <OpcionEntrada
+      <Link
         href="/clave"
-        icono="clave"
-        titulo="No tengo WhatsApp: entrar con mi clave"
-        detalle="Si ya creó una clave de respaldo"
-      />
+        className="inline-flex min-h-tactil items-center self-start font-bold text-texto-enlace"
+      >
+        No tengo WhatsApp: entrar con mi clave
+      </Link>
     </div>
   );
 }

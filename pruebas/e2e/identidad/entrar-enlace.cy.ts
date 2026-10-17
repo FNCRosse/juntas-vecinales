@@ -92,7 +92,7 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
       cy.get("h1").should("have.text", "Tenga la app en su pantalla");
       cy.contains("p", "Agregar a inicio").should("exist");
       cy.revisarAccesibilidad("guia-paso4-senior");
-      cy.contains("a", "Terminar e ir al inicio").click();
+      cy.contains("a", "Terminar y empezar").click();
 
       cy.location("pathname").should("eq", "/");
       cy.get("h1").should("contain.text", "Sofía");

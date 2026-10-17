@@ -149,6 +149,13 @@ describe("@HU-GAR-07 @HU-GAR-08 Visitas en la garita y bitácora", () => {
     cy.location("pathname").then((ruta) => {
       const id = ruta.split("/").pop();
       entrarComo("40000002");
+      // VEC-ACC-09: el Inicio avisa que hay una visita esperando y lleva a Responder.
+      cy.visit("/");
+      cy.contains('[role="status"]', `${NO_ANUNCIADA} está en la garita y pregunta por usted`).should(
+        "contain.text",
+        "Luis Paredes, el vigilante, espera su respuesta.",
+      );
+      cy.contains("a", "Responder").should("have.attr", "href", `/visitas/${id}/responder`);
       cy.visit(`/visitas/${id}/responder`);
       cy.get("h1").should("have.text", `¿Deja pasar a ${NO_ANUNCIADA}?`);
       cy.contains("section", "Viene a revisar el cable").should(

@@ -9,8 +9,8 @@ import { enviarJson } from "@/app/_formularios/enviar";
 import { Boton } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
-import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 import type { CampoRectificable } from "@/modulos/identidad/aplicacion/arco";
 
 const AYUDA: Record<CampoRectificable, { etiqueta: string; ayuda: string }> = {
@@ -66,21 +66,22 @@ export function CorregirDato({ campos }: { campos: Record<CampoRectificable, { o
       </Link>
       <h1 className="text-titulo-1">Corregir un dato</h1>
       <ResumenErrores errores={listaErrores} />
-      <GrupoOpciones id="campo-campo" pregunta="¿Qué dato quiere corregir?" error={errores.campo}>
-        {(Object.keys(campos) as CampoRectificable[]).map((c) => (
-          <Opcion
-            key={c}
-            tipo="radio"
-            name="campo"
-            etiqueta={campos[c].opcion}
-            checked={campo === c}
-            onChange={() => {
-              setCampo(c);
-              setErrores({});
-            }}
-          />
-        ))}
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-campo"
+        pregunta="¿Qué dato quiere corregir?"
+        vacio="Elija el dato"
+        opciones={(Object.keys(campos) as CampoRectificable[]).map((c) => ({
+          valor: c,
+          etiqueta: campos[c].opcion,
+          detalle: c === "WHATSAPP" ? "Por ejemplo, si cambió de teléfono" : undefined,
+        }))}
+        valor={campo}
+        alElegir={(c) => {
+          setCampo(c);
+          setErrores({});
+        }}
+        error={errores.campo}
+      />
       {campo && (
         <>
           <Campo

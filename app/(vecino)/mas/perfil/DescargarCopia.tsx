@@ -28,7 +28,7 @@ export function DescargarCopia() {
   return (
     <div className="flex flex-col gap-3">
       <Boton icono={Download} cargando={enviando} onClick={descargar}>
-        Bajar una copia de mis datos (PDF)
+        Descargar una copia de mis datos
       </Boton>
       {lista && (
         <MensajeEstado tipo="exito" titulo="Descargamos una copia de sus datos">

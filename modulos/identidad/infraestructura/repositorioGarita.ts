@@ -136,6 +136,14 @@ export async function visitaConPredio(id: string) {
   return prisma.visita.findUnique({ where: { id }, include: { predio: { include: VIVEN } } });
 }
 
+/** La visita no anunciada que espera la respuesta de la casa, la más reciente (Inicio del vecino). */
+export async function visitaEsperandoRespuesta(predioId: string) {
+  return prisma.visita.findFirst({
+    where: { predioId, anunciada: false, estado: "ESPERANDO_RESPUESTA" },
+    orderBy: { creadaEn: "desc" },
+  });
+}
+
 export async function crearVisitaNoAnunciada(tx: Transaccion, datos: Prisma.VisitaUncheckedCreateInput) {
   return tx.visita.create({ data: { ...datos, anunciada: false, estado: "ESPERANDO_RESPUESTA" } });
 }

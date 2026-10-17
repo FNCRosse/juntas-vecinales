@@ -25,7 +25,7 @@ export const TIPOS_ARCO: Record<TipoArco, string> = {
 export const CAMPOS: Record<CampoRectificable, { opcion: string; nombre: string }> = {
   NOMBRE: { opcion: "Mi nombre", nombre: "el nombre" },
   DNI: { opcion: "Mi DNI", nombre: "el DNI" },
-  DIRECCION: { opcion: "Mi vivienda (manzana y lote)", nombre: "la vivienda" },
+  DIRECCION: { opcion: "Mi dirección", nombre: "la vivienda" },
   WHATSAPP: { opcion: "Mi número de WhatsApp", nombre: "el número de WhatsApp" },
 };
 

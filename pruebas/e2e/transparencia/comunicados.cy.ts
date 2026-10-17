@@ -68,10 +68,9 @@ describe("@HU-ASA-15 Comunicados generales y feed comunitario", () => {
     cy.revisarAccesibilidad("noticias-senior-360");
 
     cy.visit("/");
-    cy.contains("h2", "Últimas noticias de la junta").should("exist");
-    cy.contains("a", "Ver todas las noticias").should("exist");
+    cy.contains("a", "Noticias de la junta").should("have.attr", "href", "/noticias");
     cy.revisarAccesibilidad("inicio-noticias-senior-360");
-    cy.contains("a", "Ver todas las noticias").click();
+    cy.contains("a", "Noticias de la junta").click();
     cy.location("pathname").should("eq", "/noticias");
   });
 });
