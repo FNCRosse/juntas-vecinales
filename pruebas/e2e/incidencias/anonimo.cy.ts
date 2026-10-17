@@ -23,9 +23,11 @@ describe("@HU-QUE-02 Modo anónimo", () => {
     cy.viewport(360, 800);
     cy.visit("/incidentes/reportar");
     cy.esperarHidratacion("Revisar mi reporte");
-    cy.contains("label", "Seguridad").click();
+    cy.contains("button", "Elija el tipo").click();
+    cy.get("[role=dialog]").contains("button", "Seguridad").click();
     cy.get("#campo-descripcion").type("Robaron el espejo de un auto estacionado");
-    cy.contains("button", "Cerca de mi casa").click();
+    cy.contains("button", "Elija el lugar").click();
+    cy.get("[role=dialog]").contains("button", "Cerca de mi casa").click();
     cy.get("#campo-evidencias").selectFile({
       contents: Cypress.Buffer.from("foto"),
       fileName: "espejo.jpg",
@@ -37,7 +39,7 @@ describe("@HU-QUE-02 Modo anónimo", () => {
     cy.revisarAccesibilidad("reportar-anonimo-360");
     cy.contains("label", "Acepto la política de privacidad").click();
     cy.contains("button", "Revisar mi reporte").click();
-    cy.contains("dd", "Sin su nombre (anónimo)").should("exist");
+    cy.contains("dd", "sin su nombre (anónimo)").should("exist");
     cy.contains("button", "Sí, enviar mi reporte").click();
     cy.contains("aunque haya enviado el reporte sin su nombre").should("exist");
     cy.contains("strong", /^Q-\d{4}-\d{5}-[A-Z2-9]{4}$/).should("exist");

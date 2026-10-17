@@ -36,12 +36,15 @@ describe("@HU-QUE-01 @HU-QUE-04 Registrar una queja y emitir su ticket", () => {
     cy.get("#campo-lugar-error").should("contain.text", "Falta el lugar");
     cy.revisarAccesibilidad("reportar-faltan-datos-senior-360");
 
-    cy.contains("label", "Ruidos molestos").click();
+    cy.contains("button", "Elija el tipo").click();
+    cy.get("[role=dialog]").contains("button", "Ruidos molestos").click();
     cy.get("#campo-descripcion").type("Música muy fuerte todas las noches después de las 11 p. m.");
-    cy.contains("button", "Elegir la manzana en la lista").click();
+    cy.contains("button", "Elija el lugar").click();
+    cy.get("[role=dialog]").contains("button", "Elegir la manzana en la lista").click();
     cy.get("h1").should("have.text", "¿Dónde fue?");
     cy.revisarAccesibilidad("reportar-lugar-senior-360");
-    cy.contains("label", "Mz. F").click();
+    cy.contains("button", "Elija la manzana").click();
+    cy.get("[role=dialog]").contains("button", "Mz. F").click();
     cy.get("#campo-referencia").type("frente al parque");
     cy.contains("button", "Usar este lugar").click();
     cy.contains("Mz. F, frente al parque").should("exist");

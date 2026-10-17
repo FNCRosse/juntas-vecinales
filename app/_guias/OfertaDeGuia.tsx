@@ -44,7 +44,6 @@ export function OfertaDeGuia({
         <strong>
           {enPausa ? "¿Sigue con la guía de esta sección?" : "¿Quiere ver cómo funciona esta sección?"}
         </strong>
-        <span>Es una guía corta y opcional. Puede dejarla cuando quiera.</span>
         <div className="flex flex-wrap gap-separacion">
           <Link
             href={`/guia/${seccion.toLowerCase()}`}

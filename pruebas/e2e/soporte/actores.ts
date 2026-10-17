@@ -23,6 +23,8 @@ export const ACTORES: Actor[] = [
       "/mas/perfil/cancelar",
       "/visitas/nueva",
       "/mas/ayuda",
+      "/noticias",
+      "/incidentes/reportar",
     ],
   },
   {

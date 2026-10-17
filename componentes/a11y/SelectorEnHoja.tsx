@@ -19,6 +19,7 @@ export function SelectorEnHoja<T extends string>({
   valor,
   alElegir,
   error,
+  mostrar,
 }: {
   id: string;
   pregunta: string;
@@ -28,6 +29,8 @@ export function SelectorEnHoja<T extends string>({
   valor: T | null;
   alElegir: (valor: T) => void;
   error?: string;
+  /** Lo que se ve como elegido cuando no es una de las opciones (por ejemplo, un lugar con su referencia). */
+  mostrar?: string;
 }) {
   const [abierto, setAbierto] = useState(false);
   const elegida = opciones.find((o) => o.valor === valor);
@@ -51,7 +54,7 @@ export function SelectorEnHoja<T extends string>({
             className="flex min-h-tactil w-full items-center gap-3 rounded-control border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie px-4 py-2 text-left text-base text-texto-principal cursor-pointer hover:bg-accion-secundaria-hover aria-invalid:border-borde-error"
           >
             <span className="flex min-w-0 flex-1 flex-col">
-              <strong>{elegida?.etiqueta ?? vacio}</strong>
+              <strong>{mostrar ?? elegida?.etiqueta ?? vacio}</strong>
               {elegida?.detalle && (
                 <span className="text-pequeno text-texto-secundario">{elegida.detalle}</span>
               )}

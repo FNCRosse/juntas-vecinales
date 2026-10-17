@@ -25,6 +25,7 @@ export function PasoConfirmacion({
   alConfirmar,
   alCorregir,
   hrefCancelar,
+  textoCancelar = "Cancelar, no guardar nada",
 }: {
   /** El título recibe el foco al llegar a este paso. */
   referencia?: RefObject<HTMLHeadingElement | null>;
@@ -32,7 +33,8 @@ export function PasoConfirmacion({
   /** 2 cuando el paso va dentro de una página que ya tiene su título (un reporte que se evalúa). */
   nivel?: 1 | 2;
   titulo: string;
-  filas: [etiqueta: string, valor: string][];
+  /** Cada dato puede traer su "Cambiar": vuelve al paso 1 sin borrar nada (prototipo, R-12). */
+  filas: [etiqueta: string, valor: string, alCambiar?: () => void][];
   efecto: string;
   /** Acción que no se puede deshacer: botón de peligro y la advertencia en un recuadro. */
   peligro?: { titulo: string; texto: string };
@@ -42,6 +44,7 @@ export function PasoConfirmacion({
   alConfirmar: () => void;
   alCorregir: () => void;
   hrefCancelar: string;
+  textoCancelar?: string;
 }) {
   const Titulo = nivel === 1 ? "h1" : "h2";
   return (
@@ -61,10 +64,21 @@ export function PasoConfirmacion({
         </Titulo>
       </div>
       <dl className="flex flex-col gap-3 rounded-control bg-fondo-suave p-4 senior:p-6">
-        {filas.map(([etiqueta, valor]) => (
+        {filas.map(([etiqueta, valor, alCambiar]) => (
           <div key={etiqueta} className="flex flex-col">
             <dt className="text-pequeno text-texto-secundario">{etiqueta}</dt>
-            <dd className="font-bold">{valor}</dd>
+            <dd className="flex flex-col font-bold">
+              {valor}
+              {alCambiar && (
+                <button
+                  type="button"
+                  onClick={alCambiar}
+                  className="inline-flex min-h-tactil items-center self-start font-bold text-texto-enlace underline underline-offset-4 cursor-pointer"
+                >
+                  Cambiar<span className="sr-only">: {etiqueta.toLowerCase()}</span>
+                </button>
+              )}
+            </dd>
           </div>
         ))}
       </dl>
@@ -93,7 +107,7 @@ export function PasoConfirmacion({
           href={hrefCancelar}
           className="inline-flex min-h-tactil items-center justify-center font-bold text-texto-enlace"
         >
-          Cancelar, no guardar nada
+          {textoCancelar}
         </Link>
       </div>
     </div>

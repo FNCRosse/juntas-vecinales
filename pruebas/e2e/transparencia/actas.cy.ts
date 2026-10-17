@@ -69,16 +69,15 @@ describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
     cy.visit("/transparencia");
     cy.get("h1").should("have.text", "Actas y balances");
     cy.contains("article", TITULO_VECINO).within(() => {
-      cy.contains("h3", "Acuerdos").should("exist");
-      cy.contains("li", "Se aprobó la limpieza del parque.").should("exist");
-      cy.contains("a", "Descargar el acta en PDF")
+      cy.contains("p", "Acuerdo").should("contain.text", "Se aprobó la limpieza del parque.");
+      cy.contains("a", "Descargar acta (PDF)")
         .should("have.attr", "href")
         .and("match", /\/pdf$/);
     });
     cy.revisarAccesibilidad("actas-senior-360");
 
     cy.contains("article", TITULO_VECINO)
-      .contains("a", "Descargar el acta en PDF")
+      .contains("a", "Descargar acta (PDF)")
       .invoke("attr", "href")
       .then((href) =>
         cy.request({ url: href as string, encoding: "binary" }).then((r) => {

@@ -8,11 +8,8 @@ import {
   Check,
   CircleCheck,
   EyeOff,
-  House,
   Info,
   LocateFixed,
-  Map,
-  MapPin,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
@@ -23,9 +20,11 @@ import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo, MensajeDeCampo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { Interruptor } from "@/componentes/a11y/Interruptor";
-import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
+import { SeccionPlegable } from "@/componentes/a11y/SeccionPlegable";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
+import { useVistaGrandeEnTelefono } from "@/componentes/a11y/useVistaEnTelefono";
 import { fechaYHora } from "@/compartido/fechas";
 import type { QuejaDto } from "@/modulos/incidencias/aplicacion/quejas";
 
@@ -49,11 +48,14 @@ export function ReportarProblema({
   manzanas,
   miManzana,
   nombre,
+  seniorAlInicio,
 }: {
   manzanas: string[];
   miManzana: string | null;
   nombre: string;
+  seniorAlInicio: boolean;
 }) {
+  const plegar = useVistaGrandeEnTelefono(seniorAlInicio);
   const [paso, setPaso] = useState<"formulario" | "lugar" | "confirmar" | "enviado">("formulario");
   const [categoria, setCategoria] = useState<string>("");
   const [descripcion, setDescripcion] = useState<string>("");
@@ -206,13 +208,20 @@ export function ReportarProblema({
         referencia={titulo}
         titulo="¿Desea enviar este reporte?"
         filas={[
-          ["Tipo", CATEGORIAS.find(([c]) => c === categoria)?.[1] ?? ""],
-          ["Qué pasó", descripcion.trim()],
-          ["Dónde", textoLugar(lugar)],
-          ["Foto o video", evidencias.map((e) => e.nombre).join(", ")],
-          ["Quién lo envía", anonimo ? "Sin su nombre (anónimo)" : nombre],
+          [
+            "Qué pasó",
+            `${CATEGORIAS.find(([c]) => c === categoria)?.[1] ?? ""}: ${descripcion.trim()}`,
+            () => setPaso("formulario"),
+          ],
+          ["Dónde", textoLugar(lugar), () => setPaso("lugar")],
+          [
+            "Foto y nombre",
+            `${evidencias.map((e) => e.nombre).join(", ")} · ${anonimo ? "sin su nombre (anónimo)" : nombre}`,
+            () => setPaso("formulario"),
+          ],
         ]}
-        efecto="La directiva lo revisará y le avisaremos cada vez que avance. Puede corregir o cancelar ahora sin problema."
+        efecto="Al enviarlo, confirma que acepta la política de privacidad de la junta y que lo que cuenta es cierto. La directiva lo revisará y le avisaremos cada vez que avance."
+        textoCancelar="Cancelar, no enviar"
         textoConfirmar="Sí, enviar mi reporte"
         enviando={enviando}
         error={falla}
@@ -277,20 +286,18 @@ export function ReportarProblema({
         <p>Lo que ya escribió está guardado. Complete lo que está marcado abajo.</p>
       )}
 
-      <GrupoOpciones id="campo-categoria" pregunta="¿Qué tipo de problema es?" error={errores.categoria}>
-        {CATEGORIAS.map(([valor, etiqueta]) => (
-          <Opcion
-            key={valor}
-            tipo="radio"
-            name="categoria"
-            value={valor}
-            etiqueta={etiqueta}
-            checked={categoria === valor}
-            onChange={() => setCategoria(valor)}
-            className="border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie"
-          />
-        ))}
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-categoria"
+        pregunta="¿Qué tipo de problema es?"
+        vacio="Elija el tipo"
+        opciones={CATEGORIAS.map(([valor, etiqueta]) => ({ valor, etiqueta }))}
+        valor={(categoria || null) as (typeof CATEGORIAS)[number][0] | null}
+        alElegir={(valor) => {
+          setCategoria(valor);
+          quitarError("categoria");
+        }}
+        error={errores.categoria}
+      />
 
       <AreaTexto
         name="descripcion"
@@ -302,115 +309,104 @@ export function ReportarProblema({
         onChange={(e) => setDescripcion(e.target.value)}
       />
 
-      <div id="campo-lugar" tabIndex={-1} className="flex flex-col gap-3">
-        <span className="font-bold">¿Dónde fue?</span>
-        {lugar && (
-          <span className="inline-flex items-center gap-2">
-            <MapPin aria-hidden className="size-icono text-accion-primaria" />
-            {textoLugar(lugar)}
-          </span>
-        )}
-        <div className="grid gap-separacion md:grid-cols-2">
-          {miManzana && (
-            <Boton
-              type="button"
-              variante="secundario"
-              icono={House}
-              onClick={() => {
-                setLugar({
-                  manzana: miManzana,
-                  referencia: "cerca de mi casa",
-                  latitud: null,
-                  longitud: null,
-                });
-                quitarError("lugar");
-              }}
-            >
-              Cerca de mi casa
-            </Boton>
-          )}
-          <Boton type="button" variante="secundario" icono={Map} onClick={() => setPaso("lugar")}>
-            Elegir la manzana en la lista
-          </Boton>
-        </div>
-        {errores.lugar && <MensajeDeCampo id="campo-lugar-error">{errores.lugar}</MensajeDeCampo>}
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <Campo
-          name="evidencias"
-          etiqueta="Foto o video de lo que pasó"
-          ayuda={
-            subiendo
-              ? "Subiendo el archivo…"
-              : "Ayuda a la directiva a entender el problema. Una foto (JPG o PNG) o un video MP4 corto."
-          }
-          type="file"
-          accept="image/jpeg,image/png,video/mp4"
-          disabled={evidencias.length >= MAXIMO_EVIDENCIAS}
-          error={errores.evidencias ?? (fallaArchivo || undefined)}
-          onChange={(e) => {
-            const archivo = e.target.files?.[0];
-            e.target.value = "";
-            if (archivo) void subir(archivo);
-          }}
-        />
-        {evidencias.length > 0 && (
-          <ul className="flex flex-col gap-2" aria-label="Archivos adjuntos">
-            {evidencias.map((e) => (
-              <li key={e.id} className="flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-2">
-                  <CircleCheck aria-hidden className="size-icono text-texto-exito" />
-                  {e.nombre}
-                </span>
-                <Boton
-                  type="button"
-                  variante="secundario"
-                  icono={Trash2}
-                  onClick={() => setEvidencias((lista) => lista.filter((x) => x.id !== e.id))}
-                >
-                  {`Quitar ${e.nombre}`}
-                </Boton>
-              </li>
-            ))}
-          </ul>
-        )}
-        <p className="inline-flex items-center gap-2 text-pequeno text-texto-secundario">
-          <Camera aria-hidden className="size-icono-pequeno" />
-          Puede adjuntar hasta {MAXIMO_EVIDENCIAS} archivos.
-        </p>
-      </div>
-
-      <Interruptor
-        etiqueta="Enviar sin mi nombre (modo anónimo)"
-        descripcion="Nadie verá quién lo envió. Le daremos un código para seguirlo."
-        activo={anonimo}
-        alCambiar={setAnonimo}
-        icono={<EyeOff aria-hidden className="size-icono shrink-0 text-accion-primaria" />}
+      <SelectorEnHoja
+        id="campo-lugar"
+        pregunta="¿Dónde fue?"
+        vacio="Elija el lugar"
+        mostrar={lugar ? textoLugar(lugar) : undefined}
+        opciones={[
+          ...(miManzana ? [{ valor: "casa", etiqueta: "Cerca de mi casa" }] : []),
+          { valor: "lista", etiqueta: "Elegir la manzana en la lista" },
+        ]}
+        valor={null}
+        alElegir={(valor) => {
+          if (valor === "lista") return setPaso("lugar");
+          setLugar({ manzana: miManzana, referencia: "cerca de mi casa", latitud: null, longitud: null });
+          quitarError("lugar");
+        }}
+        error={errores.lugar}
       />
 
-      <div id="campo-consentimiento" tabIndex={-1} className="flex flex-col gap-2">
-        <label className="flex min-h-tactil cursor-pointer items-start gap-3 rounded-control border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie p-3 hover:bg-fondo-suave">
-          <input
-            type="checkbox"
-            name="consentimiento"
-            checked={consentimiento}
-            aria-invalid={errores.consentimiento ? true : undefined}
-            aria-describedby={errores.consentimiento ? "consentimiento-error" : undefined}
-            onChange={(e) => setConsentimiento(e.target.checked)}
-            className="mt-1 size-icono shrink-0 accent-accion-primaria"
+      <SeccionPlegable
+        titulo="Foto y nombre (opcional)"
+        plegable={plegar}
+        abrirSiError={Boolean(errores.evidencias || fallaArchivo || errores.consentimiento)}
+      >
+        <div className="flex flex-col gap-3">
+          <Campo
+            name="evidencias"
+            etiqueta="Foto o video de lo que pasó"
+            ayuda={
+              subiendo
+                ? "Subiendo el archivo…"
+                : "Ayuda a la directiva a entender el problema. Una foto (JPG o PNG) o un video MP4 corto."
+            }
+            type="file"
+            accept="image/jpeg,image/png,video/mp4"
+            disabled={evidencias.length >= MAXIMO_EVIDENCIAS}
+            error={errores.evidencias ?? (fallaArchivo || undefined)}
+            onChange={(e) => {
+              const archivo = e.target.files?.[0];
+              e.target.value = "";
+              if (archivo) void subir(archivo);
+            }}
           />
-          <span>
-            <strong>Acepto la política de privacidad</strong> y confirmo que lo que cuento es cierto.
-          </span>
-        </label>
-        <a href="/privacidad" target="_blank" className="self-start font-bold text-texto-enlace">
-          Leer la política de privacidad (se abre en otra pestaña)
-        </a>
-        {errores.consentimiento && (
-          <MensajeDeCampo id="consentimiento-error">{errores.consentimiento}</MensajeDeCampo>
-        )}
-      </div>
+          {evidencias.length > 0 && (
+            <ul className="flex flex-col gap-2" aria-label="Archivos adjuntos">
+              {evidencias.map((e) => (
+                <li key={e.id} className="flex flex-wrap items-center gap-3">
+                  <span className="inline-flex items-center gap-2">
+                    <CircleCheck aria-hidden className="size-icono text-texto-exito" />
+                    {e.nombre}
+                  </span>
+                  <Boton
+                    type="button"
+                    variante="secundario"
+                    icono={Trash2}
+                    onClick={() => setEvidencias((lista) => lista.filter((x) => x.id !== e.id))}
+                  >
+                    {`Quitar ${e.nombre}`}
+                  </Boton>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="inline-flex items-center gap-2 text-pequeno text-texto-secundario">
+            <Camera aria-hidden className="size-icono-pequeno" />
+            Puede adjuntar hasta {MAXIMO_EVIDENCIAS} archivos.
+          </p>
+        </div>
+
+        <Interruptor
+          etiqueta="Enviar sin mi nombre (modo anónimo)"
+          descripcion="Nadie verá quién lo envió. Le daremos un código para seguirlo."
+          activo={anonimo}
+          alCambiar={setAnonimo}
+          icono={<EyeOff aria-hidden className="size-icono shrink-0 text-accion-primaria" />}
+        />
+        <div id="campo-consentimiento" tabIndex={-1} className="flex flex-col gap-2">
+          <label className="flex min-h-tactil cursor-pointer items-start gap-3 rounded-control border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie p-3 hover:bg-fondo-suave">
+            <input
+              type="checkbox"
+              name="consentimiento"
+              checked={consentimiento}
+              aria-invalid={errores.consentimiento ? true : undefined}
+              aria-describedby={errores.consentimiento ? "consentimiento-error" : undefined}
+              onChange={(e) => {
+                setConsentimiento(e.target.checked);
+                if (e.target.checked) quitarError("consentimiento");
+              }}
+              className="mt-1 size-icono shrink-0 accent-accion-primaria"
+            />
+            <span>
+              <strong>Acepto la política de privacidad</strong> y confirmo que lo que cuento es cierto.
+            </span>
+          </label>
+          {errores.consentimiento && (
+            <MensajeDeCampo id="consentimiento-error">{errores.consentimiento}</MensajeDeCampo>
+          )}
+        </div>
+      </SeccionPlegable>
 
       <Boton type="submit" icono={Check} anchoCompleto>
         Revisar mi reporte
@@ -491,22 +487,18 @@ function ElegirLugar({
         </h1>
         <p>Toque una manzana de la lista. No hace falta arrastrar nada.</p>
       </div>
-      <GrupoOpciones id="campo-manzana" pregunta="Manzanas del barrio" error={error.manzana}>
-        <div className="grid grid-cols-2 gap-separacion md:grid-cols-3">
-          {[...manzanas, OTRO_LUGAR].map((m) => (
-            <Opcion
-              key={m}
-              tipo="radio"
-              name="manzana"
-              value={m}
-              etiqueta={m === OTRO_LUGAR ? "Otro lugar del barrio" : `Mz. ${m}`}
-              checked={eleccion === m}
-              onChange={() => setEleccion(m)}
-              className="border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie"
-            />
-          ))}
-        </div>
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-manzana"
+        pregunta="Manzana o lugar"
+        vacio="Elija la manzana"
+        opciones={[...manzanas, OTRO_LUGAR].map((m) => ({
+          valor: m,
+          etiqueta: m === OTRO_LUGAR ? "Otro lugar del barrio" : `Mz. ${m}`,
+        }))}
+        valor={eleccion || null}
+        alElegir={setEleccion}
+        error={error.manzana}
+      />
       <Campo
         name="referencia"
         etiqueta={eleccion === OTRO_LUGAR ? "¿Dónde fue?" : "Referencia (opcional)"}
