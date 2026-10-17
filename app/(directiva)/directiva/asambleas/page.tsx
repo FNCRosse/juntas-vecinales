@@ -1,9 +1,11 @@
-import { CalendarDays, UserCheck } from "lucide-react";
+import { CalendarDays, UserCheck, UsersRound } from "lucide-react";
 import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
 import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
+import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { casoSinQuorum } from "@/modulos/asambleas/aplicacion/contingencia";
 import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 
 export const metadata: Metadata = { title: "Asambleas y actividades" };
@@ -12,6 +14,7 @@ export const metadata: Metadata = { title: "Asambleas y actividades" };
 export default async function AsambleasDirectiva() {
   const sesion = await sesionActual();
   const proxima = sesion ? await proximaAsamblea(sesion) : null;
+  const sinQuorum = sesion ? await casoSinQuorum(sesion) : null;
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Asambleas y actividades</h1>
@@ -23,6 +26,28 @@ export default async function AsambleasDirectiva() {
           Registrar la asistencia de un vecino
         </BotonEnlace>
       </div>
+      {sinQuorum && (
+        <MensajeEstado tipo="aviso" titulo="No se llegó al quórum">
+          <p>
+            Al corte confirmaron {sinQuorum.quorum.confirmados} de {sinQuorum.padronTotal} casas. El mínimo
+            es {sinQuorum.quorumRequerido}. Decida si reprograma la asamblea o la convierte en una sesión
+            informativa.
+          </p>
+          <BotonEnlace href="/directiva/asambleas/sin-quorum" icono={UsersRound}>
+            Decidir qué hacer
+          </BotonEnlace>
+        </MensajeEstado>
+      )}
+      {proxima?.estado === "REPROGRAMADA" && (
+        <MensajeEstado tipo="info" titulo="Asamblea reprogramada">
+          <p>Avisamos a las {proxima.padronTotal} casas la nueva fecha.</p>
+        </MensajeEstado>
+      )}
+      {proxima?.estado === "INFORMATIVA" && (
+        <MensajeEstado tipo="info" titulo="Será una sesión informativa">
+          <p>Avisamos a la comunidad que no se votará ni se tomarán acuerdos.</p>
+        </MensajeEstado>
+      )}
       <section aria-labelledby="titulo-proxima" className="flex flex-col gap-4">
         <h2 id="titulo-proxima" className="text-titulo-2">
           Próxima asamblea

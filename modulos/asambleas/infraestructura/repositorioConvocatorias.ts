@@ -106,3 +106,24 @@ export async function reclamarAvisoDeCorte(tx: Transaccion, convocatoriaId: stri
   });
   return count === 1;
 }
+
+/** Pasa la asamblea a otra fecha: queda REPROGRAMADA, con su nuevo plazo y el aviso de corte por hacer otra vez. */
+export async function reprogramarAsamblea(
+  tx: Transaccion,
+  id: string,
+  datos: { fechaHora: Date; confirmacionesHasta: Date },
+) {
+  await tx.convocatoria.update({
+    where: { id },
+    data: {
+      fechaHora: datos.fechaHora,
+      estado: "REPROGRAMADA",
+      asamblea: { update: { confirmacionesHasta: datos.confirmacionesHasta, avisoCorteEn: null } },
+    },
+  });
+}
+
+/** La asamblea sigue en pie pero sin votaciones ni acuerdos resolutivos. */
+export async function convertirEnInformativa(tx: Transaccion, id: string) {
+  await tx.convocatoria.update({ where: { id }, data: { estado: "INFORMATIVA" } });
+}
