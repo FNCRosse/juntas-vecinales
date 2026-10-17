@@ -2,7 +2,7 @@ export {};
 
 // Área táctil de 48 px (56 en Senior) y separación de 8 px (12 en Senior) entre objetivos (HU-ACC-09).
 
-import { ACTORES, entrarComo } from "../soporte/actores";
+import { ACTORES, entrarComo, visitarRuta } from "../soporte/actores";
 
 type Caja = { x: number; y: number; ancho: number; alto: number; texto: string; el: Element };
 
@@ -90,8 +90,7 @@ function verificar(documento: Document, ruta: string, minimo: number, separacion
           it(`@HU-ACC-09 CA1 CA2 ${ruta}: objetivos de ${minimo} px o más y a ${separacion} px de los demás`, () => {
             cy.viewport(ancho, 800);
             entrarComo(actor, modo as "normal" | "senior");
-            cy.visit(ruta);
-            cy.get("h1").should("exist");
+            visitarRuta(ruta);
             cy.document().then((documento) => verificar(documento, ruta, minimo, separacion));
           });
         });

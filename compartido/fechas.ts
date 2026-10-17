@@ -22,6 +22,12 @@ export function fechaLarga(fecha: Date) {
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
+/** La fecha larga dentro de una frase: "el viernes 16 de octubre de 2026" (sin la mayúscula del título). */
+export function fechaEnFrase(fecha: Date) {
+  const texto = fechaLarga(fecha);
+  return texto.charAt(0).toLowerCase() + texto.slice(1);
+}
+
 /** "Buenos días", "Buenas tardes" o "Buenas noches", según la hora de Lima. */
 export function saludo(ahora: Date) {
   const hora = Number(

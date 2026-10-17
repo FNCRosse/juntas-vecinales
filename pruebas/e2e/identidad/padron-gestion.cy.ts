@@ -48,7 +48,9 @@ describe("@HU-GAR-10 @HU-GAR-09 Gestión del padrón", () => {
     cy.get("h1").should("have.text", `Actualizar los datos de Mz. G, lote ${LOTE}`);
     cy.esperarHidratacion("Revisar el cambio").click();
     cy.contains('[role="status"]', "No cambió ningún dato").should("exist");
-    cy.get('button[aria-label="Agregar uno: Motos"]').click();
+    cy.contains("button", "Cambiar las cantidades").click();
+    cy.get('[id="campo.motos"]').click();
+    cy.get("[role=dialog]").contains("button", /^1$/).click();
     cy.get('[id="campo-placas.motos.0"]').type(`M${sufijo.slice(-4)}`);
     cy.revisarAccesibilidad("predio-actualizar-normal");
     cy.contains("button", "Revisar el cambio").click();

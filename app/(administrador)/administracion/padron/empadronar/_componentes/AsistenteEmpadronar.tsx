@@ -8,7 +8,8 @@ import { enviarJson } from "@/app/_formularios/enviar";
 import { fechaYHora, primerNombre } from "@/compartido/fechas";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo, MensajeDeCampo } from "@/componentes/a11y/Campo";
-import { Contador } from "@/componentes/a11y/Contador";
+import { ConceptosDelPredio } from "../../_componentes/ConceptosDelPredio";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 import { CamposPlacas, type PlacasEscritas } from "../../_componentes/CamposPlacas";
 import { Interruptor } from "@/componentes/a11y/Interruptor";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
@@ -455,40 +456,22 @@ export function AsistenteEmpadronar() {
           onChange={(e) => setVivienda({ ...vivienda, lote: e.target.value })}
         />
       </div>
-      <GrupoOpciones id="campo-vivienda.uso" pregunta="¿Para qué se usa?" error={eVivienda.uso}>
-        {USOS.map(([uso, etiqueta]) => (
-          <Opcion
-            key={uso}
-            tipo="radio"
-            name="uso"
-            etiqueta={etiqueta}
-            checked={vivienda.uso === uso}
-            onChange={() => setVivienda({ ...vivienda, uso })}
-          />
-        ))}
-      </GrupoOpciones>
-      <section aria-labelledby="titulo-ocupacion" className="flex flex-col gap-2">
-        <h2 id="titulo-ocupacion" className="text-titulo-3">
-          ¿Cuántos hay de cada uno?
-        </h2>
-        <p className="text-texto-secundario">
-          Es la misma lista de conceptos de la tarifa que aprobó la directiva.
-        </p>
-        <div className="flex flex-col">
-          {CONCEPTOS.map(([concepto, etiqueta]) => (
-            <Contador
-              key={concepto}
-              id={`campo-vivienda.${concepto}`}
-              etiqueta={etiqueta}
-              valor={vivienda[concepto]}
-              minimo={concepto === "familias" && vivienda.uso !== "NEGOCIO" ? 1 : 0}
-              maximo={9}
-              error={eVivienda[concepto]}
-              alCambiar={(valor) => setVivienda({ ...vivienda, [concepto]: valor })}
-            />
-          ))}
-        </div>
-      </section>
+      <SelectorEnHoja
+        id="campo-vivienda.uso"
+        pregunta="¿Para qué se usa?"
+        opciones={USOS.map(([valor, etiqueta]) => ({ valor, etiqueta }))}
+        valor={vivienda.uso}
+        alElegir={(uso) => setVivienda({ ...vivienda, uso })}
+        error={eVivienda.uso}
+      />
+      <ConceptosDelPredio
+        idBase="campo-vivienda"
+        valores={vivienda}
+        esNegocio={vivienda.uso === "NEGOCIO"}
+        ayuda="Es la misma lista de conceptos de la tarifa que aprobó la directiva."
+        errores={eVivienda}
+        alCambiar={(concepto, valor) => setVivienda({ ...vivienda, [concepto]: valor })}
+      />
       <CamposPlacas
         autos={vivienda.autos}
         motos={vivienda.motos}

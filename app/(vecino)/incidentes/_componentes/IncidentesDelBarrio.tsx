@@ -3,7 +3,7 @@ import { Car, CircleHelp, Info, List, Map, ShieldAlert, Table, Trash2, Volume2 }
 import { fechaLarga } from "@/compartido/fechas";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import type { MapaDto } from "@/modulos/incidencias/aplicacion/mapa";
-import { SelectorDeVista } from "./SelectorDeVista";
+import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 
 // VEC-QUE-01, 02 y 03: los incidentes del barrio como lista, como mapa por manzanas o como tabla. El mapa
 // lleva su descripción en texto y la lista y la tabla dicen lo mismo sin depender de la vista (HU-ACC-07).
@@ -49,11 +49,14 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
       <h2 id="titulo-barrio" className="text-titulo-2">
         En el barrio · último mes
       </h2>
-      <SelectorDeVista
-        vista={vista}
+      <SelectorDeFiltro
+        id="vista-incidentes"
+        pregunta="Ver los incidentes como"
+        valor={vista}
         opciones={(Object.keys(VISTAS) as Vista[]).map((clave) => ({
           valor: clave,
           etiqueta: VISTAS[clave].etiqueta,
+          href: `/incidentes?vista=${clave}`,
         }))}
       />
       <p>

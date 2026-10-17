@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { clasesBoton } from "@/componentes/a11y/Boton";
-import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { bandejaArco, type FilaArco, TIPOS_ARCO, type TipoArco } from "@/modulos/identidad/aplicacion/arco";
@@ -48,13 +48,14 @@ export default async function SolicitudesDePrivacidad({
           <p>Quedó en la auditoría y le avisamos al vecino.</p>
         </MensajeEstado>
       )}
-      <FiltroEnHoja
-        actual={FILTROS.find((f) => f.valor === filtro)?.texto ?? "Todas"}
-        titulo="Mostrar solicitudes de"
+      <SelectorDeFiltro
+        id="tipo-solicitud"
+        pregunta="Tipo de solicitud"
+        valor={filtro ?? "todas"}
         opciones={FILTROS.map((f) => ({
+          valor: f.valor ?? "todas",
           etiqueta: f.texto,
           href: f.valor ? `/administracion/privacidad?tipo=${f.valor}` : "/administracion/privacidad",
-          activa: filtro === f.valor,
         }))}
       />
       {filas.length ? (

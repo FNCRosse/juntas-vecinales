@@ -4,7 +4,7 @@ export {};
 // grande (HU-ACC-09). No cuentan la barra de navegación, el encabezado ("Vista grande", "Pedir ayuda")
 // ni el selector de perfil. Se mide en cada ruta real de los cuatro actores con las semillas (soporte/actores.ts).
 
-import { ACTORES, entrarComo } from "../soporte/actores";
+import { ACTORES, entrarComo, visitarRuta } from "../soporte/actores";
 
 const LIMITE = { normal: 8, senior: 6 } as const;
 
@@ -19,8 +19,7 @@ const OBJETIVOS =
       actor.rutas.forEach((ruta) => {
         it(`@HU-ACC-09 CA2 ${actor.nombre} ${ruta}: como máximo ${LIMITE[modo]} objetivos de contenido`, () => {
           entrarComo(actor, modo);
-          cy.visit(ruta);
-          cy.get("h1").should("exist");
+          visitarRuta(ruta);
           cy.get("main").then(($main) => {
             // Un campo con su etiqueta es un solo objetivo; una opción de radio o casilla, uno por opción.
             const n = $main
