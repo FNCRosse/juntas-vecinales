@@ -1,10 +1,10 @@
 "use client";
 // @HU-GAR-07
 
-import { Check, TriangleAlert, Users, X } from "lucide-react";
+import { Check, TriangleAlert, X } from "lucide-react";
 import { useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
-import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
+import { Boton } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 
 type Visita = {
@@ -71,9 +71,6 @@ export function ResponderVisita({ visita }: { visita: Visita }) {
         </MensajeEstado>
       ) : (
         <div className="flex flex-col gap-opuestas">
-          <Boton icono={Check} cargando={enviando === true} onClick={() => responder(true)}>
-            Sí, dejarla pasar
-          </Boton>
           <Boton
             variante="secundario"
             icono={X}
@@ -81,6 +78,9 @@ export function ResponderVisita({ visita }: { visita: Visita }) {
             onClick={() => responder(false)}
           >
             No la conozco, que no pase
+          </Boton>
+          <Boton icono={Check} cargando={enviando === true} onClick={() => responder(true)}>
+            Sí, dejarla pasar
           </Boton>
           <p>Si prefiere, llame a la garita y dígale al vigilante qué hacer.</p>
         </div>
@@ -90,9 +90,6 @@ export function ResponderVisita({ visita }: { visita: Visita }) {
           <p>{falla}</p>
         </MensajeEstado>
       )}
-      <BotonEnlace href="/visitas" variante="secundario" icono={Users}>
-        Ir a Mis visitas
-      </BotonEnlace>
     </div>
   );
 }

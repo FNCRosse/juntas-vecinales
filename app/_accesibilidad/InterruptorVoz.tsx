@@ -48,7 +48,7 @@ export function InterruptorVoz({ activoAlInicio }: { activoAlInicio: boolean }) 
     <div className="flex flex-col gap-3">
       <Interruptor
         etiqueta="Leer en voz alta las noticias"
-        descripcion="Cada noticia tendrá un botón Escuchar."
+        descripcion="Aparece el botón Escuchar en cada noticia."
         activo={activo}
         alCambiar={cambiar}
         icono={<Volume2 aria-hidden className="size-icono shrink-0 text-accion-primaria" />}

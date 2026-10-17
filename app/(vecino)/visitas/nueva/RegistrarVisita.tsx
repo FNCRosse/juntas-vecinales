@@ -11,6 +11,8 @@ import { Campo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
+import { SeccionPlegable } from "@/componentes/a11y/SeccionPlegable";
+import { useVistaGrandeEnTelefono } from "@/componentes/a11y/useVistaEnTelefono";
 
 type Registrada = {
   codigo: string;
@@ -23,7 +25,16 @@ type Registrada = {
 
 const hoyEnLima = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Lima" }).format(new Date());
 
-export function RegistrarVisita({ vivienda, nombre }: { vivienda: string; nombre: string }) {
+export function RegistrarVisita({
+  vivienda,
+  nombre,
+  seniorAlInicio,
+}: {
+  vivienda: string;
+  nombre: string;
+  seniorAlInicio: boolean;
+}) {
+  const plegar = useVistaGrandeEnTelefono(seniorAlInicio);
   const [datos, setDatos] = useState({
     nombre: "",
     dni: "",
@@ -76,7 +87,7 @@ export function RegistrarVisita({ vivienda, nombre }: { vivienda: string; nombre
             {registrada.vehiculo} · a {registrada.vivienda}
           </span>
         </section>
-        <p>Si cambia de planes, puede anular la visita desde Mis visitas.</p>
+        <p>Cuando llegue, le avisaremos. Si cambia de planes, puede anular la visita desde Mis visitas.</p>
         <BotonEnlace href="/visitas" icono={Users}>
           Volver a Mis visitas
         </BotonEnlace>
@@ -112,17 +123,6 @@ export function RegistrarVisita({ vivienda, nombre }: { vivienda: string; nombre
         error={errores.nombre}
         onChange={(e) => setDatos({ ...datos, nombre: e.target.value })}
       />
-      <Campo
-        name="dni"
-        etiqueta="Su DNI (opcional)"
-        ayuda="Si lo sabe, ayuda al vigilante a reconocerla. Si no, puede dejarlo vacío."
-        inputMode="numeric"
-        maxLength={8}
-        autoComplete="off"
-        value={datos.dni}
-        error={errores.dni}
-        onChange={(e) => setDatos({ ...datos, dni: e.target.value.replace(/\D/g, "").slice(0, 8) })}
-      />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Campo
           name="fecha"
@@ -144,34 +144,47 @@ export function RegistrarVisita({ vivienda, nombre }: { vivienda: string; nombre
           onChange={(e) => setDatos({ ...datos, hora: e.target.value })}
         />
       </div>
-      <GrupoOpciones id="campo-conVehiculo" pregunta="¿Tiene vehículo?">
-        <Opcion
-          tipo="radio"
-          name="vehiculo"
-          etiqueta="No, viene a pie"
-          checked={!datos.conVehiculo}
-          onChange={() => setDatos({ ...datos, conVehiculo: false })}
-        />
-        <Opcion
-          tipo="radio"
-          name="vehiculo"
-          etiqueta="Sí, viene en auto o moto"
-          checked={datos.conVehiculo}
-          onChange={() => setDatos({ ...datos, conVehiculo: true })}
-        />
-      </GrupoOpciones>
-      {datos.conVehiculo && (
+      <SeccionPlegable titulo="Agregar DNI o vehículo (opcional)" plegable={plegar}>
         <Campo
-          name="placa"
-          etiqueta="Placa del vehículo (opcional)"
-          ayuda="Si no la sabe, el vigilante la anotará cuando llegue."
-          autoComplete="off"
+          name="dni"
+          etiqueta="Su DNI (opcional)"
+          ayuda="Si lo sabe, ayuda al vigilante a reconocerla. Si no, puede dejarlo vacío."
+          inputMode="numeric"
           maxLength={8}
-          value={datos.placa}
-          error={errores.placa}
-          onChange={(e) => setDatos({ ...datos, placa: e.target.value.toUpperCase() })}
+          autoComplete="off"
+          value={datos.dni}
+          error={errores.dni}
+          onChange={(e) => setDatos({ ...datos, dni: e.target.value.replace(/\D/g, "").slice(0, 8) })}
         />
-      )}
+        <GrupoOpciones id="campo-conVehiculo" pregunta="¿Tiene vehículo?">
+          <Opcion
+            tipo="radio"
+            name="vehiculo"
+            etiqueta="No, viene a pie"
+            checked={!datos.conVehiculo}
+            onChange={() => setDatos({ ...datos, conVehiculo: false })}
+          />
+          <Opcion
+            tipo="radio"
+            name="vehiculo"
+            etiqueta="Sí, viene en auto o moto"
+            checked={datos.conVehiculo}
+            onChange={() => setDatos({ ...datos, conVehiculo: true })}
+          />
+        </GrupoOpciones>
+        {datos.conVehiculo && (
+          <Campo
+            name="placa"
+            etiqueta="Placa del vehículo (opcional)"
+            ayuda="Si no la sabe, el vigilante la anotará cuando llegue."
+            autoComplete="off"
+            maxLength={8}
+            value={datos.placa}
+            error={errores.placa}
+            onChange={(e) => setDatos({ ...datos, placa: e.target.value.toUpperCase() })}
+          />
+        )}
+      </SeccionPlegable>
       {falla && (
         <MensajeEstado tipo="error" titulo="No se registró la visita">
           <p>{falla}</p>
