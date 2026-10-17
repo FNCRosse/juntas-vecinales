@@ -29,8 +29,8 @@ export default async function AsambleasDirectiva() {
       {sinQuorum && (
         <MensajeEstado tipo="aviso" titulo="No se llegó al quórum">
           <p>
-            Al corte confirmaron {sinQuorum.quorum.confirmados} de {sinQuorum.padronTotal} casas. El mínimo
-            es {sinQuorum.quorumRequerido}. Decida si reprograma la asamblea o la convierte en una sesión
+            Al corte confirmaron {sinQuorum.quorum.confirmados} de {sinQuorum.padronTotal} casas. El mínimo es{" "}
+            {sinQuorum.quorumRequerido}. Decida si reprograma la asamblea o la convierte en una sesión
             informativa.
           </p>
           <BotonEnlace href="/directiva/asambleas/sin-quorum" icono={UsersRound}>

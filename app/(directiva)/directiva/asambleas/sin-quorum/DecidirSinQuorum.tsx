@@ -170,9 +170,7 @@ export function DecidirSinQuorum({
       </div>
       <div className="flex flex-col gap-2">
         <p className="text-texto-secundario">Paso 1 de 2</p>
-        <h2 className="text-titulo-2">
-          ¿Qué hacemos con la asamblea del {cuando}?
-        </h2>
+        <h2 className="text-titulo-2">¿Qué hacemos con la asamblea del {cuando}?</h2>
       </div>
       <ResumenErrores errores={listaErrores} />
       <GrupoOpciones id="campo-decision" pregunta="Elija una opción" error={errores.decision}>
