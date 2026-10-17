@@ -1,9 +1,10 @@
-import { Car, ChevronRight, Clock, ListChecks, NotebookPen, Search, UserRound } from "lucide-react";
+import { Car, ChevronRight, ListChecks, NotebookPen, Search, UserRound } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BotonCerrarSesion } from "@/app/_sesion/BotonCerrarSesion";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaLarga } from "@/compartido/fechas";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { Tarjeta, TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
 import { bitacora, visitasDeHoy } from "@/modulos/identidad/aplicacion/garita";
@@ -81,18 +82,21 @@ export default async function InicioGarita() {
           Las anotan los vecinos en su app. Se actualizan solas.
         </p>
         {anunciadas.length ? (
-          <ul className="flex flex-col gap-4">
-            {anunciadas.map((a) => (
-              <li key={a.id} className="flex flex-col gap-2 border-b border-borde-sutil pb-4 last:border-b-0">
+          <ListaVerMas
+            etiqueta="Visitas anunciadas"
+            normal={2}
+            senior={1}
+            elementos={anunciadas.map((a) => (
+              <div key={a.id} className="flex flex-col gap-2 border-b border-borde-sutil pb-4">
                 <strong>{a.nombre}</strong>
                 <span>Para {a.vivienda}</span>
                 <span className="text-texto-secundario">
                   {a.cuando} · {a.vehiculo}
                 </span>
                 <EnlaceLlego id={a.id} nombre={a.nombre} />
-              </li>
+              </div>
             ))}
-          </ul>
+          />
         ) : (
           <p>No hay visitas anunciadas.</p>
         )}
@@ -115,14 +119,6 @@ export default async function InicioGarita() {
             </p>
           </MensajeEstado>
         ))}
-        <Link
-          href="/garita/bitacora"
-          className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
-        >
-          <Clock aria-hidden className="size-icono" />
-          Ver la bitácora
-          <ChevronRight aria-hidden className="size-icono" />
-        </Link>
       </Tarjeta>
 
       <BotonCerrarSesion destino="/entrar/equipo" />

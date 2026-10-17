@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { clasesBoton } from "@/componentes/a11y/Boton";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { bitacora } from "@/modulos/identidad/aplicacion/garita";
 import { AccionGarita } from "../visitas/_componentes/AccionGarita";
@@ -79,9 +80,12 @@ export default async function Bitacora({
       </nav>
 
       {lista.length ? (
-        <ul className="flex flex-col gap-4">
-          {lista.map((f) => (
-            <li
+        <ListaVerMas
+          etiqueta="Entradas y salidas"
+          normal={4}
+          senior={2}
+          elementos={lista.map((f) => (
+            <div
               key={f.id}
               className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
             >
@@ -110,9 +114,9 @@ export default async function Bitacora({
                   {`Marcar salida de ${f.quien}`}
                 </AccionGarita>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        />
       ) : (
         <p>{ver === "dentro" ? "No hay nadie dentro por ahora." : "Todavía no hay entradas hoy."}</p>
       )}

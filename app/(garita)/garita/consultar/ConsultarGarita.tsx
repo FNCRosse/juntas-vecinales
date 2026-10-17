@@ -10,6 +10,7 @@ import {
   Info,
   Search,
   Siren,
+  UserPlus,
   WifiOff,
 } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +18,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { horaCorta } from "@/compartido/fechas";
-import { Boton } from "@/componentes/a11y/Boton";
+import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
@@ -245,16 +246,25 @@ export function ConsultarGarita() {
       {consulta && (
         <section aria-label="Resultado de la consulta" className="flex flex-col gap-4">
           {consulta.yaNoVive && (
-            <MensajeEstado tipo="info" titulo={`${consulta.yaNoVive} ya no está en el padrón de la garita`}>
-              <p>No pasa como vecino. Si viene a una casa, trátelo como una visita y pregunte en esa casa.</p>
+            <MensajeEstado tipo="info" titulo="Ya no vive en el barrio">
+              <p>
+                {consulta.yaNoVive} se dio de baja del padrón. Trátelo como visita: pregunte a qué casa va.
+              </p>
+              <BotonEnlace
+                href={`/garita/visitas/nueva?${new URLSearchParams({ nombre: consulta.yaNoVive })}`}
+                variante="secundario"
+                icono={UserPlus}
+              >
+                Registrar como visita
+              </BotonEnlace>
             </MensajeEstado>
           )}
           {!consulta.yaNoVive && consulta.resultados.length === 0 && (
-            <MensajeEstado tipo="info" titulo={`No encontramos «${consulta.texto}»`}>
+            <MensajeEstado tipo="info" titulo="No encontramos a nadie con ese dato">
               <p>
-                Revise la placa o pruebe con el apellido. Si es una visita,{" "}
+                Revise la placa o el nombre. Si es una visita, regístrela en{" "}
                 <Link href="/garita/visitas" className="font-bold text-texto-enlace">
-                  búsquela en la lista de visitas
+                  Llegó una visita
                 </Link>
                 .
               </p>
@@ -273,7 +283,7 @@ export function ConsultarGarita() {
               ) : (
                 <p className="inline-flex items-center gap-2 self-start rounded-control bg-fondo-error px-3 py-2 font-bold text-texto-error">
                   <Hand aria-hidden className="size-icono shrink-0" />
-                  Vecino atrasado: la reja no se abre sola
+                  Vecino atrasado: no abrir
                 </p>
               )}
               <div className="flex flex-col gap-1">
@@ -298,10 +308,17 @@ export function ConsultarGarita() {
                 )}
               </p>
               {r.estado === "ROJO" && (
-                <p className="inline-flex items-start gap-2">
-                  <Info aria-hidden className="mt-1 size-icono-pequeno shrink-0" />
-                  Pídale que abra la reja a mano, como siempre. Le avisaremos por qué no se abre sola.
-                </p>
+                <div className="flex flex-col gap-2">
+                  <p className="inline-flex items-start gap-2">
+                    <Info aria-hidden className="mt-1 size-icono-pequeno shrink-0" />
+                    No use la apertura de la reja para esta casa. El vecino puede entrar abriendo a mano con
+                    su llave o por la puerta peatonal. No hace falta hablar del motivo.
+                  </p>
+                  <p>
+                    Si le pregunta, dígale con amabilidad que la directiva le explica y que puede ponerse al
+                    día cuando pueda. Ya le avisamos a su WhatsApp.
+                  </p>
+                </div>
               )}
               {consulta.guardadaA ? (
                 <p>
@@ -317,7 +334,7 @@ export function ConsultarGarita() {
                   </Boton>
                   {r.estado === "ROJO" && (
                     <Boton variante="secundario" icono={Siren} onClick={() => setEmergencia(r)}>
-                      Abrir por emergencia
+                      Es una emergencia: abrir la reja igual
                     </Boton>
                   )}
                 </div>

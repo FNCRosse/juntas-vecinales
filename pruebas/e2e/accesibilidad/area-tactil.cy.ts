@@ -144,7 +144,7 @@ describe("@HU-ACC-09 Acciones destructivas separadas", () => {
       cy.esperarHidratacion("Buscar");
       cy.get("#campo-texto").type("JLM-314");
       cy.contains("button", "Buscar").click();
-      cy.contains("button", "Abrir por emergencia").click();
+      cy.contains("button", "Es una emergencia: abrir la reja igual").click();
       cy.contains("h1", "¿Abrir la reja por una emergencia?");
       cy.contains("button", "Sí, abrir la reja ahora").then(($si) =>
         cy.contains("button", "No abrir, volver").then(($no) => apiladas($si, $no)),
