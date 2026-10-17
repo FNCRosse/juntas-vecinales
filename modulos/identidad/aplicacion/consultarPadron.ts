@@ -1,7 +1,14 @@
 // @HU-GAR-01 @HU-GAR-10
 import { ErrorNoEncontrado } from "@/compartido/errores";
 import { NOMBRE_RELACION } from "@/modulos/identidad/dominio/empadronamiento";
-import { CONCEPTOS, type Concepto, direccion, type UsoPredio } from "@/modulos/identidad/dominio/predio";
+import {
+  CONCEPTOS,
+  type Concepto,
+  direccion,
+  NOMBRE_CONCEPTO,
+  ocupacionEnTexto,
+  type UsoPredio,
+} from "@/modulos/identidad/dominio/predio";
 import {
   buscarPredio,
   historialDePredio,
@@ -18,21 +25,7 @@ export const NOMBRE_USO: Record<UsoPredio, string> = {
   VIVIENDA_Y_NEGOCIO: "Vivienda y negocio",
 };
 
-export const NOMBRE_CONCEPTO: Record<Concepto, [singular: string, plural: string]> = {
-  familias: ["familia", "familias"],
-  inquilinos: ["inquilino", "inquilinos"],
-  autos: ["auto o camioneta", "autos o camionetas"],
-  motos: ["moto", "motos"],
-  triciclos: ["triciclo o carreta", "triciclos o carretas"],
-  negocios: ["local de negocio", "locales de negocio"],
-};
-
-/** "1 familia · 1 auto o camioneta": solo los conceptos que tiene. */
-export function ocupacionEnTexto(ocupacion: Record<Concepto, number>) {
-  return CONCEPTOS.filter((c) => ocupacion[c] > 0)
-    .map((c) => `${ocupacion[c]} ${NOMBRE_CONCEPTO[c][ocupacion[c] === 1 ? 0 : 1]}`)
-    .join(" · ");
-}
+export { NOMBRE_CONCEPTO, ocupacionEnTexto };
 
 type Fila = NonNullable<Awaited<ReturnType<typeof buscarPredio>>>;
 /** Lo que comparten la ficha y la lista del padrón: la lista no carga los vehículos. */

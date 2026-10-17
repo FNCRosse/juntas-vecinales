@@ -10,6 +10,22 @@ export type Ocupacion = Record<Concepto, number>;
 /** Tope por concepto del contador de la pantalla (prototipo ADM-PAD-03). */
 export const MAXIMO_POR_CONCEPTO = 9;
 
+export const NOMBRE_CONCEPTO: Record<Concepto, [singular: string, plural: string]> = {
+  familias: ["familia", "familias"],
+  inquilinos: ["inquilino", "inquilinos"],
+  autos: ["auto o camioneta", "autos o camionetas"],
+  motos: ["moto", "motos"],
+  triciclos: ["triciclo o carreta", "triciclos o carretas"],
+  negocios: ["local de negocio", "locales de negocio"],
+};
+
+/** "1 familia · 1 auto o camioneta": solo los conceptos que tiene. */
+export function ocupacionEnTexto(ocupacion: Ocupacion) {
+  return CONCEPTOS.filter((c) => ocupacion[c] > 0)
+    .map((c) => `${ocupacion[c]} ${NOMBRE_CONCEPTO[c][ocupacion[c] === 1 ? 0 : 1]}`)
+    .join(" · ");
+}
+
 export type DatosPredio = { manzana: string; lote: string; uso: UsoPredio } & Ocupacion;
 
 /** "Mz. C, lote 7": así se nombra un predio en todas las pantallas. */

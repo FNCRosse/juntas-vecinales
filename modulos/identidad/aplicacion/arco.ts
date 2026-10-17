@@ -3,7 +3,7 @@ import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import type { SeccionPdf } from "@/compartido/archivos/pdf";
 import { prisma, type Transaccion } from "@/compartido/bd/cliente";
 import { ErrorConflicto, ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
-import { fechaLarga, fechaYHora, primerNombre } from "@/compartido/fechas";
+import { fechaEnFrase, fechaLarga, fechaYHora, primerNombre } from "@/compartido/fechas";
 import { encolarAviso } from "@/compartido/notificaciones/encolar";
 import {
   plantillaCancelacionPedida,
@@ -261,7 +261,7 @@ export async function solicitarCancelacion(
   const quien = residencia
     ? `${usuario.nombreCompleto} (${direccion(residencia.predio)})`
     : usuario.nombreCompleto;
-  const vence = fechaLarga(fechaLimite(ahora, "CANCELACION"));
+  const vence = fechaEnFrase(fechaLimite(ahora, "CANCELACION"));
   const administradores = await administradoresActivos();
   const solicitud = await prisma.$transaction(async (tx) => {
     const creada = await crearSolicitud(tx, {
@@ -357,7 +357,7 @@ async function aFila(s: Solicitud, ahora: Date) {
     tipoTexto: TIPOS_ARCO[s.tipo],
     titulo: titulo(s),
     quien: vivienda ? `${s.usuario.nombreCompleto} · ${direccion(vivienda)}` : s.usuario.nombreCompleto,
-    recibida: fechaLarga(s.creadaEn),
+    recibida: fechaEnFrase(s.creadaEn),
     pendiente: s.estado === "PENDIENTE",
     plazoTexto:
       s.estado === "RESUELTA_SOLA"
@@ -368,7 +368,7 @@ async function aFila(s: Solicitud, ahora: Date) {
             : "Se aplicó sola, también a sus reportes anteriores: se muestran solo por manzana."
         : s.estado === "PENDIENTE"
           ? `Van ${usados} de ${plazo} días hábiles`
-          : `${s.estado === "APROBADA" ? "Aprobada" : "Rechazada"} el ${fechaLarga(s.resueltaEn ?? s.creadaEn)} por ${resolvio ?? "la administración"}`,
+          : `${s.estado === "APROBADA" ? "Aprobada" : "Rechazada"} el ${fechaEnFrase(s.resueltaEn ?? s.creadaEn)} por ${resolvio ?? "la administración"}`,
     insignia: insignia(s, ahora),
   };
 }
@@ -410,7 +410,7 @@ export async function verSolicitudArco(sesion: SesionDto, id: string, ahora = ne
     pideVerificacion: s.campo === "WHATSAPP",
     verificacion: s.verificacion,
     detalle: s.detalle,
-    vence: fechaLarga(fechaLimite(s.creadaEn, s.tipo)),
+    vence: fechaEnFrase(fechaLimite(s.creadaEn, s.tipo)),
     motivoResolucion: s.motivoResolucion,
     /** Qué se borra y qué se conserva si se aprueba una cancelación (ADM-ARC-04). */
     efecto: s.tipo === "CANCELACION" ? EFECTO_CANCELACION : null,

@@ -7,11 +7,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { Boton } from "@/componentes/a11y/Boton";
-import { Contador } from "@/componentes/a11y/Contador";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
-import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { CamposPlacas, type PlacasEscritas } from "../../_componentes/CamposPlacas";
+import { ConceptosDelPredio } from "../../_componentes/ConceptosDelPredio";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
 
 type Uso = "VIVIENDA" | "NEGOCIO" | "VIVIENDA_Y_NEGOCIO";
@@ -138,36 +138,19 @@ export function ActualizarPredio({
         </h1>
         <p>Ya están los datos de hoy. Cambie solo lo que ya no es igual.</p>
       </div>
-      <GrupoOpciones id="campo-uso" pregunta="¿Para qué se usa?">
-        {USOS.map(([uso, etiqueta]) => (
-          <Opcion
-            key={uso}
-            tipo="radio"
-            name="uso"
-            etiqueta={etiqueta}
-            checked={datos.uso === uso}
-            onChange={() => setDatos({ ...datos, uso })}
-          />
-        ))}
-      </GrupoOpciones>
-      <section aria-labelledby="titulo-ocupacion" className="flex flex-col gap-2">
-        <h2 id="titulo-ocupacion" className="text-titulo-3">
-          ¿Cuántos hay de cada uno?
-        </h2>
-        <div className="flex flex-col">
-          {CONCEPTOS.map(([concepto, etiqueta]) => (
-            <Contador
-              key={concepto}
-              id={`campo-${concepto}`}
-              etiqueta={etiqueta}
-              valor={datos[concepto]}
-              minimo={concepto === "familias" && datos.uso !== "NEGOCIO" ? 1 : 0}
-              maximo={9}
-              alCambiar={(valor) => setDatos({ ...datos, [concepto]: valor })}
-            />
-          ))}
-        </div>
-      </section>
+      <SelectorEnHoja
+        id="campo-uso"
+        pregunta="¿Para qué se usa?"
+        opciones={USOS.map(([valor, etiqueta]) => ({ valor, etiqueta }))}
+        valor={datos.uso}
+        alElegir={(uso) => setDatos({ ...datos, uso })}
+      />
+      <ConceptosDelPredio
+        idBase="campo"
+        valores={datos}
+        esNegocio={datos.uso === "NEGOCIO"}
+        alCambiar={(concepto, valor) => setDatos({ ...datos, [concepto]: valor })}
+      />
       <CamposPlacas
         autos={datos.autos}
         motos={datos.motos}
