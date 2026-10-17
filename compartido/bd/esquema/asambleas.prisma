@@ -18,6 +18,11 @@ enum TipoAsamblea {
   EXTRAORDINARIA
 }
 
+enum ModoConfirmacion {
+  DIGITAL
+  ASISTIDA
+}
+
 // Convocatoria de la junta (diagrama 02c, abstracta). La versión imprimible (afiche A4) se arma de esta
 // misma fila: fecha, hora, lugar y motivo nunca se escriben dos veces (HU-ASA-01 CA3). idOperacion lo
 // genera el dispositivo y evita publicar dos veces al reintentar (AC-5). El autor se guarda tal como
@@ -35,9 +40,27 @@ model Convocatoria {
   fechaPublicacion DateTime           @default(now())
   idOperacion      String             @unique
   asamblea         Asamblea?
+  confirmaciones   ConfirmacionAsistencia[]
 
   @@index([fechaHora])
   @@map("asambleas_convocatorias")
+}
+
+// Confirmación de asistencia a una asamblea (HU-ASA-02, HU-ASA-03). Una por predio (un voto por predio),
+// editable hasta el plazo. `modo` distingue la confirmación propia del vecino (DIGITAL) de la registrada
+// por un mediador (ASISTIDA, con el usuarioId en `registradaPor`), para medir la participación autónoma.
+model ConfirmacionAsistencia {
+  id             String           @id @default(uuid())
+  convocatoriaId String
+  convocatoria   Convocatoria     @relation(fields: [convocatoriaId], references: [id])
+  predioId       String
+  modo           ModoConfirmacion
+  registradaPor  String?
+  creadaEn       DateTime         @default(now())
+
+  @@unique([convocatoriaId, predioId])
+  @@index([convocatoriaId])
+  @@map("asambleas_confirmaciones")
 }
 
 // Datos propios de una asamblea (HU-ASA-01). El quórum requerido y el total del padrón se fijan al

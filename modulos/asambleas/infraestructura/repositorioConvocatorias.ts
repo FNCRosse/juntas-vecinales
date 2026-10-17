@@ -1,9 +1,12 @@
 // @HU-ASA-01
 import type { Transaccion } from "@/compartido/bd/cliente";
 import { prisma } from "@/compartido/bd/cliente";
-import type { TipoAsamblea } from "@/compartido/bd/generado/client";
+import type { ModoConfirmacion, TipoAsamblea } from "@/compartido/bd/generado/client";
 
-const conAsamblea = { asamblea: true } as const;
+const conAsamblea = {
+  asamblea: true,
+  confirmaciones: { select: { modo: true, predioId: true } },
+} as const;
 
 export async function buscarPorIdOperacion(idOperacion: string) {
   return prisma.convocatoria.findUnique({ where: { idOperacion }, include: conAsamblea });
@@ -53,4 +56,28 @@ export async function listarAsambleas() {
     orderBy: { fechaHora: "asc" },
     take: 100,
   });
+}
+
+export async function confirmacionDePredio(convocatoriaId: string, predioId: string) {
+  return prisma.confirmacionAsistencia.findUnique({
+    where: { convocatoriaId_predioId: { convocatoriaId, predioId } },
+  });
+}
+
+/** Confirma (o reafirma) la asistencia de un predio. Idempotente por el par convocatoria–predio (AC-5). */
+export async function confirmarAsistencia(
+  tx: Transaccion,
+  datos: { convocatoriaId: string; predioId: string; modo: ModoConfirmacion; registradaPor: string | null },
+) {
+  return tx.confirmacionAsistencia.upsert({
+    where: {
+      convocatoriaId_predioId: { convocatoriaId: datos.convocatoriaId, predioId: datos.predioId },
+    },
+    create: datos,
+    update: { modo: datos.modo, registradaPor: datos.registradaPor },
+  });
+}
+
+export async function cancelarConfirmacion(tx: Transaccion, convocatoriaId: string, predioId: string) {
+  await tx.confirmacionAsistencia.deleteMany({ where: { convocatoriaId, predioId } });
 }

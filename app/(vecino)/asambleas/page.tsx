@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
-import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
+import { miAsistencia, proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
+import { ConfirmarAsistencia } from "./ConfirmarAsistencia";
 
 export const metadata: Metadata = { title: "Asambleas" };
 
-// VEC-ASA-01 (HU-ASA-01): la próxima asamblea con su quórum. Confirmar asistencia llega en HU-ASA-02;
-// delegar el voto, en HU-ASA-06; proponer un tema, en HU-ASA-13.
+// VEC-ASA-01 (HU-ASA-01) y VEC-ASA-02 (HU-ASA-02): la próxima asamblea con su quórum y la confirmación de
+// asistencia. Delegar el voto llega en HU-ASA-06; proponer un tema, en HU-ASA-13.
 export default async function AsambleasVecino() {
   const sesion = await sesionActual();
-  const proxima = sesion ? await proximaAsamblea(sesion) : null;
+  const ahora = new Date();
+  const proxima = sesion ? await proximaAsamblea(sesion, ahora) : null;
+  const confirmado = sesion && proxima ? await miAsistencia(sesion, proxima.id) : false;
+  const plazoAbierto = proxima ? ahora.getTime() <= new Date(proxima.confirmacionesHasta).getTime() : false;
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Asambleas</h1>
@@ -27,10 +31,14 @@ export default async function AsambleasVecino() {
             <p className="text-texto-secundario">{proxima.lugar}</p>
             <p className="pt-2 font-bold">Motivo</p>
             <p>{proxima.motivo}</p>
-            <p className="pt-2 text-texto-secundario">
-              Puede confirmar su asistencia hasta {fechaEnFrase(new Date(proxima.confirmacionesHasta))} a las{" "}
-              {horaCorta(new Date(proxima.confirmacionesHasta))}.
-            </p>
+            <div className="pt-2">
+              <ConfirmarAsistencia
+                asambleaId={proxima.id}
+                confirmado={confirmado}
+                plazoAbierto={plazoAbierto}
+                plazoTexto={`${fechaEnFrase(new Date(proxima.confirmacionesHasta))} a las ${horaCorta(new Date(proxima.confirmacionesHasta))}`}
+              />
+            </div>
           </section>
           <section aria-labelledby="titulo-cuantos" className="flex flex-col gap-2">
             <h2 id="titulo-cuantos" className="text-titulo-2">

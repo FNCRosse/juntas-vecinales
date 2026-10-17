@@ -82,4 +82,27 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("casas").should("exist");
     cy.revisarAccesibilidad("asambleas-vecino-senior-360");
   });
+
+  it("@HU-ASA-02 CA1 CA3 el vecino confirma su asistencia y puede cambiar la respuesta", () => {
+    cy.request("POST", "/api/asambleas", {
+      tipoAsamblea: "ORDINARIA",
+      fecha: "2026-12-27",
+      hora: "18:00",
+      lugar: LUGAR,
+      motivo: MOTIVO,
+      idOperacion: crypto.randomUUID(),
+    })
+      .its("status")
+      .should("eq", 201);
+    cy.viewport(360, 800);
+
+    cy.visit("/asambleas");
+    cy.esperarHidratacion("Sí, asistiré").click();
+    cy.contains("Usted confirmó que asistirá").should("exist");
+    cy.contains("1 de").should("exist");
+    cy.revisarAccesibilidad("asambleas-vecino-confirmado-360");
+
+    cy.contains("button", "Cambiar mi respuesta: ya no podré ir").click();
+    cy.contains("button", "Sí, asistiré").should("exist");
+  });
 });
