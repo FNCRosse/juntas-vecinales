@@ -3,10 +3,11 @@
 
 import { ArrowLeft, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import Link from "next/link";
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { AvisoDeshacer } from "@/componentes/a11y/AvisoDeshacer";
 import { Interruptor } from "@/componentes/a11y/Interruptor";
+import { useVistaGrandeEnTelefono } from "@/componentes/a11y/useVistaEnTelefono";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import type { Preferencias as Prefs } from "@/modulos/identidad/aplicacion/avisos";
 
@@ -17,16 +18,6 @@ const GRUPOS: { id: string; titulo: string; claves: (keyof Prefs)[] }[] = [
   { id: "g2", titulo: "Mi casa y el barrio", claves: ["reportes", "garita", "noticias"] },
 ];
 
-function suscribirVista(alCambiar: () => void) {
-  const observador = new MutationObserver(alCambiar);
-  observador.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] });
-  const telefono = window.matchMedia("(max-width: 47.99rem)");
-  telefono.addEventListener("change", alCambiar);
-  return () => {
-    observador.disconnect();
-    telefono.removeEventListener("change", alCambiar);
-  };
-}
 const OPCIONES: [keyof Prefs, string, string][] = [
   ["whatsapp", "Recibir avisos por WhatsApp", "Además de verlos aquí, en Avisos."],
   ["pagos", "Recordatorios de pago", "Un aviso amable cuando tenga una semana pendiente."],
@@ -42,13 +33,7 @@ const OPCIONES: [keyof Prefs, string, string][] = [
 export function Preferencias({ iniciales, seniorAlInicio }: { iniciales: Prefs; seniorAlInicio: boolean }) {
   const [prefs, setPrefs] = useState(iniciales);
   const [grupoAbierto, setGrupoAbierto] = useState("g1");
-  const enGrupos = useSyncExternalStore(
-    suscribirVista,
-    () =>
-      document.documentElement.dataset.mode === "senior" &&
-      window.matchMedia("(max-width: 47.99rem)").matches,
-    () => seniorAlInicio,
-  );
+  const enGrupos = useVistaGrandeEnTelefono(seniorAlInicio);
   // "deshacer" guarda cómo estaba el interruptor que se acaba de cambiar.
   const [mensaje, setMensaje] = useState<
     { ok: true; deshacer: { campo: keyof Prefs; valor: boolean } } | { ok: false; texto: string } | null

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaYHora } from "@/compartido/fechas";
 import { BotonEnlace, clasesBoton } from "@/componentes/a11y/Boton";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { misVisitas } from "@/modulos/identidad/aplicacion/visitas";
@@ -38,9 +39,10 @@ export default async function MisVisitas({ searchParams }: { searchParams: Promi
       </BotonEnlace>
       <Tarjeta titulo="Visitas programadas">
         {programadas.length ? (
-          <ul className="flex flex-col gap-4">
-            {programadas.map((v) => (
-              <li key={v.id} className="flex flex-col gap-2 border-b border-borde-sutil pb-4 last:border-b-0">
+          <ListaVerMas
+            etiqueta="Visitas programadas"
+            elementos={programadas.map((v) => (
+              <div key={v.id} className="flex flex-col gap-2 border-b border-borde-sutil pb-4">
                 <strong className="text-titulo-3">{v.nombre}</strong>
                 <span>{v.cuando}</span>
                 <span className="text-texto-secundario">{v.vehiculo}</span>
@@ -54,9 +56,9 @@ export default async function MisVisitas({ searchParams }: { searchParams: Promi
                     Anular esta visita<span className="sr-only"> de {v.nombre}</span>
                   </span>
                 </Link>
-              </li>
+              </div>
             ))}
-          </ul>
+          />
         ) : (
           <p>
             <strong>No tiene visitas programadas.</strong> Si espera a alguien, regístrelo y entrará sin

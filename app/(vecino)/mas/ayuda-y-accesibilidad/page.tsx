@@ -1,4 +1,4 @@
-import { BookOpen, CircleCheck, Clock, LifeBuoy } from "lucide-react";
+import { BookOpen, CircleCheck, Clock } from "lucide-react";
 import type { Metadata } from "next";
 import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
 import { exigirActor } from "@/app/_sesion/sesion";
@@ -26,17 +26,10 @@ export default async function AyudaYAccesibilidad() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Ayuda y accesibilidad</h1>
-      <Tarjeta titulo="Cómo se ve">
-        <p>
-          La vista grande agranda la letra y los botones, deja menos opciones por pantalla y sube el
-          contraste. Se guarda en su cuenta.
-        </p>
+      <Tarjeta titulo="Cómo se ve y se escucha">
         <div className="self-start">
           <InterruptorLetraGrande activoAlInicio={senior} />
         </div>
-      </Tarjeta>
-      <Tarjeta titulo="Lectura en voz alta">
-        <p>El teléfono le lee las noticias de la junta, para que no tenga que leerlas en pantalla.</p>
         <InterruptorVoz activoAlInicio={perfil.sintesisVozActiva} />
       </Tarjeta>
       <Tarjeta titulo="Guías de uso">
@@ -49,7 +42,7 @@ export default async function AyudaYAccesibilidad() {
               </span>
             </span>
             <BotonEnlace href="/guia" variante="secundario" icono={BookOpen}>
-              Ver la guía de primeros pasos
+              Ver la guía<span className="sr-only"> de primeros pasos</span>
             </BotonEnlace>
           </li>
           {guias.map((g) => (
@@ -66,7 +59,7 @@ export default async function AyudaYAccesibilidad() {
                 variante="secundario"
                 icono={BookOpen}
               >
-                {`Ver la guía de ${g.nombre}`}
+                Ver la guía<span className="sr-only"> de {g.nombre}</span>
               </BotonEnlace>
             </li>
           ))}
@@ -97,13 +90,6 @@ export default async function AyudaYAccesibilidad() {
         ) : (
           <p>Todavía no pidió ayuda. Si algo se le complica, use el botón Pedir ayuda de arriba.</p>
         )}
-        <BotonEnlace
-          href="/mas/ayuda?desde=/mas/ayuda-y-accesibilidad"
-          variante="secundario"
-          icono={LifeBuoy}
-        >
-          Pedir ayuda a una persona
-        </BotonEnlace>
       </Tarjeta>
     </div>
   );

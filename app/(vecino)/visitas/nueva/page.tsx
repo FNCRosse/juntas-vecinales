@@ -1,6 +1,7 @@
 import { ArrowLeft, HandCoins } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
@@ -12,7 +13,10 @@ export const metadata: Metadata = { title: "Registrar una visita" };
 // VEC-GAR-02 y 03 (HU-GAR-04 CA1 y CA3); VEC-GAR-06 si tiene 8 semanas pendientes (CA2).
 export default async function Nueva() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
-  const { vivienda, puedeRegistrar } = await misVisitas(sesion);
+  const [{ vivienda, puedeRegistrar }, senior] = await Promise.all([
+    misVisitas(sesion),
+    modoSeniorAlRenderizar(),
+  ]);
   if (!puedeRegistrar) {
     return (
       <div className="flex flex-col gap-6">
@@ -37,5 +41,5 @@ export default async function Nueva() {
       </div>
     );
   }
-  return <RegistrarVisita vivienda={vivienda} nombre={sesion.nombreCompleto} />;
+  return <RegistrarVisita vivienda={vivienda} nombre={sesion.nombreCompleto} seniorAlInicio={senior} />;
 }
