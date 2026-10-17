@@ -20,7 +20,7 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
     cy.get("h1").should("have.text", "Mi perfil y privacidad");
     cy.contains("dd", "Terminado en 02").should("exist");
     cy.revisarAccesibilidad("perfil-normal");
-    cy.esperarHidratacion("Bajar una copia de mis datos (PDF)").click();
+    cy.esperarHidratacion("Descargar una copia de mis datos").click();
     cy.contains('[role="status"]', "Descargamos una copia de sus datos")
       .find("a")
       .invoke("attr", "href")
@@ -37,7 +37,8 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
     cy.visit("/mas/perfil/corregir");
     cy.esperarHidratacion("Enviar mi solicitud").click();
     cy.contains("Elija qué dato quiere corregir.").should("exist");
-    cy.contains("label", "Mi DNI").click();
+    cy.esperarHidratacion("Elija el dato").click();
+    cy.get("[role=dialog]").contains("button", "Mi DNI").click();
     cy.get("#campo-valor").type(DNI_NUEVO);
     cy.get("#campo-detalle").type("Así figura en mi DNI");
     cy.revisarAccesibilidad("corregir-dato-normal");
@@ -84,7 +85,8 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
     cy.entrarComoVecinaNueva("Lucía Paz Vera");
     cy.visit("/mas/perfil/corregir");
     cy.esperarHidratacion("Enviar mi solicitud");
-    cy.contains("label", "Mi número de WhatsApp").click();
+    cy.esperarHidratacion("Elija el dato").click();
+    cy.get("[role=dialog]").contains("button", "Mi número de WhatsApp").click();
     cy.contains('[role="status"]', "Primero confirmaremos que es usted").should(
       "contain.text",
       "en su número anterior y en el nuevo",

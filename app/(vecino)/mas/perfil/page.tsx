@@ -1,4 +1,4 @@
-import { ChevronLeft, Pencil, TriangleAlert } from "lucide-react";
+import { Bell, Pencil, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
@@ -33,13 +33,6 @@ export default async function MiPerfil({ searchParams }: { searchParams: Promise
   ]);
   return (
     <div className="flex flex-col gap-6">
-      <Link
-        href="/mas"
-        className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
-      >
-        <ChevronLeft aria-hidden className="size-icono" />
-        Volver a Más opciones
-      </Link>
       <h1 className="text-titulo-1">Mi perfil y privacidad</h1>
       {aviso === "cancelacion" && (
         <MensajeEstado tipo="info" titulo="Recibimos su pedido de cancelación">
@@ -86,6 +79,13 @@ export default async function MiPerfil({ searchParams }: { searchParams: Promise
           vecinos.
         </p>
         <DescargarCopia />
+        <Link
+          href="/avisos/preferencias"
+          className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
+        >
+          <Bell aria-hidden className="size-icono" />
+          Qué avisos recibo
+        </Link>
         {perfil.cancelacionPendiente ? (
           <MensajeEstado tipo="info" titulo="Pidió cancelar su cuenta">
             <p>
@@ -94,13 +94,16 @@ export default async function MiPerfil({ searchParams }: { searchParams: Promise
             </p>
           </MensajeEstado>
         ) : (
-          <Link
-            href="/mas/perfil/cancelar"
-            className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
-          >
-            <TriangleAlert aria-hidden className="size-icono" />
-            Pedir que cancelen mi cuenta
-          </Link>
+          <>
+            <h3 className="text-titulo-3">Si ya no vive en el barrio</h3>
+            <Link
+              href="/mas/perfil/cancelar"
+              className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
+            >
+              <TriangleAlert aria-hidden className="size-icono" />
+              Pedir que cancelen mi cuenta
+            </Link>
+          </>
         )}
       </Tarjeta>
 

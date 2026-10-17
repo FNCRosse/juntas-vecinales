@@ -38,6 +38,7 @@ import {
   predioConResidentes,
   prediosPorNombreOCasa,
   prediosPorPlaca,
+  visitaEsperandoRespuesta,
   registrosEntre,
   salidaDe,
   visitaConPredio,
@@ -454,6 +455,18 @@ export async function preguntarAlVecino(
     }
     return { id: visita.id };
   });
+}
+
+/** La visita que espera la respuesta de su casa, para el Inicio (VEC-ACC-09, HU-GAR-07 CA2). */
+export async function visitaEnLaPuerta(sesion: SesionDto) {
+  const predio = await viviendaDe(sesion.usuarioId);
+  const v = predio && (await visitaEsperandoRespuesta(predio.id));
+  if (!v) return null;
+  return {
+    id: v.id,
+    nombre: v.nombre,
+    vigilante: (await nombreDeUsuario(v.registradaPor)) ?? "El vigilante",
+  };
 }
 
 /** Lo que ve el vecino al responder (VEC-GAR-05): solo si la visita es para su casa (AC-7). */

@@ -29,7 +29,8 @@ const PASOS = [
   },
   {
     titulo: "Tenga la app en su pantalla",
-    texto: "Así la abre con un toque, como WhatsApp, y no tiene que volver a entrar.",
+    texto:
+      "Así la abre con un toque, como WhatsApp, y no tiene que volver a entrar. Su teléfono le preguntará si desea agregarla.",
     Icono: Smartphone,
   },
 ];
@@ -189,7 +190,7 @@ export function GuiaPrimerUso() {
       <div className="flex flex-col gap-separacion">
         {ultimo ? (
           <BotonEnlace href="/" icono={ArrowRight} anchoCompleto>
-            Terminar e ir al inicio
+            Terminar y empezar
           </BotonEnlace>
         ) : (
           <Boton icono={ArrowRight} anchoCompleto onClick={siguiente}>
@@ -212,9 +213,6 @@ export function GuiaPrimerUso() {
           Saltar la guía (no se volverá a mostrar)
         </Link>
       </div>
-      {!ultimo && (
-        <p className="text-texto-secundario">Puede volver a verla desde Más, en «Ayuda y accesibilidad».</p>
-      )}
     </div>
   );
 }

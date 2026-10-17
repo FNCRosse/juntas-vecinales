@@ -41,7 +41,7 @@ describe("@HU-GAR-11 @HU-GAR-24 @HU-GAR-25 Entrada alterna del vecino", () => {
     cy.visit("/clave");
     cy.get("h1").should("have.text", "Entrar con mi clave");
     cy.revisarAccesibilidad("entrar-clave-senior");
-    cy.contains("a", "Olvidé mi clave: crear una nueva").click();
+    cy.contains("a", "Olvidé mi clave").click();
     cy.get("h1").should("have.text", "Crear una clave nueva");
     cy.esperarHidratacion("Enviarme el enlace");
     cy.get("#campo-identificador").type("40000007");
@@ -66,21 +66,21 @@ describe("@HU-GAR-11 @HU-GAR-24 @HU-GAR-25 Entrada alterna del vecino", () => {
     // HU-GAR-24: entra con su DNI y su clave nueva.
     cy.clearCookie("sesion");
     cy.visit("/clave");
-    cy.esperarHidratacion("Entrar con mi clave");
+    cy.esperarHidratacion("Entrar");
     cy.get("#campo-dni").type("40000007");
     cy.get("#campo-clave").type("rosa-clave-1");
-    cy.contains("button", "Entrar con mi clave").click();
+    cy.contains("button", "Entrar").click();
     cy.location("pathname").should("eq", "/entrar/privacidad");
 
     // CA3: cinco fallos seguidos pausan la entrada con clave y sugieren el enlace.
     cy.clearCookie("sesion");
     cy.visit("/clave");
-    cy.esperarHidratacion("Entrar con mi clave");
+    cy.esperarHidratacion("Entrar");
     cy.get("#campo-dni").type("40000007");
     for (let i = 0; i < 5; i++) {
       cy.get("#campo-clave").clear().type("no-es-la-clave");
-      cy.contains("button", "Entrar con mi clave").click();
-      cy.contains("button", "Entrar con mi clave").should("not.have.attr", "aria-busy");
+      cy.contains("button", "Entrar").click();
+      cy.contains("button", "Entrar").should("not.have.attr", "aria-busy");
     }
     cy.contains('[role="status"]', "Su cuenta está bien").should(
       "contain.text",

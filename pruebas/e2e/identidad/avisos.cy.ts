@@ -110,15 +110,17 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
     cy.contains('[role="switch"]', "Recordatorios de pago")
       .should("have.attr", "aria-checked", "true")
       .click();
-    cy.contains('[role="status"]', "El cambio se aplica desde el próximo aviso.").should("exist");
+    cy.contains('[role="status"]', "El cambio vale desde el próximo aviso.").should("exist");
     cy.contains('[role="switch"]', "Recordatorios de pago").should("have.attr", "aria-checked", "false");
-    cy.contains("div", "Avisos importantes de su cuenta, la reja y la seguridad").should(
-      "contain.text",
-      "Siempre",
-    );
+    cy.contains("div", "Avisos importantes de la reja y de seguridad").should("contain.text", "Siempre");
     cy.revisarAccesibilidad("avisos-preferencias-senior-360");
     cy.reload();
     cy.contains('[role="switch"]', "Recordatorios de pago").should("have.attr", "aria-checked", "false");
+    // R-11: en vista grande y en el teléfono van en dos grupos plegables, uno abierto a la vez.
+    cy.contains("button", "WhatsApp, pagos y asambleas").should("have.attr", "aria-expanded", "true");
+    cy.contains("button", "Mi casa y el barrio").should("have.attr", "aria-expanded", "false").click();
+    cy.contains('[role="switch"]', "Noticias de la junta").should("be.visible");
+    cy.contains('[role="switch"]', "Recordatorios de pago").should("not.exist");
   });
 
   it("@HU-ACC-03 CA4 el cambio se aplica sin confirmar y Deshacer lo revierte en el servidor (R-12)", () => {

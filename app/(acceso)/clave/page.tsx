@@ -25,7 +25,8 @@ export default async function EntrarConClave() {
       </div>
       <FormularioEntradaClave
         etiquetaClave="Su clave"
-        ayudaClave="Es la clave de respaldo que creó al entrar por primera vez."
+        ayudaDni=""
+        textoBoton="Entrar"
         siguePausa={
           <>
             <p>
@@ -42,7 +43,7 @@ export default async function EntrarConClave() {
         href="/clave/nueva"
         className="inline-flex min-h-tactil items-center self-start font-bold text-texto-enlace"
       >
-        Olvidé mi clave: crear una nueva
+        Olvidé mi clave
       </Link>
     </div>
   );
