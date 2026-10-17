@@ -111,6 +111,63 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("button", "Sí, asistiré").should("exist");
   });
 
+  it("@HU-ASA-06 CA1 CA2 el vecino delega su voto en dos pasos, descarga la constancia y puede anularla", () => {
+    cy.request("POST", "/api/asambleas", {
+      tipoAsamblea: "ORDINARIA",
+      fecha: enDias(65),
+      hora: "18:00",
+      lugar: LUGAR,
+      motivo: MOTIVO,
+      idOperacion: crypto.randomUUID(),
+    })
+      .its("status")
+      .should("eq", 201);
+    cy.viewport(360, 800);
+
+    cy.visit("/asambleas");
+    cy.contains("a", "¿No podrá ir? Delegar mi voto").click();
+    cy.get("h1").should("have.text", "Delegar mi voto");
+    cy.contains("p", "Paso 1 de 2").should("exist");
+    cy.revisarAccesibilidad("delegar-paso1-360");
+
+    cy.esperarHidratacion("Revisar la delegación").click();
+    cy.contains("Escriba el nombre de quien votará por usted.").should("exist");
+    cy.contains("El DNI tiene 8 cifras.").should("exist");
+    cy.contains("Elija quién es para usted.").should("exist");
+    cy.revisarAccesibilidad("delegar-errores-360");
+
+    cy.get("#campo-nombre").type("Rosa Huamán");
+    cy.get("#campo-dni").type("08123456");
+    cy.contains("button", "Elegir una opción").click();
+    cy.contains("button", "Familiar").click();
+    cy.contains("button", "Revisar la delegación").click();
+
+    cy.get("h1").should("contain.text", "¿Desea dejarle su voto a Rosa Huamán?");
+    cy.focused().should("match", "h1");
+    cy.contains("dd", "DNI terminado en 56").should("exist");
+    cy.revisarAccesibilidad("delegar-paso2-360");
+    cy.contains("button", "Sí, delegar mi voto").click();
+
+    cy.contains('[role="status"]', "Rosa Huamán votará por usted").should("exist");
+    cy.contains("h1", /Constancia de delegación N\.° D-\d{4,}/).should("exist");
+    cy.revisarAccesibilidad("delegar-registrada-360");
+    cy.contains("a", "Descargar constancia (PDF)")
+      .should("have.attr", "href")
+      .then((href) => {
+        cy.request({ url: String(href), encoding: "binary" }).then((r) => {
+          expect(r.status).to.eq(200);
+          expect(r.headers["content-type"]).to.eq("application/pdf");
+          expect(String(r.body).startsWith("%PDF")).to.eq(true);
+        });
+      });
+
+    cy.visit("/asambleas");
+    cy.contains("Delegado a Rosa Huamán").should("exist");
+    cy.visit("/asambleas/delegar");
+    cy.contains("button", "Anular la delegación").click();
+    cy.get("h1").should("have.text", "Delegar mi voto");
+  });
+
   it("@HU-ASA-04 CA2 la directiva ve el quórum proyectado con la barra y si alcanza el mínimo", () => {
     cy.request("POST", "/api/asambleas", {
       tipoAsamblea: "ORDINARIA",

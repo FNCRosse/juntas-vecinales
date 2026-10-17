@@ -1,20 +1,24 @@
+import { ChevronRight, UserRoundCheck } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
 import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { miAsistencia, proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
+import { miDelegacion } from "@/modulos/asambleas/aplicacion/delegaciones";
 import { ConfirmarAsistencia } from "./ConfirmarAsistencia";
 
 export const metadata: Metadata = { title: "Asambleas" };
 
-// VEC-ASA-01 (HU-ASA-01) y VEC-ASA-02 (HU-ASA-02): la próxima asamblea con su quórum y la confirmación de
-// asistencia. Delegar el voto llega en HU-ASA-06; proponer un tema, en HU-ASA-13.
+// VEC-ASA-01 (HU-ASA-01) y VEC-ASA-02 (HU-ASA-02): la próxima asamblea con su quórum, la confirmación de
+// asistencia y el acceso a delegar el voto (HU-ASA-06). Proponer un tema llega en HU-ASA-13.
 export default async function AsambleasVecino() {
   const sesion = await sesionActual();
   const ahora = new Date();
   const proxima = sesion ? await proximaAsamblea(sesion, ahora) : null;
   const confirmado = sesion && proxima ? await miAsistencia(sesion, proxima.id) : false;
+  const delegacion = sesion && proxima ? await miDelegacion(sesion, proxima.id) : null;
   const plazoAbierto = proxima ? ahora.getTime() <= new Date(proxima.confirmacionesHasta).getTime() : false;
   return (
     <div className="flex flex-col gap-6">
@@ -74,6 +78,21 @@ export default async function AsambleasVecino() {
               La línea marca ese mínimo.
             </p>
           </section>
+          {(plazoAbierto || delegacion) && (
+            <Link
+              href="/asambleas/delegar"
+              className="flex min-h-tactil items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+            >
+              <UserRoundCheck aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+              <span className="flex min-w-0 flex-1 flex-col">
+                <strong>¿No podrá ir? Delegar mi voto</strong>
+                {delegacion && (
+                  <span className="text-texto-secundario">Delegado a {delegacion.apoderadoNombre}</span>
+                )}
+              </span>
+              <ChevronRight aria-hidden className="size-icono-pequeno shrink-0" />
+            </Link>
+          )}
         </>
       ) : (
         <p>No hay ninguna asamblea convocada por ahora. Le avisaremos cuando la directiva convoque una.</p>

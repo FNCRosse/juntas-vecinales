@@ -18,6 +18,12 @@ enum TipoAsamblea {
   EXTRAORDINARIA
 }
 
+enum CondicionApoderado {
+  FAMILIAR
+  VECINO
+  EXTERNO
+}
+
 enum ModoConfirmacion {
   DIGITAL
   ASISTIDA
@@ -41,6 +47,7 @@ model Convocatoria {
   idOperacion      String             @unique
   asamblea         Asamblea?
   confirmaciones   ConfirmacionAsistencia[]
+  delegaciones     DelegacionVoto[]
 
   @@index([fechaHora])
   @@map("asambleas_convocatorias")
@@ -78,4 +85,27 @@ model Asamblea {
   avisoCorteEn       DateTime?
 
   @@map("asambleas_asambleas")
+}
+
+// Delegación del voto de un predio en un apoderado para una asamblea (HU-ASA-06). Una por predio y asamblea;
+// anularla la borra (queda en la auditoría). Del apoderado se guarda el nombre y el DNI solo como hash,
+// más sus dos últimas cifras para mostrarlo («DNI terminado en 32»): el hash permite contar cuántas casas
+// representa y validarlo en la mesa sin guardar el número (minimización, docs/DATOS.md). `numero` es el
+// correlativo de la constancia («D-0031»).
+model DelegacionVoto {
+  id                String             @id @default(uuid())
+  numero            Int                @unique @default(autoincrement())
+  convocatoriaId    String
+  convocatoria      Convocatoria       @relation(fields: [convocatoriaId], references: [id])
+  predioId          String
+  titularId         String
+  apoderadoNombre   String
+  apoderadoDniHash  String
+  apoderadoDniFinal String
+  condicion         CondicionApoderado
+  creadaEn          DateTime           @default(now())
+
+  @@unique([convocatoriaId, predioId])
+  @@index([convocatoriaId, apoderadoDniHash])
+  @@map("asambleas_delegaciones")
 }
