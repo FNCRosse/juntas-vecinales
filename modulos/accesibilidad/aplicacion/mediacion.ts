@@ -29,6 +29,7 @@ type Actor = { usuarioId: string; nombre: string; roles: string[] };
 
 const aDto = (s: Awaited<ReturnType<typeof solicitudesDe>>[number]) => ({
   id: s.id,
+  usuarioId: s.usuarioId,
   numero: numeroDePedido(s.numero),
   quien: s.quien,
   pantalla: s.pantalla,

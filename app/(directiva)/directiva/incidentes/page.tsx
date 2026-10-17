@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
-import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { fechaYHora } from "@/compartido/fechas";
 import {
@@ -47,13 +47,14 @@ export default async function BandejaIncidentes({
           Registrar un reporte por un vecino
         </BotonEnlace>
       )}
-      <FiltroEnHoja
-        actual={etiquetaFiltro(filtro)}
-        titulo="Mostrar reportes"
+      <SelectorDeFiltro
+        id="estado-reportes"
+        pregunta="Mostrar"
+        valor={filtro}
         opciones={(Object.keys(FILTROS_BANDEJA) as FiltroBandeja[]).map((clave) => ({
+          valor: clave,
           etiqueta: etiquetaFiltro(clave),
           href: clave === "todos" ? "/directiva/incidentes" : `/directiva/incidentes?estado=${clave}`,
-          activa: clave === filtro,
         }))}
       />
       {quejas.length ? (

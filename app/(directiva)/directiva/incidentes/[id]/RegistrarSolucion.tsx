@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { AreaTexto } from "@/componentes/a11y/AreaTexto";
 import { Boton } from "@/componentes/a11y/Boton";
-import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 
 // DIR-QUE-04 (lo que se hizo) y DIR-QUE-05 (cerrar como resuelto): quien reportó recibe el detalle.
 
@@ -92,20 +92,15 @@ export function RegistrarSolucion({
       }}
     >
       <h2 className="text-titulo-2">Registrar lo que se hizo</h2>
-      <GrupoOpciones id="campo-medida" pregunta="¿Qué medida se tomó?" error={errores.medida}>
-        {MEDIDAS.map(([valor, etiqueta]) => (
-          <Opcion
-            key={valor}
-            tipo="radio"
-            name="medida"
-            value={valor}
-            etiqueta={etiqueta}
-            checked={medida === valor}
-            onChange={() => setMedida(valor)}
-            className="border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie"
-          />
-        ))}
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-medida"
+        pregunta="¿Qué medida se tomó?"
+        vacio="Elija la medida"
+        opciones={MEDIDAS.map(([valor, etiqueta]) => ({ valor, etiqueta }))}
+        valor={(medida || null) as (typeof MEDIDAS)[number][0] | null}
+        alElegir={setMedida}
+        error={errores.medida}
+      />
       <AreaTexto
         name="detalle"
         etiqueta="Detalle para quien reportó"

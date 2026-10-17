@@ -39,7 +39,8 @@ describe("@HU-QUE-05 @HU-QUE-06 Gestión de un reporte por la directiva", () => 
         cy.revisarAccesibilidad("evaluar-reporte-senior-360");
         cy.esperarHidratacion("Revisar la decisión").click();
         cy.get("#campo-decision-error").should("contain.text", "Elija qué decide.");
-        cy.contains("label", "No procede").click();
+        cy.get("#campo-decision").click();
+        cy.get("[role=dialog]").contains("button", "No procede").click();
         cy.contains('[role="status"]', "Se enviará una advertencia").should("exist");
         cy.get("#campo-motivo").type("No describe un problema del barrio.");
         cy.contains("button", "Revisar la decisión").click();
@@ -69,15 +70,18 @@ describe("@HU-QUE-05 @HU-QUE-06 Gestión de un reporte por la directiva", () => 
         cy.viewport(1280, 900);
         cy.visit(`/directiva/incidentes/${queja.id}`);
         cy.esperarHidratacion("Revisar la decisión");
-        cy.contains("label", "Procede").click();
-        cy.contains("label", "Alta").click();
+        cy.get("#campo-decision").click();
+        cy.get("[role=dialog]").contains("button", "Procede: pasar a En revisión").click();
+        cy.get("#campo-prioridad").click();
+        cy.get("[role=dialog]").contains("button", "Alta").click();
         cy.contains("button", "Revisar la decisión").click();
         cy.contains("button", "Sí, pasar a En revisión").click();
         cy.contains("Procede, con prioridad alta.").should("exist");
         cy.contains("h2", "Registrar lo que se hizo").should("exist");
         cy.esperarHidratacion("Revisar y cerrar el caso").click();
         cy.get("#campo-detalle-error").should("contain.text", "Escriba qué se hizo");
-        cy.contains("label", "Mediación en persona, con acuerdo").click();
+        cy.get("#campo-medida").click();
+        cy.get("[role=dialog]").contains("button", "Mediación en persona, con acuerdo").click();
         cy.get("#campo-detalle").type(
           "Conversamos con el vecino y acordó bajar la música desde las 10 p. m.",
         );
@@ -110,7 +114,8 @@ describe("@HU-QUE-05 @HU-QUE-06 Gestión de un reporte por la directiva", () => 
         cy.viewport(360, 800);
         cy.visit(`/directiva/incidentes/${queja.id}`);
         cy.esperarHidratacion("Revisar la decisión");
-        cy.contains("label", "Excede a la junta").click();
+        cy.get("#campo-decision").click();
+        cy.get("[role=dialog]").contains("button", "Excede a la junta").click();
         cy.contains("En el siguiente paso armará el expediente").should("exist");
         cy.contains("button", "Revisar la decisión").click();
         cy.get("h1").should("have.text", "Derivar a una entidad externa");
