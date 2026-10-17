@@ -2,7 +2,7 @@
 import { prisma } from "@/compartido/bd/cliente";
 import { direccion } from "@/modulos/identidad/dominio/predio";
 import { buscarConVivienda } from "@/modulos/identidad/infraestructura/repositorioEquipo";
-import type { SesionDto } from "./sesion";
+import { exigirRol, type SesionDto } from "./sesion";
 
 /** "Carmen Huamán, Mz. C, lote 7" y el final de su teléfono: lo que ve quien pide ayuda (VEC-AYU-01). */
 export async function quienPideAyuda(sesion: SesionDto) {
@@ -30,6 +30,22 @@ export async function mediadoresDeTurno() {
     }
   }
   return [];
+}
+
+/** El teléfono de quien pidió ayuda, para que quien atiende lo llame (DIR-AYU-01): solo la directiva. */
+export async function telefonosParaLlamar(sesion: SesionDto, usuarioIds: string[]) {
+  exigirRol(sesion, "DIRECTIVA", "DIRECTIVO_MEDIADOR");
+  const personas = await prisma.usuario.findMany({
+    where: { id: { in: usuarioIds } },
+    select: { id: true, telefonoWhatsApp: true },
+  });
+  return new Map(
+    personas.flatMap((p) =>
+      p.telefonoWhatsApp
+        ? [[p.id, p.telefonoWhatsApp.replace(/^51(d{3})(d{3})(d{3})$/, "$1 $2 $3")] as const]
+        : [],
+    ),
+  );
 }
 
 /** El contacto de la administración, para el "Pedir ayuda" del equipo. */

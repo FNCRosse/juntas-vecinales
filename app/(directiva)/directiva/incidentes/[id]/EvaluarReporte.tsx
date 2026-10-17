@@ -8,8 +8,8 @@ import { enviarJson } from "@/app/_formularios/enviar";
 import { AreaTexto } from "@/componentes/a11y/AreaTexto";
 import { Boton } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
-import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 
 // DIR-QUE-02 (la decisión) y DIR-QUE-03 (la confirmación). Rechazar envía una advertencia sin tono punitivo.
 
@@ -105,35 +105,33 @@ export function EvaluarReporte({ id, numero, categoria }: { id: string; numero: 
         revisar();
       }}
     >
-      <GrupoOpciones id="campo-decision" pregunta="¿Qué decide?" error={errores.decision}>
-        {DECISIONES.map(([valor, etiqueta, ayuda]) => (
-          <Opcion
-            key={valor}
-            tipo="radio"
-            name="decision"
-            value={valor}
-            etiqueta={ayuda ? `${etiqueta}. ${ayuda}` : etiqueta}
-            checked={decision === valor}
-            onChange={() => setDecision(valor)}
-            className="border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie"
-          />
-        ))}
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-decision"
+        pregunta="¿Qué decide?"
+        vacio="Elija qué decide"
+        opciones={DECISIONES.map(([valor, etiqueta, detalle]) => ({
+          valor,
+          etiqueta,
+          detalle: detalle || undefined,
+        }))}
+        valor={(decision || null) as (typeof DECISIONES)[number][0] | null}
+        alElegir={setDecision}
+        error={errores.decision}
+      />
       {decision === "admitir" && (
-        <GrupoOpciones id="campo-prioridad" pregunta="Prioridad" error={errores.prioridad}>
-          {PRIORIDADES.map(([valor, etiqueta, ayuda]) => (
-            <Opcion
-              key={valor}
-              tipo="radio"
-              name="prioridad"
-              value={valor}
-              etiqueta={ayuda ? `${etiqueta}: ${ayuda.toLowerCase()}` : etiqueta}
-              checked={prioridad === valor}
-              onChange={() => setPrioridad(valor)}
-              className="border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie"
-            />
-          ))}
-        </GrupoOpciones>
+        <SelectorEnHoja
+          id="campo-prioridad"
+          pregunta="Prioridad"
+          vacio="Elija la prioridad"
+          opciones={PRIORIDADES.map(([valor, etiqueta, detalle]) => ({
+            valor,
+            etiqueta,
+            detalle: detalle || undefined,
+          }))}
+          valor={(prioridad || null) as (typeof PRIORIDADES)[number][0] | null}
+          alElegir={setPrioridad}
+          error={errores.prioridad}
+        />
       )}
       {decision === "rechazar" && (
         <>

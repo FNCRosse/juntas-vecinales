@@ -20,8 +20,10 @@ describe("@HU-QUE-03 Queja asistida por el mediador", () => {
     cy.contains("button", "Buscar al vecino").click();
     cy.contains("label", "Carmen Huamán · Mz. C, lote 7").click();
     cy.contains("button", "Cambiar de vecino").should("exist");
-    cy.contains("label", "Basura").click();
-    cy.contains("label", "Mz. D").click();
+    cy.get("#campo-categoria").click();
+    cy.get("[role=dialog]").contains("button", "Basura").click();
+    cy.get("#campo-manzana").click();
+    cy.get("[role=dialog]").contains("button", "Mz. D").click();
     cy.get("#campo-descripcion").type("Dejan bolsas de basura en la esquina desde hace una semana.");
     cy.get('[role="switch"]').click();
     cy.contains("label", "El vecino aceptó la política de privacidad").click();

@@ -12,6 +12,7 @@ import { Interruptor } from "@/componentes/a11y/Interruptor";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
 import { fechaYHora } from "@/compartido/fechas";
 import type { ConstanciaDto } from "@/modulos/incidencias/aplicacion/quejas";
@@ -294,37 +295,28 @@ export function RegistrarPorVecino({ manzanas }: { manzanas: string[] }) {
         )}
       </div>
 
-      <GrupoOpciones id="campo-categoria" pregunta="¿Qué problema es?" error={errores.categoria}>
-        {CATEGORIAS.map(([valor, etiqueta]) => (
-          <Opcion
-            key={valor}
-            tipo="radio"
-            name="categoria"
-            value={valor}
-            etiqueta={etiqueta}
-            checked={categoria === valor}
-            onChange={() => setCategoria(valor)}
-            className="border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie"
-          />
-        ))}
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-categoria"
+        pregunta="¿Qué problema es?"
+        vacio="Elija el tipo"
+        opciones={CATEGORIAS.map(([valor, etiqueta]) => ({ valor, etiqueta }))}
+        valor={(categoria || null) as (typeof CATEGORIAS)[number][0] | null}
+        alElegir={setCategoria}
+        error={errores.categoria}
+      />
 
-      <GrupoOpciones id="campo-manzana" pregunta="¿Dónde pasa?" error={errores.manzana ?? errores.lugar}>
-        <div className="grid grid-cols-2 gap-separacion md:grid-cols-3">
-          {[...manzanas, OTRO_LUGAR].map((m) => (
-            <Opcion
-              key={m}
-              tipo="radio"
-              name="manzana"
-              value={m}
-              etiqueta={m === OTRO_LUGAR ? "Otro lugar del barrio" : `Mz. ${m}`}
-              checked={manzana === m}
-              onChange={() => setManzana(m)}
-              className="border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie"
-            />
-          ))}
-        </div>
-      </GrupoOpciones>
+      <SelectorEnHoja
+        id="campo-manzana"
+        pregunta="¿Dónde pasa?"
+        vacio="Elija la manzana"
+        opciones={[...manzanas, OTRO_LUGAR].map((m) => ({
+          valor: m,
+          etiqueta: m === OTRO_LUGAR ? "Otro lugar del barrio" : `Mz. ${m}`,
+        }))}
+        valor={manzana || null}
+        alElegir={setManzana}
+        error={errores.manzana ?? errores.lugar}
+      />
       <Campo
         name="referencia"
         etiqueta={manzana === OTRO_LUGAR ? "¿Dónde fue?" : "Referencia (opcional)"}

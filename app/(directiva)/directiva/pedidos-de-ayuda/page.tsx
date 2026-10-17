@@ -4,6 +4,7 @@ import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaYHora } from "@/compartido/fechas";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { solicitudesPorAtender } from "@/modulos/accesibilidad/aplicacion/mediacion";
+import { telefonosParaLlamar } from "@/modulos/identidad/aplicacion/datosParaAyuda";
 import { CambiarEstado } from "./CambiarEstado";
 
 export const metadata: Metadata = { title: "Pedidos de ayuda" };
@@ -17,6 +18,7 @@ export default async function PedidosDeAyuda() {
     nombre: sesion.nombreCompleto,
     roles: sesion.roles,
   });
+  const telefonos = await telefonosParaLlamar(sesion, [...new Set(pedidos.map((p) => p.usuarioId))]);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -30,6 +32,8 @@ export default async function PedidosDeAyuda() {
       {pedidos.length ? (
         <ListaVerMas
           etiqueta="Pedidos de ayuda"
+          normal={2}
+          senior={1}
           elementos={pedidos.map((p) => (
             <div
               key={p.id}
@@ -54,6 +58,15 @@ export default async function PedidosDeAyuda() {
                 )}
                 {p.estadoTexto}
               </span>
+              {p.estado !== "ATENDIDA" && telefonos.get(p.usuarioId) && (
+                <a
+                  href={`tel:+51${telefonos.get(p.usuarioId)!.replaceAll(" ", "")}`}
+                  className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace underline underline-offset-4"
+                >
+                  <Phone aria-hidden className="size-icono" />
+                  Llamar al {telefonos.get(p.usuarioId)}
+                </a>
+              )}
               {p.estado !== "ATENDIDA" && <CambiarEstado id={p.id} estado={p.estado} quien={p.quien} />}
             </div>
           ))}
