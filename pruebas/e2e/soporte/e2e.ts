@@ -49,6 +49,8 @@ Cypress.Commands.add("revisarAccesibilidad", (nombre: string) => {
       }),
     );
   cy.checkA11y(undefined, { runOnly: { type: "tag", values: ETIQUETAS } });
+  // Con CYPRESS_CAPTURAS=1 cada pantalla revisada también se fotografía (evidencia de cierre de módulo).
+  if (Cypress.env("CAPTURAS")) cy.screenshot(nombre, { capture: "fullPage", overwrite: true });
 });
 
 Cypress.Commands.add("guardarModo", (modo: "normal" | "senior") => {

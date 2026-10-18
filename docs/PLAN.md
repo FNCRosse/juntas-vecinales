@@ -77,7 +77,7 @@ Punto de entrada del vecino:
 - [x] HU-GAR-20 Centro de notificaciones unificado
 - [x] HU-GAR-18 Preferencias de notificación
 - [x] HU-ACC-04 Pedir ayuda humana desde cualquier pantalla
-- [~] HU-GAR-19 Panel de inicio consolidado — `[~]` M1 dejó el panel (saludo, vivienda) y el bloque de avisos; M3, el de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); se cierra en M5: M1 deja el panel y el bloque de avisos; M3, M4 y M5 añaden los bloques de queja, evento y deuda
+- [~] HU-GAR-19 Panel de inicio consolidado — `[~]` M1 dejó el panel (saludo, vivienda) y el bloque de avisos; M3, el de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, el de la próxima asamblea y la próxima actividad (PR [#79](https://github.com/FNCRosse/juntas-vecinales/pull/79)); se cierra en M5: falta el bloque de deuda
 
 Garita:
 - [x] HU-GAR-04 Pre-registrar visitas
@@ -88,9 +88,9 @@ Garita:
 
 Privacidad (ARCO) y contacto:
 - [x] HU-GAR-16 Bandeja ARCO del administrador con plazos
-- [~] HU-GAR-12 Copia de mis datos personales — `[~]` M1 dejó el PDF con las secciones de identidad y accesibilidad; M3, la de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); se cierra en M5: cada módulo añade su sección a la copia
+- [~] HU-GAR-12 Copia de mis datos personales — `[~]` M1 dejó el PDF con las secciones de identidad y accesibilidad; M3, la de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, la de asambleas y actividades (PR [#80](https://github.com/FNCRosse/juntas-vecinales/pull/80)); se cierra en M5: falta la sección de aportes
 - [x] HU-GAR-13 Rectificación de datos
-- [~] HU-GAR-14 Cancelación de la cuenta — `[~]` M1 anonimiza identidad y accesibilidad; M3, los reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); se cierra en M5: cada módulo añade su anonimización
+- [~] HU-GAR-14 Cancelación de la cuenta — `[~]` M1 anonimiza identidad y accesibilidad; M3, los reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, el apoderado y los textos libres (PR [#80](https://github.com/FNCRosse/juntas-vecinales/pull/80)); se cierra en M5: falta la anonimización de aportes
 - [x] HU-GAR-15 Oposición a mostrar la ubicación exacta — M1 dejó la opción; se cerró en M3: el mapa muestra todos los reportes solo por manzana (PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45))
 - [x] HU-GAR-17 Cambio de número de contacto verificado
 
@@ -115,7 +115,7 @@ Evidencia de cierre: [M1.md](evidencias/M1.md) (PR [#11](https://github.com/FNCR
 Evidencia de cierre: [M2.md](evidencias/M2.md).
 
 **Pantallas:** DIR-ASA-01, 10–18 · DIR-COB-19 · DIR-INI-01, 05 · DIR-TRA-01–05 · VEC-ACC-09 · VEC-ASA-09, 13 · VEC-AYU-03 · VEC-TRA-01–04.
-**Riesgos:** el orden de módulos pone M2 antes de M4 y M5, de los que consume datos: las actas y balances se registran a mano con título y fecha (en M4 se enlazan a su asamblea o evento) y las dos HU de recaudación se hacen en M5. La evidencia de M2 lo declara.
+**Riesgos:** el orden de módulos pone M2 antes de M4 y M5, de los que consume datos: las actas y balances se registran a mano con título y fecha (en M4 se enlazan a su asamblea o evento, ya hecho en el PR [#81](https://github.com/FNCRosse/juntas-vecinales/pull/81)) y las dos HU de recaudación se hacen en M5. La evidencia de M2 lo declara.
 
 ## M3 · Demandas e Incidentes
 
@@ -129,7 +129,7 @@ Evidencia de cierre: [M2.md](evidencias/M2.md).
 - [x] HU-QUE-07 Expediente y derivación a PNP o Municipalidad — PR [#44](https://github.com/FNCRosse/juntas-vecinales/pull/44)
 - [x] HU-QUE-08 Mapa de incidentes — PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45)
 - [x] HU-ACC-07 Alternativa textual del mapa, imágenes e íconos — PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45)
-- [~] HU-ACC-10 Tutorial guiado por sección — `[~]` se cierra en M5: M3 dejó el mecanismo y la guía de Incidentes (PR [#46](https://github.com/FNCRosse/juntas-vecinales/pull/46)); M4 y M5 añaden Asambleas y Mi cuota
+- [~] HU-ACC-10 Tutorial guiado por sección — `[~]` se cierra en M5: M3 dejó el mecanismo y la guía de Incidentes (PR [#46](https://github.com/FNCRosse/juntas-vecinales/pull/46)); M4 añadió la de Asambleas (PR [#79](https://github.com/FNCRosse/juntas-vecinales/pull/79)); M5 añade Mi cuota
 
 Al cerrar M3 también: cerrar la oposición de ubicación de M1, añadir el bloque de quejas al panel de inicio y la sección de quejas a la copia y la anonimización ARCO. Hecho en PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45) (el mapa muestra todo por manzana) y PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47).
 
@@ -140,19 +140,19 @@ Evidencia de cierre: [M3.md](evidencias/M3.md).
 
 ## M4 · Asambleas y eventos pro fondos
 
-- [ ] HU-ASA-01 Convocatoria con versión imprimible
-- [ ] HU-ASA-02 Confirmar asistencia
-- [ ] HU-ASA-03 Confirmación asistida por el mediador
-- [ ] HU-ASA-04 Quórum proyectado en tiempo real
-- [ ] HU-ASA-05 Contingencia por falta de quórum
-- [ ] HU-ASA-06 Delegar el voto en un apoderado
-- [ ] HU-ASA-07 Check-in presencial y quórum definitivo
-- [ ] HU-ASA-13 Proponer un tema de agenda
-- [ ] HU-ASA-14 Consolidar propuestas en la agenda
-- [ ] HU-ASA-08 Modalidad de aporte en eventos pro fondos
-- [ ] HU-ASA-09 Voluntariado
+- [x] HU-ASA-01 Convocatoria con versión imprimible — PR [#68](https://github.com/FNCRosse/juntas-vecinales/pull/68)
+- [x] HU-ASA-02 Confirmar asistencia — PR [#69](https://github.com/FNCRosse/juntas-vecinales/pull/69)
+- [x] HU-ASA-03 Confirmación asistida por el mediador — PR [#70](https://github.com/FNCRosse/juntas-vecinales/pull/70)
+- [x] HU-ASA-04 Quórum proyectado en tiempo real — PR [#71](https://github.com/FNCRosse/juntas-vecinales/pull/71)
+- [x] HU-ASA-05 Contingencia por falta de quórum — PR [#72](https://github.com/FNCRosse/juntas-vecinales/pull/72)
+- [x] HU-ASA-06 Delegar el voto en un apoderado — PR [#73](https://github.com/FNCRosse/juntas-vecinales/pull/73)
+- [x] HU-ASA-07 Check-in presencial y quórum definitivo — PR [#74](https://github.com/FNCRosse/juntas-vecinales/pull/74)
+- [x] HU-ASA-13 Proponer un tema de agenda — PR [#75](https://github.com/FNCRosse/juntas-vecinales/pull/75)
+- [x] HU-ASA-14 Consolidar propuestas en la agenda — PR [#76](https://github.com/FNCRosse/juntas-vecinales/pull/76)
+- [x] HU-ASA-08 Modalidad de aporte en eventos pro fondos — PR [#77](https://github.com/FNCRosse/juntas-vecinales/pull/77)
+- [x] HU-ASA-09 Voluntariado — PR [#78](https://github.com/FNCRosse/juntas-vecinales/pull/78)
 
-Al cerrar M4 también: bloque de próximo evento en el panel, recorrido guiado de Asambleas, sección de asambleas en ARCO y enlace de actas y balances de M2 con su asamblea o evento.
+Al cerrar M4 también: bloque de próximo evento en el panel, recorrido guiado de Asambleas, sección de asambleas en ARCO y enlace de actas y balances de M2 con su asamblea o evento. Hecho en los PR [#79](https://github.com/FNCRosse/juntas-vecinales/pull/79) (panel y recorrido), [#80](https://github.com/FNCRosse/juntas-vecinales/pull/80) (ARCO) y [#81](https://github.com/FNCRosse/juntas-vecinales/pull/81) (actas y balances enlazados; sin quórum definitivo no se aceptan acuerdos).
 
 **Pantallas:** DIR-ASA-01–09, 12, 16–17 · DIR-INI-01–02 · VEC-ACC-09, 11 · VEC-ASA-01–07, 10–13.
 **Riesgos:** votación digital: las pantallas VEC-ASA-07–09 del prototipo no tienen HU que pida votar desde la app; solo se implementa el efecto del check-in (votación habilitada o bloqueada según el quórum definitivo). El límite normativo de representaciones por apoderado debe confirmarlo la directiva (valor inicial: 2, como el prototipo).
