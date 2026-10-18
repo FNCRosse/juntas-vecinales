@@ -56,4 +56,28 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     cy.reload();
     cy.get('[role="note"]').should("not.exist");
   });
+
+  it("@HU-ACC-10 CA1 CA2 la vecina ve la guía de Asambleas la primera vez, en cuatro pasos, y la termina", () => {
+    cy.entrarComoVecinaNueva("Marina Vega Soto");
+    cy.viewport(360, 800);
+    cy.guardarModo("senior");
+    cy.visit("/asambleas");
+    cy.contains('[role="note"]', "¿Quiere ver cómo funciona esta sección?").should("exist");
+    cy.revisarAccesibilidad("asambleas-oferta-guia-senior-360");
+    cy.contains("a", "Ver la guía").click();
+    cy.contains("p", "Guía de Asambleas · paso 1 de 4 · es opcional").should("exist");
+    cy.get("h1").should("have.text", "Confirme si irá a la asamblea");
+    cy.contains("strong", "Sí, asistiré").should("exist");
+    cy.revisarAccesibilidad("guia-asambleas-paso1-senior-360");
+    cy.esperarHidratacion("Siguiente").click();
+    cy.get("h1").should("have.text", "Vea cuántos van");
+    cy.contains("button", "Siguiente").click();
+    cy.get("h1").should("have.text", "Si no puede ir, deje su voto");
+    cy.contains("button", "Siguiente").click();
+    cy.get("h1").should("have.text", "Proponga un tema");
+    cy.contains("button", "Terminar e ir a Asambleas").click();
+    cy.location("pathname").should("eq", "/asambleas");
+    cy.get('[role="note"]').should("not.exist");
+    cy.guardarModo("normal");
+  });
 });
