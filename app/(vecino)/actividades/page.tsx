@@ -7,6 +7,7 @@ import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { soles } from "@/compartido/dinero";
 import { fechaLarga, horaCorta } from "@/compartido/fechas";
 import { miColaboracion, proximaActividad } from "@/modulos/asambleas/aplicacion/actividades";
+import { miVoluntariado } from "@/modulos/asambleas/aplicacion/voluntarios";
 import { balancesPublicados } from "@/modulos/transparencia/aplicacion/balances";
 import { SubirComprobante } from "./SubirComprobante";
 
@@ -17,6 +18,7 @@ export default async function Actividades() {
   const sesion = await sesionActual();
   const actividad = sesion ? await proximaActividad(sesion) : null;
   const aporte = sesion && actividad ? await miColaboracion(sesion, actividad.id) : null;
+  const ayuda = sesion && actividad ? await miVoluntariado(sesion, actividad.id) : null;
   const anteriores = sesion ? await balancesPublicados(sesion) : [];
   const fecha = actividad ? new Date(actividad.fechaHora) : null;
   const unidad =
@@ -59,8 +61,25 @@ export default async function Actividades() {
                 <SubirComprobante actividadId={actividad.id} tieneComprobante={aporte.tieneComprobante} />
               )}
             </div>
-          ) : (
+          ) : ayuda && ayuda.estado !== "NO_APROBADO" ? (
             <div className="pt-2">
+              {ayuda.estado === "APROBADO" ? (
+                <MensajeEstado tipo="exito" titulo="Ayuda aprobada">
+                  <p>Su rol: {ayuda.rolAsignado}. Su casa no paga la colaboración.</p>
+                </MensajeEstado>
+              ) : (
+                <MensajeEstado tipo="info" titulo="Usted ofreció su ayuda">
+                  <p>La directiva revisará su ofrecimiento y le avisará.</p>
+                </MensajeEstado>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 pt-2">
+              {ayuda?.estado === "NO_APROBADO" && (
+                <MensajeEstado tipo="aviso" titulo="Su ayuda no se aprobó por ahora">
+                  <p>Si quiere, puede colaborar pagando.</p>
+                </MensajeEstado>
+              )}
               <BotonEnlace href="/actividades/colaborar">Colaborar con la actividad</BotonEnlace>
             </div>
           )}
