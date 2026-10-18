@@ -27,6 +27,8 @@ const pedir = (cuerpo?: unknown) =>
     body: cuerpo ? JSON.stringify(cuerpo) : undefined,
   });
 
+const ASAMBLEAS_SIN_VER = { seccion: "ASAMBLEAS", nombre: "Asambleas", estado: "Todavía no la ve" };
+
 describe("@HU-ACC-10 Tutorial guiado por sección", () => {
   it("@HU-ACC-10 CA1 la primera vez en Incidentes se ofrece la guía, de cinco pasos o menos", async () => {
     const guia = await guiaDeSeccion(marta, "INCIDENTES");
@@ -35,11 +37,30 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     await expect(guiaDeSeccion(marta, "OTRA")).rejects.toBeInstanceOf(ErrorNoEncontrado);
   });
 
+  it("@HU-ACC-10 CA1 la primera vez en Asambleas se ofrece su guía, de cinco pasos o menos y con las acciones tal como se ven", async () => {
+    const guia = await guiaDeSeccion(marta, "ASAMBLEAS");
+    expect(guia).toMatchObject({
+      nombre: "Asambleas",
+      href: "/asambleas",
+      estado: null,
+      paso: 0,
+      ofrecer: true,
+    });
+    expect(guia.pasos.length).toBeLessThanOrEqual(5);
+    expect(guia.pasos.map((p) => p.accion)).toEqual([
+      "Sí, asistiré",
+      "¿Cuántos van?",
+      "¿No podrá ir? Delegar mi voto",
+      "Proponer un tema para la agenda",
+    ]);
+  });
+
   it("@HU-ACC-10 CA2 CA3 se pausa y se retoma; omitida o completada, ya no se ofrece sola y se puede volver a ver", async () => {
     const pausa = await accionHttp(pedir({ seccion: "INCIDENTES", accion: "pausar", paso: 1 }), undefined);
     expect(await pausa.json()).toMatchObject({ estado: "PAUSADA", paso: 1, ofrecer: true });
     expect(await (await guiasHttp(pedir(), undefined)).json()).toEqual([
       { seccion: "INCIDENTES", nombre: "Incidentes", estado: "La dejó en el paso 2 de 4" },
+      ASAMBLEAS_SIN_VER,
     ]);
     await registrarAccionDeGuia(marta, "INCIDENTES", "omitir");
     expect((await guiaDeSeccion(marta, "INCIDENTES")).ofrecer).toBe(false);
@@ -48,6 +69,7 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     expect(await guiaDeSeccion(marta, "INCIDENTES")).toMatchObject({ estado: "COMPLETADA", ofrecer: false });
     expect(await guiasDeUso(marta)).toEqual([
       { seccion: "INCIDENTES", nombre: "Incidentes", estado: "Ya la vio" },
+      ASAMBLEAS_SIN_VER,
     ]);
     expect((await accionHttp(pedir({ seccion: "INCIDENTES", accion: "borrar" }), undefined)).status).toBe(
       400,
