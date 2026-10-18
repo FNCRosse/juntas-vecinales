@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { leerJson, manejar } from "@/compartido/manejar";
 import { anonimizar as anonimizarAccesibilidad } from "@/modulos/accesibilidad/aplicacion/datosPersonales";
+import { anonimizar as anonimizarAsambleas } from "@/modulos/asambleas/aplicacion/datosPersonales";
 import { anonimizar as anonimizarIncidencias } from "@/modulos/incidencias/aplicacion/datosPersonales";
 import { resolverSolicitudArco } from "@/modulos/identidad/aplicacion/arco";
 import { exigirSesion } from "@/modulos/identidad/aplicacion/sesion";
@@ -19,6 +20,7 @@ export const PATCH = manejar<{ params: Promise<{ id: string }> }>(async (peticio
     await resolverSolicitudArco(sesion, (await params).id, decision, new Date(), [
       anonimizarAccesibilidad,
       anonimizarIncidencias,
+      anonimizarAsambleas,
     ]),
   );
 });
