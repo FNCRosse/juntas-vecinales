@@ -49,8 +49,15 @@ Cypress.Commands.add("revisarAccesibilidad", (nombre: string) => {
       }),
     );
   cy.checkA11y(undefined, { runOnly: { type: "tag", values: ETIQUETAS } });
-  // Con CYPRESS_CAPTURAS=1 cada pantalla revisada también se fotografía (evidencia de cierre de módulo).
-  if (Cypress.env("CAPTURAS")) cy.screenshot(nombre, { capture: "fullPage", overwrite: true });
+  // Con CAPTURAS=1 cada pantalla revisada también se fotografía (evidencia de cierre de módulo).
+  cy.task<boolean>("capturasActivas", null, { log: false }).then((activas) => {
+    if (!activas) return;
+    // El modo lo deja el perfil de quien entró, no la prueba: el nombre lleva el que se ve de verdad.
+    cy.document({ log: false }).then((d) => {
+      const modo = d.documentElement.dataset.mode === "senior" ? "senior" : "normal";
+      cy.screenshot(`${nombre}--${modo}`, { capture: "fullPage", overwrite: true });
+    });
+  });
 });
 
 Cypress.Commands.add("guardarModo", (modo: "normal" | "senior") => {

@@ -47,7 +47,7 @@ Cuando todas las casillas del módulo están marcadas:
    - los números de cobertura (líneas, ramas, funciones; global y del módulo);
    - la matriz HU → código → prueba del módulo (extracto de `docs/evidencias/matriz-hu.md`);
    - el reporte axe por pantalla (pantalla, modo, tamaño, violaciones);
-   - capturas de cada pantalla del módulo en teléfono y en modo Senior, tomadas con el navegador integrado sobre producción, en `docs/evidencias/capturas/M<n>/<id-pantalla>-<modo>.png`;
+   - capturas de cada pantalla del módulo en teléfono y en modo Senior, tomadas con el navegador integrado sobre producción, o con `CAPTURAS=1 npx cypress run` sobre el build local (cada `revisarAccesibilidad` fotografía la pantalla con su modo real en `pruebas/e2e/screenshots/`), en `docs/evidencias/capturas/M<n>/<id-pantalla>-<modo>.png`;
    - la URL de producción y lo que quedó diferido con su motivo.
 4. Abre el PR `docs(evidencias): cierre de M<n>`, espera el CI verde y haz el merge.
 5. `graphify update .`
