@@ -1,18 +1,29 @@
-// @HU-ASA-13
+// @HU-ASA-13 @HU-ASA-14
 import { prisma } from "@/compartido/bd/cliente";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
+import { fechaEnFrase } from "@/compartido/fechas";
+import { encolarAviso } from "@/compartido/notificaciones/encolar";
 import { nombresDe } from "@/modulos/identidad/aplicacion/barrio";
 import { casasDe, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 import { cierreDeAgenda } from "@/modulos/asambleas/aplicacion/convocatorias";
-import { type DatosPropuesta, prepararPropuesta } from "@/modulos/asambleas/dominio/propuesta";
+import {
+  type DatosPropuesta,
+  type DecisionPropuesta,
+  prepararDecision,
+  prepararPropuesta,
+} from "@/modulos/asambleas/dominio/propuesta";
 import { buscarAsamblea } from "@/modulos/asambleas/infraestructura/repositorioConvocatorias";
 import {
+  buscarPropuesta,
   crearPropuesta,
+  decidir,
   propuestaPorIdOperacion,
   propuestasDe,
   propuestasDeAutor,
+  propuestasIncluidas,
+  reabrir,
 } from "@/modulos/asambleas/infraestructura/repositorioPropuestas";
 
 const ROLES_VECINO = ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
@@ -114,4 +125,128 @@ export async function bandejaDePropuestas(sesion: SesionDto, asambleaId: string)
     quien: autores.get(p.autorId) ?? "",
     vivienda: casas.get(p.predioId)?.vivienda ?? "",
   }));
+}
+
+async function propuestaDeUnaAsambleaVigente(id: string, ahora: Date) {
+  const propuesta = await buscarPropuesta(id);
+  if (!propuesta) throw new ErrorNoEncontrado();
+  const asamblea = await buscarAsamblea(propuesta.convocatoriaId);
+  if (!asamblea) throw new ErrorNoEncontrado();
+  if (ahora.getTime() > asamblea.fechaHora.getTime() || asamblea.estado === "CERRADA") {
+    throw new ErrorReglaNegocio("La asamblea ya empezó: la agenda quedó cerrada.");
+  }
+  return { propuesta, asamblea };
+}
+
+/**
+ * La directiva decide sobre una propuesta (HU-ASA-14 CA2): la incluye en la agenda o no la incluye con un motivo
+ * breve, y el vecino recibe el resultado en sus avisos (HU-ASA-13 CA3). Todo en una transacción con su
+ * auditoría (AC-6). Repetir la misma decisión no avisa dos veces (AC-5); para cambiarla hay que reabrirla.
+ */
+export async function decidirPropuesta(
+  sesion: SesionDto,
+  propuestaId: string,
+  datos: { decision: DecisionPropuesta; motivo: string },
+  ahora = new Date(),
+) {
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
+  const { errores, motivo } = prepararDecision(datos);
+  if (Object.keys(errores).length) throw new ErrorValidacion(undefined, errores);
+  const { propuesta, asamblea } = await propuestaDeUnaAsambleaVigente(propuestaId, ahora);
+
+  const estado = datos.decision === "INCLUIR" ? ("INCLUIDA" as const) : ("NO_INCLUIDA" as const);
+  if (propuesta.estado === estado && propuesta.motivoDecision === motivo) {
+    return { propuesta: aDto(propuesta), registrada: false };
+  }
+  if (propuesta.estado !== "PENDIENTE_REVISION") {
+    throw new ErrorReglaNegocio(
+      "Esta propuesta ya tiene una decisión. Use «Cambiar la decisión» para revisarla.",
+    );
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const registrada = await decidir(tx, {
+      id: propuestaId,
+      estado,
+      motivoDecision: motivo,
+      decididaPor: sesion.usuarioId,
+      ahora,
+    });
+    if (!registrada)
+      throw new ErrorReglaNegocio("Otra persona de la directiva ya decidió sobre esta propuesta.");
+    await encolarAviso(
+      {
+        destinatarioId: propuesta.autorId,
+        tipo: "ASAMBLEAS",
+        titulo:
+          estado === "INCLUIDA"
+            ? "Su propuesta fue incluida en la agenda"
+            : "Su propuesta no se incluyó en la agenda",
+        texto:
+          estado === "INCLUIDA"
+            ? `«${propuesta.titulo}» se tratará en la asamblea del ${fechaEnFrase(asamblea.fechaHora)}.`
+            : `«${propuesta.titulo}» no se incluyó en la agenda. Motivo: ${motivo}.`,
+      },
+      tx,
+    );
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "decidir_propuesta",
+        entidad: "PropuestaAgenda",
+        entidadId: propuestaId,
+        antes: { estado: propuesta.estado },
+        despues: { estado, motivo },
+      },
+      tx,
+    );
+  });
+  const actual = await buscarPropuesta(propuestaId);
+  return { propuesta: aDto(actual!), registrada: true };
+}
+
+/** «Cambiar la decisión» (DIR-ASA-05): la propuesta vuelve a pendiente de revisión y sale de la agenda. */
+export async function cambiarDecision(sesion: SesionDto, propuestaId: string, ahora = new Date()) {
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
+  const { propuesta } = await propuestaDeUnaAsambleaVigente(propuestaId, ahora);
+  if (propuesta.estado === "PENDIENTE_REVISION") return { propuesta: aDto(propuesta), reabierta: false };
+
+  await prisma.$transaction(async (tx) => {
+    if (!(await reabrir(tx, propuestaId))) return;
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "reabrir_propuesta",
+        entidad: "PropuestaAgenda",
+        entidadId: propuestaId,
+        antes: { estado: propuesta.estado, motivo: propuesta.motivoDecision },
+        despues: { estado: "PENDIENTE_REVISION" },
+      },
+      tx,
+    );
+  });
+  return { propuesta: aDto((await buscarPropuesta(propuestaId))!), reabierta: true };
+}
+
+export type PuntoDeAgenda = { titulo: string; origen: "DIRECTIVA" | "VECINAL"; quien?: string };
+
+/**
+ * La agenda publicada de la asamblea (HU-ASA-14 CA3): el motivo de la convocatoria y, anexadas solas, las
+ * propuestas incluidas. La directiva ve quién propuso cada una; el vecino, solo el tema (privacidad).
+ */
+export async function agendaPublicada(sesion: SesionDto, asambleaId: string): Promise<PuntoDeAgenda[]> {
+  exigirRol(sesion, ...ROLES_VECINO);
+  const asamblea = await buscarAsamblea(asambleaId);
+  if (!asamblea) throw new ErrorNoEncontrado();
+  const incluidas = await propuestasIncluidas(asambleaId);
+  const veAutores = sesion.roles.some((r) => (ROLES_DIRECTIVA as readonly string[]).includes(r));
+  const autores = veAutores ? await nombresDe(incluidas.map((p) => p.autorId)) : new Map<string, string>();
+  return [
+    { titulo: asamblea.motivo, origen: "DIRECTIVA" },
+    ...incluidas.map((p) => ({
+      titulo: p.titulo,
+      origen: "VECINAL" as const,
+      ...(veAutores ? { quien: autores.get(p.autorId) ?? "" } : {}),
+    })),
+  ];
 }

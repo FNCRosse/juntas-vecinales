@@ -32,3 +32,36 @@ describe("@HU-ASA-13 Proponer un tema para la agenda", () => {
     expect(DIAS_ANTES_DEL_CIERRE_DE_AGENDA).toBe(9);
   });
 });
+
+import { MOTIVOS_DE_DESCARTE, prepararDecision } from "@/modulos/asambleas/dominio/propuesta";
+
+describe("@HU-ASA-14 Decidir sobre una propuesta", () => {
+  it("@HU-ASA-14 CA2 incluir no pide motivo", () => {
+    expect(prepararDecision({ decision: "INCLUIR", motivo: "" })).toEqual({ errores: {}, motivo: null });
+  });
+
+  it("@HU-ASA-14 CA2 no incluir exige un motivo breve y lo limpia", () => {
+    const { errores, motivo } = prepararDecision({ decision: "NO_INCLUIR", motivo: "  Ya se trató  " });
+    expect(errores).toEqual({});
+    expect(motivo).toBe("Ya se trató");
+    expect(prepararDecision({ decision: "NO_INCLUIR", motivo: " " }).errores.motivo).toMatch(/motivo/i);
+  });
+
+  it("@HU-ASA-14 CA2 el motivo no pasa de 200 letras", () => {
+    expect(prepararDecision({ decision: "NO_INCLUIR", motivo: "a".repeat(201) }).errores.motivo).toMatch(
+      /200/,
+    );
+  });
+
+  it("@HU-ASA-14 CA2 rechaza una decisión desconocida", () => {
+    expect(prepararDecision({ decision: "OTRA" as never, motivo: "x" }).errores.decision).toMatch(/incluye/i);
+  });
+
+  it("@HU-ASA-14 hay tres motivos sugeridos, los del prototipo", () => {
+    expect(MOTIVOS_DE_DESCARTE).toEqual([
+      "Ya se trató en otra asamblea",
+      "No le corresponde a la junta",
+      "Falta información: se la pediremos al vecino",
+    ]);
+  });
+});
