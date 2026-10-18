@@ -450,6 +450,26 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.revisarAccesibilidad("quorum-directiva-senior-360");
   });
 
+  it("@HU-GAR-19 CA1 CA3 el inicio muestra la próxima asamblea y se actualiza cuando la vecina confirma", () => {
+    cy.viewport(360, 800);
+    cy.visit("/");
+    cy.contains("a", "Próxima asamblea").should("contain.text", "Falta confirmar su asistencia");
+    cy.revisarAccesibilidad("inicio-asamblea-sin-confirmar-360");
+
+    cy.visit("/asambleas");
+    cy.esperarHidratacion("Sí, asistiré").click();
+    cy.contains("Usted confirmó que asistirá").should("exist");
+
+    cy.visit("/");
+    cy.contains("a", "Próxima asamblea").should("contain.text", "Usted asistirá");
+    cy.revisarAccesibilidad("inicio-asamblea-confirmada-360");
+
+    // Se deja como estaba para los demás casos.
+    cy.visit("/asambleas");
+    cy.contains("button", "Cambiar mi respuesta: ya no podré ir").click();
+    cy.contains("button", "Sí, asistiré").should("exist");
+  });
+
   it("@HU-ASA-03 CA1 CA2 CA3 el mediador busca a un vecino y asienta su asistencia", () => {
     cy.request("POST", "/api/asambleas", {
       tipoAsamblea: "ORDINARIA",

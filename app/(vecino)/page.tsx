@@ -1,13 +1,24 @@
-import { Bell, ChevronRight, DoorOpen, Info, MapPin, Newspaper } from "lucide-react";
+import {
+  Bell,
+  CalendarDays,
+  ChevronRight,
+  CircleCheck,
+  DoorOpen,
+  HandHeart,
+  Info,
+  MapPin,
+  Newspaper,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { exigirActor } from "@/app/_sesion/sesion";
-import { fechaLarga, primerNombre } from "@/compartido/fechas";
+import { fechaLarga, horaCorta, primerNombre } from "@/compartido/fechas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { bloqueDeInicio } from "@/modulos/asambleas/aplicacion/inicio";
 import { bloqueDeIdentidad } from "@/modulos/identidad/aplicacion/panelInicio";
 import { visitaEnLaPuerta } from "@/modulos/identidad/aplicacion/garita";
 import { bloqueDeReportes } from "@/modulos/incidencias/aplicacion/quejas";
@@ -49,14 +60,42 @@ const ICONO = "size-icono shrink-0 text-accion-primaria";
 // al final, lo que se puede dejar detrás de "Ver más" (R-11): actividad (M4) y noticias. Se lee en cada carga (CA3).
 export default async function Inicio() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
-  const [{ avisosSinLeer }, [noticia], reportes, enLaPuerta] = await Promise.all([
+  const [{ avisosSinLeer }, [noticia], reportes, enLaPuerta, { asamblea, actividad }] = await Promise.all([
     bloqueDeIdentidad(sesion),
     ultimasNoticias(sesion, 1),
     bloqueDeReportes(sesion),
     visitaEnLaPuerta(sesion),
+    bloqueDeInicio(sesion),
   ]);
   const ahora = new Date();
-  const bloques: ReactNode[] = [
+  const bloques: ReactNode[] = [];
+  if (asamblea) {
+    const cuando = new Date(asamblea.fechaHora);
+    bloques.push(
+      <Bloque
+        key="asamblea"
+        href="/asambleas"
+        icono={<CalendarDays aria-hidden className={ICONO} />}
+        titulo="Próxima asamblea"
+      >
+        <span>{fechaLarga(cuando)}</span>
+        <span className="text-texto-secundario">
+          {horaCorta(cuando)} · {asamblea.lugar}
+        </span>
+        {asamblea.estado === "INFORMATIVA" ? (
+          <span className="font-bold">Será una sesión informativa</span>
+        ) : asamblea.confirmo ? (
+          <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-exito bg-fondo-exito px-3 text-pequeno font-bold text-texto-exito">
+            <CircleCheck aria-hidden className="size-icono-pequeno" />
+            Usted asistirá
+          </span>
+        ) : (
+          <span className="font-bold text-texto-enlace">Falta confirmar su asistencia</span>
+        )}
+      </Bloque>,
+    );
+  }
+  bloques.push(
     <Bloque
       key="reportes"
       href="/incidentes"
@@ -86,6 +125,8 @@ export default async function Inicio() {
         </>
       )}
     </Bloque>,
+  );
+  bloques.push(
     <Bloque key="avisos" href="/avisos" icono={<Bell aria-hidden className={ICONO} />} titulo="Mis avisos">
       {avisosSinLeer ? (
         <span className="inline-flex items-center gap-1 font-bold text-texto-info">
@@ -96,7 +137,19 @@ export default async function Inicio() {
         <span className="text-texto-secundario">No tiene avisos nuevos</span>
       )}
     </Bloque>,
-  ];
+  );
+  if (actividad)
+    bloques.push(
+      <Bloque
+        key="actividad"
+        href="/actividades"
+        icono={<HandHeart aria-hidden className={ICONO} />}
+        titulo="Actividad pro-fondos"
+      >
+        <span>{actividad.nombre}</span>
+        <span className="text-texto-secundario">{fechaLarga(new Date(actividad.fechaHora))}</span>
+      </Bloque>,
+    );
   if (noticia)
     bloques.push(
       <Bloque

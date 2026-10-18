@@ -1,10 +1,12 @@
 import { ChevronRight, HandHeart, Lightbulb, UserRoundCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { OfertaDeGuia } from "@/app/_guias/OfertaDeGuia";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
 import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { guiaDeSeccion } from "@/modulos/accesibilidad/aplicacion/guias";
 import { miAsistencia, proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 import { miDelegacion } from "@/modulos/asambleas/aplicacion/delegaciones";
 import { agendaPublicada } from "@/modulos/asambleas/aplicacion/propuestas";
@@ -21,10 +23,14 @@ export default async function AsambleasVecino() {
   const confirmado = sesion && proxima ? await miAsistencia(sesion, proxima.id) : false;
   const delegacion = sesion && proxima ? await miDelegacion(sesion, proxima.id) : null;
   const agenda = sesion && proxima ? await agendaPublicada(sesion, proxima.id) : [];
+  const guia = sesion ? await guiaDeSeccion(sesion.usuarioId, "ASAMBLEAS") : null;
   const plazoAbierto = proxima ? ahora.getTime() <= new Date(proxima.confirmacionesHasta).getTime() : false;
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Asambleas</h1>
+      {guia?.ofrecer && (
+        <OfertaDeGuia seccion="ASAMBLEAS" enPausa={guia.estado === "PAUSADA"} paso={guia.paso} />
+      )}
       {proxima ? (
         <>
           {proxima.estado === "REPROGRAMADA" && (
