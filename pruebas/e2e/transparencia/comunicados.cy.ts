@@ -68,6 +68,8 @@ describe("@HU-ASA-15 Comunicados generales y feed comunitario", () => {
     cy.revisarAccesibilidad("noticias-senior-360");
 
     cy.visit("/");
+    // En vista grande el inicio muestra tres bloques y el resto queda detrás de «Ver más» (R-11).
+    cy.verTodos();
     cy.contains("a", "Noticias de la junta").should("have.attr", "href", "/noticias");
     cy.revisarAccesibilidad("inicio-noticias-senior-360");
     cy.contains("a", "Noticias de la junta").click();

@@ -1,6 +1,6 @@
 // @HU-ACC-10
 // Los recorridos guiados por sección: cada paso explica una sola acción y la nombra tal como se ve en la
-// pantalla (CA1). M4 y M5 agregan Asambleas y Mi cuota.
+// pantalla (CA1). M3 dejó Incidentes, M4 agregó Asambleas y M5 agregará Mi cuota.
 
 export type PasoGuia = { titulo: string; texto: string; accion: string };
 
@@ -28,6 +28,33 @@ export const RECORRIDOS = {
         titulo: "Vea lo que pasa en el barrio",
         texto: "Elija Lista, Mapa o Resumen. Todo se muestra por manzana, sin la casa de nadie.",
         accion: "Mapa",
+      },
+    ],
+  },
+  ASAMBLEAS: {
+    nombre: "Asambleas",
+    href: "/asambleas",
+    pasos: [
+      {
+        titulo: "Confirme si irá a la asamblea",
+        texto: "Es una confirmación por casa. Puede cambiarla hasta el plazo que se indica.",
+        accion: "Sí, asistiré",
+      },
+      {
+        titulo: "Vea cuántos van",
+        texto:
+          "La barra muestra cuántas casas confirmaron y cuántas se necesitan para que la asamblea pueda decidir.",
+        accion: "¿Cuántos van?",
+      },
+      {
+        titulo: "Si no puede ir, deje su voto",
+        texto: "Elija a una persona de su confianza. Le daremos una constancia para la mesa.",
+        accion: "¿No podrá ir? Delegar mi voto",
+      },
+      {
+        titulo: "Proponga un tema",
+        texto: "Cuente qué tema le importa. La directiva decide si entra a la agenda y le avisamos.",
+        accion: "Proponer un tema para la agenda",
       },
     ],
   },

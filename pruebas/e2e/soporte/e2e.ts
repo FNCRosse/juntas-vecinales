@@ -26,6 +26,9 @@ declare global {
 }
 
 Cypress.Commands.add("revisarAccesibilidad", (nombre: string) => {
+  // Next transmite el título de la página después del cuerpo: en el CI, con carga, axe llegó a medir antes
+  // de que existiera (document-title). Se espera al título; una página que de verdad no lo tenga sigue fallando.
+  cy.title().should("not.be.empty");
   cy.injectAxe();
   cy.window({ log: false })
     .then((ventana) =>
