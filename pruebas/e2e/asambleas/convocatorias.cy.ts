@@ -168,6 +168,44 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.get("h1").should("have.text", "Delegar mi voto");
   });
 
+  it("@HU-ASA-13 CA1 CA2 el vecino propone un tema en teléfono y la directiva lo ve pendiente de revisión", () => {
+    const tema = `Cámaras en la entrada ${sufijo}`;
+    cy.request("POST", "/api/asambleas", {
+      tipoAsamblea: "ORDINARIA",
+      fecha: enDias(66),
+      hora: "18:00",
+      lugar: LUGAR,
+      motivo: MOTIVO,
+      idOperacion: crypto.randomUUID(),
+    })
+      .its("status")
+      .should("eq", 201);
+    cy.viewport(360, 800);
+
+    cy.visit("/asambleas");
+    cy.contains("a", "Proponer un tema para la agenda").click();
+    cy.get("h1").should("have.text", "Proponer un tema");
+    cy.revisarAccesibilidad("proponer-tema-360");
+
+    cy.esperarHidratacion("Enviar mi propuesta").click();
+    cy.contains("Escriba el tema que quiere proponer.").should("exist");
+    cy.contains("Cuéntenos por qué es importante, en unas pocas líneas.").should("exist");
+    cy.revisarAccesibilidad("proponer-tema-errores-360");
+
+    cy.get("#campo-titulo").type(tema);
+    cy.get("#campo-justificacion").type("Hubo dos robos este mes.");
+    cy.contains("button", "Enviar mi propuesta").click();
+    cy.contains('[role="status"]', "Recibimos su propuesta").should("exist");
+    cy.contains("Quedó pendiente de revisión.").should("exist");
+    cy.revisarAccesibilidad("proponer-tema-enviada-360");
+
+    // Marta es también de la directiva: ve su propia propuesta en la bandeja, pendiente de revisión.
+    cy.visit("/directiva/asambleas/propuestas");
+    cy.get("h1").should("have.text", "Propuestas para la agenda");
+    cy.contains("article", tema).should("contain.text", "Pendiente de revisión");
+    cy.revisarAccesibilidad("propuestas-directiva-360");
+  });
+
   it("@HU-ASA-04 CA2 la directiva ve el quórum proyectado con la barra y si alcanza el mínimo", () => {
     cy.request("POST", "/api/asambleas", {
       tipoAsamblea: "ORDINARIA",

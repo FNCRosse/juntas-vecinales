@@ -24,6 +24,12 @@ enum CondicionApoderado {
   EXTERNO
 }
 
+enum EstadoPropuesta {
+  PENDIENTE_REVISION
+  INCLUIDA
+  NO_INCLUIDA
+}
+
 enum ModoConfirmacion {
   DIGITAL
   ASISTIDA
@@ -49,6 +55,7 @@ model Convocatoria {
   confirmaciones   ConfirmacionAsistencia[]
   delegaciones     DelegacionVoto[]
   checkIns         CheckInPresencial[]
+  propuestas       PropuestaAgenda[]
 
   @@index([fechaHora])
   @@map("asambleas_convocatorias")
@@ -129,4 +136,27 @@ model CheckInPresencial {
 
   @@unique([convocatoriaId, predioId])
   @@map("asambleas_checkins")
+}
+
+// Tema que un vecino propone para la agenda de la asamblea (HU-ASA-13). Queda PENDIENTE_REVISION hasta que la
+// directiva lo marque INCLUIDA o NO_INCLUIDA con un motivo (HU-ASA-14). idOperacion lo genera el dispositivo y
+// evita registrar dos veces al reintentar (AC-5).
+model PropuestaAgenda {
+  id             String           @id @default(uuid())
+  idOperacion    String           @unique
+  convocatoriaId String
+  convocatoria   Convocatoria     @relation(fields: [convocatoriaId], references: [id])
+  autorId        String
+  predioId       String
+  titulo         String
+  justificacion  String
+  estado         EstadoPropuesta  @default(PENDIENTE_REVISION)
+  motivoDecision String?
+  decididaEn     DateTime?
+  decididaPor    String?
+  creadaEn       DateTime         @default(now())
+
+  @@index([convocatoriaId, creadaEn])
+  @@index([autorId])
+  @@map("asambleas_propuestas")
 }

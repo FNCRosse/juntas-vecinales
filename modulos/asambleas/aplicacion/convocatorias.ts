@@ -1,8 +1,14 @@
-// @HU-ASA-01 @HU-ASA-02 @HU-ASA-04 @HU-ASA-07
+// @HU-ASA-01 @HU-ASA-02 @HU-ASA-04 @HU-ASA-07 @HU-ASA-13
 import { prisma } from "@/compartido/bd/cliente";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
-import { fechaEnFrase, fechaLarga, horaCorta, visperaALasOchoPm } from "@/compartido/fechas";
+import {
+  fechaEnFrase,
+  fechaLarga,
+  horaCorta,
+  inicioDelDiaEnLima,
+  visperaALasOchoPm,
+} from "@/compartido/fechas";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
 import {
   buscarVecinos,
@@ -16,6 +22,7 @@ import {
   prepararConvocatoria,
   quorumRequerido,
 } from "@/modulos/asambleas/dominio/convocatoria";
+import { DIAS_ANTES_DEL_CIERRE_DE_AGENDA } from "@/modulos/asambleas/dominio/propuesta";
 import { proyectarQuorum, textoDelQuorum } from "@/modulos/asambleas/dominio/quorum";
 import {
   buscarAsamblea,
@@ -28,6 +35,17 @@ import {
 } from "@/modulos/asambleas/infraestructura/repositorioConvocatorias";
 
 type Fila = NonNullable<Awaited<ReturnType<typeof buscarPorIdOperacion>>>;
+
+/**
+ * El último instante en que se pueden proponer temas: el fin del día (en Lima) que está 9 días antes de la
+ * asamblea («Puede enviarlo hasta el jueves 1 de octubre», HU-ASA-13). Si la asamblea se reprograma, se corre sola.
+ */
+export function cierreDeAgenda(fechaHora: Date): Date {
+  const dia = inicioDelDiaEnLima(
+    new Date(fechaHora.getTime() - DIAS_ANTES_DEL_CIERRE_DE_AGENDA * 86_400_000),
+  );
+  return new Date(dia.getTime() + 86_400_000 - 1);
+}
 
 export const aDto = (c: Fila) => {
   const digital = c.confirmaciones.filter((f) => f.modo === "DIGITAL").length;
@@ -45,6 +63,7 @@ export const aDto = (c: Fila) => {
     motivo: c.motivo,
     estado: c.estado,
     confirmacionesHasta: (c.asamblea?.confirmacionesHasta ?? c.fechaHora).toISOString(),
+    cierreAgenda: cierreDeAgenda(c.fechaHora).toISOString(),
     padronTotal,
     quorumRequerido: requerido,
     confirmados: { digital, asistida, total: quorum.confirmados },
