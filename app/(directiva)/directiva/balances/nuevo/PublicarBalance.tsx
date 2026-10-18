@@ -11,10 +11,15 @@ import { GraficoBalance } from "@/componentes/a11y/GraficoBalance";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 import { aCentimos, soles } from "@/compartido/dinero";
 import { calcularTotales } from "@/modulos/transparencia/aplicacion/totales";
 
 const hoyEnLima = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Lima" }).format(new Date());
+const OTRA = "otra";
+
+type ActividadElegible = { id: string; nombre: string; dia: string; fecha: string };
+
 const MENSAJE_MONTO = "Escriba un monto en soles, por ejemplo 150.50.";
 
 type Gasto = {
@@ -36,7 +41,8 @@ const nuevoGasto = (clave: number): Gasto => ({
   falla: "",
 });
 
-export function PublicarBalance() {
+/** `actividades`: las pro fondos de M4 que ya se hicieron. Sin ninguna (o si fue anterior a la plataforma) se escriben el nombre y la fecha. */
+export function PublicarBalance({ actividades }: { actividades: ActividadElegible[] }) {
   const [paso, setPaso] = useState<"registrar" | "confirmar" | "publicado">("registrar");
   const [datos, setDatos] = useState({
     titulo: "",
@@ -44,6 +50,7 @@ export function PublicarBalance() {
     ingresosVirtuales: "",
     ingresosEnPuerta: "",
   });
+  const [actividad, setActividad] = useState<string | null>(actividades.length ? null : OTRA);
   const [gastos, setGastos] = useState<Gasto[]>([]);
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [falla, setFalla] = useState<string | null>(null);
@@ -104,8 +111,10 @@ export function PublicarBalance() {
 
   function revisar() {
     const nuevos: Record<string, string> = {};
-    if (!datos.titulo.trim()) nuevos.titulo = "Escriba el nombre de la actividad.";
-    if (!datos.fechaActividad) nuevos.fechaActividad = "Elija la fecha de la actividad.";
+    if (!actividad) nuevos.convocatoria = "Elija la actividad del balance.";
+    if (actividad === OTRA && !datos.titulo.trim()) nuevos.titulo = "Escriba el nombre de la actividad.";
+    if (actividad === OTRA && !datos.fechaActividad)
+      nuevos.fechaActividad = "Elija la fecha de la actividad.";
     if (virtuales === null) nuevos.ingresosVirtuales = MENSAJE_MONTO;
     if (enPuerta === null) nuevos.ingresosEnPuerta = MENSAJE_MONTO;
     gastos.forEach((g, i) => {
@@ -124,6 +133,17 @@ export function PublicarBalance() {
     if (Object.keys(nuevos).length === 0) setPaso("confirmar");
   }
 
+  function elegirActividad(id: string) {
+    setActividad(id);
+    setErrores({ ...errores, convocatoria: "" });
+    const elegida = actividades.find((a) => a.id === id);
+    setDatos({
+      ...datos,
+      titulo: elegida?.nombre ?? "",
+      fechaActividad: elegida?.dia ?? "",
+    });
+  }
+
   async function publicar() {
     idOperacion.current ??= crypto.randomUUID();
     setEnviando(true);
@@ -131,6 +151,7 @@ export function PublicarBalance() {
     const r = await enviarJson("/api/transparencia/balances", "POST", {
       titulo: datos.titulo,
       fechaActividad: datos.fechaActividad,
+      convocatoriaId: actividad === OTRA ? null : actividad,
       ingresosVirtuales: virtuales ?? 0,
       ingresosEnPuerta: enPuerta ?? 0,
       egresos: gastos.map((g, i) => ({ concepto: g.concepto, monto: montos[i], archivoId: g.archivoId })),
@@ -190,10 +211,12 @@ export function PublicarBalance() {
     );
   }
 
-  const listaErrores = Object.entries(errores).map(([campo, mensaje]) => ({
-    campo: campo.startsWith("egresos.") ? `gasto-${campo.slice(8).replace(".", "-")}` : `campo-${campo}`,
-    mensaje,
-  }));
+  const listaErrores = Object.entries(errores)
+    .filter(([, mensaje]) => mensaje)
+    .map(([campo, mensaje]) => ({
+      campo: campo.startsWith("egresos.") ? `gasto-${campo.slice(8).replace(".", "-")}` : `campo-${campo}`,
+      mensaje,
+    }));
   return (
     <form
       noValidate
@@ -218,25 +241,43 @@ export function PublicarBalance() {
         <p>Registre lo que se recaudó y lo que se gastó. Cada gasto lleva la foto de su comprobante.</p>
       </div>
       <ResumenErrores errores={listaErrores} />
-      <Campo
-        name="titulo"
-        etiqueta="Nombre de la actividad"
-        ayuda="Por ejemplo: Pollada pro fondos de setiembre."
-        autoComplete="off"
-        maxLength={120}
-        value={datos.titulo}
-        error={errores.titulo}
-        onChange={(e) => setDatos({ ...datos, titulo: e.target.value })}
-      />
-      <Campo
-        name="fechaActividad"
-        etiqueta="Fecha de la actividad"
-        type="date"
-        max={hoyEnLima()}
-        value={datos.fechaActividad}
-        error={errores.fechaActividad}
-        onChange={(e) => setDatos({ ...datos, fechaActividad: e.target.value })}
-      />
+      {actividades.length > 0 && (
+        <SelectorEnHoja
+          id="campo-convocatoria"
+          pregunta="¿De qué actividad es el balance?"
+          vacio="Elegir la actividad"
+          valor={actividad}
+          error={errores.convocatoria || undefined}
+          alElegir={elegirActividad}
+          opciones={[
+            ...actividades.map((a) => ({ valor: a.id, etiqueta: a.nombre, detalle: a.fecha })),
+            { valor: OTRA, etiqueta: "Otra actividad", detalle: "De antes de usar esta plataforma" },
+          ]}
+        />
+      )}
+      {actividad === OTRA && (
+        <>
+          <Campo
+            name="titulo"
+            etiqueta="Nombre de la actividad"
+            ayuda="Por ejemplo: Pollada pro fondos de setiembre."
+            autoComplete="off"
+            maxLength={120}
+            value={datos.titulo}
+            error={errores.titulo}
+            onChange={(e) => setDatos({ ...datos, titulo: e.target.value })}
+          />
+          <Campo
+            name="fechaActividad"
+            etiqueta="Fecha de la actividad"
+            type="date"
+            max={hoyEnLima()}
+            value={datos.fechaActividad}
+            error={errores.fechaActividad}
+            onChange={(e) => setDatos({ ...datos, fechaActividad: e.target.value })}
+          />
+        </>
+      )}
       <Campo
         name="ingresosVirtuales"
         etiqueta="Ingresos virtuales (Yape, Plin, transferencias)"

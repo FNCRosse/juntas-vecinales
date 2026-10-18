@@ -5,9 +5,12 @@ export {};
 
 const sufijo = String(Date.now()).slice(-6);
 const TITULO = `Asamblea de prueba ${sufijo}`;
+const TITULO_ENLAZADA = `Acta enlazada ${sufijo}`;
 const TITULO_VECINO = `Asamblea para el vecino ${sufijo}`;
 
 describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
+  // Sin asambleas de la plataforma el formulario pide la fecha, como en las actas de antes.
+  before(() => cy.task("reiniciarAsambleas"));
   beforeEach(() => {
     cy.clearCookies();
     cy.request("POST", "/api/auth/clave", { dni: "40000002", clave: "clave-de-prueba" })
@@ -53,6 +56,55 @@ describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
     cy.revisarAccesibilidad("acta-publicada-360");
   });
 
+  it("@HU-ASA-11 @HU-ASA-07 CA3 el acta de una asamblea se enlaza con ella y, sin quórum definitivo, no admite acuerdos", () => {
+    cy.task("reiniciarAsambleas");
+    const enDias = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
+    cy.request("POST", "/api/asambleas", {
+      tipoAsamblea: "ORDINARIA",
+      fecha: enDias(40),
+      hora: "18:00",
+      lugar: "Local comunal",
+      motivo: "Aprobar el presupuesto.",
+      idOperacion: crypto.randomUUID(),
+    }).then(({ body }) => {
+      // La asamblea ya empezó, pero todavía no se hizo el pase de lista.
+      cy.task("empezarAsambleas", { padronTotal: 1, quorumRequerido: 1 });
+      cy.viewport(360, 800);
+      cy.visit("/directiva/actas/nueva");
+      cy.contains("button", "Elegir la asamblea").click();
+      cy.contains("button", "Sin quórum definitivo").should("exist");
+      cy.contains("button", "Asamblea ordinaria").click();
+      cy.get("#campo-titulo").type(TITULO_ENLAZADA);
+      cy.get("#campo-acuerdos").type("Se aprobó el presupuesto.");
+      cy.contains("button", "Revisar el acta").click();
+      cy.get("#campo-convocatoria-error").should("contain.text", "no tiene el quórum definitivo");
+      cy.revisarAccesibilidad("acta-sin-quorum-360");
+
+      // Con el pase de lista y las votaciones abiertas, la asamblea admite el acta.
+      cy.request("GET", `/api/asambleas/${body.id}/checkin?q=40000002`)
+        .its("body.0.predioId")
+        .then((predioId) =>
+          cy
+            .request("POST", `/api/asambleas/${body.id}/checkin`, { predioId })
+            .its("status")
+            .should("eq", 200),
+        );
+      cy.request("POST", `/api/asambleas/${body.id}/votaciones`).its("status").should("eq", 200);
+      cy.visit("/directiva/actas/nueva");
+      cy.contains("button", "Elegir la asamblea").click();
+      cy.contains("button", "Sin quórum definitivo").should("not.exist");
+      cy.contains("button", "Asamblea ordinaria").click();
+      cy.get("#campo-fechaAsamblea").should("not.exist");
+      cy.get("#campo-titulo").type(TITULO_ENLAZADA);
+      cy.get("#campo-acuerdos").type("Se aprobó el presupuesto.");
+      cy.contains("button", "Revisar el acta").click();
+      cy.get("h1").should("have.text", "¿Desea publicar el acta?");
+      cy.contains("button", "Sí, publicar el acta").click();
+      cy.contains('[role="status"]', "Acta publicada").should("exist");
+      cy.revisarAccesibilidad("acta-enlazada-360");
+    });
+  });
+
   it("@HU-ASA-11 CA2 CA3 en modo Senior el vecino ve el acta publicada y descarga su PDF", () => {
     cy.request("POST", "/api/transparencia/actas", {
       titulo: TITULO_VECINO,
@@ -68,6 +120,7 @@ describe("@HU-ASA-11 Acta digital en PDF y su publicación", () => {
     cy.guardarModo("senior");
     cy.visit("/transparencia");
     cy.get("h1").should("have.text", "Actas y balances");
+    cy.verTodos();
     cy.contains("article", TITULO_VECINO).within(() => {
       cy.contains("p", "Acuerdo").should("contain.text", "Se aprobó la limpieza del parque.");
       cy.contains("a", "Descargar acta (PDF)")

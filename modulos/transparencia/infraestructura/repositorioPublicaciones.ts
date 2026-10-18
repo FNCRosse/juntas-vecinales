@@ -49,6 +49,7 @@ export async function crearActa(
     idOperacion: string;
     titulo: string;
     fechaAsamblea: Date;
+    convocatoriaId: string | null;
     acuerdos: string[];
     compromisos: string[];
     conclusiones: string;
@@ -57,12 +58,12 @@ export async function crearActa(
     fechaPublicacion: Date;
   },
 ) {
-  const { fechaAsamblea, acuerdos, compromisos, conclusiones, ...publicacion } = datos;
+  const { fechaAsamblea, convocatoriaId, acuerdos, compromisos, conclusiones, ...publicacion } = datos;
   return tx.publicacion.create({
     data: {
       ...publicacion,
       tipo: "ACTA",
-      acta: { create: { fechaAsamblea, acuerdos, compromisos, conclusiones } },
+      acta: { create: { fechaAsamblea, convocatoriaId, acuerdos, compromisos, conclusiones } },
     },
     include: conActa,
   });
@@ -93,6 +94,7 @@ export async function crearBalance(
     idOperacion: string;
     titulo: string;
     fechaActividad: Date;
+    convocatoriaId: string | null;
     ingresosVirtuales: number;
     ingresosEnPuerta: number;
     egresos: { concepto: string; monto: number; archivoId: string }[];
@@ -101,7 +103,8 @@ export async function crearBalance(
     fechaPublicacion: Date;
   },
 ) {
-  const { fechaActividad, ingresosVirtuales, ingresosEnPuerta, egresos, ...publicacion } = datos;
+  const { fechaActividad, convocatoriaId, ingresosVirtuales, ingresosEnPuerta, egresos, ...publicacion } =
+    datos;
   return tx.publicacion.create({
     data: {
       ...publicacion,
@@ -109,6 +112,7 @@ export async function crearBalance(
       balance: {
         create: {
           fechaActividad,
+          convocatoriaId,
           ingresosVirtuales,
           ingresosEnPuerta,
           egresos: { create: egresos.map((e, orden) => ({ ...e, orden })) },

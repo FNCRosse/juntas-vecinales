@@ -4,6 +4,7 @@ import { archivosSubidosPor } from "@/compartido/archivos/registro";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { ErrorNoEncontrado, ErrorValidacion } from "@/compartido/errores";
 import { fechaLarga } from "@/compartido/fechas";
+import { actividadDeUnBalance } from "@/modulos/asambleas/aplicacion/enlaces";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 import { calcularTotales, type DatosBalance, prepararBalance } from "@/modulos/transparencia/dominio/balance";
 import {
@@ -47,15 +48,20 @@ export type BalanceDto = ReturnType<typeof balanceADto>;
 /**
  * Publica el balance de una actividad pro fondos (HU-ASA-10 CA3): queda inalterable, avisa a cada vecino
  * activo y se audita, todo en una transacción (AC-6, ADR-006). Cada gasto lleva un comprobante que subió
- * quien publica (CA1). Repetir el mismo `idOperacion` devuelve lo ya publicado (AC-5).
+ * quien publica (CA1). Repetir el mismo `idOperacion` devuelve lo ya publicado (AC-5). Si es el balance de una
+ * actividad de la plataforma (`convocatoriaId`), su día es el de la actividad.
  */
 export async function publicarBalance(
   sesion: SesionDto,
-  datos: DatosBalance & { idOperacion: string },
+  datos: DatosBalance & { idOperacion: string; convocatoriaId?: string | null },
   ahora = new Date(),
 ) {
   exigirRol(sesion, ...ROLES_DIRECTIVA);
-  const { errores, balance } = prepararBalance(datos, ahora);
+  const convocatoriaId = datos.convocatoriaId ?? null;
+  const fechaActividad = convocatoriaId
+    ? (await actividadDeUnBalance(convocatoriaId)).dia
+    : datos.fechaActividad;
+  const { errores, balance } = prepararBalance({ ...datos, fechaActividad }, ahora);
   const propios = await archivosSubidosPor(
     sesion.usuarioId,
     USO_COMPROBANTE,
@@ -75,6 +81,7 @@ export async function publicarBalance(
   const creada = await prisma.$transaction(async (tx) => {
     const fila = await crearBalance(tx, {
       ...balance,
+      convocatoriaId,
       idOperacion: datos.idOperacion,
       autorId: sesion.usuarioId,
       autor: sesion.nombreCompleto,
@@ -95,7 +102,13 @@ export async function publicarBalance(
         entidad: "Balance",
         entidadId: fila.id,
         antes: null,
-        despues: { titulo: balance.titulo, ...totales, gastos: balance.egresos.length, avisados },
+        despues: {
+          titulo: balance.titulo,
+          convocatoriaId,
+          ...totales,
+          gastos: balance.egresos.length,
+          avisados,
+        },
       },
       tx,
     );

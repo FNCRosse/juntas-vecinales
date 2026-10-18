@@ -1,7 +1,7 @@
 // @HU-ASA-10
 // BalanceFinanciero y Egreso del diagrama 02e: lo que una actividad pro fondos recaudó y gastó. Todo en
-// céntimos enteros; la utilidad neta se calcula y puede ser negativa. Mientras M4 no exista, la actividad
-// se identifica por su nombre y fecha.
+// céntimos enteros; la utilidad neta se calcula y puede ser negativa. Si es de una actividad de la
+// plataforma se enlaza con ella (M4); si es anterior, se identifica por su nombre y fecha.
 import { desdeHoraDeLima } from "@/compartido/fechas";
 
 export const MAXIMO_TITULO = 120;

@@ -4,6 +4,7 @@ import { generarPdf } from "@/compartido/archivos/pdf";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { ErrorNoEncontrado, ErrorValidacion } from "@/compartido/errores";
 import { fechaLarga, fechaYHora } from "@/compartido/fechas";
+import { asambleaDeUnActa } from "@/modulos/asambleas/aplicacion/enlaces";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 import { type DatosActa, nombreDeArchivo, prepararActa } from "@/modulos/transparencia/dominio/acta";
 import {
@@ -65,21 +66,25 @@ function revisar(datos: DatosActa, ahora: Date) {
 /**
  * Publica el acta (HU-ASA-11 CA3): la confirmación de la directiva la aprueba y la publica, queda
  * inalterable y avisa a cada vecino activo, todo en una transacción (AC-6, ADR-006). Repetir el mismo
- * `idOperacion` devuelve lo ya publicado sin avisar otra vez (AC-5).
+ * `idOperacion` devuelve lo ya publicado sin avisar otra vez (AC-5). Si es el acta de una asamblea de la plataforma
+ * (`convocatoriaId`), su día es el de la asamblea, y sin quórum definitivo no se aceptan acuerdos (HU-ASA-07 CA3).
  */
 export async function publicarActa(
   sesion: SesionDto,
-  datos: DatosActa & { idOperacion: string },
+  datos: DatosActa & { idOperacion: string; convocatoriaId?: string | null },
   ahora = new Date(),
 ) {
   exigirRol(sesion, "DIRECTIVA", "DIRECTIVO_MEDIADOR");
-  const acta = revisar(datos, ahora);
+  const convocatoriaId = datos.convocatoriaId ?? null;
+  const fechaAsamblea = convocatoriaId ? (await asambleaDeUnActa(convocatoriaId)).dia : datos.fechaAsamblea;
+  const acta = revisar({ ...datos, fechaAsamblea }, ahora);
   const previa = await buscarActaPorIdOperacion(datos.idOperacion);
   if (previa) return { acta: actaADto(previa), creado: false };
 
   const creada = await prisma.$transaction(async (tx) => {
     const fila = await crearActa(tx, {
       ...acta,
+      convocatoriaId,
       idOperacion: datos.idOperacion,
       autorId: sesion.usuarioId,
       autor: sesion.nombreCompleto,
@@ -100,7 +105,7 @@ export async function publicarActa(
         entidad: "Acta",
         entidadId: fila.id,
         antes: null,
-        despues: { titulo: acta.titulo, fechaAsamblea: datos.fechaAsamblea, avisados },
+        despues: { titulo: acta.titulo, fechaAsamblea, convocatoriaId, avisados },
       },
       tx,
     );

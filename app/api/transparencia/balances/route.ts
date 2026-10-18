@@ -6,6 +6,7 @@ import { balancesPublicados, publicarBalance } from "@/modulos/transparencia/apl
 const esquema = z.object({
   titulo: z.string(),
   fechaActividad: z.string(),
+  convocatoriaId: z.uuid().nullish(),
   ingresosVirtuales: z.number({ error: "Escriba un monto en soles, por ejemplo 150.50." }),
   ingresosEnPuerta: z.number({ error: "Escriba un monto en soles, por ejemplo 150.50." }),
   egresos: z.array(z.object({ concepto: z.string(), monto: z.number(), archivoId: z.string() })).max(60),

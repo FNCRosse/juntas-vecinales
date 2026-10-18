@@ -1,6 +1,6 @@
 // @HU-ASA-11
 // ActaDigital del diagrama 02e: lo que la asamblea acordó, a lo que se comprometió la directiva y las
-// conclusiones. Se registra con título y fecha hasta que M4 la enlace a su asamblea.
+// conclusiones. Si es de una asamblea de la plataforma se enlaza con ella (M4); si es anterior, se registra con título y fecha.
 import { desdeHoraDeLima } from "@/compartido/fechas";
 
 export const MAXIMO_TITULO = 120;
