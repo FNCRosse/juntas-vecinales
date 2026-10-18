@@ -16,7 +16,7 @@ Enum: `NivelUrgencia` (INFORMATIVO, URGENTE).
 - Publicar notifica a toda la comunidad por la cola (ADR-006), respetando las preferencias de cada vecino; la copia interna siempre se escribe.
 - El acta pasa por BORRADOR → APROBADA (por la directiva) → PUBLICADA; solo la publicada se notifica. El PDF es etiquetado y legible por lector de pantalla ([BACKEND.md §7](../../docs/BACKEND.md#7-adaptadores-externos)).
 - El balance de una actividad: utilidad neta = ingresos virtuales + ingresos en puerta − egresos, en céntimos. Cada egreso lleva su comprobante en R2. El gráfico siempre va con su tabla equivalente.
-- Mientras M4 no exista, actas y balances se registran con título y fecha; en M4 se enlazan a su asamblea o evento. Una asamblea sin quórum definitivo no admite registrar acuerdos (lo informa M4).
+- Actas y balances de la plataforma se enlazan a su asamblea o actividad (`convocatoriaId`, opcional): toman de ella el día y, en el acta, una asamblea sin quórum definitivo o informativa no admite acuerdos (lo informa `asambleas/aplicacion/enlaces`). Los anteriores a la plataforma se registran con título y fecha.
 - El feed lista por fecha, los urgentes primero, de forma lineal y sin jerarquías. El historial público es visible para todo vecino con sesión.
 - Con la lectura en voz alta activa en el perfil (M6), cada publicación del feed muestra "Escuchar" con controles de reproducir, pausar y detener (Web Speech API, voz `es-PE` o `es`). Si el navegador no tiene voz en español, el botón no aparece.
 - **Balance agregado (invariante `garantizarNoIdentificacion`):** solo totales del periodo; ningún filtro accesible al vecino baja a nivel de lote, manzana o persona. Se calcula pidiendo a `aportes/aplicacion` los totales; nunca lee tablas de M5.

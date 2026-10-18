@@ -42,12 +42,14 @@ model ComunicadoGeneral {
   @@map("transparencia_comunicados")
 }
 
-// Acta de una asamblea (HU-ASA-11). Mientras M4 no exista se registra con título y fecha; en M4 se enlaza
-// a su asamblea. La aprobación de la directiva es la confirmación al publicar: no se guardan borradores.
+// Acta de una asamblea (HU-ASA-11). Si es de una asamblea de la plataforma se enlaza con ella (M4); si es anterior,
+// se registra con título y fecha. La aprobación de la directiva es la confirmación al publicar: no se guardan borradores.
 model ActaDigital {
   publicacionId String      @id
   publicacion   Publicacion @relation(fields: [publicacionId], references: [id])
   fechaAsamblea DateTime
+  // La asamblea de M4 de la que es el acta (id de la convocatoria). Vacío en las actas de antes de la plataforma.
+  convocatoriaId String?
   acuerdos      String[]
   compromisos   String[]
   conclusiones  String
@@ -55,13 +57,15 @@ model ActaDigital {
   @@map("transparencia_actas")
 }
 
-// Balance de una actividad pro fondos (HU-ASA-10). Mientras M4 no exista, la actividad se identifica por
-// su nombre (el título de la publicación) y su fecha. Los montos son céntimos enteros; la utilidad neta
+// Balance de una actividad pro fondos (HU-ASA-10). Si es de una actividad de la plataforma se enlaza con ella (M4);
+// si es anterior, se identifica por su nombre (el título de la publicación) y su fecha. Los montos son céntimos enteros; la utilidad neta
 // se calcula, no se guarda.
 model BalanceFinanciero {
   publicacionId     String      @id
   publicacion       Publicacion @relation(fields: [publicacionId], references: [id])
   fechaActividad    DateTime
+  // La actividad pro fondos de M4 de la que es el balance (id de la convocatoria). Vacío si fue anterior a la plataforma.
+  convocatoriaId    String?
   ingresosVirtuales Int
   ingresosEnPuerta  Int
   egresos           Egreso[]

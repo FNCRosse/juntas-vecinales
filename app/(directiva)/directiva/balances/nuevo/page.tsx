@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { actividadesParaBalance } from "@/modulos/asambleas/aplicacion/enlaces";
 import { PublicarBalance } from "./PublicarBalance";
 
 export const metadata: Metadata = { title: "Balance de una actividad" };
@@ -8,5 +9,5 @@ export const metadata: Metadata = { title: "Balance de una actividad" };
 // gráfico y publicar el balance, en dos pasos.
 export default async function NuevoBalance() {
   await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
-  return <PublicarBalance />;
+  return <PublicarBalance actividades={await actividadesParaBalance()} />;
 }

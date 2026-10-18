@@ -11,14 +11,21 @@ import { Campo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
+import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 
 const hoyEnLima = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Lima" }).format(new Date());
 
+const OTRA = "otra";
+
+type AsambleaElegible = { id: string; titulo: string; dia: string; fecha: string; admiteAcuerdos: boolean };
+
 const VACIO = { titulo: "", fechaAsamblea: "", acuerdos: "", compromisos: "", conclusiones: "" };
 
-export function PublicarActa() {
+/** `asambleas`: las que ya empezaron, de M4. Sin ninguna (o para un acta anterior a la plataforma) se escribe la fecha. */
+export function PublicarActa({ asambleas }: { asambleas: AsambleaElegible[] }) {
   const [paso, setPaso] = useState<"redactar" | "confirmar" | "publicado">("redactar");
   const [datos, setDatos] = useState(VACIO);
+  const [asamblea, setAsamblea] = useState<string | null>(asambleas.length ? null : OTRA);
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [falla, setFalla] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -44,12 +51,27 @@ export function PublicarActa() {
 
   function revisar() {
     const nuevos: Record<string, string> = {};
+    const elegida = asambleas.find((a) => a.id === asamblea);
+    if (!asamblea) nuevos.convocatoria = "Elija la asamblea del acta.";
+    else if (elegida && !elegida.admiteAcuerdos) {
+      nuevos.convocatoria = "Esa asamblea no tiene el quórum definitivo: no se pueden registrar acuerdos.";
+    }
     if (!datos.titulo.trim()) nuevos.titulo = "Escriba el título del acta.";
-    if (!datos.fechaAsamblea) nuevos.fechaAsamblea = "Elija la fecha de la asamblea.";
+    if (asamblea === OTRA && !datos.fechaAsamblea) nuevos.fechaAsamblea = "Elija la fecha de la asamblea.";
     if (!datos.acuerdos.trim()) nuevos.acuerdos = "Escriba al menos un acuerdo de la asamblea.";
     setErrores(nuevos);
     if (Object.keys(nuevos).length === 0) setPaso("confirmar");
   }
+
+  function elegirAsamblea(id: string) {
+    setAsamblea(id);
+    setErrores({ ...errores, convocatoria: "" });
+    const elegida = asambleas.find((a) => a.id === id);
+    setDatos({ ...datos, fechaAsamblea: elegida?.dia ?? "" });
+    setPrevia(null);
+  }
+
+  const enviarDatos = () => ({ ...datos, convocatoriaId: asamblea === OTRA ? null : asamblea });
 
   async function verPdf() {
     setPrevia("cargando");
@@ -58,7 +80,7 @@ export function PublicarActa() {
       const respuesta = await fetch("/api/transparencia/actas/vista-previa", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(datos),
+        body: JSON.stringify(enviarDatos()),
       });
       if (respuesta.ok) return setPrevia({ url: URL.createObjectURL(await respuesta.blob()) });
       const cuerpo = (await respuesta.json().catch(() => null)) as { campos?: Record<string, string> } | null;
@@ -75,7 +97,7 @@ export function PublicarActa() {
     setEnviando(true);
     setFalla(null);
     const r = await enviarJson("/api/transparencia/actas", "POST", {
-      ...datos,
+      ...enviarDatos(),
       idOperacion: idOperacion.current,
     });
     setEnviando(false);
@@ -124,10 +146,12 @@ export function PublicarActa() {
     );
   }
 
-  const listaErrores = Object.entries(errores).map(([campo, mensaje]) => ({
-    campo: `campo-${campo}`,
-    mensaje,
-  }));
+  const listaErrores = Object.entries(errores)
+    .filter(([, mensaje]) => mensaje)
+    .map(([campo, mensaje]) => ({
+      campo: `campo-${campo}`,
+      mensaje,
+    }));
   return (
     <form
       noValidate
@@ -152,6 +176,24 @@ export function PublicarActa() {
         <p>Escriba lo que se acordó. Cada acuerdo y cada compromiso va en una línea.</p>
       </div>
       <ResumenErrores errores={listaErrores} />
+      {asambleas.length > 0 && (
+        <SelectorEnHoja
+          id="campo-convocatoria"
+          pregunta="¿De qué asamblea es el acta?"
+          vacio="Elegir la asamblea"
+          valor={asamblea}
+          error={errores.convocatoria || undefined}
+          alElegir={elegirAsamblea}
+          opciones={[
+            ...asambleas.map((a) => ({
+              valor: a.id,
+              etiqueta: `${a.titulo}, ${a.fecha}`,
+              detalle: a.admiteAcuerdos ? undefined : "Sin quórum definitivo: no admite acuerdos",
+            })),
+            { valor: OTRA, etiqueta: "Otra asamblea", detalle: "De antes de usar esta plataforma" },
+          ]}
+        />
+      )}
       <Campo
         name="titulo"
         etiqueta="Título del acta"
@@ -161,15 +203,17 @@ export function PublicarActa() {
         error={errores.titulo}
         onChange={(e) => cambiar("titulo", e.target.value)}
       />
-      <Campo
-        name="fechaAsamblea"
-        etiqueta="Fecha de la asamblea"
-        type="date"
-        max={hoyEnLima()}
-        value={datos.fechaAsamblea}
-        error={errores.fechaAsamblea}
-        onChange={(e) => cambiar("fechaAsamblea", e.target.value)}
-      />
+      {asamblea === OTRA && (
+        <Campo
+          name="fechaAsamblea"
+          etiqueta="Fecha de la asamblea"
+          type="date"
+          max={hoyEnLima()}
+          value={datos.fechaAsamblea}
+          error={errores.fechaAsamblea}
+          onChange={(e) => cambiar("fechaAsamblea", e.target.value)}
+        />
+      )}
       <AreaTexto
         name="acuerdos"
         etiqueta="Acuerdos"

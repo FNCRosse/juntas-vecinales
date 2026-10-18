@@ -8,6 +8,8 @@ const TITULO = `Pollada pro fondos ${sufijo}`;
 const R2_SIMULADO = "https://r2-simulado.invalid/comprobante";
 
 describe("@HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos", () => {
+  // Sin actividades de la plataforma el formulario pide el nombre y la fecha, como en los balances de antes.
+  before(() => cy.task("reiniciarAsambleas"));
   beforeEach(() => {
     cy.clearCookies();
     cy.request("POST", "/api/auth/clave", { dni: "40000002", clave: "clave-de-prueba" })
@@ -72,6 +74,41 @@ describe("@HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos", (
     cy.revisarAccesibilidad("balance-publicado-360");
   });
 
+  it("@HU-ASA-10 el balance se enlaza con la actividad pro fondos que ya se hizo y toma su nombre y su fecha", () => {
+    const nombre = `Bingo enlazado ${sufijo}`;
+    cy.request("POST", "/api/eventos", {
+      tipoActividad: "BINGO",
+      nombre,
+      paraQue: "Comprar sillas para el local comunal",
+      fecha: new Date(Date.now() + 20 * 86_400_000).toISOString().slice(0, 10),
+      hora: "17:00",
+      lugar: "Local comunal",
+      precio: "10",
+      meta: "",
+      pagos: "AMBOS",
+      pideVoluntarios: false,
+      idOperacion: crypto.randomUUID(),
+    })
+      .its("status")
+      .should("eq", 201);
+    cy.task("empezarAsambleas", { padronTotal: 1, quorumRequerido: 1 });
+    cy.viewport(360, 800);
+    cy.visit("/directiva/balances/nuevo");
+    cy.contains("button", "Elegir la actividad").click();
+    cy.contains("button", nombre).click();
+    cy.get("#campo-titulo").should("not.exist");
+    cy.get("#campo-fechaActividad").should("not.exist");
+    cy.get("#campo-ingresosVirtuales").type("100");
+    cy.get("#campo-ingresosEnPuerta").type("50");
+    cy.contains("button", "Revisar el balance").click();
+    cy.get("h1").should("have.text", "¿Desea publicar el balance?");
+    cy.contains("dd", nombre).should("exist");
+    cy.contains("button", "Sí, publicar el balance").click();
+    cy.contains('[role="status"]', "Balance publicado").should("exist");
+    cy.get("h1").should("have.text", nombre);
+    cy.revisarAccesibilidad("balance-enlazado-360");
+  });
+
   it("@HU-ASA-10 CA2 CA3 en modo Senior el vecino ve el balance publicado con su gráfico y su tabla", () => {
     cy.task<string>("archivoDePrueba", { dni: "40000002" }).then((archivoId) =>
       cy
@@ -88,6 +125,8 @@ describe("@HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos", (
           cy.viewport(360, 800);
           cy.guardarModo("senior");
           cy.visit("/transparencia");
+          // Con más balances publicados, la vista grande deja los demás detrás de «Ver más» (R-11).
+          cy.verTodos();
           cy.contains("article", `${TITULO} (vecino)`)
             .should("contain.text", "Saldo final")
             .and("contain.text", "S/ 450.00");
