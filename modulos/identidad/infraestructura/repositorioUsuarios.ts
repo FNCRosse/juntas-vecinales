@@ -64,6 +64,16 @@ export async function vecinosPorNombreODni(texto: string) {
   });
 }
 
+/** Los predios por su id con quién vive hoy, para nombrarlos en una lista (el pase de lista de una asamblea). */
+export async function prediosConResidentes(ids: string[]) {
+  return prisma.predio.findMany({
+    where: { id: { in: ids } },
+    include: {
+      residencias: { where: { fechaFin: null }, include: { usuario: true }, orderBy: { fechaInicio: "asc" } },
+    },
+  });
+}
+
 export async function idsDeVecinosActivos(tx: Transaccion) {
   const vecinos = await tx.usuario.findMany({
     where: { estado: "ACTIVA", anonimizadaEn: null, roles: { hasSome: ["VECINO", "VECINO_ADULTO_MAYOR"] } },

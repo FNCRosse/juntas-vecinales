@@ -10,12 +10,15 @@ export function BarraQuorum({
   requerido,
   alcanza,
   texto,
+  insignias = { alcanza: "Quórum proyectado suficiente", noAlcanza: "Todavía no alcanza el quórum" },
 }: {
   confirmados: number;
   padronTotal: number;
   requerido: number;
   alcanza: boolean;
   texto: string;
+  /** Lo que dice la insignia en cada caso (el pase de lista dice «Hay quórum», no «proyectado»). */
+  insignias?: { alcanza: string; noAlcanza: string };
 }) {
   const pct = (n: number) => `${padronTotal > 0 ? Math.min(100, Math.round((n / padronTotal) * 100)) : 0}%`;
   return (
@@ -45,7 +48,7 @@ export function BarraQuorum({
         ) : (
           <Info aria-hidden className="size-icono-pequeno" />
         )}
-        {alcanza ? "Quórum proyectado suficiente" : "Todavía no alcanza el quórum"}
+        {alcanza ? insignias.alcanza : insignias.noAlcanza}
       </span>
     </div>
   );

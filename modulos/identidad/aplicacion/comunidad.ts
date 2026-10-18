@@ -3,6 +3,7 @@ import type { Transaccion } from "@/compartido/bd/cliente";
 import { contarPadron } from "@/modulos/identidad/infraestructura/repositorioPadron";
 import {
   idsDeVecinosActivos,
+  prediosConResidentes,
   vecinosPorNombreODni,
 } from "@/modulos/identidad/infraestructura/repositorioUsuarios";
 import { direccion } from "@/modulos/identidad/dominio/predio";
@@ -18,6 +19,20 @@ export const totalDePredios = async () => (await contarPadron()).predios;
 export async function predioDelVecino(usuarioId: string) {
   const predio = await viviendaDe(usuarioId);
   return predio ? { id: predio.id, vivienda: direccion(predio) } : null;
+}
+
+/**
+ * Puerto para M4: cada casa por su id con su vivienda («Mz. A, lote 12») y el nombre de quien la encabeza (el
+ * primero que vive en ella), para las listas del pase de lista.
+ */
+export async function casasDe(predioIds: string[]) {
+  const predios = await prediosConResidentes(predioIds);
+  return new Map(
+    predios.map((p) => [
+      p.id,
+      { vivienda: direccion(p), nombre: p.residencias[0]?.usuario.nombreCompleto ?? "Sin residentes" },
+    ]),
+  );
 }
 
 /**

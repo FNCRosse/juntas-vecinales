@@ -109,6 +109,32 @@ export default defineConfig({
             await cliente.end();
           }
         },
+        // Hace que las asambleas vigentes ya estén en curso (empezaron hace una hora) y fija un padrón
+        // pequeño, para poder alcanzar el quórum del pase de lista con pocos vecinos (HU-ASA-07). Solo la
+        // BD de pruebas.
+        async empezarAsambleas({
+          padronTotal,
+          quorumRequerido,
+        }: {
+          padronTotal: number;
+          quorumRequerido: number;
+        }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            await cliente.query(
+              `UPDATE asambleas_convocatorias SET "fechaHora" = now() - interval '1 hour'
+               WHERE estado IN ('PUBLICADA', 'REPROGRAMADA')`,
+            );
+            await cliente.query(`UPDATE asambleas_asambleas SET "padronTotal" = $1, "quorumRequerido" = $2`, [
+              padronTotal,
+              quorumRequerido,
+            ]);
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
         // Adelanta el plazo para confirmar de las asambleas que siguen vigentes, para probar lo que pasa al
         // corte sin esperar a la víspera (HU-ASA-04, HU-ASA-05). Solo la BD de pruebas.
         async vencerCorteDeAsambleas() {

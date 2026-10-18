@@ -48,6 +48,7 @@ model Convocatoria {
   asamblea         Asamblea?
   confirmaciones   ConfirmacionAsistencia[]
   delegaciones     DelegacionVoto[]
+  checkIns         CheckInPresencial[]
 
   @@index([fechaHora])
   @@map("asambleas_convocatorias")
@@ -83,6 +84,9 @@ model Asamblea {
   // Cuándo el worker avisó a la directiva si el quórum proyectado alcanza al corte (HU-ASA-04 CA3). Se
   // reclama con un UPDATE condicionado a que siga vacío, así el aviso sale una sola vez aunque corran dos.
   avisoCorteEn       DateTime?
+  // Cuándo la directiva abrió las votaciones tras comprobar el quórum definitivo (HU-ASA-07 CA3). Sin esta
+  // marca no se registran votaciones ni acuerdos.
+  votacionesAbiertasEn DateTime?
 
   @@map("asambleas_asambleas")
 }
@@ -104,8 +108,25 @@ model DelegacionVoto {
   apoderadoDniFinal String
   condicion         CondicionApoderado
   creadaEn          DateTime           @default(now())
+  // El poder se valida en la puerta el día de la asamblea (HU-ASA-07): solo entonces cuenta para el quórum.
+  validadaEn        DateTime?
+  validadaPor       String?
 
   @@unique([convocatoriaId, predioId])
   @@index([convocatoriaId, apoderadoDniHash])
   @@map("asambleas_delegaciones")
+}
+
+// Pase de lista del día de la asamblea (HU-ASA-07): la casa cuyo titular llegó. Una por predio y asamblea; el
+// quórum definitivo cuenta solo a los presentes y a los poderes validados aquí.
+model CheckInPresencial {
+  id             String       @id @default(uuid())
+  convocatoriaId String
+  convocatoria   Convocatoria @relation(fields: [convocatoriaId], references: [id])
+  predioId       String
+  acreditadoPor  String
+  creadoEn       DateTime     @default(now())
+
+  @@unique([convocatoriaId, predioId])
+  @@map("asambleas_checkins")
 }

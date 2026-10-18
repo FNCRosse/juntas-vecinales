@@ -78,6 +78,23 @@ export default async function AsambleasVecino() {
               La línea marca ese mínimo.
             </p>
           </section>
+          <section aria-labelledby="titulo-votar" className="flex flex-col gap-1">
+            <h2 id="titulo-votar" className="text-titulo-2">
+              Votar en la asamblea
+            </h2>
+            {proxima.votacion === "ABIERTA" && (
+              <p>
+                <strong>Votación abierta ahora.</strong> Se vota en el local de la asamblea, no en la app.
+              </p>
+            )}
+            {proxima.votacion === "CERRADA" && (
+              <p>
+                Todavía no. Se abre el {fechaEnFrase(new Date(proxima.fechaHora))} a las{" "}
+                {horaCorta(new Date(proxima.fechaHora))}, cuando la asamblea empiece y haya quórum.
+              </p>
+            )}
+            {proxima.votacion === "SIN_VOTACION" && <p>Esta reunión es informativa: no habrá votaciones.</p>}
+          </section>
           {(plazoAbierto || delegacion) && (
             <Link
               href="/asambleas/delegar"

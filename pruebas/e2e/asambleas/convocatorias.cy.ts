@@ -273,4 +273,66 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("no se votará ni se tomarán acuerdos").should("exist");
     cy.revisarAccesibilidad("asambleas-vecino-informativa-senior-360");
   });
+
+  // Reinicia las asambleas y las deja en curso con un padrón de 3 casas (mínimo: 2): va al final.
+  it("@HU-ASA-07 CA1 CA2 CA3 el mediador hace el pase de lista, valida un poder y abre las votaciones con quórum", () => {
+    cy.task("reiniciarAsambleas");
+    cy.request("POST", "/api/asambleas", {
+      tipoAsamblea: "ORDINARIA",
+      fecha: enDias(70),
+      hora: "18:00",
+      lugar: LUGAR,
+      motivo: MOTIVO,
+      idOperacion: crypto.randomUUID(),
+    }).then(({ body }) => {
+      // Marta (directiva y vecina) le deja su voto a una apoderada: el poder se valida en la puerta.
+      cy.request("POST", `/api/asambleas/${body.id}/delegaciones`, {
+        nombre: "Rosa Huamán",
+        dni: "08123456",
+        condicion: "FAMILIAR",
+      })
+        .its("status")
+        .should("eq", 201);
+    });
+    cy.task("empezarAsambleas", { padronTotal: 3, quorumRequerido: 2 });
+    cy.viewport(360, 800);
+
+    cy.visit("/directiva/asambleas/pase-de-lista");
+    cy.get("h1").should("have.text", "Pase de lista");
+    cy.contains("0 de 3 casas").should("exist");
+    cy.contains("Votaciones bloqueadas").should("exist");
+    cy.revisarAccesibilidad("pase-de-lista-360");
+
+    // Sin quórum definitivo, abrir las votaciones se rechaza y dice cuánto falta.
+    cy.esperarHidratacion("Abrir las votaciones").click();
+    cy.contains("faltan 2 casas para el quórum de 2").should("exist");
+
+    cy.get("#campo-buscar").type("Carmen");
+    cy.contains("button", "Buscar").click();
+    cy.contains("button", "Marcar presente").click();
+    cy.contains("Presente").should("exist");
+    cy.contains("Presentes: 1 · Poderes validados: 0").should("exist");
+
+    // El poder de Marta se valida en su pantalla y suma su casa al quórum definitivo.
+    cy.contains("a", "Poderes (delegaciones de voto)").click();
+    cy.get("h1").should("have.text", "Poderes (delegaciones de voto)");
+    cy.contains("Rosa Huamán representa a Marta").should("exist");
+    cy.revisarAccesibilidad("poderes-360");
+    cy.contains("button", "Validar el poder").click();
+    cy.contains("Validado").should("exist");
+
+    cy.visit("/directiva/asambleas/pase-de-lista");
+    cy.contains("Presentes: 1 · Poderes validados: 1").should("exist");
+    cy.contains("2 de 3 casas").should("exist");
+    cy.contains("Hay quórum").should("exist");
+    cy.revisarAccesibilidad("pase-de-lista-con-quorum-360");
+    cy.contains("button", "Abrir las votaciones").click();
+    cy.contains("Votaciones abiertas").should("exist");
+
+    // El vecino ve que se vota en el local, no en la app (no hay voto digital).
+    cy.guardarModo("senior");
+    cy.visit("/asambleas");
+    cy.contains("Votación abierta ahora").should("exist");
+    cy.revisarAccesibilidad("asambleas-vecino-votacion-senior-360");
+  });
 });

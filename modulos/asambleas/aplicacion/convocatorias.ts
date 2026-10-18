@@ -1,4 +1,4 @@
-// @HU-ASA-01 @HU-ASA-02 @HU-ASA-04
+// @HU-ASA-01 @HU-ASA-02 @HU-ASA-04 @HU-ASA-07
 import { prisma } from "@/compartido/bd/cliente";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
@@ -48,6 +48,13 @@ export const aDto = (c: Fila) => {
     padronTotal,
     quorumRequerido: requerido,
     confirmados: { digital, asistida, total: quorum.confirmados },
+    // Hay votación presencial si la directiva las abrió tras comprobar el quórum definitivo (HU-ASA-07 CA3);
+    // una sesión informativa no tiene votaciones. En la app solo se muestra el estado: no hay voto digital.
+    votacion: (c.estado === "INFORMATIVA"
+      ? "SIN_VOTACION"
+      : c.asamblea?.votacionesAbiertasEn
+        ? "ABIERTA"
+        : "CERRADA") as "SIN_VOTACION" | "ABIERTA" | "CERRADA",
     quorum: { ...quorum, texto: textoDelQuorum(quorum) },
   };
 };
@@ -124,11 +131,13 @@ export async function verAsambleas(sesion: SesionDto): Promise<AsambleaDto[]> {
   return (await listarAsambleas()).map(aDto);
 }
 
-/** La próxima asamblea a partir de ahora, o null si no hay (bloque del inicio, DIR-INI-01 / VEC-ACC-09). */
+/** Una asamblea sigue "en curso" hasta 12 horas después de su hora: el día de la reunión no desaparece de la lista. */
+const HORAS_EN_CURSO = 12;
+
+/** La próxima asamblea (o la que está en curso), o null si no hay (bloque del inicio, DIR-INI-01 / VEC-ACC-09). */
 export async function proximaAsamblea(sesion: SesionDto, ahora = new Date()): Promise<AsambleaDto | null> {
-  const futuras = (await verAsambleas(sesion)).filter(
-    (a) => new Date(a.fechaHora).getTime() >= ahora.getTime(),
-  );
+  const desde = ahora.getTime() - HORAS_EN_CURSO * 3_600_000;
+  const futuras = (await verAsambleas(sesion)).filter((a) => new Date(a.fechaHora).getTime() >= desde);
   return futuras[0] ?? null;
 }
 
