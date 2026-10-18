@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
 import { miColaboracion, proximaActividad } from "@/modulos/asambleas/aplicacion/actividades";
+import { miVoluntariado } from "@/modulos/asambleas/aplicacion/voluntarios";
 import { Colaborar } from "./Colaborar";
 
 export const metadata: Metadata = { title: "Colaborar con la actividad" };
@@ -11,8 +12,17 @@ export const metadata: Metadata = { title: "Colaborar con la actividad" };
 export default async function ColaborarPagina() {
   const sesion = await sesionActual();
   const actividad = sesion ? await proximaActividad(sesion) : null;
-  // Sin actividad, o si la casa ya colaboró, se vuelve a la lista (allí se ve su aporte).
-  if (!sesion || !actividad || (await miColaboracion(sesion, actividad.id))) redirect("/actividades");
+  // Sin actividad, o si la casa ya colaboró o se ofreció, se vuelve a la lista (allí se ve su aporte). Si su
+  // ofrecimiento no se aprobó por ahora, puede elegir pagar.
+  const ayuda = sesion && actividad ? await miVoluntariado(sesion, actividad.id) : null;
+  if (
+    !sesion ||
+    !actividad ||
+    (await miColaboracion(sesion, actividad.id)) ||
+    (ayuda && ayuda.estado !== "NO_APROBADO")
+  ) {
+    redirect("/actividades");
+  }
   const fecha = new Date(actividad.fechaHora);
   return (
     <Colaborar
@@ -24,6 +34,7 @@ export default async function ColaborarPagina() {
       precio={actividad.precioUnidad}
       unidad={actividad.unidad}
       modalidades={actividad.modalidades}
+      pideVoluntarios={actividad.pideVoluntarios && ayuda === null}
     />
   );
 }

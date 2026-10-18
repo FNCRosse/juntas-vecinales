@@ -18,6 +18,7 @@ import {
   TIPO_EN_TEXTO,
   UNIDAD_DE_ACTIVIDAD,
 } from "@/modulos/asambleas/dominio/actividad";
+import { voluntariadoDePredio } from "@/modulos/asambleas/infraestructura/repositorioVoluntarios";
 import {
   actividadPorIdOperacion,
   adjuntarComprobante,
@@ -200,6 +201,14 @@ export async function colaborar(
   if (!predio) throw new ErrorReglaNegocio(MENSAJE_SIN_PREDIO);
   if (await colaboracionDePredio(actividadId, predio.id)) {
     throw new ErrorReglaNegocio("Su casa ya registró su aporte a esta actividad.");
+  }
+  // Quien ofreció su ayuda no paga (HU-ASA-09 CA3); si la directiva no la aprobó por ahora, puede pagar.
+  const ayuda = await voluntariadoDePredio(actividadId, predio.id);
+  if (ayuda?.estado === "APROBADO") {
+    throw new ErrorReglaNegocio("Su casa es voluntaria en esta actividad: no paga la colaboración.");
+  }
+  if (ayuda?.estado === "PENDIENTE") {
+    throw new ErrorReglaNegocio("Su ofrecimiento de ayuda está pendiente: la directiva le avisará.");
   }
 
   const creada = await prisma.$transaction(async (tx) => {

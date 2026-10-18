@@ -1,4 +1,4 @@
-import { CalendarDays, ClipboardCheck, Lightbulb, UserCheck, UsersRound } from "lucide-react";
+import { CalendarDays, ClipboardCheck, HandHeart, Lightbulb, UserCheck, UsersRound } from "lucide-react";
 import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
@@ -30,6 +30,9 @@ export default async function AsambleasDirectiva() {
         </BotonEnlace>
         <BotonEnlace href="/directiva/asambleas/propuestas" variante="secundario" icono={Lightbulb}>
           Propuestas para la agenda
+        </BotonEnlace>
+        <BotonEnlace href="/directiva/actividades" variante="secundario" icono={HandHeart}>
+          Actividad pro-fondos
         </BotonEnlace>
       </div>
       {sinQuorum && (

@@ -346,6 +346,87 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("Recibimos su comprobante").should("exist");
   });
 
+  it("@HU-ASA-09 CA1 CA2 CA3 la vecina ofrece su ayuda, la directiva la aprueba con un rol y deja de pagar", () => {
+    const nombre = `Bingo con voluntarios ${sufijo}`;
+    // Más cercana que la actividad anterior (+40 días), así es la próxima.
+    cy.request("POST", "/api/eventos", {
+      tipoActividad: "BINGO",
+      nombre,
+      paraQue: "Comprar sillas para el local comunal",
+      fecha: enDias(20),
+      hora: "17:00",
+      lugar: "Local comunal",
+      precio: "10",
+      meta: "",
+      pagos: "AMBOS",
+      pideVoluntarios: true,
+      idOperacion: crypto.randomUUID(),
+    })
+      .its("status")
+      .should("eq", 201);
+    cy.viewport(360, 800);
+
+    // La vecina elige «voluntaria» y cuenta cómo ayudaría.
+    cy.visit("/actividades");
+    cy.contains("h2", nombre).should("exist");
+    cy.contains("a", "Colaborar con la actividad").click();
+    cy.contains("button", "Elegir una opción").click();
+    cy.contains("button", "Prefiero ayudar como voluntaria").click();
+    cy.contains("label", "¿Cómo le gustaría ayudar?").should("exist");
+    cy.revisarAccesibilidad("voluntario-paso1-360");
+    cy.contains("button", "Revisar mi aporte").click();
+    cy.contains("Cuéntenos cómo le gustaría ayudar.").should("exist");
+    cy.get("#campo-descripcion").type("Puedo atender la mesa de la entrada.");
+    cy.contains("button", "Revisar mi aporte").click();
+
+    cy.get("h1").should("have.text", "¿Desea confirmar su aporte?");
+    cy.contains("dd", "Ayuda como voluntaria (sin pago)").should("exist");
+    cy.revisarAccesibilidad("voluntario-confirmar-360");
+    cy.contains("button", "Sí, confirmar mi aporte").click();
+    cy.location("pathname").should("eq", "/actividades");
+    cy.contains("Usted ofreció su ayuda").should("exist");
+    cy.revisarAccesibilidad("voluntario-ofrecida-360");
+
+    // La directiva la aprueba registrando el rol.
+    cy.visit("/directiva/actividades");
+    cy.get("h1").should("have.text", nombre);
+    cy.contains("article", "Puedo atender la mesa de la entrada.").should("contain.text", "Por aprobar");
+    cy.revisarAccesibilidad("voluntarios-directiva-360");
+    cy.contains("article", "Puedo atender la mesa").contains("button", "Aprobar la ayuda").click();
+    cy.get("[role=dialog]").contains("button", "Aprobar la ayuda").click();
+    cy.get("[role=dialog]").should("contain.text", "Escriba el rol que tendrá");
+    cy.get("#campo-rol").type("Mesa de la entrada");
+    cy.get("[role=dialog]").contains("button", "Aprobar la ayuda").click();
+    cy.contains("article", "Puedo atender la mesa").should(
+      "contain.text",
+      "Ayuda aprobada: Mesa de la entrada",
+    );
+
+    // Aprobada, la casa no paga: la página lo dice y el servidor rechaza un aporte.
+    cy.visit("/actividades");
+    cy.contains("Ayuda aprobada").should("exist");
+    cy.contains("no paga la colaboración").should("exist");
+    cy.revisarAccesibilidad("voluntario-aprobada-360");
+    cy.request("GET", "/api/eventos")
+      .its("body")
+      .then((actividades: { id: string; nombre: string }[]) => {
+        const actividad = actividades.find((a) => a.nombre === nombre)!;
+        cy.request({
+          method: "POST",
+          url: `/api/eventos/${actividad.id}/colaboraciones`,
+          body: { cantidad: 1, modalidad: "EN_PUERTA", idOperacion: crypto.randomUUID() },
+          failOnStatusCode: false,
+        })
+          .its("status")
+          .should("be.gte", 400);
+      });
+
+    // El worker no corre en la prueba: se escribe la copia interna del aviso de aprobación.
+    cy.task("copiaInternaDeLaCola", { dni: "40000002" });
+    cy.visit("/avisos");
+    cy.contains("Su ayuda fue aprobada").should("exist");
+  });
+
   it("@HU-ASA-04 CA2 la directiva ve el quórum proyectado con la barra y si alcanza el mínimo", () => {
     cy.request("POST", "/api/asambleas", {
       tipoAsamblea: "ORDINARIA",

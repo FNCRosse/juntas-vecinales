@@ -37,6 +37,12 @@ enum EstadoColaboracion {
   AGENDADA
 }
 
+enum EstadoVoluntariado {
+  PENDIENTE
+  APROBADO
+  NO_APROBADO
+}
+
 enum TipoAsamblea {
   ORDINARIA
   EXTRAORDINARIA
@@ -82,6 +88,7 @@ model Convocatoria {
   propuestas       PropuestaAgenda[]
   evento           EventoProFondos?
   colaboraciones   Colaboracion[]
+  voluntarios      Voluntariado[]
 
   @@index([fechaHora])
   @@map("asambleas_convocatorias")
@@ -221,4 +228,25 @@ model Colaboracion {
 
   @@unique([convocatoriaId, predioId])
   @@map("asambleas_colaboraciones")
+}
+
+// Ofrecimiento de ayuda de una casa en una actividad pro fondos (HU-ASA-09). La directiva lo aprueba registrando el
+// rol asignado y, aprobado, la casa queda exenta de la colaboración del evento; si no lo aprueba por ahora, la casa
+// aún puede colaborar pagando. Una por casa y actividad; idOperacion evita duplicar al reintentar (AC-5).
+model Voluntariado {
+  id             String             @id @default(uuid())
+  idOperacion    String             @unique
+  convocatoriaId String
+  convocatoria   Convocatoria       @relation(fields: [convocatoriaId], references: [id])
+  predioId       String
+  autorId        String
+  descripcion    String
+  estado         EstadoVoluntariado @default(PENDIENTE)
+  rolAsignado    String?
+  decididoPor    String?
+  decididoEn     DateTime?
+  creadaEn       DateTime           @default(now())
+
+  @@unique([convocatoriaId, predioId])
+  @@map("asambleas_voluntarios")
 }
