@@ -11,6 +11,13 @@ export const USOS = {
     roles: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"],
     ven: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"],
   },
+  // El comprobante de un aporte anticipado a una actividad pro fondos (HU-ASA-08): lo sube el vecino y lo ve la directiva.
+  comprobante_aporte: {
+    carpeta: "comprobantes",
+    clase: "documento",
+    roles: ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"],
+    ven: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"],
+  },
   // La evidencia de una queja la sube el vecino y la ve solo la directiva: otro vecino nunca (AC-7).
   evidencia_queja: {
     carpeta: "evidencias",

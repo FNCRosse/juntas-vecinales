@@ -39,6 +39,8 @@ export const ACTORES: Actor[] = [
       "/asambleas",
       "/asambleas/delegar",
       "/asambleas/proponer",
+      "/actividades",
+      "/actividades/colaborar",
     ],
   },
   {
@@ -60,6 +62,7 @@ export const ACTORES: Actor[] = [
       "/directiva/asambleas/pase-de-lista",
       "/directiva/asambleas/poderes",
       "/directiva/asambleas/propuestas",
+      "/directiva/actividades/nueva",
     ],
   },
   {

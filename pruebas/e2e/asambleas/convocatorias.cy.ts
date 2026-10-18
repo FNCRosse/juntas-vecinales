@@ -260,6 +260,92 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("Su propuesta no se incluyó en la agenda").should("exist");
   });
 
+  it("@HU-ASA-08 CA1 CA2 la directiva publica una actividad pro fondos y la vecina elige su aporte y adjunta el comprobante", () => {
+    const nombre = `Pollada para la reja ${sufijo}`;
+    cy.viewport(360, 800);
+
+    // La directiva publica la actividad en dos pasos.
+    cy.visit("/directiva/crear");
+    cy.contains("a", "Nueva actividad pro-fondos").click();
+    cy.get("h1").should("have.text", "Nueva actividad pro-fondos");
+    cy.contains("p", "Paso 1 de 2").should("exist");
+    cy.revisarAccesibilidad("actividad-nueva-360");
+
+    cy.esperarHidratacion("Revisar la actividad").click();
+    cy.contains("Elija qué actividad es.").should("exist");
+    cy.contains("Elija cómo pueden pagar los vecinos.").should("exist");
+    cy.contains("Escriba el nombre de la actividad.").should("exist");
+    cy.revisarAccesibilidad("actividad-errores-360");
+
+    cy.contains("button", "Elegir una opción").click();
+    cy.contains("button", "Pollada").click();
+    cy.contains("button", "Escribir los datos").click();
+    cy.get("#campo-nombre").type(nombre);
+    cy.get("#campo-paraQue").type("Reparar la reja principal");
+    cy.get("#campo-fecha").type(enDias(40));
+    cy.get("#campo-hora").type("12:00");
+    cy.get("#campo-lugar").type("Parque Central");
+    cy.get("#campo-precio").type("15");
+    cy.get("#campo-meta").type("1200");
+    cy.contains("button", "Listo").click();
+    cy.contains("button", "Elegir una opción").click();
+    cy.contains("button", "Por Yape o Plin y en la puerta").click();
+    cy.contains("button", "Revisar la actividad").click();
+
+    cy.get("h1").should("have.text", "¿Desea publicar la actividad?");
+    cy.focused().should("match", "h1");
+    cy.contains("dd", nombre).should("exist");
+    cy.contains("dd", "S/ 15").should("exist");
+    cy.revisarAccesibilidad("actividad-confirmar-360");
+    cy.contains("button", "Sí, publicar la actividad").click();
+    cy.contains('[role="status"]', "Actividad publicada").should("exist");
+    cy.revisarAccesibilidad("actividad-publicada-360");
+
+    // La vecina la ve, elige cuántos platos y cómo, y confirma.
+    cy.visit("/actividades");
+    cy.get("h1").should("have.text", "Actividades pro-fondos");
+    cy.contains("h2", nombre).should("exist");
+    cy.contains("Colaboración: S/ 15.00 por plato.").should("exist");
+    cy.revisarAccesibilidad("actividades-vecino-360");
+    cy.contains("a", "Colaborar con la actividad").click();
+
+    cy.contains("p", "Paso 1 de 2").should("exist");
+    cy.contains("button", "Elegir una opción").click();
+    cy.contains("button", "Pagar antes con Yape o Plin").click();
+    cy.contains("button", "Uno más").click();
+    cy.contains("button", "Uno más").click();
+    cy.contains("Total: S/ 45.00").should("exist");
+    cy.revisarAccesibilidad("colaborar-paso1-360");
+    cy.contains("button", "Revisar mi aporte").click();
+
+    cy.get("h1").should("have.text", "¿Desea confirmar su aporte?");
+    cy.focused().should("match", "h1");
+    cy.contains("dd", "S/ 45.00").should("exist");
+    cy.contains("dd", "Pago antes con Yape o Plin").should("exist");
+    cy.revisarAccesibilidad("colaborar-confirmar-360");
+    cy.contains("button", "Sí, confirmar mi aporte").click();
+
+    cy.location("pathname").should("eq", "/actividades");
+    cy.contains("Usted ya registró su aporte").should("exist");
+    cy.contains("3 platos · S/ 45.00").should("exist");
+    cy.contains("label", "Foto del comprobante de Yape o Plin").should("exist");
+    cy.revisarAccesibilidad("actividades-aporte-360");
+
+    // El CI no habla con R2: el comprobante se simula con un archivo ya registrado y se adjunta por la API.
+    cy.request("GET", "/api/eventos")
+      .its("body")
+      .then((actividades: { id: string; nombre: string }[]) => {
+        const actividad = actividades.find((a) => a.nombre === nombre)!;
+        cy.task("archivoDePrueba", { dni: "40000002", uso: "comprobante_aporte" }).then((archivoId) => {
+          cy.request("POST", `/api/eventos/${actividad.id}/colaboraciones/comprobante`, { archivoId })
+            .its("status")
+            .should("eq", 200);
+        });
+      });
+    cy.visit("/actividades");
+    cy.contains("Recibimos su comprobante").should("exist");
+  });
+
   it("@HU-ASA-04 CA2 la directiva ve el quórum proyectado con la barra y si alcanza el mínimo", () => {
     cy.request("POST", "/api/asambleas", {
       tipoAsamblea: "ORDINARIA",
