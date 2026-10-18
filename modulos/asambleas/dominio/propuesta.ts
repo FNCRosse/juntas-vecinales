@@ -32,3 +32,29 @@ export function prepararPropuesta(datos: DatosPropuesta) {
   }
   return { errores, propuesta: { titulo, justificacion } };
 }
+
+export type DecisionPropuesta = "INCLUIR" | "NO_INCLUIR";
+
+export const MAXIMO_MOTIVO_DECISION = 200;
+
+/** Los motivos que la pantalla ofrece al descartar una propuesta (prototipo DAS04); el vecino los recibe tal cual. */
+export const MOTIVOS_DE_DESCARTE = [
+  "Ya se trató en otra asamblea",
+  "No le corresponde a la junta",
+  "Falta información: se la pediremos al vecino",
+] as const;
+
+/** Revisa la decisión de la directiva (HU-ASA-14 CA2): incluir no pide motivo; no incluir, un motivo breve. */
+export function prepararDecision(datos: { decision: DecisionPropuesta; motivo: string }) {
+  const errores: Record<string, string> = {};
+  const motivo = datos.motivo.trim();
+  if (datos.decision !== "INCLUIR" && datos.decision !== "NO_INCLUIR") {
+    errores.decision = "Elija si incluye la propuesta en la agenda o no.";
+  } else if (datos.decision === "NO_INCLUIR") {
+    if (!motivo) errores.motivo = "Elija o escriba un motivo breve: se lo enviaremos al vecino.";
+    else if (motivo.length > MAXIMO_MOTIVO_DECISION) {
+      errores.motivo = `El motivo puede tener hasta ${MAXIMO_MOTIVO_DECISION} letras. Hágalo más corto.`;
+    }
+  }
+  return { errores, motivo: datos.decision === "NO_INCLUIR" ? motivo : null };
+}

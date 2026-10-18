@@ -7,6 +7,7 @@ import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { miAsistencia, proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 import { miDelegacion } from "@/modulos/asambleas/aplicacion/delegaciones";
+import { agendaPublicada } from "@/modulos/asambleas/aplicacion/propuestas";
 import { ConfirmarAsistencia } from "./ConfirmarAsistencia";
 
 export const metadata: Metadata = { title: "Asambleas" };
@@ -19,6 +20,7 @@ export default async function AsambleasVecino() {
   const proxima = sesion ? await proximaAsamblea(sesion, ahora) : null;
   const confirmado = sesion && proxima ? await miAsistencia(sesion, proxima.id) : false;
   const delegacion = sesion && proxima ? await miDelegacion(sesion, proxima.id) : null;
+  const agenda = sesion && proxima ? await agendaPublicada(sesion, proxima.id) : [];
   const plazoAbierto = proxima ? ahora.getTime() <= new Date(proxima.confirmacionesHasta).getTime() : false;
   return (
     <div className="flex flex-col gap-6">
@@ -45,8 +47,17 @@ export default async function AsambleasVecino() {
             <p className="font-bold">{fechaLarga(new Date(proxima.fechaHora))}</p>
             <p>{horaCorta(new Date(proxima.fechaHora))}</p>
             <p className="text-texto-secundario">{proxima.lugar}</p>
-            <p className="pt-2 font-bold">Motivo</p>
-            <p>{proxima.motivo}</p>
+            <h3 className="pt-2 text-titulo-3">Temas a tratar</h3>
+            <ol className="flex list-decimal flex-col gap-1 pl-6">
+              {agenda.map((punto, i) => (
+                <li key={i}>
+                  {punto.titulo}
+                  {punto.origen === "VECINAL" && (
+                    <span className="text-pequeno text-texto-secundario"> · Propuesta de un vecino</span>
+                  )}
+                </li>
+              ))}
+            </ol>
             <div className="pt-2">
               <ConfirmarAsistencia
                 asambleaId={proxima.id}

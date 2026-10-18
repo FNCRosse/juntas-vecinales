@@ -202,8 +202,62 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     // Marta es también de la directiva: ve su propia propuesta en la bandeja, pendiente de revisión.
     cy.visit("/directiva/asambleas/propuestas");
     cy.get("h1").should("have.text", "Propuestas para la agenda");
-    cy.contains("article", tema).should("contain.text", "Pendiente de revisión");
+    cy.contains("article", tema).should("contain.text", "Por revisar");
     cy.revisarAccesibilidad("propuestas-directiva-360");
+  });
+
+  it("@HU-ASA-14 CA2 CA3 la directiva incluye una propuesta en la agenda, la descarta con motivo y el vecino recibe el aviso", () => {
+    const tema = `Botiquín para el local ${sufijo}`;
+    cy.request("POST", "/api/asambleas", {
+      tipoAsamblea: "ORDINARIA",
+      fecha: enDias(67),
+      hora: "18:00",
+      lugar: LUGAR,
+      motivo: MOTIVO,
+      idOperacion: crypto.randomUUID(),
+    })
+      .its("status")
+      .should("eq", 201);
+    cy.request("GET", "/api/asambleas")
+      .its("body")
+      .then((asambleas: { id: string }[]) => {
+        cy.request("POST", `/api/asambleas/${asambleas[0].id}/propuestas`, {
+          titulo: tema,
+          justificacion: "Para emergencias durante las asambleas.",
+          idOperacion: crypto.randomUUID(),
+        })
+          .its("status")
+          .should("eq", 201);
+      });
+    cy.viewport(360, 800);
+
+    cy.visit("/directiva/asambleas/propuestas");
+    cy.contains("article", tema).should("contain.text", "Por revisar");
+    cy.revisarAccesibilidad("propuestas-decidir-360");
+    cy.contains("article", tema).contains("button", "Decidir").click();
+    cy.contains("button", "Incluir en la agenda").click();
+    cy.contains("article", tema).should("contain.text", "Incluida en la agenda");
+    cy.contains("ol li", tema).should("contain.text", "Propuesta vecinal de Marta");
+    cy.revisarAccesibilidad("propuestas-incluida-360");
+
+    // El vecino ve el tema entre los «Temas a tratar», sin el nombre de quien lo propuso.
+    cy.visit("/asambleas");
+    cy.contains("ol li", tema).should("contain.text", "Propuesta de un vecino");
+
+    // Se puede cambiar la decisión; ahora se descarta con un motivo breve.
+    cy.visit("/directiva/asambleas/propuestas");
+    cy.contains("article", tema).contains("button", "Cambiar la decisión").click();
+    cy.contains("article", tema).should("contain.text", "Por revisar");
+    cy.contains("article", tema).contains("button", "Decidir").click();
+    cy.contains("button", "No incluir").click();
+    cy.contains("Motivo breve (se lo enviaremos al vecino)").should("exist");
+    cy.contains("button", "Ya se trató en otra asamblea").click();
+    cy.contains("article", tema).should("contain.text", "No incluida: Ya se trató en otra asamblea");
+
+    // El worker no corre en la prueba: se escribe la copia interna de los avisos pendientes.
+    cy.task("copiaInternaDeLaCola", { dni: "40000002" });
+    cy.visit("/avisos");
+    cy.contains("Su propuesta no se incluyó en la agenda").should("exist");
   });
 
   it("@HU-ASA-04 CA2 la directiva ve el quórum proyectado con la barra y si alcanza el mínimo", () => {
