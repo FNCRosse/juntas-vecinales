@@ -13,6 +13,30 @@ enum EstadoConvocatoria {
   CERRADA
 }
 
+enum TipoActividad {
+  POLLADA
+  PARRILLADA
+  BINGO
+  RIFA
+  OTRA
+}
+
+enum PagosDeActividad {
+  AMBOS
+  ANTICIPADO
+  PUERTA
+}
+
+enum ModalidadAporte {
+  ANTICIPADA
+  EN_PUERTA
+}
+
+enum EstadoColaboracion {
+  POR_REVISAR
+  AGENDADA
+}
+
 enum TipoAsamblea {
   ORDINARIA
   EXTRAORDINARIA
@@ -56,6 +80,8 @@ model Convocatoria {
   delegaciones     DelegacionVoto[]
   checkIns         CheckInPresencial[]
   propuestas       PropuestaAgenda[]
+  evento           EventoProFondos?
+  colaboraciones   Colaboracion[]
 
   @@index([fechaHora])
   @@map("asambleas_convocatorias")
@@ -159,4 +185,40 @@ model PropuestaAgenda {
   @@index([convocatoriaId, creadaEn])
   @@index([autorId])
   @@map("asambleas_propuestas")
+}
+
+// Datos propios de una actividad pro fondos (HU-ASA-08, diagrama 02c). El nombre es el título de la convocatoria y
+// «para qué se juntará el dinero» su motivo. Los montos son céntimos enteros; la meta es opcional.
+model EventoProFondos {
+  convocatoriaId   String           @id
+  convocatoria     Convocatoria     @relation(fields: [convocatoriaId], references: [id])
+  tipoActividad    TipoActividad
+  precioUnidad     Int
+  metaRecaudacion  Int?
+  pagos            PagosDeActividad
+  pideVoluntarios  Boolean          @default(false)
+
+  @@map("asambleas_eventos")
+}
+
+// Aporte de una casa a una actividad pro fondos (HU-ASA-08): cuántas unidades (platos, boletos) y cómo las paga.
+// ANTICIPADA sube su comprobante (con compartido/archivos, no el Comprobante de M5) y queda POR_REVISAR;
+// EN_PUERTA queda AGENDADA para el cobro del día. Una por casa y actividad. idOperacion evita duplicar (AC-5).
+model Colaboracion {
+  id             String             @id @default(uuid())
+  idOperacion    String             @unique
+  convocatoriaId String
+  convocatoria   Convocatoria       @relation(fields: [convocatoriaId], references: [id])
+  predioId       String
+  autorId        String
+  cantidad       Int
+  modalidad      ModalidadAporte
+  monto          Int
+  estado         EstadoColaboracion
+  archivoId      String?
+  archivo        Archivo?           @relation(fields: [archivoId], references: [id])
+  creadaEn       DateTime           @default(now())
+
+  @@unique([convocatoriaId, predioId])
+  @@map("asambleas_colaboraciones")
 }

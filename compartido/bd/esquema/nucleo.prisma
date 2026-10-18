@@ -123,6 +123,7 @@ model Archivo {
   creadoEn   DateTime         @default(now())
   egresos    Egreso[]
   evidencias EvidenciaQueja[]
+  colaboraciones Colaboracion[]
 
   @@index([subidoPor])
   @@map("nucleo_archivos")

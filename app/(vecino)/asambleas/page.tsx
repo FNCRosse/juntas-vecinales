@@ -1,4 +1,4 @@
-import { ChevronRight, Lightbulb, UserRoundCheck } from "lucide-react";
+import { ChevronRight, HandHeart, Lightbulb, UserRoundCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { sesionActual } from "@/app/_sesion/sesion";
@@ -106,6 +106,14 @@ export default async function AsambleasVecino() {
             )}
             {proxima.votacion === "SIN_VOTACION" && <p>Esta reunión es informativa: no habrá votaciones.</p>}
           </section>
+          <Link
+            href="/actividades"
+            className="flex min-h-tactil items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+          >
+            <HandHeart aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+            <strong className="min-w-0 flex-1">Actividades pro-fondos</strong>
+            <ChevronRight aria-hidden className="size-icono-pequeno shrink-0" />
+          </Link>
           {proxima.estado !== "INFORMATIVA" && (
             <Link
               href="/asambleas/proponer"
