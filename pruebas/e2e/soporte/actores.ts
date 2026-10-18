@@ -38,6 +38,7 @@ export const ACTORES: Actor[] = [
       "/incidentes/reportar",
       "/asambleas",
       "/asambleas/delegar",
+      "/asambleas/proponer",
     ],
   },
   {
@@ -58,6 +59,7 @@ export const ACTORES: Actor[] = [
       "/directiva/asambleas/sin-quorum",
       "/directiva/asambleas/pase-de-lista",
       "/directiva/asambleas/poderes",
+      "/directiva/asambleas/propuestas",
     ],
   },
   {
