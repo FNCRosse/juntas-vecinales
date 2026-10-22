@@ -17,6 +17,8 @@ export default defineConfig({
     allowCypressEnv: false,
     setupNodeEvents(on) {
       on("task", {
+        // CAPTURAS=1: cada pantalla revisada con axe también se fotografía (evidencia de cierre de módulo).
+        capturasActivas: () => process.env.CAPTURAS === "1",
         // Guarda el resultado de axe por pantalla: es la evidencia de cierre de cada módulo.
         guardarAxe({ nombre, resultado }: { nombre: string; resultado: unknown }) {
           mkdirSync(CARPETA_AXE, { recursive: true });
