@@ -64,3 +64,7 @@ export const cuotasPorPagarDe = (predioId: string) =>
 /** La cuota más reciente de una casa, con sus conceptos: lo que se le cobra por semana. */
 export const ultimaCuotaDe = (predioId: string) =>
   prisma.cuota.findFirst({ where: { predioId }, include: conConceptos, orderBy: { periodo: "desc" } });
+
+/** Las cuotas de una casa que ya se pagaron, de la más reciente a la más antigua. */
+export const cuotasPagadasDe = (predioId: string) =>
+  prisma.cuota.findMany({ where: { predioId, estado: "PAGADA" }, orderBy: { periodo: "desc" }, take: 100 });

@@ -1,7 +1,8 @@
-import { CircleCheck, Info, TriangleAlert } from "lucide-react";
+import { CircleCheck, Info, ReceiptText, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
+import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { soles } from "@/compartido/dinero";
 import { miCuota } from "@/modulos/aportes/aplicacion/deuda";
@@ -18,7 +19,7 @@ const INSIGNIAS = {
 } as const;
 
 // VEC-COB-01 (HU-COB-01 CA1): lo que la casa debe hoy semana por semana y cómo se calcula su cuota semanal. Solo ve
-// su casa: el predio sale de su sesión. «Pagar», «Mis pagos y recibos» y el reclamo llegan con HU-COB-08, 02 y 03.
+// su casa: el predio sale de su sesión. «Pagar» y el reclamo llegan con HU-COB-08 y 03.
 export default async function MiCuota() {
   const sesion = await exigirActor([...ROLES], "/entrar");
   const cuota = await miCuota(sesion);
@@ -64,13 +65,18 @@ export default async function MiCuota() {
                   <insignia.Icono aria-hidden className="size-icono-pequeno" />
                   {s.estado}
                 </span>
-                <p className="font-bold">{soles(s.monto)}</p>
+                <p className="font-bold">
+                  {s.pagado > 0 ? `Falta ${soles(s.monto)} · ya pagó ${soles(s.pagado)}` : soles(s.monto)}
+                </p>
               </article>
             );
           })}
         />
       )}
       <p className="text-texto-secundario">Solo usted y la directiva ven esta información.</p>
+      <BotonEnlace href="/cuota/pagos" variante="secundario" icono={ReceiptText}>
+        Mis pagos y recibos
+      </BotonEnlace>
       <section aria-labelledby="titulo-calculo" className="flex flex-col gap-3">
         <h2 id="titulo-calculo" className="text-titulo-2">
           Cómo se calcula su cuota semanal

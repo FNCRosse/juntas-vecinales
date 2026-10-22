@@ -17,6 +17,7 @@ import {
 import { separarVersiones } from "@/modulos/aportes/dominio/tarifa";
 import {
   crearCuota,
+  cuotasPagadasDe,
   cuotasPorPagarDe,
   marcarVencidas,
   ultimaCuotaDe,
@@ -108,14 +109,19 @@ const ESTADO_EN_TEXTO = {
 } as const;
 
 /**
- * «Mi cuota» (VEC-COB-01): lo que la casa debe hoy, semana por semana, y cómo se calcula su cuota semanal, con los
- * conceptos de su última cuota (HU-COB-01 CA1). Solo ve su casa (AC-7): el predio sale de su sesión, no de la petición.
+ * El estado de cuenta de la casa (HU-COB-02, VEC-COB-01 y VEC-COB-05): lo que debe hoy semana por semana, lo ya pagado
+ * y cómo se calcula su cuota semanal, con los conceptos de su última cuota (HU-COB-01 CA1). Se lee en cada consulta, así
+ * un abono nuevo se ve de inmediato (CA3). Solo ve su casa (AC-7): el predio sale de su sesión, no de la petición.
  */
 export async function miCuota(sesion: SesionDto) {
   exigirRol(sesion, ...ROLES_VECINO);
   const casa = await predioDelVecino(sesion.usuarioId);
   if (!casa) return null;
-  const [pendientes, ultima] = await Promise.all([cuotasPorPagarDe(casa.id), ultimaCuotaDe(casa.id)]);
+  const [pendientes, pagadas, ultima] = await Promise.all([
+    cuotasPorPagarDe(casa.id),
+    cuotasPagadasDe(casa.id),
+    ultimaCuotaDe(casa.id),
+  ]);
   return {
     vivienda: casa.vivienda,
     debe: pendientes.reduce((suma, c) => suma + c.saldoPendiente, 0),
@@ -124,6 +130,13 @@ export async function miCuota(sesion: SesionDto) {
       semana: etiquetaDeSemana(lunesDe(c.periodo)),
       estado: ESTADO_EN_TEXTO[c.estado],
       monto: c.saldoPendiente,
+      // Lo que ya abonó de esa semana, si pagó una parte.
+      pagado: c.montoCalculado - c.saldoPendiente,
+    })),
+    historial: pagadas.map((c) => ({
+      id: c.id,
+      semana: etiquetaDeSemana(lunesDe(c.periodo)),
+      monto: c.montoCalculado,
     })),
     porSemana: ultima?.montoCalculado ?? 0,
     conceptos: (ultima?.conceptos ?? []).map((l) => ({
