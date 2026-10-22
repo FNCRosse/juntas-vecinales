@@ -3,6 +3,7 @@ import type { Transaccion } from "@/compartido/bd/cliente";
 import { contarPadron } from "@/modulos/identidad/infraestructura/repositorioPadron";
 import {
   idsDeVecinosActivos,
+  prediosConOcupacion,
   prediosConResidentes,
   vecinosPorNombreODni,
 } from "@/modulos/identidad/infraestructura/repositorioUsuarios";
@@ -48,4 +49,29 @@ export async function buscarVecinos(texto: string) {
     vivienda: direccion(r.predio),
     dniTerminadoEn: r.usuario.dni.slice(-2),
   }));
+}
+
+/** El rubro de la ocupación del predio que corresponde a cada concepto de la tarifa (HU-COB-16, diagrama 02b). */
+const RUBRO_DE_CONCEPTO = {
+  casa: "familias",
+  inquilino: "inquilinos",
+  auto: "autos",
+  moto: "motos",
+  triciclo: "triciclos",
+  negocio: "negocios",
+} as const;
+
+/**
+ * Puerto para M5: las casas que pagan por un concepto de la tarifa (las que tienen esa unidad registrada) y sus
+ * residentes activos, para avisarles un monto nuevo antes de que rija (HU-COB-16 CA2). Un concepto que la asamblea
+ * agrega después todavía no tiene dónde registrarse en el padrón, así que no tiene casas por ahora.
+ */
+export async function casasQuePaganPor(clave: string) {
+  const rubro = RUBRO_DE_CONCEPTO[clave as keyof typeof RUBRO_DE_CONCEPTO];
+  if (!rubro) return { casas: 0, residentes: [] as string[] };
+  const predios = await prediosConOcupacion(rubro);
+  return {
+    casas: predios.length,
+    residentes: [...new Set(predios.flatMap((p) => p.residencias.map((r) => r.usuarioId)))],
+  };
 }

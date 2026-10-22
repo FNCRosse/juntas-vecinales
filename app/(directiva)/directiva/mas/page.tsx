@@ -7,7 +7,7 @@ import { solicitudesPorAtender } from "@/modulos/accesibilidad/aplicacion/mediac
 
 export const metadata: Metadata = { title: "Más opciones" };
 
-// Más opciones de la directiva (prototipo DMA01): pedidos de ayuda y "Cerrar sesión".
+// Más opciones de la directiva (prototipo DMA01): pedidos de ayuda, la tarifa de la cuota semanal y "Cerrar sesión".
 export default async function MasOpciones() {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
   const pedidos = await solicitudesPorAtender({
@@ -21,6 +21,12 @@ export default async function MasOpciones() {
       <h1 className="text-titulo-1">Más opciones</h1>
       <TarjetaEnlace href="/directiva/pedidos-de-ayuda" titulo="Pedidos de ayuda">
         <span>{pendientes ? `${pendientes} por atender` : "No hay pedidos por atender"}</span>
+      </TarjetaEnlace>
+      <TarjetaEnlace href="/directiva/cobros/tarifa" titulo="Tarifa de la cuota semanal">
+        <span>Conceptos, montos y su historial</span>
+      </TarjetaEnlace>
+      <TarjetaEnlace href="/directiva/historial" titulo="Historial de acciones">
+        <span>Quién hizo cada acción y cuándo</span>
       </TarjetaEnlace>
       <CambiarDePerfil sesion={sesion} actual="directiva" estilo="tarjeta" />
       <BotonCerrarSesion destino="/entrar/equipo" />

@@ -61,7 +61,7 @@ Personajes del prototipo (todos ficticios; DNI, teléfonos y placas inventados):
 | Elena Soto | Vecina | Mz. D, lote 9 (auto y moto) | Varios vehículos en la tarifa |
 | Víctor Salas | Vecino | Mz. B, lote 11 | Cancelación ARCO |
 
-Tarifa semanal de ejemplo, con la estructura que aprueba la asamblea (HU-COB-16): casa S/ 2.50, auto o camioneta S/ 5.00, moto S/ 2.50, triciclo o carreta S/ 2.50, inquilino S/ 2.50, negocio S/ 5.00.
+Tarifa semanal de ejemplo, la del prototipo (HU-COB-16): casa S/ 2.50, inquilino S/ 2.50, auto o camioneta S/ 2.00, moto S/ 1.00, triciclo o carreta S/ 0.50 y negocio S/ 3.00 (vigente desde el 6 de abril de 2026). `npm run semillas` la crea con dos cambios de historial; en producción la primera versión la registra la directiva.
 
 **Prohibido** copiar al repositorio nombres, DNI, teléfonos, direcciones, placas o recibos reales de la junta, aunque sea para una prueba.
 
