@@ -1,4 +1,4 @@
-// @HU-COB-08
+// @HU-COB-08 @HU-COB-10
 import { archivosSubidosPor } from "@/compartido/archivos/registro";
 import { generarPdf } from "@/compartido/archivos/pdf";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
@@ -9,6 +9,12 @@ import { fechaCorta, fechaYHora } from "@/compartido/fechas";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
 import { aplicarAbono, lunesDe } from "@/modulos/aportes/dominio/cuota";
 import { clasificarMorosidad } from "@/modulos/aportes/dominio/morosidad";
+import {
+  MOTIVOS,
+  MOTIVOS_OBSERVACION,
+  prepararObservacion,
+  textoParaLaVecina,
+} from "@/modulos/aportes/dominio/observacion";
 import {
   MEDIOS,
   MEDIOS_DIGITALES,
@@ -33,6 +39,9 @@ import {
   pagosPorRevisar,
   periodosDelPago,
   reclamarAprobacion,
+  reclamarObservacion,
+  reclamarReenvio,
+  semanasEnOtroPago,
   semanasYaEnPago,
 } from "@/modulos/aportes/infraestructura/repositorioPagos";
 import { directivaParaAvisar, nombresDe } from "@/modulos/identidad/aplicacion/barrio";
@@ -55,6 +64,15 @@ const ESTADO_EN_TEXTO = {
 } as const;
 
 const diaYMes = (fecha: Date) => fechaCorta(fecha).replace(/ de \d{4}$/, "");
+
+/** La observación que la casa todavía tiene que atender: la del último comprobante, si el pago sigue observado. */
+function observacionVigente(pago: PagoConDetalle) {
+  if (pago.estado !== "OBSERVADO") return null;
+  const comprobante = pago.comprobantes.findLast((c) => c.estado === "OBSERVADO");
+  return comprobante?.motivoObservacion
+    ? { motivo: comprobante.motivoObservacion, nota: comprobante.nota }
+    : null;
+}
 
 /** Las semanas que cubre un pago, en palabras: «2 semanas, del 7 al 20 de setiembre». */
 async function semanasDelPago(pago: PagoConDetalle) {
@@ -200,14 +218,20 @@ export async function misPagos(sesion: SesionDto) {
   const casa = await predioDelVecino(sesion.usuarioId);
   if (!casa) return { pagos: [] };
   return {
-    pagos: (await pagosDeLaCasa(casa.id)).map((p) => ({
-      id: p.id,
-      titulo: `Pago del ${diaYMes(p.creadoEn)}`,
-      monto: p.monto,
-      detalle: `${fechaCorta(p.creadoEn)} · ${MEDIOS[p.medio]}`,
-      estado: ESTADO_EN_TEXTO[p.estado],
-      constancia: numeroDeConstancia(p.numero),
-    })),
+    pagos: (await pagosDeLaCasa(casa.id)).map((p) => {
+      const observado = observacionVigente(p);
+      return {
+        id: p.id,
+        titulo: `Pago del ${diaYMes(p.creadoEn)}`,
+        monto: p.monto,
+        detalle: `${fechaCorta(p.creadoEn)} · ${MEDIOS[p.medio]}`,
+        estado: ESTADO_EN_TEXTO[p.estado],
+        constancia: numeroDeConstancia(p.numero),
+        // «Observado: la foto se ve borrosa» y el camino para subsanarlo (HU-COB-10 CA2 y CA3).
+        motivo: observado ? textoParaLaVecina(observado.motivo, observado.nota).resumen : null,
+        puedeEnviarOtraFoto: observado !== null,
+      };
+    }),
   };
 }
 
@@ -302,7 +326,10 @@ export async function verComprobante(sesion: SesionDto, id: string) {
   const esSuyo = pago.autorId === sesion.usuarioId || pago.predioId === miCasa?.id;
   return {
     id: comprobante.id,
-    estado: ESTADO_EN_TEXTO[pago.estado],
+    estado:
+      pago.estado === "REGISTRADO" && comprobante.estado === "OBSERVADO"
+        ? "Observado"
+        : ESTADO_EN_TEXTO[pago.estado],
     nombre: nombres.get(pago.autorId) ?? "",
     vivienda: casas.get(pago.predioId)?.vivienda ?? "",
     monto: pago.monto,
@@ -318,7 +345,12 @@ export async function verComprobante(sesion: SesionDto, id: string) {
         : `Si lo aprueba, el pago queda Aprobado y la casa todavía debe ${soles(falta)}.`,
     archivo: archivo ? { id: archivo.id, tipo: archivo.tipo } : null,
     esSuyo,
-    puedeAprobar: sesion.roles.includes("DIRECTIVA") && !esSuyo && pago.estado === "REGISTRADO",
+    // Aprobar y observar los decide la directiva, sobre el comprobante que espera revisión y no sobre el pago propio.
+    puedeAprobar:
+      sesion.roles.includes("DIRECTIVA") &&
+      !esSuyo &&
+      pago.estado === "REGISTRADO" &&
+      comprobante.estado === "PENDIENTE_REVISION",
   };
 }
 
@@ -339,7 +371,7 @@ export async function aprobarComprobante(sesion: SesionDto, comprobanteId: strin
   if (pago.autorId === sesion.usuarioId || pago.predioId === miCasa?.id) {
     throw new ErrorReglaNegocio("Es el pago de su casa: lo revisa otro miembro de la directiva.");
   }
-  if (pago.estado !== "REGISTRADO" && pago.estado !== "APROBADO") {
+  if ((pago.estado !== "REGISTRADO" && pago.estado !== "APROBADO") || comprobante.estado === "OBSERVADO") {
     throw new ErrorReglaNegocio("Ese pago ya fue revisado.");
   }
   const [casas, nombres] = await Promise.all([casasDe([pago.predioId]), nombresDe([pago.autorId])]);
@@ -408,4 +440,168 @@ export async function aprobarComprobante(sesion: SesionDto, comprobanteId: strin
     debeAhora,
     alDia: debeAhora === 0,
   };
+}
+
+/** Los motivos que ofrece «Observar» (HU-COB-10 CA1), con la palabra que lee la directiva. */
+export const motivosDeObservacion = MOTIVOS_OBSERVACION.map((valor) => ({
+  valor,
+  etiqueta: MOTIVOS[valor].etiqueta,
+}));
+
+/**
+ * Marca un comprobante como observado con un motivo (HU-COB-10 CA1 y CA2): el pago queda observado y sale de la bandeja,
+ * no toca ninguna cuota y se avisa a quien pagó el motivo en llano, para que mande otra foto (CA3). Solo la directiva y
+ * nunca el pago de su propia casa. Observar dos veces no avisa dos veces (AC-5: el cambio de estado es un UPDATE
+ * condicionado) y queda en la auditoría en la misma transacción (AC-6).
+ */
+export async function observarComprobante(
+  sesion: SesionDto,
+  comprobanteId: string,
+  datos: { motivo: string; nota?: string },
+) {
+  exigirRol(sesion, "DIRECTIVA");
+  const comprobante = await comprobantePorId(comprobanteId);
+  if (!comprobante) throw new ErrorNoEncontrado();
+  const pago = comprobante.pago;
+  const miCasa = await predioDelVecino(sesion.usuarioId);
+  if (pago.autorId === sesion.usuarioId || pago.predioId === miCasa?.id) {
+    throw new ErrorReglaNegocio("Es el pago de su casa: lo revisa otro miembro de la directiva.");
+  }
+  const { errores, observacion } = prepararObservacion({ motivo: datos.motivo, nota: datos.nota ?? "" });
+  if (!observacion) throw new ErrorValidacion(undefined, errores);
+  const repetido = comprobante.estado === "OBSERVADO" && pago.estado === "OBSERVADO";
+  if (!repetido && (pago.estado !== "REGISTRADO" || comprobante.estado !== "PENDIENTE_REVISION")) {
+    throw new ErrorReglaNegocio("Ese pago ya fue revisado.");
+  }
+  const [casas, nombres] = await Promise.all([casasDe([pago.predioId]), nombresDe([pago.autorId])]);
+  const texto = textoParaLaVecina(observacion.motivo, observacion.nota);
+
+  const aplicado = await prisma.$transaction(async (tx) => {
+    await bloquearCasa(tx, pago.predioId);
+    if (!(await reclamarObservacion(tx, pago.id))) return false;
+    const { count } = await tx.comprobante.updateMany({
+      where: { id: comprobante.id, estado: "PENDIENTE_REVISION" },
+      data: { estado: "OBSERVADO", motivoObservacion: observacion.motivo, nota: observacion.nota },
+    });
+    if (count !== 1) throw new ErrorReglaNegocio("Ese pago ya fue revisado.");
+    await encolarAvisos(
+      [
+        {
+          destinatarioId: pago.autorId,
+          tipo: "PAGOS" as const,
+          titulo: "Su pago quedó observado",
+          texto: `Su pago de ${soles(pago.monto)} quedó observado. ${texto.titulo}. ${texto.texto} Lo encuentra en Mis pagos.`,
+        },
+      ],
+      tx,
+    );
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "observar_pago",
+        entidad: "Pago",
+        entidadId: pago.id,
+        antes: null,
+        despues: {
+          constancia: numeroDeConstancia(pago.numero),
+          monto: soles(pago.monto),
+          motivo: MOTIVOS[observacion.motivo].etiqueta,
+          nota: observacion.nota,
+        },
+      },
+      tx,
+    );
+    return true;
+  });
+  return {
+    aplicado,
+    pagoId: pago.id,
+    nombre: nombres.get(pago.autorId) ?? "",
+    vivienda: casas.get(pago.predioId)?.vivienda ?? "",
+    monto: pago.monto,
+  };
+}
+
+/**
+ * «Enviar otra foto» (VEC-COB-07): qué le pasó a su pago y qué foto hace falta. Solo de un pago de su casa (AC-7).
+ * `puedeEnviar` es falso si el pago ya no está observado (por ejemplo, ya mandó la foto nueva).
+ */
+export async function pagoParaOtraFoto(sesion: SesionDto, pagoId: string) {
+  exigirRol(sesion, ...ROLES_VECINO);
+  const casa = await predioDelVecino(sesion.usuarioId);
+  const pago = casa ? await pagoDeLaCasa(casa.id, pagoId) : null;
+  if (!pago) throw new ErrorNoEncontrado();
+  const observado = observacionVigente(pago);
+  const texto = observado ? textoParaLaVecina(observado.motivo, observado.nota) : { titulo: "", texto: "" };
+  return {
+    id: pago.id,
+    resumen: `Su pago de ${soles(pago.monto)} del ${diaYMes(pago.creadoEn)} sigue guardado.`,
+    titulo: texto.titulo,
+    texto: texto.texto,
+    puedeEnviar: observado !== null,
+  };
+}
+
+export type PagoParaOtraFoto = Awaited<ReturnType<typeof pagoParaOtraFoto>>;
+
+/**
+ * La casa manda otra foto de un pago observado (HU-COB-10 CA3): el pago vuelve a revisión con un comprobante nuevo y se
+ * avisa a la directiva. Las semanas del pago no pueden estar ya pagadas ni en otro pago en revisión (si pagó de nuevo,
+ * no se cuenta dos veces). Repetir la misma foto no avisa otra vez (AC-5) y queda en la auditoría (AC-6).
+ */
+export async function enviarOtraFoto(
+  sesion: SesionDto,
+  pagoId: string,
+  datos: { archivoId: string },
+  ahora = new Date(),
+) {
+  exigirRol(sesion, ...ROLES_VECINO);
+  const casa = await predioDelVecino(sesion.usuarioId);
+  const pago = casa ? await pagoDeLaCasa(casa.id, pagoId) : null;
+  if (!casa || !pago) throw new ErrorNoEncontrado();
+  if (pago.estado === "REGISTRADO" && pago.comprobantes.at(-1)?.archivoId === datos.archivoId) {
+    return { aplicado: false, pago: await aDto(pago) };
+  }
+  if (pago.estado !== "OBSERVADO") throw new ErrorReglaNegocio("Ese pago no necesita otra foto.");
+  const propios = datos.archivoId
+    ? await archivosSubidosPor(sesion.usuarioId, USO_COMPROBANTE_PAGO, [datos.archivoId])
+    : new Set<string>();
+  if (!propios.has(datos.archivoId)) throw new ErrorValidacion(undefined, { archivoId: MENSAJE_FOTO });
+
+  const destinatarios = await directivaParaAvisar();
+  const cuotaIds = pago.cuotas.map((c) => c.cuotaId);
+  const aplicado = await prisma.$transaction(async (tx) => {
+    await bloquearCasa(tx, casa.id);
+    if (await semanasEnOtroPago(tx, pago.id, cuotaIds)) {
+      throw new ErrorReglaNegocio("Esas semanas ya están en un pago que la directiva está revisando.");
+    }
+    if (await tx.cuota.count({ where: { id: { in: cuotaIds }, estado: "PAGADA" } })) {
+      throw new ErrorReglaNegocio("Alguna de esas semanas ya está pagada. Vea lo que falta en Mi cuota.");
+    }
+    if (!(await reclamarReenvio(tx, pago.id))) return false;
+    await tx.comprobante.create({ data: { pagoId: pago.id, archivoId: datos.archivoId, creadoEn: ahora } });
+    await encolarAvisos(
+      destinatarios.map((destinatarioId) => ({
+        destinatarioId,
+        tipo: "PAGOS" as const,
+        titulo: "Llegó otra foto de un pago",
+        texto: `${casa.vivienda} mandó otra foto de su pago de ${soles(pago.monto)}. Revísela en Cobros.`,
+      })),
+      tx,
+    );
+    await registrarAuditoria(
+      {
+        actorId: sesion.usuarioId,
+        accion: "reenviar_comprobante",
+        entidad: "Pago",
+        entidadId: pago.id,
+        antes: null,
+        despues: { constancia: numeroDeConstancia(pago.numero), monto: soles(pago.monto) },
+      },
+      tx,
+    );
+    return true;
+  });
+  const actual = await pagoDeLaCasa(casa.id, pago.id);
+  return { aplicado, pago: await aDto(actual ?? pago) };
 }

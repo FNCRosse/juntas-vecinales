@@ -115,6 +115,7 @@ enum MotivoObservacion {
   MONTO_INSUFICIENTE
   IMAGEN_BORROSA
   FECHA_ERRONEA
+  OTRO
 }
 
 // Cómo pagó una casa. Solo digitales por ahora (HU-COB-08); el efectivo con cobrador llega con HU-COB-11.
@@ -167,6 +168,7 @@ model Comprobante {
   archivoId         String
   estado            EstadoComprobante @default(PENDIENTE_REVISION)
   motivoObservacion MotivoObservacion?
+  nota              String?
   creadoEn          DateTime          @default(now())
 
   @@index([pagoId])

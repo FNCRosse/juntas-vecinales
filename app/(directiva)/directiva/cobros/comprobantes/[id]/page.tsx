@@ -9,7 +9,7 @@ import { AprobarPago } from "./AprobarPago";
 export const metadata: Metadata = { title: "Revisar un comprobante" };
 
 // DIR-COB-02 (HU-COB-09 CA1): la captura del comprobante junto a lo que declaró la casa y lo que figura en la junta, y qué
-// pasaría al aprobarlo. Solo la directiva aprueba; observar o rechazar llega con HU-COB-10.
+// pasaría al aprobarlo. Solo la directiva aprueba u observa (HU-COB-10).
 export default async function RevisarComprobante({ params }: { params: Promise<{ id: string }> }) {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
   const c = await verComprobante(sesion, (await params).id);
@@ -85,6 +85,7 @@ export default async function RevisarComprobante({ params }: { params: Promise<{
       ) : c.puedeAprobar ? (
         <AprobarPago
           comprobanteId={c.id}
+          hrefObservar={`/directiva/cobros/comprobantes/${c.id}/observar`}
           nombre={c.nombre}
           vivienda={c.vivienda}
           monto={c.monto}

@@ -8,7 +8,7 @@
 
 `Tarifa` (vigenciaDesde, actaAprobacion) con `ConceptoTarifa` (nombre, unidad, monto) · `Cuota` (periodo, montoCalculado, saldoPendiente, fechaLimite, estado) · `EstadoCuenta` · `Pago` (abstracta: monto, fechaRegistro, estado; `validar` abstracta) → `PagoDigital` (billetera) con su `Comprobante` (archivo, estadoValidacion, motivoObservacion) y `PagoPresencial` (idOperacionLocal, sincronizado) · `ReciboDigital` (correlativo, codigoVerificacion) · `SolicitudAjusteTarifa` (motivo, sustento, estado) · `EvaluadorMorosidad` (servicio de dominio) · `TableroRecaudacion`.
 
-Enums: `UnidadCobro` (POR_FAMILIA, POR_VEHICULO, POR_INQUILINO, POR_LOCAL) · `EstadoCuota` (PENDIENTE, EN_DISCREPANCIA, PAGADA, VENCIDA) · `EstadoPago` (REGISTRADO, APROBADO, OBSERVADO, RECHAZADO) · `EstadoComprobante` (PENDIENTE_REVISION, APROBADO, OBSERVADO) · `EstadoMorosidad` (SOLVENTE, MOROSO_PREVENTIVO, MOROSO_CRITICO) · `MotivoObservacion` (MONTO_INSUFICIENTE, IMAGEN_BORROSA, FECHA_ERRONEA).
+Enums: `UnidadCobro` (POR_FAMILIA, POR_VEHICULO, POR_INQUILINO, POR_LOCAL) · `EstadoCuota` (PENDIENTE, EN_DISCREPANCIA, PAGADA, VENCIDA) · `EstadoPago` (REGISTRADO, APROBADO, OBSERVADO, RECHAZADO) · `EstadoComprobante` (PENDIENTE_REVISION, APROBADO, OBSERVADO) · `EstadoMorosidad` (SOLVENTE, MOROSO_PREVENTIVO, MOROSO_CRITICO) · `MotivoObservacion` (MONTO_INSUFICIENTE, IMAGEN_BORROSA, FECHA_ERRONEA, OTRO: este exige una nota).
 
 ## Reglas de negocio
 
@@ -22,7 +22,7 @@ Enums: `UnidadCobro` (POR_FAMILIA, POR_VEHICULO, POR_INQUILINO, POR_LOCAL) · `E
 
 **Pagos**
 - Digital (Yape, Plin, transferencia): el comprobante (JPG, PNG o PDF, máx. 5 MB) queda PENDIENTE_REVISION, el vecino ve "Pago en revisión" y la directiva recibe un aviso.
-- Aprobar: si cubre el 100 % la cuota queda PAGADA; si es parcial se registra la amortización y el saldo remanente. Observar exige un `MotivoObservacion`, avisa al vecino y habilita volver a subir o pagar la diferencia.
+- Aprobar: si cubre el 100 % la cuota queda PAGADA; si es parcial se registra la amortización y el saldo remanente. Observar exige un `MotivoObservacion` (y una nota si es «otro motivo»), deja el pago OBSERVADO sin tocar cuotas ni garita, avisa al vecino el motivo en llano y habilita volver a subir (un `Comprobante` nuevo en el mismo pago, que vuelve a REGISTRADO) o pagar la diferencia. Un pago observado no reserva las semanas: la casa puede pagarlas de nuevo y entonces el observado ya no vuelve a revisión.
 - Presencial: `idOperacionLocal` con `UNIQUE`; el reintento devuelve el resultado anterior sin duplicar (AC-5). La pantalla distingue "Enviado" de "Pendiente de enviar".
 - Recibo: correlativo + código de verificación; PDF inalterable en R2; vista de impresión para entregar en papel o envío al perfil del vecino.
 - Liquidar la deuda histórica, aprobar el pago que deja al día o cualquier cambio a SOLVENTE restituye la garita **en la misma transacción** con `identidad/aplicacion.actualizarEstadoMorosidad`.

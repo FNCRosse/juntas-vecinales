@@ -1,7 +1,7 @@
 "use client";
-// @HU-COB-09
+// @HU-COB-09 @HU-COB-10
 
-import { Check, Wallet } from "lucide-react";
+import { Check, TriangleAlert, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
@@ -16,6 +16,7 @@ type Resultado = { aplicado: boolean; nombre: string; debeAhora: number; alDia: 
 // título: por eso la confirmación usa uno de nivel 2.
 export function AprobarPago({
   comprobanteId,
+  hrefObservar,
   nombre,
   vivienda,
   monto,
@@ -24,6 +25,8 @@ export function AprobarPago({
   semanas,
 }: {
   comprobanteId: string;
+  /** Observar el comprobante es otra pantalla (DIR-COB-05); aquí solo se ofrece junto a «Aprobar». */
+  hrefObservar: string;
   nombre: string;
   vivienda: string;
   monto: number;
@@ -104,8 +107,13 @@ export function AprobarPago({
   }
 
   return (
-    <Boton type="button" icono={Check} anchoCompleto onClick={() => setPaso("confirmar")}>
-      Aprobar el pago
-    </Boton>
+    <div className="flex flex-col gap-opuestas">
+      <Boton type="button" icono={Check} anchoCompleto onClick={() => setPaso("confirmar")}>
+        Aprobar el pago
+      </Boton>
+      <BotonEnlace href={hrefObservar} variante="secundario" icono={TriangleAlert}>
+        Marcar como observado
+      </BotonEnlace>
+    </div>
   );
 }
