@@ -1,7 +1,8 @@
-import { CircleCheck, Info, TriangleAlert } from "lucide-react";
+import { CircleCheck, FileSearch, Info, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { soles } from "@/compartido/dinero";
 import { comprobantesPorRevisar } from "@/modulos/aportes/aplicacion/pagos";
@@ -9,7 +10,7 @@ import { comprobantesPorRevisar } from "@/modulos/aportes/aplicacion/pagos";
 export const metadata: Metadata = { title: "Cobros" };
 
 // DIR-COB-01 (HU-COB-08 CA3): los comprobantes que mandaron los vecinos y esperan a la directiva, el más reciente
-// primero. Revisarlos (aprobar u observar) llega con HU-COB-09 y 10; los cobros en casa y los reclamos, con HU-COB-11 y 03.
+// primero. Aprobarlos es de HU-COB-09; observarlos llega con HU-COB-10; los cobros en casa y los reclamos, con HU-COB-11 y 03.
 export default async function Cobros() {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
   const { items } = await comprobantesPorRevisar(sesion);
@@ -57,6 +58,15 @@ export default async function Cobros() {
                     <CircleCheck aria-hidden className="size-icono-pequeno" />
                     Es su pago: lo revisa otro miembro
                   </p>
+                )}
+                {!i.esSuyo && i.comprobanteId && (
+                  <BotonEnlace
+                    href={`/directiva/cobros/comprobantes/${i.comprobanteId}`}
+                    variante="secundario"
+                    icono={FileSearch}
+                  >
+                    Revisar el comprobante
+                  </BotonEnlace>
                 )}
               </article>
             ))}

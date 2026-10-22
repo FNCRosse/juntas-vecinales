@@ -7,7 +7,8 @@ import { soles } from "@/compartido/dinero";
 import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
 import { fechaCorta, fechaYHora } from "@/compartido/fechas";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
-import { lunesDe } from "@/modulos/aportes/dominio/cuota";
+import { aplicarAbono, lunesDe } from "@/modulos/aportes/dominio/cuota";
+import { clasificarMorosidad } from "@/modulos/aportes/dominio/morosidad";
 import {
   MEDIOS,
   MEDIOS_DIGITALES,
@@ -18,8 +19,11 @@ import {
 } from "@/modulos/aportes/dominio/pago";
 import { cuotasPorPagarDe } from "@/modulos/aportes/infraestructura/repositorioCuotas";
 import {
+  archivoPorId,
   bloquearCasa,
+  comprobantePorId,
   crearPago,
+  cuotasImpagasDe,
   cuotasEnRevision,
   deudaPorCasa,
   pagoDeLaCasa,
@@ -28,10 +32,12 @@ import {
   pagosDeLaCasa,
   pagosPorRevisar,
   periodosDelPago,
+  reclamarAprobacion,
   semanasYaEnPago,
 } from "@/modulos/aportes/infraestructura/repositorioPagos";
 import { directivaParaAvisar, nombresDe } from "@/modulos/identidad/aplicacion/barrio";
 import { casasDe, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
+import { actualizarEstadoMorosidad } from "@/modulos/identidad/aplicacion/visitas";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 
 export const USO_COMPROBANTE_PAGO = "comprobante_pago";
@@ -252,6 +258,7 @@ export async function comprobantesPorRevisar(sesion: SesionDto) {
       const debia = deudas.get(p.predioId) ?? 0;
       return {
         id: p.id,
+        comprobanteId: p.comprobantes.find((c) => c.estado === "PENDIENTE_REVISION")?.id ?? null,
         medio: MEDIOS[p.medio],
         nombre: nombres.get(p.autorId) ?? "",
         vivienda: casas.get(p.predioId)?.vivienda ?? "",
@@ -266,3 +273,139 @@ export async function comprobantesPorRevisar(sesion: SesionDto) {
 }
 
 export type ComprobantesPorRevisar = Awaited<ReturnType<typeof comprobantesPorRevisar>>;
+
+/** Dónde se hizo el pago, para que la directiva compare con la captura (viene de la configuración, no del código). */
+const cuentaDeDestino = (medio: "YAPE_O_PLIN" | "TRANSFERENCIA") =>
+  medio === "YAPE_O_PLIN"
+    ? `Yape o Plin: ${process.env.DATOS_PAGO_YAPE ?? "sin configurar"}`
+    : `Cuenta bancaria: ${process.env.DATOS_PAGO_CUENTA ?? "sin configurar"}`;
+
+/**
+ * Revisar un comprobante (DIR-COB-02, HU-COB-09 CA1): la captura junto a lo que declaró la casa, lo que debe hoy, la
+ * fecha y la cuenta de destino, y qué pasaría si se aprueba. Solo la directiva y los mediadores lo ven; aprobar,
+ * solo la directiva, y nunca el pago de su propia casa (lo revisa otro miembro).
+ */
+export async function verComprobante(sesion: SesionDto, id: string) {
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
+  const comprobante = await comprobantePorId(id);
+  if (!comprobante) throw new ErrorNoEncontrado();
+  const pago = comprobante.pago;
+  const [casas, deudas, nombres, miCasa, archivo] = await Promise.all([
+    casasDe([pago.predioId]),
+    deudaPorCasa([pago.predioId]),
+    nombresDe([pago.autorId]),
+    predioDelVecino(sesion.usuarioId),
+    archivoPorId(comprobante.archivoId),
+  ]);
+  const debe = deudas.get(pago.predioId) ?? 0;
+  const falta = Math.max(0, debe - pago.monto);
+  const esSuyo = pago.autorId === sesion.usuarioId || pago.predioId === miCasa?.id;
+  return {
+    id: comprobante.id,
+    estado: ESTADO_EN_TEXTO[pago.estado],
+    nombre: nombres.get(pago.autorId) ?? "",
+    vivienda: casas.get(pago.predioId)?.vivienda ?? "",
+    monto: pago.monto,
+    debe,
+    semanas: await semanasDelPago(pago),
+    medio: MEDIOS[pago.medio],
+    enviado: fechaYHora(pago.creadoEn),
+    cuentaDeDestino: cuentaDeDestino(pago.medio),
+    cubre: falta === 0 ? "Cubre el 100 %" : `Cubre una parte: ${soles(pago.monto)} de ${soles(debe)}`,
+    efecto:
+      falta === 0
+        ? "Si lo aprueba, el pago queda Aprobado y la casa pasa a Al día."
+        : `Si lo aprueba, el pago queda Aprobado y la casa todavía debe ${soles(falta)}.`,
+    archivo: archivo ? { id: archivo.id, tipo: archivo.tipo } : null,
+    esSuyo,
+    puedeAprobar: sesion.roles.includes("DIRECTIVA") && !esSuyo && pago.estado === "REGISTRADO",
+  };
+}
+
+export type ComprobanteParaRevisar = Awaited<ReturnType<typeof verComprobante>>;
+
+/**
+ * Aprueba el pago de un comprobante (HU-COB-09 CA2 y CA3): el abono se aplica a las cuotas que cubría, de modo que
+ * las que se completan quedan pagadas y, si es parcial, queda el saldo que falta. Si la casa ya no tiene atraso crítico,
+ * la garita se restituye en la misma transacción (R-05). Avisa a quien pagó y se audita (AC-6). Aprobar dos veces no
+ * abona dos veces (AC-5): el cambio de estado es un UPDATE condicionado.
+ */
+export async function aprobarComprobante(sesion: SesionDto, comprobanteId: string, ahora = new Date()) {
+  exigirRol(sesion, "DIRECTIVA");
+  const comprobante = await comprobantePorId(comprobanteId);
+  if (!comprobante) throw new ErrorNoEncontrado();
+  const pago = comprobante.pago;
+  const miCasa = await predioDelVecino(sesion.usuarioId);
+  if (pago.autorId === sesion.usuarioId || pago.predioId === miCasa?.id) {
+    throw new ErrorReglaNegocio("Es el pago de su casa: lo revisa otro miembro de la directiva.");
+  }
+  if (pago.estado !== "REGISTRADO" && pago.estado !== "APROBADO") {
+    throw new ErrorReglaNegocio("Ese pago ya fue revisado.");
+  }
+  const [casas, nombres] = await Promise.all([casasDe([pago.predioId]), nombresDe([pago.autorId])]);
+
+  const { aplicado, debeAhora } = await prisma.$transaction(async (tx) => {
+    await bloquearCasa(tx, pago.predioId);
+    const reclamado = await reclamarAprobacion(tx, pago.id);
+    if (reclamado) {
+      await tx.comprobante.update({ where: { id: comprobante.id }, data: { estado: "APROBADO" } });
+      for (const parte of pago.cuotas) {
+        const cuota = await tx.cuota.findUniqueOrThrow({ where: { id: parte.cuotaId } });
+        if (cuota.estado === "PAGADA") continue;
+        const { saldo, estado } = aplicarAbono(
+          cuota.saldoPendiente,
+          parte.monto,
+          cuota.estado as "PENDIENTE" | "VENCIDA" | "EN_DISCREPANCIA",
+        );
+        await tx.cuota.update({ where: { id: cuota.id }, data: { saldoPendiente: saldo, estado } });
+      }
+    }
+    const impagas = await cuotasImpagasDe(tx, pago.predioId);
+    const debe = impagas.reduce((suma, c) => suma + c.saldoPendiente, 0);
+    if (reclamado) {
+      // Solo se restituye la garita si ya no hay atraso crítico; suspenderla es de la tarea de morosidad (HU-COB-06).
+      if (clasificarMorosidad(impagas, ahora) !== "MOROSO_CRITICO") {
+        await actualizarEstadoMorosidad(pago.predioId, "VERDE", tx);
+      }
+      await encolarAvisos(
+        [
+          {
+            destinatarioId: pago.autorId,
+            tipo: "PAGOS" as const,
+            titulo: "Su pago fue aprobado",
+            texto:
+              debe === 0
+                ? `Recibimos su pago de ${soles(pago.monto)}. Ya está al día. Gracias.`
+                : `Recibimos su pago de ${soles(pago.monto)}. Todavía le faltan ${soles(debe)} de su cuota. Puede pagarlo cuando pueda.`,
+          },
+        ],
+        tx,
+      );
+      await registrarAuditoria(
+        {
+          actorId: sesion.usuarioId,
+          accion: "aprobar_pago",
+          entidad: "Pago",
+          entidadId: pago.id,
+          antes: null,
+          despues: {
+            constancia: numeroDeConstancia(pago.numero),
+            monto: soles(pago.monto),
+            debeAhora: soles(debe),
+          },
+        },
+        tx,
+      );
+    }
+    return { aplicado: reclamado, debeAhora: debe };
+  });
+  return {
+    aplicado,
+    pagoId: pago.id,
+    nombre: nombres.get(pago.autorId) ?? "",
+    vivienda: casas.get(pago.predioId)?.vivienda ?? "",
+    monto: pago.monto,
+    debeAhora,
+    alDia: debeAhora === 0,
+  };
+}

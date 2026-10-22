@@ -101,3 +101,26 @@ export const crearPago = (
     },
     include: conDetalle,
   });
+
+/** Un comprobante con su pago y lo que ese pago cubre, para revisarlo (HU-COB-09). */
+export const comprobantePorId = (id: string) =>
+  prisma.comprobante.findUnique({ where: { id }, include: { pago: { include: conDetalle } } });
+
+export const archivoPorId = (id: string) =>
+  prisma.archivo.findUnique({ where: { id }, select: { id: true, tipo: true } });
+
+/** Las cuotas que todavía se deben (con saldo), para medir el retraso de la casa después de un abono. */
+export const cuotasImpagasDe = (tx: Transaccion, predioId: string) =>
+  tx.cuota.findMany({ where: { predioId, estado: { not: "PAGADA" }, saldoPendiente: { gt: 0 } } });
+
+/**
+ * Pasa el pago de «en revisión» a aprobado con un UPDATE condicionado: si otra aprobación llegó primero, no cambia
+ * nada y devuelve falso, así el abono se aplica una sola vez (AC-5).
+ */
+export async function reclamarAprobacion(tx: Transaccion, pagoId: string) {
+  const { count } = await tx.pago.updateMany({
+    where: { id: pagoId, estado: "REGISTRADO" },
+    data: { estado: "APROBADO" },
+  });
+  return count === 1;
+}
