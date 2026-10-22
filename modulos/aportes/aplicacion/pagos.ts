@@ -1,4 +1,4 @@
-// @HU-COB-08 @HU-COB-10
+// @HU-COB-08 @HU-COB-10 @HU-COB-12
 import { archivosSubidosPor } from "@/compartido/archivos/registro";
 import { generarPdf } from "@/compartido/archivos/pdf";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
@@ -23,6 +23,8 @@ import {
   opcionesDePago,
   rangoDeSemanas,
 } from "@/modulos/aportes/dominio/pago";
+import { numeroDeRecibo } from "@/modulos/aportes/dominio/recibo";
+import { aReciboDto } from "@/modulos/aportes/aplicacion/recibos";
 import { cuotasPorPagarDe } from "@/modulos/aportes/infraestructura/repositorioCuotas";
 import {
   archivoPorId,
@@ -44,6 +46,7 @@ import {
   semanasEnOtroPago,
   semanasYaEnPago,
 } from "@/modulos/aportes/infraestructura/repositorioPagos";
+import { crearRecibo } from "@/modulos/aportes/infraestructura/repositorioRecibos";
 import { directivaParaAvisar, nombresDe } from "@/modulos/identidad/aplicacion/barrio";
 import { casasDe, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
 import { actualizarEstadoMorosidad } from "@/modulos/identidad/aplicacion/visitas";
@@ -230,6 +233,8 @@ export async function misPagos(sesion: SesionDto) {
         // «Observado: la foto se ve borrosa» y el camino para subsanarlo (HU-COB-10 CA2 y CA3).
         motivo: observado ? textoParaLaVecina(observado.motivo, observado.nota).resumen : null,
         puedeEnviarOtraFoto: observado !== null,
+        // El recibo oficial, en cuanto la directiva se lo envía a la app (HU-COB-12).
+        recibo: p.recibo?.enviadoEn ? { id: p.recibo.id, numero: numeroDeRecibo(p.recibo.numero) } : null,
       };
     }),
   };
@@ -375,8 +380,9 @@ export async function aprobarComprobante(sesion: SesionDto, comprobanteId: strin
     throw new ErrorReglaNegocio("Ese pago ya fue revisado.");
   }
   const [casas, nombres] = await Promise.all([casasDe([pago.predioId]), nombresDe([pago.autorId])]);
+  const concepto = `Cuota de vigilancia: ${await semanasDelPago(pago)}`;
 
-  const { aplicado, debeAhora } = await prisma.$transaction(async (tx) => {
+  const { aplicado, debeAhora, recibo } = await prisma.$transaction(async (tx) => {
     await bloquearCasa(tx, pago.predioId);
     const reclamado = await reclamarAprobacion(tx, pago.id);
     if (reclamado) {
@@ -394,7 +400,21 @@ export async function aprobarComprobante(sesion: SesionDto, comprobanteId: strin
     }
     const impagas = await cuotasImpagasDe(tx, pago.predioId);
     const debe = impagas.reduce((suma, c) => suma + c.saldoPendiente, 0);
+    let emitido: Awaited<ReturnType<typeof crearRecibo>> | null = null;
     if (reclamado) {
+      // El recibo oficial nace con el pago aprobado y guarda lo que dice el papel (HU-COB-12 CA1).
+      emitido = await crearRecibo(tx, {
+        pagoId: pago.id,
+        predioId: pago.predioId,
+        titular: nombres.get(pago.autorId) ?? "",
+        vivienda: casas.get(pago.predioId)?.vivienda ?? "",
+        concepto,
+        medio: MEDIOS[pago.medio],
+        monto: pago.monto,
+        fecha: ahora,
+        registradoPor: sesion.nombreCompleto,
+        registradoPorId: sesion.usuarioId,
+      });
       // Solo se restituye la garita si ya no hay atraso crítico; suspenderla es de la tarea de morosidad (HU-COB-06).
       if (clasificarMorosidad(impagas, ahora) !== "MOROSO_CRITICO") {
         await actualizarEstadoMorosidad(pago.predioId, "VERDE", tx);
@@ -424,12 +444,17 @@ export async function aprobarComprobante(sesion: SesionDto, comprobanteId: strin
             constancia: numeroDeConstancia(pago.numero),
             monto: soles(pago.monto),
             debeAhora: soles(debe),
+            recibo: numeroDeRecibo(emitido.numero),
           },
         },
         tx,
       );
     }
-    return { aplicado: reclamado, debeAhora: debe };
+    return {
+      aplicado: reclamado,
+      debeAhora: debe,
+      recibo: emitido ?? (await tx.recibo.findUnique({ where: { pagoId: pago.id } })),
+    };
   });
   return {
     aplicado,
@@ -439,6 +464,7 @@ export async function aprobarComprobante(sesion: SesionDto, comprobanteId: strin
     monto: pago.monto,
     debeAhora,
     alDia: debeAhora === 0,
+    recibo: recibo ? aReciboDto(recibo) : null,
   };
 }
 

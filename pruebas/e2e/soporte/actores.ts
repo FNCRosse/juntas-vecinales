@@ -44,6 +44,7 @@ export const ACTORES: Actor[] = [
       "/cuota",
       "/cuota/pagos",
       "/cuota/pagar",
+      "/cuota/recibo-en-papel",
     ],
   },
   {

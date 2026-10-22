@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { ErrorNoEncontrado } from "@/compartido/errores";
 import { pagoParaOtraFoto } from "@/modulos/aportes/aplicacion/pagos";
 import { EnviarOtraFoto } from "./EnviarOtraFoto";
 
@@ -13,7 +14,10 @@ export default async function OtraFoto({ params }: { params: Promise<{ id: strin
     ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"],
     "/entrar",
   );
-  const pago = await pagoParaOtraFoto(sesion, (await params).id);
+  const pago = await pagoParaOtraFoto(sesion, (await params).id).catch((error) => {
+    if (error instanceof ErrorNoEncontrado) notFound();
+    throw error;
+  });
   if (!pago.puedeEnviar) redirect("/cuota/pagos");
   return <EnviarOtraFoto {...pago} />;
 }
