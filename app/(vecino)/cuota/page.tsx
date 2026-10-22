@@ -1,4 +1,4 @@
-import { CircleCheck, Info, ReceiptText, TriangleAlert } from "lucide-react";
+import { CircleCheck, Info, ReceiptText, TriangleAlert, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
@@ -15,11 +15,12 @@ const INSIGNIAS = {
   Pendiente: { clases: "border-borde-info bg-fondo-info text-texto-info", Icono: Info },
   "Con retraso": { clases: "border-borde-aviso bg-fondo-aviso text-texto-aviso", Icono: TriangleAlert },
   "En revisión": { clases: "border-borde-info bg-fondo-info text-texto-info", Icono: Info },
+  "Pago en revisión": { clases: "border-borde-info bg-fondo-info text-texto-info", Icono: Info },
   Pagada: { clases: "border-borde-exito bg-fondo-exito text-texto-exito", Icono: CircleCheck },
 } as const;
 
 // VEC-COB-01 (HU-COB-01 CA1): lo que la casa debe hoy semana por semana y cómo se calcula su cuota semanal. Solo ve
-// su casa: el predio sale de su sesión. «Pagar» y el reclamo llegan con HU-COB-08 y 03.
+// su casa: el predio sale de su sesión. El reclamo llega con HU-COB-03.
 export default async function MiCuota() {
   const sesion = await exigirActor([...ROLES], "/entrar");
   const cuota = await miCuota(sesion);
@@ -37,6 +38,14 @@ export default async function MiCuota() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Mi cuota</h1>
+      {cuota.enRevision && (
+        <MensajeEstado tipo="info" titulo="Su pago está en revisión">
+          <p>
+            Su pago de {soles(cuota.enRevision.monto)} está en revisión. Cuando la directiva lo valide, verá
+            su recibo en Mis pagos y recibos.
+          </p>
+        </MensajeEstado>
+      )}
       <section aria-labelledby="titulo-debe" className="flex flex-col gap-2">
         <h2 id="titulo-debe" className="text-titulo-3">
           Lo que debe hoy
@@ -72,6 +81,11 @@ export default async function MiCuota() {
             );
           })}
         />
+      )}
+      {cuota.puedePagar && (
+        <BotonEnlace href="/cuota/pagar" icono={Wallet}>
+          Pagar mi cuota
+        </BotonEnlace>
       )}
       <p className="text-texto-secundario">Solo usted y la directiva ven esta información.</p>
       <BotonEnlace href="/cuota/pagos" variante="secundario" icono={ReceiptText}>

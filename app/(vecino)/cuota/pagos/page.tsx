@@ -1,21 +1,31 @@
-import { ChevronLeft, CircleCheck } from "lucide-react";
+import { ChevronLeft, CircleCheck, FileDown, Info, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { soles } from "@/compartido/dinero";
 import { miCuota } from "@/modulos/aportes/aplicacion/deuda";
+import { misPagos } from "@/modulos/aportes/aplicacion/pagos";
 
 export const metadata: Metadata = { title: "Mis pagos y recibos" };
 
-// VEC-COB-05 (HU-COB-02 CA1): lo que la casa ya pagó, de la semana más reciente a la más antigua. Solo ve su casa. Los
-// pagos con su medio y su estado, y los recibos, se suman con HU-COB-08, 09 y 12.
+const INSIGNIAS = {
+  "En revisión": { clases: "border-borde-info bg-fondo-info text-texto-info", Icono: Info },
+  Aprobado: { clases: "border-borde-exito bg-fondo-exito text-texto-exito", Icono: CircleCheck },
+  Observado: { clases: "border-borde-aviso bg-fondo-aviso text-texto-aviso", Icono: TriangleAlert },
+  Rechazado: { clases: "border-borde-aviso bg-fondo-aviso text-texto-aviso", Icono: TriangleAlert },
+} as const;
+
+// VEC-COB-05 (HU-COB-02 CA1, HU-COB-08): los pagos que mandó la casa con su fecha, su medio y su estado, y las semanas
+// que ya se pagaron. Solo ve su casa. Los recibos y volver a mandar una foto llegan con HU-COB-09, 10 y 12.
 export default async function MisPagos() {
   const sesion = await exigirActor(
     ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"],
     "/entrar",
   );
-  const cuota = await miCuota(sesion);
+  const [cuota, { pagos }] = await Promise.all([miCuota(sesion), misPagos(sesion)]);
+  const historial = cuota?.historial ?? [];
   return (
     <div className="flex flex-col gap-6">
       <Link
@@ -26,26 +36,61 @@ export default async function MisPagos() {
         Volver a Mi cuota
       </Link>
       <h1 className="text-titulo-1">Mis pagos y recibos</h1>
-      {cuota && cuota.historial.length > 0 ? (
+      {pagos.length > 0 && (
         <ListaVerMas
-          etiqueta="Semanas pagadas"
-          elementos={cuota.historial.map((h) => (
-            <article
-              key={h.id}
-              className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
-            >
-              <h2 className="text-titulo-3">{h.semana}</h2>
-              <p className="font-bold">{soles(h.monto)}</p>
-              <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-exito bg-fondo-exito px-3 text-pequeno font-bold text-texto-exito">
-                <CircleCheck aria-hidden className="size-icono-pequeno" />
-                Pagada
-              </span>
-            </article>
-          ))}
+          etiqueta="Pagos enviados"
+          elementos={pagos.map((p) => {
+            const insignia = INSIGNIAS[p.estado as keyof typeof INSIGNIAS];
+            return (
+              <article
+                key={p.id}
+                className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+              >
+                <h2 className="text-titulo-3">{p.titulo}</h2>
+                <p className="font-bold">{soles(p.monto)}</p>
+                <p className="text-texto-secundario">{p.detalle}</p>
+                <span
+                  className={`inline-flex items-center gap-1 self-start rounded-pastilla border px-3 text-pequeno font-bold ${insignia.clases}`}
+                >
+                  <insignia.Icono aria-hidden className="size-icono-pequeno" />
+                  {p.estado}
+                </span>
+                <BotonEnlace
+                  href={`/api/aportes/pagos/${p.id}/constancia`}
+                  variante="secundario"
+                  icono={FileDown}
+                >
+                  Constancia de envío {p.constancia}
+                </BotonEnlace>
+              </article>
+            );
+          })}
         />
-      ) : (
-        <p>Todavía no tiene pagos registrados.</p>
       )}
+      {historial.length > 0 && (
+        <section aria-labelledby="titulo-pagadas" className="flex flex-col gap-4">
+          <h2 id="titulo-pagadas" className="text-titulo-2">
+            Semanas pagadas
+          </h2>
+          <ListaVerMas
+            etiqueta="Semanas pagadas"
+            elementos={historial.map((h) => (
+              <article
+                key={h.id}
+                className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+              >
+                <h3 className="text-titulo-3">{h.semana}</h3>
+                <p className="font-bold">{soles(h.monto)}</p>
+                <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-exito bg-fondo-exito px-3 text-pequeno font-bold text-texto-exito">
+                  <CircleCheck aria-hidden className="size-icono-pequeno" />
+                  Pagada
+                </span>
+              </article>
+            ))}
+          />
+        </section>
+      )}
+      {pagos.length === 0 && historial.length === 0 && <p>Todavía no tiene pagos registrados.</p>}
       <p className="text-texto-secundario">Solo usted y la directiva ven esta información.</p>
     </div>
   );

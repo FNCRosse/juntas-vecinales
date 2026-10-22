@@ -42,6 +42,7 @@ Sin valores en el repositorio. `.env.example` lista los nombres; los valores loc
 | `R2_ID_CLAVE_ACCESO` | Sí | Vercel | La autora |
 | `R2_CLAVE_ACCESO_SECRETA` | Sí | Vercel | La autora |
 | `CLAVE_CIFRADO` | Sí | Vercel, Render (32 bytes en base64, AES-256-GCM) | La autora |
+| `DATOS_PAGO_YAPE`, `DATOS_PAGO_CUENTA` | No (son datos públicos de la junta) | Vercel (producción): el número de Yape o Plin con el nombre del titular y la cuenta bancaria que se muestran en «Pagar mi cuota»; si faltan, la pantalla dice que la directiva indicará dónde pagar | La autora da el dato; Claude lo fija con el conector |
 | `WHATSAPP_SIMULAR_FALLO` | No | Solo local y pruebas | — |
 | `CYPRESS_INSTALL_BINARY` | No | Vercel (prod y preview) y Render = `0`; jobs del CI sin e2e | Claude |
 | `NODE_VERSION` | No | Render = `22` | Claude |

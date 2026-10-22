@@ -23,6 +23,7 @@ import {
   ultimaCuotaDe,
   ultimoPeriodoPorCasa,
 } from "@/modulos/aportes/infraestructura/repositorioCuotas";
+import { cuotasEnRevision } from "@/modulos/aportes/infraestructura/repositorioPagos";
 import { versionesDeTarifa } from "@/modulos/aportes/infraestructura/repositorioTarifa";
 import { ocupacionDeLasCasas, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
@@ -122,13 +123,15 @@ export async function miCuota(sesion: SesionDto) {
     cuotasPagadasDe(casa.id),
     ultimaCuotaDe(casa.id),
   ]);
+  const enRevision = await cuotasEnRevision(pendientes.map((c) => c.id));
+  const pagosEnRevision = new Map([...enRevision.values()].map((p) => [p.pagoId, p.monto]));
   return {
     vivienda: casa.vivienda,
     debe: pendientes.reduce((suma, c) => suma + c.saldoPendiente, 0),
     semanas: pendientes.map((c) => ({
       id: c.id,
       semana: etiquetaDeSemana(lunesDe(c.periodo)),
-      estado: ESTADO_EN_TEXTO[c.estado],
+      estado: enRevision.has(c.id) ? "Pago en revisión" : ESTADO_EN_TEXTO[c.estado],
       monto: c.saldoPendiente,
       // Lo que ya abonó de esa semana, si pagó una parte.
       pagado: c.montoCalculado - c.saldoPendiente,
@@ -138,6 +141,12 @@ export async function miCuota(sesion: SesionDto) {
       semana: etiquetaDeSemana(lunesDe(c.periodo)),
       monto: c.montoCalculado,
     })),
+    // Lo que ya mandó y espera la revisión de la directiva (HU-COB-08): las semanas que cubre salen como «Pago en revisión».
+    enRevision: pagosEnRevision.size
+      ? { monto: [...pagosEnRevision.values()].reduce((suma, m) => suma + m, 0) }
+      : null,
+    // Si todo lo pendiente ya está en un pago, no hay nada más que pagar por ahora.
+    puedePagar: pendientes.some((c) => !enRevision.has(c.id)),
     porSemana: ultima?.montoCalculado ?? 0,
     conceptos: (ultima?.conceptos ?? []).map((l) => ({
       clave: l.clave,

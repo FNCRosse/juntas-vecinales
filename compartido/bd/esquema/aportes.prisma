@@ -97,3 +97,78 @@ model CuotaConcepto {
 
   @@map("aportes_cuota_conceptos")
 }
+
+enum EstadoPago {
+  REGISTRADO
+  APROBADO
+  OBSERVADO
+  RECHAZADO
+}
+
+enum EstadoComprobante {
+  PENDIENTE_REVISION
+  APROBADO
+  OBSERVADO
+}
+
+enum MotivoObservacion {
+  MONTO_INSUFICIENTE
+  IMAGEN_BORROSA
+  FECHA_ERRONEA
+}
+
+// Cómo pagó una casa. Solo digitales por ahora (HU-COB-08); el efectivo con cobrador llega con HU-COB-11.
+enum MedioDePago {
+  YAPE_O_PLIN
+  TRANSFERENCIA
+}
+
+// Pago que manda una casa (HU-COB-08): lo que declara pagar de sus cuotas y cómo. Nace REGISTRADO (en revisión) y la
+// directiva lo aprueba, observa o rechaza (HU-COB-09 y 10). `numero` es el correlativo de la constancia de envío
+// («E-0917»). idOperacion evita registrar dos veces al reintentar (AC-5). No cambia ninguna cuota hasta que se apruebe.
+model Pago {
+  id           String        @id @default(uuid())
+  numero       Int           @unique @default(autoincrement())
+  idOperacion  String        @unique
+  predioId     String
+  autorId      String
+  medio        MedioDePago
+  monto        Int
+  estado       EstadoPago    @default(REGISTRADO)
+  creadoEn     DateTime      @default(now())
+  cuotas       PagoCuota[]
+  comprobantes Comprobante[]
+
+  @@index([predioId, creadoEn])
+  @@index([estado, creadoEn])
+  @@map("aportes_pagos")
+}
+
+// Qué parte de cada cuota cubre un pago, fijada al enviarlo: así se sabe qué semanas están «en revisión» y qué se
+// aplica al aprobarlo.
+model PagoCuota {
+  id      String @id @default(uuid())
+  pagoId  String
+  pago    Pago   @relation(fields: [pagoId], references: [id])
+  cuotaId String
+  monto   Int
+
+  @@unique([pagoId, cuotaId])
+  @@index([cuotaId])
+  @@map("aportes_pago_cuotas")
+}
+
+// La captura o el PDF del pago (archivo en R2 con `compartido/archivos`). Un pago puede tener varios: si la directiva
+// lo observa, la casa manda otra foto.
+model Comprobante {
+  id                String            @id @default(uuid())
+  pagoId            String
+  pago              Pago              @relation(fields: [pagoId], references: [id])
+  archivoId         String
+  estado            EstadoComprobante @default(PENDIENTE_REVISION)
+  motivoObservacion MotivoObservacion?
+  creadoEn          DateTime          @default(now())
+
+  @@index([pagoId])
+  @@map("aportes_comprobantes")
+}
