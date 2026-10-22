@@ -75,3 +75,71 @@ describe("@HU-COB-01 Mi cuota", () => {
     cy.location("pathname").should("not.eq", "/cuota");
   });
 });
+
+describe("@HU-COB-02 Estado de cuenta privado: Mis pagos y recibos", () => {
+  it("@HU-COB-02 CA1 sin pagos todavía, Mis pagos y recibos lo dice y se llega desde Mi cuota", () => {
+    cy.entrarComoVecinaNueva("Vecina Sin Pagos");
+    cy.viewport(360, 800);
+    cy.visit("/cuota");
+    cy.contains("a", "Mis pagos y recibos").click();
+    cy.get("h1").should("have.text", "Mis pagos y recibos");
+    cy.contains("Todavía no tiene pagos registrados").should("exist");
+    cy.revisarAccesibilidad("pagos-vacio-360");
+    cy.contains("a", "Volver a Mi cuota").click();
+    cy.location("pathname").should("eq", "/cuota");
+  });
+
+  it("@HU-COB-02 CA1 CA3 las semanas pagadas pasan al historial y el saldo se actualiza en cuanto hay un abono", () => {
+    cy.entrarComoVecinaNueva("Vecina Con Pagos").then(({ dni }) => {
+      cy.task("emitirCuotas", {
+        dni,
+        cuotas: [
+          { periodo: "2026-09-07", estado: "PENDIENTE", lineas: [CASA, INQUILINO] },
+          { periodo: "2026-09-14", estado: "PENDIENTE", lineas: [CASA, INQUILINO] },
+        ],
+      });
+      cy.viewport(360, 800);
+      cy.visit("/cuota");
+      cy.contains("p", "S/ 10.00").should("exist");
+      cy.contains("2 semanas pendientes").should("exist");
+
+      // Un pago parcial: queda lo que falta y cuánto ya pagó.
+      cy.task("abonarCuota", { dni, periodo: "2026-09-07", saldo: 200, estado: "PENDIENTE" });
+      cy.reload();
+      cy.contains("p", "S/ 7.00").should("exist");
+      cy.contains("article", "Semana del 7 al 13 de setiembre").should(
+        "contain.text",
+        "Falta S/ 2.00 · ya pagó S/ 3.00",
+      );
+      cy.revisarAccesibilidad("cuota-pago-parcial-360");
+
+      // Un pago completo: la semana sale de lo pendiente y entra al historial.
+      cy.task("abonarCuota", { dni, periodo: "2026-09-07", saldo: 0, estado: "PAGADA" });
+      cy.task("abonarCuota", { dni, periodo: "2026-09-14", saldo: 0, estado: "PAGADA" });
+      cy.reload();
+      cy.contains("p", "Está al día").should("exist");
+      cy.contains("a", "Mis pagos y recibos").click();
+      cy.contains("article", "Semana del 7 al 13 de setiembre").should("contain.text", "Pagada");
+      cy.contains("article", "Semana del 14 al 20 de setiembre").should("contain.text", "S/ 5.00");
+      cy.revisarAccesibilidad("pagos-con-historial-360");
+      cy.guardarModo("senior");
+      cy.reload();
+      cy.revisarAccesibilidad("pagos-con-historial-senior-360");
+    });
+  });
+
+  it("@HU-COB-02 CA2 el estado de cuenta por la API es el de la casa de quien pide, sin guardarse en caché", () => {
+    cy.entrarComoVecinaNueva("Vecina Privada").then(({ dni }) => {
+      cy.task("emitirCuotas", {
+        dni,
+        cuotas: [{ periodo: "2026-09-21", estado: "PENDIENTE", lineas: [CASA] }],
+      });
+    });
+    cy.request("/api/aportes/estado-cuenta?predioId=otra&dni=08123478").then((r) => {
+      expect(r.status).to.eq(200);
+      expect(r.headers["cache-control"]).to.eq("private, no-store");
+      expect(r.body.debe).to.eq(250);
+      expect(JSON.stringify(r.body)).not.to.contain("Mz. C");
+    });
+  });
+});

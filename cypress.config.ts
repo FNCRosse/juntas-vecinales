@@ -163,6 +163,8 @@ export default defineConfig({
           cuotas: {
             periodo: string;
             estado: string;
+            /** Lo que falta pagar; sin él, la cuota entera (y cero si está pagada). */
+            saldo?: number;
             lineas: { clave: string; nombre: string; unidad: string; monto: number; cantidad: number }[];
           }[];
         }) {
@@ -182,9 +184,16 @@ export default defineConfig({
               const { rows } = await cliente.query<{ id: string }>(
                 `INSERT INTO aportes_cuotas (id, "predioId", periodo, "fechaLimite", "tarifaId", "montoCalculado", "saldoPendiente", estado)
                  VALUES (gen_random_uuid(), $1, ($2::date + time '0:00') AT TIME ZONE 'America/Lima',
-                         ($2::date + 6 + time '23:59:59') AT TIME ZONE 'America/Lima', $3, $4, $4, $5::"EstadoCuota")
+                         ($2::date + 6 + time '23:59:59') AT TIME ZONE 'America/Lima', $3, $4, $6::int, $5::"EstadoCuota")
                  ON CONFLICT ("predioId", periodo) DO NOTHING RETURNING id`,
-                [casa[0].predioId, c.periodo, tarifa[0].id, total, c.estado],
+                [
+                  casa[0].predioId,
+                  c.periodo,
+                  tarifa[0].id,
+                  total,
+                  c.estado,
+                  c.estado === "PAGADA" ? 0 : (c.saldo ?? total),
+                ],
               );
               if (!rows.length) continue;
               for (const [orden, l] of c.lineas.entries()) {
@@ -195,6 +204,33 @@ export default defineConfig({
                 );
               }
             }
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
+        // Un abono sobre una cuota ya emitida (HU-COB-02 CA3): cambia su saldo y su estado, como lo hará un pago aprobado.
+        async abonarCuota({
+          dni,
+          periodo,
+          saldo,
+          estado,
+        }: {
+          dni: string;
+          periodo: string;
+          saldo: number;
+          estado: string;
+        }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            await cliente.query(
+              `UPDATE aportes_cuotas SET "saldoPendiente" = $3::int, estado = $4::"EstadoCuota"
+               WHERE "predioId" = (SELECT r."predioId" FROM identidad_residencias r JOIN identidad_usuarios u ON u.id = r."usuarioId"
+                                   WHERE u.dni = $1 AND r."fechaFin" IS NULL)
+                 AND periodo = ($2::date + time '0:00') AT TIME ZONE 'America/Lima'`,
+              [dni, periodo, saldo, estado],
+            );
             return null;
           } finally {
             await cliente.end();

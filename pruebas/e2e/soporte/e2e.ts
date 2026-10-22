@@ -31,11 +31,14 @@ Cypress.Commands.add("revisarAccesibilidad", (nombre: string) => {
   cy.title().should("not.be.empty");
   cy.injectAxe();
   cy.window({ log: false })
-    .then((ventana) =>
-      (ventana as unknown as { axe: typeof axe }).axe.run(ventana.document, {
+    .then(async (ventana): Promise<axe.AxeResults> => {
+      // Tras un refresco de la página el título puede faltar unos milisegundos mientras Next lo vuelve a transmitir:
+      // se espera justo antes de medir, sin pausas fijas cuando ya está.
+      for (let i = 0; i < 20 && !ventana.document.title; i++) await new Promise((r) => setTimeout(r, 100));
+      return (ventana as unknown as { axe: typeof axe }).axe.run(ventana.document, {
         runOnly: { type: "tag", values: ETIQUETAS },
-      }),
-    )
+      });
+    })
     .then((resultado) =>
       cy.task("guardarAxe", {
         nombre,
@@ -48,6 +51,7 @@ Cypress.Commands.add("revisarAccesibilidad", (nombre: string) => {
         },
       }),
     );
+  cy.document({ log: false }).should((d) => expect(d.title).not.to.be.empty);
   cy.checkA11y(undefined, { runOnly: { type: "tag", values: ETIQUETAS } });
   // Con CAPTURAS=1 cada pantalla revisada también se fotografía (evidencia de cierre de módulo).
   cy.task<boolean>("capturasActivas", null, { log: false }).then((activas) => {
