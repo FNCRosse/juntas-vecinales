@@ -18,6 +18,7 @@ Enums: `UnidadCobro` (POR_FAMILIA, POR_VEHICULO, POR_INQUILINO, POR_LOCAL) · `E
 - Monto = Σ (monto del concepto × cantidad en el predio), con la ocupación que entrega `identidad/aplicacion` al iniciar el ciclo. La cuota guarda una copia de los conceptos y montos usados: una cuota emitida nunca cambia por un cambio de tarifa.
 - Generación idempotente: `UNIQUE (predioId, periodo)`. La tarea del worker puede correr varias veces sin duplicar.
 - Todo monto en céntimos enteros.
+- **Versiones de la tarifa:** cada cambio crea una `Tarifa` nueva con la lista completa de conceptos y la fila del cambio (concepto, monto anterior y nuevo); la vigente es la última cuya vigencia ya llegó. Dos cambios para el mismo ciclo se suman; uno nuevo no puede regir antes que uno ya programado. Un concepto se vincula con la ocupación del predio por su clave (`casa`, `inquilino`, `auto`, `moto`, `triciclo`, `negocio`); uno que la asamblea agregue después no tiene dónde registrarse en el padrón hasta que M1 lo permita.
 
 **Pagos**
 - Digital (Yape, Plin, transferencia): el comprobante (JPG, PNG o PDF, máx. 5 MB) queda PENDIENTE_REVISION, el vecino ve "Pago en revisión" y la directiva recibe un aviso.

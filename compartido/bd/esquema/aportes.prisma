@@ -1,0 +1,55 @@
+// Tablas del módulo aportes (M5, prefijo aportes_).
+
+enum UnidadCobro {
+  POR_FAMILIA
+  POR_VEHICULO
+  POR_INQUILINO
+  POR_LOCAL
+}
+
+enum TipoCambioTarifa {
+  INICIAL
+  AGREGAR
+  CAMBIAR
+}
+
+// Una versión de la tarifa semanal (HU-COB-16). Cada cambio aprobado en asamblea crea una versión nueva con la
+// lista completa de conceptos; nunca se edita ni se borra (trigger de solo inserción, docs/DATOS.md §3). La
+// vigente es la última cuya vigencia ya llegó; las cuotas emitidas guardan una copia de lo que usaron, así que un
+// cambio no las toca. El cambio que dio origen a la versión (qué concepto, de cuánto a cuánto) queda en la propia fila
+// para el historial. idOperacion evita programar dos veces el mismo cambio al reintentar (AC-5).
+model Tarifa {
+  id            String             @id @default(uuid())
+  idOperacion   String             @unique
+  vigenciaDesde DateTime
+  acta          String
+  tipoCambio    TipoCambioTarifa
+  cambioClave   String?
+  cambioNombre  String?
+  cambioUnidad  UnidadCobro?
+  montoAnterior Int?
+  montoNuevo    Int?
+  autorId       String
+  autor         String
+  creadaEn      DateTime           @default(now())
+  conceptos     ConceptoTarifa[]
+
+  @@index([vigenciaDesde, creadaEn])
+  @@map("aportes_tarifas")
+}
+
+// Un concepto de la tarifa en una versión (casa, auto o camioneta, moto, triciclo o carreta, inquilino, negocio y los
+// que apruebe la asamblea). `clave` es estable entre versiones («auto»); el monto va en céntimos enteros por semana.
+model ConceptoTarifa {
+  id        String      @id @default(uuid())
+  tarifaId  String
+  tarifa    Tarifa      @relation(fields: [tarifaId], references: [id])
+  clave     String
+  nombre    String
+  unidad    UnidadCobro
+  monto     Int
+  orden     Int
+
+  @@unique([tarifaId, clave])
+  @@map("aportes_conceptos_tarifa")
+}

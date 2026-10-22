@@ -64,6 +64,8 @@ export const ACTORES: Actor[] = [
       "/directiva/asambleas/propuestas",
       "/directiva/actividades",
       "/directiva/actividades/nueva",
+      "/directiva/cobros/tarifa",
+      "/directiva/historial",
     ],
   },
   {
@@ -90,6 +92,13 @@ export const ACTORES: Actor[] = [
     dni: "40000004",
     politica: false,
     rutas: ["/garita", "/garita/consultar", "/garita/visitas", "/garita/bitacora", "/garita/ayuda"],
+  },
+  {
+    // Marta, la tesorera: solo la directiva (no el mediador) cambia la tarifa.
+    nombre: "tesorera",
+    dni: "40000002",
+    politica: true,
+    rutas: ["/directiva/cobros/tarifa", "/directiva/cobros/tarifa/cambiar"],
   },
 ];
 

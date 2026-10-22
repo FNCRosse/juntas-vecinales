@@ -81,3 +81,19 @@ export async function idsDeVecinosActivos(tx: Transaccion) {
   });
   return vecinos.map((v) => v.id);
 }
+
+/** Las casas con al menos una unidad de ese rubro de la ocupación (autos, motos, familias…) y quiénes viven en ellas. */
+export async function prediosConOcupacion(
+  rubro: "familias" | "inquilinos" | "autos" | "motos" | "triciclos" | "negocios",
+) {
+  return prisma.predio.findMany({
+    where: { [rubro]: { gt: 0 } },
+    select: {
+      id: true,
+      residencias: {
+        where: { fechaFin: null, usuario: { estado: "ACTIVA", anonimizadaEn: null } },
+        select: { usuarioId: true },
+      },
+    },
+  });
+}

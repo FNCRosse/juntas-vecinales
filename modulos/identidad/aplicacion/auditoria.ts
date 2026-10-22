@@ -113,3 +113,31 @@ export async function auditoriaGlobal(sesion: SesionDto, filtros: FiltrosAuditor
       .map(([valor, a]) => ({ valor, texto: a.texto })),
   };
 }
+
+const MODULOS_DE_LA_DIRECTIVA: ModuloAuditoria[] = ["Asambleas", "Cobros", "Transparencia"];
+
+/**
+ * El historial de acciones que ve la directiva (DIR-INI-05, HU-COB-16 CA3): lo más reciente de cobros, asambleas y
+ * transparencia, con quién lo hizo y cuándo. Solo lectura. Solo los cobros traen su detalle (concepto y monto): del
+ * resto basta saber qué se hizo, y así el historial no repite datos de los vecinos.
+ */
+export async function historialDeLaDirectiva(sesion: SesionDto) {
+  exigirRol(sesion, "DIRECTIVA", "DIRECTIVO_MEDIADOR");
+  const filas = await leerAuditoria({
+    acciones: MODULOS_DE_LA_DIRECTIVA.flatMap(accionesDelModulo),
+    limite: 30,
+  });
+  const nombresDe = await nombres(
+    [...new Set(filas.map((f) => f.actorId))].filter((id): id is string => !!id),
+  );
+  return filas.map((f) => {
+    const { modulo, texto } = describirAccion(f.accion);
+    return {
+      id: f.id,
+      fecha: fechaYHora(f.fecha),
+      texto,
+      detalle: modulo === "Cobros" ? resumen(f.despues) : null,
+      responsable: responsable(f.actorId, nombresDe),
+    };
+  });
+}
