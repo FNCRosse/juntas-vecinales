@@ -119,6 +119,8 @@ describe("@HU-COB-01 CA3 La deuda queda registrada con trazabilidad", () => {
     expect(cuota.creadaEn).toBeInstanceOf(Date);
     const auditoria = await prisma.registroAuditoria.findFirstOrThrow({
       where: { accion: "calcular_deuda", entidadId: "2026-09-28" },
+      // La auditoría es de solo inserción: quedan las filas de las demás pruebas; esta es la última.
+      orderBy: { fecha: "desc" },
     });
     expect(auditoria).toMatchObject({
       actorId: null,
