@@ -16,6 +16,9 @@ env:
   DATABASE_URL: postgresql://postgres:pruebas@localhost:5432/jv_pruebas
   DATABASE_URL_UNPOOLED: postgresql://postgres:pruebas@localhost:5432/jv_pruebas
   WHATSAPP_MODO: simulador
+  # Datos ficticios de pago (los del prototipo) para las pruebas de «Pagar mi cuota».
+  DATOS_PAGO_YAPE: 987 654 321, a nombre de Junta Vecinal
+  DATOS_PAGO_CUENTA: 191-2345678-0-12
 
 jobs:
   lint:
