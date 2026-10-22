@@ -97,3 +97,24 @@ export async function prediosConOcupacion(
     },
   });
 }
+
+/** Las casas con al menos un residente vigente, con su ocupación y los residentes activos que son vecinos. */
+export async function prediosConResidentesVigentes() {
+  return prisma.predio.findMany({
+    where: { residencias: { some: { fechaFin: null } } },
+    include: {
+      residencias: {
+        where: {
+          fechaFin: null,
+          usuario: {
+            estado: "ACTIVA",
+            anonimizadaEn: null,
+            roles: { hasSome: ["VECINO", "VECINO_ADULTO_MAYOR"] },
+          },
+        },
+        select: { usuarioId: true },
+      },
+    },
+    orderBy: [{ manzana: "asc" }, { lote: "asc" }],
+  });
+}

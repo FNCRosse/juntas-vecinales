@@ -41,6 +41,7 @@ export const ACTORES: Actor[] = [
       "/asambleas/proponer",
       "/actividades",
       "/actividades/colaborar",
+      "/cuota",
     ],
   },
   {

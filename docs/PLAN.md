@@ -160,7 +160,7 @@ Al cerrar M4 también: bloque de próximo evento en el panel, recorrido guiado d
 ## M5 · Aportes Vecinales y Vigilancia
 
 - [~] HU-COB-16 Conceptos y montos de la tarifa — PR [#83](https://github.com/FNCRosse/juntas-vecinales/pull/83): tarifa por versiones, cambio en dos pasos con acta, aviso a las casas y historial de solo lectura (DIR-COB-20 a 23 y DIR-INI-05); `[~]` porque falta que el empadronamiento y la ficha del lote usen esta lista (CA1) y retirar un concepto, que el prototipo no tiene
-- [ ] HU-COB-01 Cálculo semanal de la deuda y estado de cuenta (worker)
+- [x] HU-COB-01 Cálculo semanal de la deuda y estado de cuenta (worker) — PR [#84](https://github.com/FNCRosse/juntas-vecinales/pull/84): tarea `calcularDeuda` (cuota por casa y semana, aviso de cobro y vencidas) y Mi cuota con lo que debe y cómo se calcula; el detalle de pagos y el historial llegan con HU-COB-02
 - [ ] HU-COB-02 Estado de cuenta privado
 - [ ] HU-COB-08 Subir el comprobante de pago digital
 - [ ] HU-COB-09 Auditar comprobantes

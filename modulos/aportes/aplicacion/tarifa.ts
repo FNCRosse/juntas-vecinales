@@ -28,7 +28,7 @@ import {
 const LEEN = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 
 /** Los conceptos de una versión como datos puros (sin los ids de la fila). */
-const conceptosDe = (v?: Pick<VersionDeTarifa, "conceptos"> | null): Concepto[] =>
+export const conceptosDe = (v?: Pick<VersionDeTarifa, "conceptos"> | null): Concepto[] =>
   (v?.conceptos ?? []).map(({ clave, nombre, unidad, monto }) => ({ clave, nombre, unidad, monto }));
 
 const conceptoDto = (c: Concepto) => ({ ...c, unidadTexto: UNIDAD_EN_TEXTO[c.unidad] });

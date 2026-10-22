@@ -53,3 +53,47 @@ model ConceptoTarifa {
   @@unique([tarifaId, clave])
   @@map("aportes_conceptos_tarifa")
 }
+
+enum EstadoCuota {
+  PENDIENTE
+  EN_DISCREPANCIA
+  PAGADA
+  VENCIDA
+}
+
+// Cuota semanal de una casa (HU-COB-01, diagrama 02b). El periodo es el lunes de la semana (0:00 de Lima, en UTC) y la
+// fecha límite, el domingo siguiente a las 11:59 p. m. UNIQUE (predioId, periodo): la tarea del worker puede correr
+// varias veces sin duplicar. Guarda la versión de la tarifa que usó y una copia de los conceptos y montos: un cambio
+// de tarifa no la toca (HU-COB-16 CA3). El saldo baja con los pagos aprobados; el estado lo mueve el pago o la tarea.
+model Cuota {
+  id             String          @id @default(uuid())
+  predioId       String
+  periodo        DateTime
+  fechaLimite    DateTime
+  tarifaId       String
+  montoCalculado Int
+  saldoPendiente Int
+  estado         EstadoCuota     @default(PENDIENTE)
+  creadaEn       DateTime        @default(now())
+  conceptos      CuotaConcepto[]
+
+  @@unique([predioId, periodo])
+  @@index([predioId, estado])
+  @@map("aportes_cuotas")
+}
+
+// Copia de lo que se cobró en una cuota: concepto, monto por unidad y cuántas unidades había. Solo inserción.
+model CuotaConcepto {
+  id            String      @id @default(uuid())
+  cuotaId       String
+  cuota         Cuota       @relation(fields: [cuotaId], references: [id])
+  clave         String
+  nombre        String
+  unidad        UnidadCobro
+  montoUnitario Int
+  cantidad      Int
+  subtotal      Int
+  orden         Int
+
+  @@map("aportes_cuota_conceptos")
+}

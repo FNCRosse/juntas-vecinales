@@ -5,6 +5,7 @@ import {
   idsDeVecinosActivos,
   prediosConOcupacion,
   prediosConResidentes,
+  prediosConResidentesVigentes,
   vecinosPorNombreODni,
 } from "@/modulos/identidad/infraestructura/repositorioUsuarios";
 import { direccion } from "@/modulos/identidad/dominio/predio";
@@ -74,4 +75,18 @@ export async function casasQuePaganPor(clave: string) {
     casas: predios.length,
     residentes: [...new Set(predios.flatMap((p) => p.residencias.map((r) => r.usuarioId)))],
   };
+}
+
+/**
+ * Puerto para M5: cada casa con residentes del padrón, con lo que hay registrado en ella por clave de concepto
+ * («auto»: 2), para calcular su cuota al iniciar el ciclo (HU-COB-01 CA1), y los vecinos a quienes avisarles.
+ */
+export async function ocupacionDeLasCasas() {
+  return (await prediosConResidentesVigentes()).map((p) => ({
+    predioId: p.id,
+    ocupacion: Object.fromEntries(
+      Object.entries(RUBRO_DE_CONCEPTO).map(([clave, rubro]) => [clave, p[rubro]]),
+    ) as Record<string, number>,
+    vecinos: p.residencias.map((r) => r.usuarioId),
+  }));
 }
