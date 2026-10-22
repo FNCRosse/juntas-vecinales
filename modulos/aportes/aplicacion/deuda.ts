@@ -23,7 +23,7 @@ import {
   ultimaCuotaDe,
   ultimoPeriodoPorCasa,
 } from "@/modulos/aportes/infraestructura/repositorioCuotas";
-import { cuotasEnRevision } from "@/modulos/aportes/infraestructura/repositorioPagos";
+import { cuotasEnPagoObservado, cuotasEnRevision } from "@/modulos/aportes/infraestructura/repositorioPagos";
 import { versionesDeTarifa } from "@/modulos/aportes/infraestructura/repositorioTarifa";
 import { ocupacionDeLasCasas, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
@@ -123,7 +123,10 @@ export async function miCuota(sesion: SesionDto) {
     cuotasPagadasDe(casa.id),
     ultimaCuotaDe(casa.id),
   ]);
-  const enRevision = await cuotasEnRevision(pendientes.map((c) => c.id));
+  const [enRevision, observadas] = await Promise.all([
+    cuotasEnRevision(pendientes.map((c) => c.id)),
+    cuotasEnPagoObservado(pendientes.map((c) => c.id)),
+  ]);
   const pagosEnRevision = new Map([...enRevision.values()].map((p) => [p.pagoId, p.monto]));
   return {
     vivienda: casa.vivienda,
@@ -131,7 +134,12 @@ export async function miCuota(sesion: SesionDto) {
     semanas: pendientes.map((c) => ({
       id: c.id,
       semana: etiquetaDeSemana(lunesDe(c.periodo)),
-      estado: enRevision.has(c.id) ? "Pago en revisión" : ESTADO_EN_TEXTO[c.estado],
+      // Un pago observado no reserva la semana: la casa puede subsanarlo o pagar de nuevo (HU-COB-10).
+      estado: enRevision.has(c.id)
+        ? "Pago en revisión"
+        : observadas.has(c.id)
+          ? "Pago observado"
+          : ESTADO_EN_TEXTO[c.estado],
       monto: c.saldoPendiente,
       // Lo que ya abonó de esa semana, si pagó una parte.
       pagado: c.montoCalculado - c.saldoPendiente,

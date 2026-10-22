@@ -124,3 +124,37 @@ export async function reclamarAprobacion(tx: Transaccion, pagoId: string) {
   });
   return count === 1;
 }
+
+/** Las cuotas que están en un pago observado: la casa todavía puede subsanarlo, pero no reservan la semana (HU-COB-10). */
+export async function cuotasEnPagoObservado(cuotaIds: string[]) {
+  if (!cuotaIds.length) return new Set<string>();
+  const filas = await prisma.pagoCuota.findMany({
+    where: { cuotaId: { in: cuotaIds }, pago: { estado: "OBSERVADO" } },
+    select: { cuotaId: true },
+  });
+  return new Set(filas.map((f) => f.cuotaId));
+}
+
+/** Pasa el pago de «en revisión» a observado con un UPDATE condicionado: observar dos veces no avisa dos veces (AC-5). */
+export async function reclamarObservacion(tx: Transaccion, pagoId: string) {
+  const { count } = await tx.pago.updateMany({
+    where: { id: pagoId, estado: "REGISTRADO" },
+    data: { estado: "OBSERVADO" },
+  });
+  return count === 1;
+}
+
+/** Devuelve el pago observado a revisión cuando la casa manda otra foto; solo una llamada lo logra (AC-5). */
+export async function reclamarReenvio(tx: Transaccion, pagoId: string) {
+  const { count } = await tx.pago.updateMany({
+    where: { id: pagoId, estado: "OBSERVADO" },
+    data: { estado: "REGISTRADO" },
+  });
+  return count === 1;
+}
+
+/** Las semanas de este pago que ya están dentro de otro pago en revisión. */
+export const semanasEnOtroPago = (tx: Transaccion, pagoId: string, cuotaIds: string[]) =>
+  tx.pagoCuota.count({
+    where: { cuotaId: { in: cuotaIds }, pago: { estado: "REGISTRADO", id: { not: pagoId } } },
+  });

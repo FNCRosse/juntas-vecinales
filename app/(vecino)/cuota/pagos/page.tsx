@@ -1,4 +1,4 @@
-import { ChevronLeft, CircleCheck, FileDown, Info, TriangleAlert } from "lucide-react";
+import { Camera, ChevronLeft, CircleCheck, FileDown, Info, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
@@ -18,7 +18,8 @@ const INSIGNIAS = {
 } as const;
 
 // VEC-COB-05 (HU-COB-02 CA1, HU-COB-08): los pagos que mandó la casa con su fecha, su medio y su estado, y las semanas
-// que ya se pagaron. Solo ve su casa. Los recibos y volver a mandar una foto llegan con HU-COB-09, 10 y 12.
+// que ya se pagaron. Solo ve su casa. Si la directiva observó un pago, aquí se dice por qué y se manda
+// otra foto (HU-COB-10); los recibos llegan con HU-COB-12.
 export default async function MisPagos() {
   const sesion = await exigirActor(
     ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"],
@@ -54,7 +55,13 @@ export default async function MisPagos() {
                 >
                   <insignia.Icono aria-hidden className="size-icono-pequeno" />
                   {p.estado}
+                  {p.motivo && `: ${p.motivo}`}
                 </span>
+                {p.puedeEnviarOtraFoto && (
+                  <BotonEnlace href={`/cuota/pagos/${p.id}/otra-foto`} icono={Camera}>
+                    Enviar otra foto
+                  </BotonEnlace>
+                )}
                 <BotonEnlace
                   href={`/api/aportes/pagos/${p.id}/constancia`}
                   variante="secundario"

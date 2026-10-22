@@ -16,6 +16,7 @@ const INSIGNIAS = {
   "Con retraso": { clases: "border-borde-aviso bg-fondo-aviso text-texto-aviso", Icono: TriangleAlert },
   "En revisión": { clases: "border-borde-info bg-fondo-info text-texto-info", Icono: Info },
   "Pago en revisión": { clases: "border-borde-info bg-fondo-info text-texto-info", Icono: Info },
+  "Pago observado": { clases: "border-borde-aviso bg-fondo-aviso text-texto-aviso", Icono: TriangleAlert },
   Pagada: { clases: "border-borde-exito bg-fondo-exito text-texto-exito", Icono: CircleCheck },
 } as const;
 
