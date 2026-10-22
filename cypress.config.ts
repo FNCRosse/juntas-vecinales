@@ -153,6 +153,53 @@ export default defineConfig({
             await cliente.end();
           }
         },
+        // Cuotas ya emitidas para la casa de esa persona (HU-COB-01): el cálculo lo prueban las pruebas de integración;
+        // aquí solo se arma lo que la pantalla muestra. Los periodos son lunes («AAAA-MM-DD») y el estado, el de cada cuota.
+        async emitirCuotas({
+          dni,
+          cuotas,
+        }: {
+          dni: string;
+          cuotas: {
+            periodo: string;
+            estado: string;
+            lineas: { clave: string; nombre: string; unidad: string; monto: number; cantidad: number }[];
+          }[];
+        }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            const { rows: casa } = await cliente.query<{ predioId: string }>(
+              `SELECT r."predioId" FROM identidad_residencias r JOIN identidad_usuarios u ON u.id = r."usuarioId"
+               WHERE u.dni = $1 AND r."fechaFin" IS NULL`,
+              [dni],
+            );
+            const { rows: tarifa } = await cliente.query<{ id: string }>(
+              "SELECT id FROM aportes_tarifas LIMIT 1",
+            );
+            for (const c of cuotas) {
+              const total = c.lineas.reduce((suma, l) => suma + l.monto * l.cantidad, 0);
+              const { rows } = await cliente.query<{ id: string }>(
+                `INSERT INTO aportes_cuotas (id, "predioId", periodo, "fechaLimite", "tarifaId", "montoCalculado", "saldoPendiente", estado)
+                 VALUES (gen_random_uuid(), $1, ($2::date + time '0:00') AT TIME ZONE 'America/Lima',
+                         ($2::date + 6 + time '23:59:59') AT TIME ZONE 'America/Lima', $3, $4, $4, $5::"EstadoCuota")
+                 ON CONFLICT ("predioId", periodo) DO NOTHING RETURNING id`,
+                [casa[0].predioId, c.periodo, tarifa[0].id, total, c.estado],
+              );
+              if (!rows.length) continue;
+              for (const [orden, l] of c.lineas.entries()) {
+                await cliente.query(
+                  `INSERT INTO aportes_cuota_conceptos (id, "cuotaId", clave, nombre, unidad, "montoUnitario", cantidad, subtotal, orden)
+                   VALUES (gen_random_uuid(), $1, $2, $3, $4::"UnidadCobro", $5::int, $6::int, $7::int, $8::int)`,
+                  [rows[0].id, l.clave, l.nombre, l.unidad, l.monto, l.cantidad, l.monto * l.cantidad, orden],
+                );
+              }
+            }
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
         // Un archivo ya "subido" por esa persona (un comprobante o la evidencia de una queja): el CI no
         // habla con R2 (docs/PRUEBAS.md §2), así que la prueba simula la subida y usa este. Solo la BD de pruebas.
         async archivoDePrueba({ dni, uso = "comprobante_egreso" }: { dni: string; uso?: string }) {

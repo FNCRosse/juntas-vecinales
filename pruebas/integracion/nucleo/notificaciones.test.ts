@@ -143,6 +143,8 @@ describe("@HU-INFRA ADR-006 Cola de avisos con copia interna garantizada", () =>
       depurados: expect.objectContaining({ bitacora: expect.any(Number), sesiones: expect.any(Number) }),
       // Y avisa el quórum al corte de las asambleas (HU-ASA-04); lo prueba asambleas/corte.test.ts.
       avisosDeQuorum: 0,
+      // Y emite las cuotas de la semana (HU-COB-01); lo prueban aportes/deuda.test.ts.
+      deuda: { cuotas: expect.any(Number), avisos: expect.any(Number), vencidas: expect.any(Number) },
     });
   });
 });
