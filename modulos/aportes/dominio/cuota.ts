@@ -99,3 +99,16 @@ export function calcularCuota(conceptos: Concepto[], ocupacion: Record<string, n
     .filter((l) => l.cantidad > 0);
   return { lineas, total: lineas.reduce((suma, l) => suma + l.subtotal, 0) };
 }
+
+/**
+ * Aplica un abono a una cuota (HU-COB-09): baja el saldo, nunca por debajo de cero. Si ya no falta nada, queda
+ * pagada; si es una parte, queda el saldo y la cuota sigue como estaba (pendiente, vencida o en discrepancia).
+ */
+export function aplicarAbono(
+  saldo: number,
+  abono: number,
+  estado: "PENDIENTE" | "VENCIDA" | "EN_DISCREPANCIA",
+) {
+  const nuevo = Math.max(0, saldo - abono);
+  return { saldo: nuevo, estado: nuevo === 0 ? ("PAGADA" as const) : estado };
+}

@@ -163,7 +163,7 @@ Al cerrar M4 también: bloque de próximo evento en el panel, recorrido guiado d
 - [x] HU-COB-01 Cálculo semanal de la deuda y estado de cuenta (worker) — PR [#84](https://github.com/FNCRosse/juntas-vecinales/pull/84): tarea `calcularDeuda` (cuota por casa y semana, aviso de cobro y vencidas) y Mi cuota con lo que debe y cómo se calcula; el detalle de pagos y el historial llegan con HU-COB-02
 - [~] HU-COB-02 Estado de cuenta privado — PR [#85](https://github.com/FNCRosse/juntas-vecinales/pull/85): `GET /api/aportes/estado-cuenta`, Mi cuota con lo ya pagado y los abonos parciales, y Mis pagos y recibos; `[~]` porque los pagos con su medio y su estado y los recibos (VEC-COB-05 completo) llegan con HU-COB-08, 09 y 12, y Cuentas del barrio (VEC-TRA-01) con HU-COB-14
 - [~] HU-COB-08 Subir el comprobante de pago digital — PR [#86](https://github.com/FNCRosse/juntas-vecinales/pull/86): Pagar mi cuota (VEC-COB-02 a 04) con la foto del comprobante, su constancia de envío en PDF, Mis pagos (VEC-COB-05) y Cobros con los comprobantes por revisar (DIR-COB-01); `[~]` porque la opción «En efectivo en mi casa» y su pedido (VEC-COB-13) llegan con HU-COB-11
-- [ ] HU-COB-09 Auditar comprobantes
+- [~] HU-COB-09 Auditar comprobantes — PR [#87](https://github.com/FNCRosse/juntas-vecinales/pull/87): revisar el comprobante junto a lo que figura en la junta y aprobar el pago (DIR-COB-02 y 03), con el abono, el aviso y la garita restituida; `[~]` porque el recibo oficial (DIR-COB-04) llega con HU-COB-12 y observar el comprobante, con HU-COB-10
 - [ ] HU-COB-10 Observar un comprobante con motivo
 - [ ] HU-COB-12 Recibo digital en PDF
 - [ ] HU-COB-11 Cobro en efectivo sin conexión
