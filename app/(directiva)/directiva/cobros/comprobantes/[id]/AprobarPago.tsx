@@ -1,5 +1,5 @@
 "use client";
-// @HU-COB-09 @HU-COB-10
+// @HU-COB-09 @HU-COB-10 @HU-COB-12
 
 import { Check, TriangleAlert, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -8,8 +8,16 @@ import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { soles } from "@/compartido/dinero";
+import type { ReciboDto } from "@/modulos/aportes/aplicacion/recibos";
+import { ReciboOficial } from "../../recibos/ReciboOficial";
 
-type Resultado = { aplicado: boolean; nombre: string; debeAhora: number; alDia: boolean };
+type Resultado = {
+  aplicado: boolean;
+  nombre: string;
+  debeAhora: number;
+  alDia: boolean;
+  recibo: ReciboDto | null;
+};
 
 // DIR-COB-03 y su cierre: aprobar el pago de un comprobante, en dos pasos. Aprobar aplica el abono, avisa a quien pagó y no
 // se deshace desde aquí, así que lleva su confirmación (R-12). Va dentro de la página del comprobante, que ya tiene su
@@ -67,8 +75,10 @@ export function AprobarPago({
             {resultado.alDia
               ? `${resultado.nombre} queda al día.`
               : `${resultado.nombre} todavía debe ${soles(resultado.debeAhora)}.`}
+            {resultado.recibo ? ` Emitimos el recibo N.° ${resultado.recibo.numero}.` : ""}
           </p>
         </MensajeEstado>
+        {resultado.recibo && <ReciboOficial recibo={resultado.recibo} puedeEnviar />}
         <BotonEnlace href="/directiva/cobros" icono={Wallet}>
           Volver a Cobros
         </BotonEnlace>

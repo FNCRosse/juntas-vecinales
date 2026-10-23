@@ -3,7 +3,11 @@ import type { Transaccion } from "@/compartido/bd/cliente";
 import { prisma } from "@/compartido/bd/cliente";
 import type { MedioDePago } from "@/compartido/bd/generado/client";
 
-const conDetalle = { cuotas: true, comprobantes: { orderBy: { creadoEn: "asc" } } } as const;
+const conDetalle = {
+  cuotas: true,
+  comprobantes: { orderBy: { creadoEn: "asc" } },
+  recibo: true,
+} as const;
 
 export type PagoConDetalle = NonNullable<Awaited<ReturnType<typeof pagoPorIdOperacion>>>;
 

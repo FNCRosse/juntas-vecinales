@@ -1,4 +1,13 @@
-import { Camera, ChevronLeft, CircleCheck, FileDown, Info, TriangleAlert } from "lucide-react";
+import {
+  Camera,
+  ChevronLeft,
+  CircleCheck,
+  FileDown,
+  Info,
+  Printer,
+  Receipt,
+  TriangleAlert,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
@@ -37,6 +46,11 @@ export default async function MisPagos() {
         Volver a Mi cuota
       </Link>
       <h1 className="text-titulo-1">Mis pagos y recibos</h1>
+      {pagos.some((p) => p.recibo) && (
+        <BotonEnlace href="/cuota/recibo-en-papel" variante="secundario" icono={Printer}>
+          Pedir un recibo en papel
+        </BotonEnlace>
+      )}
       {pagos.length > 0 && (
         <ListaVerMas
           etiqueta="Pagos enviados"
@@ -47,7 +61,7 @@ export default async function MisPagos() {
                 key={p.id}
                 className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
               >
-                <h2 className="text-titulo-3">{p.titulo}</h2>
+                <h2 className="text-titulo-3">{p.recibo ? `Recibo N.° ${p.recibo.numero}` : p.titulo}</h2>
                 <p className="font-bold">{soles(p.monto)}</p>
                 <p className="text-texto-secundario">{p.detalle}</p>
                 <span
@@ -62,13 +76,20 @@ export default async function MisPagos() {
                     Enviar otra foto
                   </BotonEnlace>
                 )}
-                <BotonEnlace
-                  href={`/api/aportes/pagos/${p.id}/constancia`}
-                  variante="secundario"
-                  icono={FileDown}
-                >
-                  Constancia de envío {p.constancia}
-                </BotonEnlace>
+                {p.recibo && (
+                  <BotonEnlace href={`/cuota/recibos/${p.recibo.id}`} icono={Receipt}>
+                    Ver el recibo
+                  </BotonEnlace>
+                )}
+                {p.estado !== "Aprobado" && (
+                  <BotonEnlace
+                    href={`/api/aportes/pagos/${p.id}/constancia`}
+                    variante="secundario"
+                    icono={FileDown}
+                  >
+                    Constancia de envío {p.constancia}
+                  </BotonEnlace>
+                )}
               </article>
             );
           })}

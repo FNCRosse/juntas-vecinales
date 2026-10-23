@@ -6,6 +6,8 @@ import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { soles } from "@/compartido/dinero";
 import { comprobantesPorRevisar } from "@/modulos/aportes/aplicacion/pagos";
+import { recibosEnPapelPorEntregar } from "@/modulos/aportes/aplicacion/recibos";
+import { EntregarRecibo } from "./EntregarRecibo";
 
 export const metadata: Metadata = { title: "Cobros" };
 
@@ -13,7 +15,10 @@ export const metadata: Metadata = { title: "Cobros" };
 // primero. Aprobarlos es de HU-COB-09; observarlos llega con HU-COB-10; los cobros en casa y los reclamos, con HU-COB-11 y 03.
 export default async function Cobros() {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
-  const { items } = await comprobantesPorRevisar(sesion);
+  const [{ items }, { items: enPapel }] = await Promise.all([
+    comprobantesPorRevisar(sesion),
+    recibosEnPapelPorEntregar(sesion),
+  ]);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -78,6 +83,37 @@ export default async function Cobros() {
           <strong>No hay comprobantes por revisar</strong>
           <span>Cuando un vecino mande un pago, lo verá aquí.</span>
         </div>
+      )}
+      {enPapel.length > 0 && (
+        <section aria-labelledby="titulo-papel" className="flex flex-col gap-4">
+          <h2 id="titulo-papel" className="text-titulo-2">
+            Recibos en papel por entregar
+          </h2>
+          <ListaVerMas
+            etiqueta="Recibos en papel por entregar"
+            elementos={enPapel.map((p) => (
+              <article
+                key={p.id}
+                className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+              >
+                <p className="text-pequeno font-bold text-texto-secundario">
+                  Recibo en papel · pedido N.° {p.numero}
+                </p>
+                <h3 className="text-titulo-3">{p.nombre}</h3>
+                <p>{p.vivienda}</p>
+                <p>{p.recibo}</p>
+                <p className="text-pequeno text-texto-secundario">Pedido el {p.fecha}</p>
+                <p>Hora preferida: {p.franja}</p>
+                {p.nota && <p>Nota: {p.nota}</p>}
+                <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
+                  <Info aria-hidden className="size-icono-pequeno" />
+                  Por entregar en su casa
+                </span>
+                <EntregarRecibo pedidoId={p.id} reciboId={p.reciboId} puedeEntregar={p.puedeEntregar} />
+              </article>
+            ))}
+          />
+        </section>
       )}
       <section aria-labelledby="titulo-otras" className="flex flex-col gap-3">
         <h2 id="titulo-otras" className="text-titulo-2">

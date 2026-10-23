@@ -139,6 +139,7 @@ model Pago {
   creadoEn     DateTime      @default(now())
   cuotas       PagoCuota[]
   comprobantes Comprobante[]
+  recibo       Recibo?
 
   @@index([predioId, creadoEn])
   @@index([estado, creadoEn])
@@ -173,4 +174,62 @@ model Comprobante {
 
   @@index([pagoId])
   @@map("aportes_comprobantes")
+}
+
+// Recibo digital oficial de un pago aprobado (HU-COB-12). Se emite al aprobar el pago, con su correlativo («000321»), y
+// guarda lo que dice el papel: titular, vivienda, concepto, medio y quién lo registró. No se puede modificar ni borrar
+// (trigger): solo se anota cuándo se envió a la app y cuándo la casa confirmó que lo recibió. El código de verificación
+// no se guarda: se calcula con el número, el pago y el monto (dominio/recibo.ts). Un recibo por pago.
+model Recibo {
+  id              String              @id @default(uuid())
+  numero          Int                 @unique @default(autoincrement())
+  pagoId          String              @unique
+  pago            Pago                @relation(fields: [pagoId], references: [id])
+  predioId        String
+  titular         String
+  vivienda        String
+  concepto        String
+  medio           String
+  monto           Int
+  fecha           DateTime
+  registradoPor   String
+  registradoPorId String
+  enviadoEn       DateTime?
+  confirmadoEn    DateTime?
+  pedidos         PedidoReciboPapel[]
+
+  @@index([predioId, fecha])
+  @@map("aportes_recibos")
+}
+
+enum FranjaDeVisita {
+  MANANA
+  TARDE
+  NOCHE
+}
+
+enum EstadoPedidoRecibo {
+  POR_ENTREGAR
+  ENTREGADO
+}
+
+// La casa pide su recibo en papel (VEC-COB-14): la directiva se lo lleva en la franja que eligió y lo marca entregado.
+// idOperacion evita pedirlo dos veces al reintentar (AC-5); un recibo no tiene dos pedidos por entregar a la vez.
+model PedidoReciboPapel {
+  id             String             @id @default(uuid())
+  numero         Int                @unique @default(autoincrement())
+  idOperacion    String             @unique
+  reciboId       String
+  recibo         Recibo             @relation(fields: [reciboId], references: [id])
+  solicitanteId  String
+  franja         FranjaDeVisita
+  nota           String?
+  estado         EstadoPedidoRecibo @default(POR_ENTREGAR)
+  creadoEn       DateTime           @default(now())
+  entregadoEn    DateTime?
+  entregadoPorId String?
+
+  @@index([estado, creadoEn])
+  @@index([reciboId, estado])
+  @@map("aportes_pedidos_recibo_papel")
 }
