@@ -1,21 +1,26 @@
-import { Bell, ChevronRight, Info, MapPin, Plus } from "lucide-react";
+import { Bell, ChevronRight, CircleCheck, Info, MapPin, Plus, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { soles } from "@/compartido/dinero";
 import { fechaLarga, horaCorta, primerNombre, saludo } from "@/compartido/fechas";
+import { consultarTablero, opcionesDelTablero } from "@/modulos/aportes/aplicacion/tablero";
 import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 import { quejasPorAtender } from "@/modulos/incidencias/aplicacion/quejas";
+import { Cuadre } from "./cobros/recaudacion/Cuadre";
 
 export const metadata: Metadata = { title: "Resumen de la directiva" };
 
-// DIR-INI-01. Las bandejas y lo que se puede crear llegan con las HU de cada módulo.
+// DIR-INI-01. Las bandejas llegan con las HU de cada módulo; la recaudación del mes es de HU-COB-13.
 export default async function ResumenDirectiva() {
   const sesion = await sesionActual();
   const ahora = new Date();
   const quejas = sesion && (await quejasPorAtender(sesion));
   const proxima = sesion ? await proximaAsamblea(sesion, ahora) : null;
+  const recaudacion = sesion && (await consultarTablero(sesion, {}, ahora));
+  const mes = opcionesDelTablero(undefined, ahora).periodo.etiqueta;
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-titulo-1">
@@ -59,6 +64,55 @@ export default async function ResumenDirectiva() {
             Ver todas las alertas de la directiva
             <ChevronRight aria-hidden className="size-icono" />
           </Link>
+        </section>
+      )}
+      {recaudacion && (
+        <section aria-labelledby="titulo-recaudacion" className="flex flex-col gap-4 pt-4">
+          <h2 id="titulo-recaudacion" className="text-titulo-2">
+            Recaudación
+          </h2>
+          <p className="text-texto-secundario">{mes}</p>
+          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {[
+              ["Se cobró", soles(recaudacion.seCobro), `${recaudacion.recibos} recibos`],
+              [
+                "Falta cobrar",
+                soles(recaudacion.faltaCobrar.monto),
+                `${recaudacion.faltaCobrar.cuotas} cuotas semanales`,
+              ],
+            ].map(([titulo, valor, detalle]) => (
+              <div
+                key={titulo}
+                className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+              >
+                <dt className="text-pequeno text-texto-secundario">{titulo}</dt>
+                <dd className="text-titulo-2 font-bold">{valor}</dd>
+                <dd className="text-pequeno text-texto-secundario">{detalle}</dd>
+              </div>
+            ))}
+          </dl>
+          <Cuadre t={recaudacion} />
+          <div className="flex flex-col gap-2">
+            <h3 className="text-titulo-3">Estado de las casas</h3>
+            <p className="text-texto-secundario">{recaudacion.casas.total} casas</p>
+            <ul className="flex flex-col gap-2">
+              <li className="flex items-center gap-2">
+                <CircleCheck aria-hidden className="size-icono-pequeno text-texto-exito" />
+                <span className="font-bold">Al día:</span> {recaudacion.casas.alDia} casas
+              </li>
+              <li className="flex items-center gap-2">
+                <TriangleAlert aria-hidden className="size-icono-pequeno text-texto-aviso" />
+                <span className="font-bold">Atraso de 1 a 7 semanas:</span> {recaudacion.casas.atraso} casas
+              </li>
+              <li className="flex items-center gap-2">
+                <TriangleAlert aria-hidden className="size-icono-pequeno text-texto-error" />
+                <span className="font-bold">8 semanas o más:</span> {recaudacion.casas.critico} casas
+              </li>
+            </ul>
+          </div>
+          <BotonEnlace href="/directiva/cobros/recaudacion" variante="secundario" icono={ChevronRight}>
+            Ver la recaudación completa
+          </BotonEnlace>
         </section>
       )}
       <section aria-labelledby="titulo-proxima-asamblea" className="flex flex-col gap-4 pt-4">
