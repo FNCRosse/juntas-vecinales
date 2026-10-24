@@ -134,6 +134,8 @@ export async function miCuota(sesion: SesionDto) {
   const pagosEnRevision = new Map([...enRevision.values()].map((p) => [p.pagoId, p.monto]));
   return {
     vivienda: casa.vivienda,
+    // La apertura automática de la reja está suspendida por 8 semanas o más de atraso (HU-COB-06).
+    rejaSuspendida: casa.estadoGarita === "ROJO",
     debe: pendientes.reduce((suma, c) => suma + c.saldoPendiente, 0),
     semanas: pendientes.map((c) => ({
       id: c.id,

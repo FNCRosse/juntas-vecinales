@@ -69,6 +69,8 @@ describe("@HU-COB-01 Mi cuota", () => {
 
   it("@HU-COB-01 CA1 el mediador, que no es vecino, no entra a Mi cuota", () => {
     cy.clearCookies();
+    // Otra prueba (Equipo) le da a Pedro el rol de Directiva: aquí vuelve a ser mediador, sin depender del orden.
+    cy.task("rolDePrueba", { dni: "40000003", rol: "DIRECTIVO_MEDIADOR" });
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
     // El mediador no es vecino: la pantalla de vecinos lo manda a su propio inicio.
     cy.visit("/cuota");

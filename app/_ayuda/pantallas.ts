@@ -8,6 +8,7 @@ const NOMBRES: [RegExp, string][] = [
   [/^\/guia/, "Guía rápida"],
   [/^\/mas\/ayuda-y-accesibilidad/, "Ayuda y accesibilidad"],
   [/^\/mas/, "Más opciones"],
+  [/^\/cuota\/reja/, "La reja no se abre sola"],
   [/^\/cuota/, "Mi cuota"],
   [/^\/asambleas/, "Asambleas"],
   [/^\/incidentes/, "Incidentes"],

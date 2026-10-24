@@ -93,6 +93,8 @@ describe("@HU-COB-09 Revisar y aprobar un comprobante", () => {
     const nombre = `Vecina Mediador ${sufijo}`;
     vecinaConPago(nombre, 3);
     cy.clearCookies();
+    // Otra prueba (Equipo) le da a Pedro el rol de Directiva: aquí vuelve a ser mediador, sin depender del orden.
+    cy.task("rolDePrueba", { dni: "40000003", rol: "DIRECTIVO_MEDIADOR" });
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
     cy.guardarModo("senior");
     cy.viewport(360, 800);
@@ -107,6 +109,8 @@ describe("@HU-COB-09 Revisar y aprobar un comprobante", () => {
 
   it("@HU-COB-09 sin ser directiva, aprobar por la API responde 403", () => {
     cy.clearCookies();
+    // Otra prueba (Equipo) le da a Pedro el rol de Directiva: aquí vuelve a ser mediador, sin depender del orden.
+    cy.task("rolDePrueba", { dni: "40000003", rol: "DIRECTIVO_MEDIADOR" });
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
     cy.request({
       method: "PATCH",

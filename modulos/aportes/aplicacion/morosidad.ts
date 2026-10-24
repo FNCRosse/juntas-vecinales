@@ -1,17 +1,26 @@
-// @HU-COB-05
+// @HU-COB-05 @HU-COB-06
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { prisma } from "@/compartido/bd/cliente";
 import { Prisma } from "@/compartido/bd/generado/client";
 import { soles } from "@/compartido/dinero";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
 import { etiquetaDeSemana, lunesDe } from "@/modulos/aportes/dominio/cuota";
-import { cuotaParaAlertar, diasDeRetraso } from "@/modulos/aportes/dominio/morosidad";
+import {
+  clasificarMorosidad,
+  cuotaParaAlertar,
+  diasDeRetraso,
+  SEMANAS_PARA_CRITICO,
+} from "@/modulos/aportes/dominio/morosidad";
+import { textoDeSemanas } from "@/modulos/aportes/dominio/pago";
+import { cuotasPorPagarDe } from "@/modulos/aportes/infraestructura/repositorioCuotas";
 import {
   cuotasImpagasPorCasa,
   cuotasYaAlertadas,
   registrarAlerta,
 } from "@/modulos/aportes/infraestructura/repositorioMorosidad";
-import { casasDe } from "@/modulos/identidad/aplicacion/comunidad";
+import { casasDe, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
+import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
+import { suspenderAperturaAutomatica } from "@/modulos/identidad/aplicacion/visitas";
 
 const minuscula = (texto: string) => texto.charAt(0).toLowerCase() + texto.slice(1);
 
@@ -90,3 +99,79 @@ export async function alertarMorosidad(ahora = new Date()) {
   }
   return { casas: candidatas.length, alertas };
 }
+
+/**
+ * Tarea del worker (HU-COB-06): a las 8 semanas seguidas de impago, la casa pasa a atraso crítico. Para cada casa cuya cuota
+ * impaga más antigua lleva 8 semanas o más desde su fecha límite, en una sola transacción: sincroniza el padrón de garita
+ * (la reja deja de abrirse sola, CA2), avisa a sus residentes con una notificación formal de seguridad que no se puede
+ * desactivar y dice cómo regularizar (CA3), y lo deja en la auditoría. No cobra nada de más ni toca las cuotas. Idempotente:
+ * el cambio de semáforo es un UPDATE condicionado, así que una casa ya suspendida no se vuelve a avisar, y correrla dos
+ * veces a la vez avisa una sola. Ponerla al día la restituye (HU-COB-07 y los pagos aprobados), no esta tarea.
+ */
+export async function suspenderCasasConAtrasoCritico(ahora = new Date()) {
+  const porCasa = await cuotasImpagasPorCasa();
+  const criticas = [...porCasa].filter(
+    ([, impagas]) => clasificarMorosidad(impagas, ahora) === "MOROSO_CRITICO",
+  );
+  if (!criticas.length) return { casas: 0, suspendidas: 0 };
+
+  const casas = await casasDe(criticas.map(([predioId]) => predioId));
+  let suspendidas = 0;
+  for (const [predioId, impagas] of criticas) {
+    const casa = casas.get(predioId);
+    if (!casa || casa.estadoGarita === "ROJO" || !casa.residentes.length) continue;
+    const debe = impagas.reduce((suma, c) => suma + c.saldoPendiente, 0);
+    const semanas = impagas.length;
+    const cambio = await prisma.$transaction(async (tx) => {
+      if (!(await suspenderAperturaAutomatica(predioId, tx))) return false;
+      await encolarAvisos(
+        casa.residentes.map((destinatarioId) => ({
+          destinatarioId,
+          tipo: "SEGURIDAD" as const,
+          titulo: "Por ahora la reja no se abre sola",
+          texto: `Su casa lleva ${semanas} semanas pendientes de pago (hoy debe ${soles(debe)}). Por eso el vigilante ya no abre la reja automáticamente: usted puede entrar abriéndola a mano, como siempre, y por ahora no puede registrar visitas nuevas. Para volver a la normalidad, pague lo pendiente por la app o en efectivo; apenas la directiva lo valide, la reja vuelve a abrirse sola. Si no puede pagarlo todo junto, converse con la directiva.`,
+        })),
+        tx,
+      );
+      await registrarAuditoria(
+        {
+          actorId: null,
+          accion: "clasificar_morosidad",
+          entidad: "Predio",
+          entidadId: predioId,
+          antes: { garita: "La reja se abre sola" },
+          despues: {
+            estado: "Atraso crítico",
+            semanas,
+            debe: soles(debe),
+            garita: "La reja no se abre sola",
+          },
+        },
+        tx,
+      );
+      return true;
+    });
+    if (cambio) suspendidas += 1;
+  }
+  return { casas: criticas.length, suspendidas };
+}
+
+/**
+ * «Por ahora la reja no se abre sola» (VEC-COB-12): lo que pasa con la reja de su casa, cuánto debe y desde cuándo, y cómo
+ * volver a la normalidad. Solo ve su casa (AC-7). `null` si no figura como residente de una casa.
+ */
+export async function miReja(sesion: SesionDto) {
+  exigirRol(sesion, "VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR");
+  const casa = await predioDelVecino(sesion.usuarioId);
+  if (!casa) return null;
+  const cuotas = await cuotasPorPagarDe(casa.id);
+  return {
+    suspendida: casa.estadoGarita === "ROJO",
+    semanas: cuotas.length,
+    debe: cuotas.reduce((suma, c) => suma + c.saldoPendiente, 0),
+    detalle: textoDeSemanas(cuotas.map((c) => c.periodo)),
+    umbral: SEMANAS_PARA_CRITICO,
+  };
+}
+
+export type MiReja = NonNullable<Awaited<ReturnType<typeof miReja>>>;

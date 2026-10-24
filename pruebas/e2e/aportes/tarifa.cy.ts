@@ -95,6 +95,8 @@ describe("@HU-COB-16 Tarifa de la cuota semanal", () => {
   });
 
   it("@HU-COB-16 CA1 el mediador ve la tarifa sin poder editarla, en modo Senior", () => {
+    // Otra prueba (Equipo) le da a Pedro el rol de Directiva: aquí vuelve a ser mediador, sin depender del orden.
+    cy.task("rolDePrueba", { dni: "40000003", rol: "DIRECTIVO_MEDIADOR" });
     entrarComo("40000003", false);
     cy.guardarModo("senior");
     cy.viewport(360, 800);

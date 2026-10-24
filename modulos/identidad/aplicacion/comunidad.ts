@@ -20,7 +20,7 @@ export const totalDePredios = async () => (await contarPadron()).predios;
 /** Puerto para M4: el predio del vecino (su residencia vigente) con su vivienda en texto, o null si no está. */
 export async function predioDelVecino(usuarioId: string) {
   const predio = await viviendaDe(usuarioId);
-  return predio ? { id: predio.id, vivienda: direccion(predio) } : null;
+  return predio ? { id: predio.id, vivienda: direccion(predio), estadoGarita: predio.estadoGarita } : null;
 }
 
 /**

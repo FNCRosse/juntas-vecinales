@@ -188,6 +188,8 @@ describe("@HU-COB-10 Observar un comprobante y mandar otra foto", () => {
     const nombre = `Vecina Mediador ${sufijo}`;
     vecinaConPago(nombre);
     cy.clearCookies();
+    // Otra prueba (Equipo) le da a Pedro el rol de Directiva: aquí vuelve a ser mediador, sin depender del orden.
+    cy.task("rolDePrueba", { dni: "40000003", rol: "DIRECTIVO_MEDIADOR" });
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
     cy.viewport(360, 800);
     cy.visit("/directiva/cobros");

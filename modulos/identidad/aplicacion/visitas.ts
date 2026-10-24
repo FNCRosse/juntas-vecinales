@@ -13,6 +13,7 @@ import {
   anular,
   crearVisita,
   guardarEstadoGarita,
+  suspenderGaritaSiNoLoEsta,
   visitaDelPredio,
   visitasDelPredio,
   viviendaDe,
@@ -83,6 +84,13 @@ export async function anularVisita(sesion: SesionDto, id: string, ahora = new Da
   await verVisita(sesion, id, ahora);
   return aDto(await anular(id, ahora));
 }
+
+/**
+ * Puerto para M5 (HU-COB-06): suspende la apertura automática de la casa cuando su atraso llega a 8 semanas. Devuelve
+ * verdadero solo si esta llamada fue la que cambió el semáforo, así M5 avisa una sola vez por suspensión.
+ */
+export const suspenderAperturaAutomatica = (predioId: string, tx: Transaccion) =>
+  suspenderGaritaSiNoLoEsta(tx, predioId);
 
 /**
  * Puerto para M5 (modulos/identidad/CLAUDE.md, Garita): pasa el semáforo del predio a ROJO cuando la
