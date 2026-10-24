@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { leerJson, manejar } from "@/compartido/manejar";
 import { anonimizar as anonimizarAccesibilidad } from "@/modulos/accesibilidad/aplicacion/datosPersonales";
+import { anonimizar as anonimizarAportes } from "@/modulos/aportes/aplicacion/datosPersonales";
 import { anonimizar as anonimizarAsambleas } from "@/modulos/asambleas/aplicacion/datosPersonales";
 import { anonimizar as anonimizarIncidencias } from "@/modulos/incidencias/aplicacion/datosPersonales";
 import { resolverSolicitudArco } from "@/modulos/identidad/aplicacion/arco";
@@ -21,6 +22,7 @@ export const PATCH = manejar<{ params: Promise<{ id: string }> }>(async (peticio
       anonimizarAccesibilidad,
       anonimizarIncidencias,
       anonimizarAsambleas,
+      anonimizarAportes,
     ]),
   );
 });

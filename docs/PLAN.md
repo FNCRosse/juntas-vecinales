@@ -88,9 +88,9 @@ Garita:
 
 Privacidad (ARCO) y contacto:
 - [x] HU-GAR-16 Bandeja ARCO del administrador con plazos
-- [~] HU-GAR-12 Copia de mis datos personales — `[~]` M1 dejó el PDF con las secciones de identidad y accesibilidad; M3, la de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, la de asambleas y actividades (PR [#80](https://github.com/FNCRosse/juntas-vecinales/pull/80)); se cierra en M5: falta la sección de aportes
+- [x] HU-GAR-12 Copia de mis datos personales — M1 dejó el PDF con las secciones de identidad y accesibilidad; M3, la de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, la de asambleas y actividades (PR [#80](https://github.com/FNCRosse/juntas-vecinales/pull/80)); M5, la de aportes: la deuda de su casa, sus pagos, los recibos con su nombre, sus reclamos y sus pedidos (PR [#97](https://github.com/FNCRosse/juntas-vecinales/pull/97))
 - [x] HU-GAR-13 Rectificación de datos
-- [~] HU-GAR-14 Cancelación de la cuenta — `[~]` M1 anonimiza identidad y accesibilidad; M3, los reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, el apoderado y los textos libres (PR [#80](https://github.com/FNCRosse/juntas-vecinales/pull/80)); se cierra en M5: falta la anonimización de aportes
+- [x] HU-GAR-14 Cancelación de la cuenta — M1 anonimiza identidad y accesibilidad; M3, los reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, el apoderado y los textos libres (PR [#80](https://github.com/FNCRosse/juntas-vecinales/pull/80)); M5, los recibos (el trigger admite solo el nombre anonimizado) y lo que escribió a mano en reclamos y pedidos (PR [#97](https://github.com/FNCRosse/juntas-vecinales/pull/97))
 - [x] HU-GAR-15 Oposición a mostrar la ubicación exacta — M1 dejó la opción; se cerró en M3: el mapa muestra todos los reportes solo por manzana (PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45))
 - [x] HU-GAR-17 Cambio de número de contacto verificado
 
