@@ -50,6 +50,14 @@ export default async function MiCuota() {
           </p>
         </MensajeEstado>
       )}
+      {cuota.reclamoEnRevision && (
+        <MensajeEstado tipo="info" titulo="Su reclamo está en revisión">
+          <p>
+            Reclamo N.° {cuota.reclamoEnRevision.numero}. Mientras la directiva responde, no tiene que pagar
+            la diferencia que reclama.
+          </p>
+        </MensajeEstado>
+      )}
       {cuota.cobroEnCasa && (
         <MensajeEstado tipo="info" titulo="Irán a su casa a cobrar">
           <p>
@@ -151,6 +159,17 @@ export default async function MiCuota() {
                 </tr>
               </tfoot>
             </table>
+            <p>
+              ¿Cree que el monto no es correcto?{" "}
+              <Link
+                href={
+                  cuota.reclamoEnRevision ? `/cuota/reclamo/${cuota.reclamoEnRevision.id}` : "/cuota/reclamo"
+                }
+                className="inline-flex min-h-tactil items-center font-bold text-texto-enlace underline underline-offset-4"
+              >
+                {cuota.reclamoEnRevision ? "Ver mi reclamo" : "Hacer un reclamo"}
+              </Link>
+            </p>
           </>
         ) : (
           <p>Todavía no tiene cuotas. La primera se calcula el lunes.</p>

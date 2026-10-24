@@ -98,7 +98,9 @@ describe("@HU-COB-05 CA3 Bitácora, sin sanciones", () => {
       residentesAvisados: 1,
     });
     const auditoria = await prisma.registroAuditoria.findFirstOrThrow({
-      where: { accion: "alertar_morosidad" },
+      // La auditoría no se vacía entre pruebas (solo inserción) y otras corridas del worker también escriben: esta es la de esa semana.
+      where: { accion: "alertar_morosidad", entidadId: "2026-09-21" },
+      orderBy: { fecha: "desc" },
     });
     expect(auditoria).toMatchObject({ actorId: null, despues: { recordatorios: await casasConDeuda() } });
   });

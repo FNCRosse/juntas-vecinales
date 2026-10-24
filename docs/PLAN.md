@@ -170,7 +170,7 @@ Al cerrar M4 también: bloque de próximo evento en el panel, recorrido guiado d
 - [x] HU-COB-07 Liquidar la deuda histórica y restituir la garita — PR [#91](https://github.com/FNCRosse/juntas-vecinales/pull/91): «Poner al día a un vecino» (DIR-COB-15 a 17): se busca a la casa, se registra el pago total de su deuda en efectivo o por Yape, Plin o transferencia, y en la misma transacción queda al día, la reja vuelve a abrirse sola, se emite el recibo y se avisa a la casa y a la garita
 - [x] HU-COB-05 Alerta preventiva a la semana de retraso (worker) — PR [#92](https://github.com/FNCRosse/juntas-vecinales/pull/92): tarea `alertarMorosidad`: a los 7 días de retraso, un recordatorio amable a la casa (monto y cómo pagar, sin sanciones), una sola vez por cuota y con su bitácora de solo inserción; no toca la garita ni cobra nada de más
 - [x] HU-COB-06 Moroso crítico a las 8 semanas y suspensión en garita (worker) — PR [#93](https://github.com/FNCRosse/juntas-vecinales/pull/93): tarea `clasificarMorosidad`: a las 8 semanas de impago la casa pasa a atraso crítico, la reja deja de abrirse sola (se sincroniza el padrón de garita), se avisa a la casa con una notificación formal y se explica en «Por ahora la reja no se abre sola» (VEC-COB-12)
-- [ ] HU-COB-03 Solicitud de ajuste de tarifa
+- [x] HU-COB-03 Solicitud de ajuste de tarifa — PR [#94](https://github.com/FNCRosse/juntas-vecinales/pull/94): «Reclamo sobre mi cuota» en dos pasos (VEC-COB-08 a 10) con motivo, nota y documento opcional; las cuotas pasan a «En discrepancia», se avisa a la directiva y no se puede hacer otro reclamo mientras hay uno en revisión (VEC-COB-11); la respuesta de la directiva es HU-COB-04
 - [ ] HU-COB-04 Auditar solicitudes de ajuste
 - [ ] HU-COB-13 Tablero de recaudación
 

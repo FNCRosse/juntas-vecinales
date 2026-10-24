@@ -34,7 +34,7 @@ Enums: `UnidadCobro` (POR_FAMILIA, POR_VEHICULO, POR_INQUILINO, POR_LOCAL) · `E
 - Hacia el vecino nunca se dice "moroso": "Al día", "Con retraso", "Pagos pendientes".
 
 **Ajustes y tablero**
-- Ajuste: motivo de una lista y sustento adjunto; la cuota pasa a EN_DISCREPANCIA y se avisa a la directiva. Un solo reclamo abierto por cuota (índice único parcial). Aprobar recalcula y avisa el nuevo importe; rechazar ratifica y avisa el motivo.
+- Ajuste (reclamo, `SolicitudAjusteTarifa`): motivo de una lista (ya no tengo inquilino, menos autos o motos, ya pagué, otro) y sustento adjunto opcional; cubre las cuotas que la casa debe (`ReclamoCuota`, que guarda su estado anterior para devolverlo si el importe se mantiene), que pasan a EN_DISCREPANCIA, y se avisa a la directiva. Una casa tiene un solo reclamo abierto (índice único parcial por predio y estado EN_REVISION); mientras tanto esas cuotas no cuentan para los recordatorios ni para la suspensión de la garita («no tiene que pagar la diferencia que reclama»). Idempotente por `idOperacion`. Aprobar recalcula y avisa el nuevo importe; rechazar ratifica y avisa el motivo.
 - Tablero: suma recibos digitales y presenciales del periodo; filtra por estado de morosidad y rango de fechas; debe cuadrar al céntimo con el total de recibos emitidos (prueba de integración). Gráfico con tabla equivalente.
 - Expone a M2 los totales agregados del periodo y el historial exportable, nunca filas por predio hacia el rol vecino.
 
