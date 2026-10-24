@@ -16,6 +16,7 @@ export const crearRecibo = (
     fecha: Date;
     registradoPor: string;
     registradoPorId: string;
+    enviadoEn?: Date;
   },
 ) => tx.recibo.create({ data: datos });
 

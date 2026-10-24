@@ -1,6 +1,8 @@
-// Service worker de la garita (FRONTEND.md §6), escrito a mano: guarda la pantalla de consulta y
-// sus archivos para abrirla sin internet. La lista de casas no va aquí: va en IndexedDB.
-const CACHE = "garita-v1";
+// Service worker (FRONTEND.md §6), escrito a mano: guarda la pantalla de consulta de la garita y la de cobros en
+// efectivo guardados de la directiva, con sus archivos, para abrirlas sin internet. Los datos no van aquí: la lista de
+// casas y la cola de cobros van en IndexedDB.
+const CACHE = "sin-conexion-v1";
+const PANTALLAS = ["/garita/consultar", "/directiva/cobros/guardados"];
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -17,7 +19,7 @@ self.addEventListener("fetch", (evento) => {
   const { request } = evento;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
-  const pantalla = request.mode === "navigate" && url.pathname === "/garita/consultar";
+  const pantalla = request.mode === "navigate" && PANTALLAS.includes(url.pathname);
   if (!pantalla && !url.pathname.startsWith("/_next/static/")) return;
   // Primero la red; sin red, lo último guardado.
   evento.respondWith(

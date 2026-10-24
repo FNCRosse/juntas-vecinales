@@ -3,9 +3,14 @@
 // El dominio solo arma las opciones; no sabe de la BD ni de los archivos. Montos en céntimos enteros.
 import { sumarDias } from "./cuota";
 
-export const MEDIOS = { YAPE_O_PLIN: "Yape o Plin", TRANSFERENCIA: "Transferencia bancaria" } as const;
-export type MedioDigital = keyof typeof MEDIOS;
-export const MEDIOS_DIGITALES = Object.keys(MEDIOS) as MedioDigital[];
+export const MEDIOS = {
+  YAPE_O_PLIN: "Yape o Plin",
+  TRANSFERENCIA: "Transferencia bancaria",
+  EFECTIVO: "Efectivo, en su casa",
+} as const;
+export type MedioDigital = "YAPE_O_PLIN" | "TRANSFERENCIA";
+/** Los medios con comprobante (HU-COB-08); el efectivo lo cobra la directiva en la casa (HU-COB-11). */
+export const MEDIOS_DIGITALES: MedioDigital[] = ["YAPE_O_PLIN", "TRANSFERENCIA"];
 
 export type CuotaPorPagar = { id: string; periodo: string; saldo: number };
 export type OpcionDePago = {
