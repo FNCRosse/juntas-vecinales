@@ -253,6 +253,40 @@ export default defineConfig({
             await cliente.end();
           }
         },
+        // Un cobro ya aprobado con su recibo para la casa de esa persona, de hoy (HU-COB-13): lo que suma el tablero de recaudación.
+        // Solo la BD de pruebas.
+        async reciboDePrueba({
+          dni,
+          monto,
+          medio,
+        }: {
+          dni: string;
+          monto: number;
+          medio: "YAPE_O_PLIN" | "TRANSFERENCIA" | "EFECTIVO";
+        }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            const { rows } = await cliente.query<{ predioId: string; usuarioId: string }>(
+              `SELECT r."predioId", r."usuarioId" FROM identidad_residencias r JOIN identidad_usuarios u ON u.id = r."usuarioId"
+               WHERE u.dni = $1 AND r."fechaFin" IS NULL`,
+              [dni],
+            );
+            const { rows: pago } = await cliente.query<{ id: string }>(
+              `INSERT INTO aportes_pagos (id, "idOperacion", "predioId", "autorId", medio, monto, estado)
+               VALUES (gen_random_uuid(), gen_random_uuid()::text, $1, $2, $3::"MedioDePago", $4::int, 'APROBADO') RETURNING id`,
+              [rows[0].predioId, rows[0].usuarioId, medio, monto],
+            );
+            await cliente.query(
+              `INSERT INTO aportes_recibos (id, "pagoId", "predioId", titular, vivienda, concepto, medio, monto, fecha, "registradoPor", "registradoPorId")
+               VALUES (gen_random_uuid(), $1, $2, 'Titular de prueba', 'Mz. X, lote 1', 'Cuota de vigilancia', $3, $4::int, now(), 'Prueba', $5)`,
+              [pago[0].id, rows[0].predioId, medio, monto, rows[0].usuarioId],
+            );
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
         // Un archivo ya "subido" por esa persona (un comprobante o la evidencia de una queja): el CI no
         // habla con R2 (docs/PRUEBAS.md §2), así que la prueba simula la subida y usa este. Solo la BD de pruebas.
         async archivoDePrueba({ dni, uso = "comprobante_egreso" }: { dni: string; uso?: string }) {
