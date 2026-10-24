@@ -38,6 +38,16 @@ export async function directivaParaAvisar() {
   return personas.map((p) => p.id);
 }
 
+/** A quién avisar en la garita (HU-COB-07 CA3): los vigilantes activos. */
+export async function vigilantesParaAvisar() {
+  const personas = await prisma.usuario.findMany({
+    where: { estado: "ACTIVA", roles: { has: "VIGILANTE" } },
+    select: { id: true },
+    orderBy: { nombreCompleto: "asc" },
+  });
+  return personas.map((p) => p.id);
+}
+
 /** Nombres de las personas por su id, para mostrar quién reportó una queja con nombre. */
 export async function nombresDe(ids: string[]) {
   const personas = await prisma.usuario.findMany({

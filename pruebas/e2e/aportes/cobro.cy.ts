@@ -272,7 +272,8 @@ describe("@HU-COB-11 Cobro en efectivo", { defaultCommandTimeout: 15000 }, () =>
     cy.viewport(360, 800);
     pedirQueVayanACobrar();
     cy.contains("button", "Prefiero pagar por Yape o transferencia").click();
-    cy.location("pathname").should("eq", "/cuota/pagar");
+    cy.contains("h1", "Pagar mi cuota").should("exist");
+    cy.contains("button", "Elegir cuánto").should("exist");
     cy.visit("/cuota");
     cy.contains("Irán a su casa a cobrar").should("not.exist");
     entrarComoDirectiva();

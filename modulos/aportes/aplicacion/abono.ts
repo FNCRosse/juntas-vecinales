@@ -1,4 +1,4 @@
-// @HU-COB-09 @HU-COB-11
+// @HU-COB-09 @HU-COB-11 @HU-COB-07
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import type { Transaccion } from "@/compartido/bd/cliente";
 import type { MedioDePago } from "@/compartido/bd/generado/client";
@@ -37,6 +37,10 @@ export async function aplicarPagoAprobado(
     enviarRecibo: boolean;
     /** Lo recibido que no cabía en las cuotas por pagar. */
     excedente?: number;
+    /** Cómo se dice el medio en el recibo, si no es el de siempre (por ejemplo, con el número de operación). */
+    medioTexto?: string;
+    /** Algo más que decirle a quien pagó, al final del aviso («La reja vuelve a abrirse sola»). */
+    avisoExtra?: string;
   },
 ) {
   const { pago } = datos;
@@ -59,7 +63,7 @@ export async function aplicarPagoAprobado(
     titular: datos.titular,
     vivienda: datos.vivienda,
     concepto: datos.concepto,
-    medio: MEDIOS[pago.medio],
+    medio: datos.medioTexto ?? MEDIOS[pago.medio],
     monto: pago.monto,
     fecha: datos.fecha,
     registradoPor: datos.registradoPor.nombre,
@@ -82,7 +86,7 @@ export async function aplicarPagoAprobado(
       destinatarioId,
       tipo: "PAGOS" as const,
       titulo: "Su pago fue aprobado",
-      texto: `Recibimos su pago de ${soles(pago.monto)}. ${aviso}`,
+      texto: `Recibimos su pago de ${soles(pago.monto)}. ${aviso}${datos.avisoExtra ? ` ${datos.avisoExtra}` : ""}`,
     })),
     tx,
   );

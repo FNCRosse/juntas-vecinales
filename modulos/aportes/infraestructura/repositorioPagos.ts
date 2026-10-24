@@ -176,6 +176,8 @@ export const crearPagoPresencial = (
     monto: number;
     creadoEn: Date;
     partes: { cuotaId: string; monto: number }[];
+    /** Efectivo salvo cuando la casa liquida su deuda por Yape, Plin o transferencia (HU-COB-07). */
+    medio?: MedioDePago;
   },
 ) =>
   tx.pago.create({
@@ -183,7 +185,7 @@ export const crearPagoPresencial = (
       idOperacion: datos.idOperacion,
       predioId: datos.predioId,
       autorId: datos.autorId,
-      medio: "EFECTIVO",
+      medio: datos.medio ?? "EFECTIVO",
       monto: datos.monto,
       estado: "APROBADO",
       creadoEn: datos.creadoEn,

@@ -32,7 +32,13 @@ export async function casasDe(predioIds: string[]) {
   return new Map(
     predios.map((p) => [
       p.id,
-      { vivienda: direccion(p), nombre: p.residencias[0]?.usuario.nombreCompleto ?? "Sin residentes" },
+      {
+        vivienda: direccion(p),
+        nombre: p.residencias[0]?.usuario.nombreCompleto ?? "Sin residentes",
+        // A quiénes avisarles lo que pasa con la casa, y si la garita le abre la reja sola (HU-COB-07).
+        residentes: p.residencias.map((r) => r.usuarioId),
+        estadoGarita: p.estadoGarita,
+      },
     ]),
   );
 }

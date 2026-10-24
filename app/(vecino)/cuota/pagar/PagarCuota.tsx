@@ -186,7 +186,11 @@ export function PagarCuota({
     setEnviando(false);
     if (!r.ok) return setFalla(r.error);
     // Vuelve a «Pagar mi cuota» con todo en blanco para elegir otro medio.
-    window.location.assign("/cuota/pagar");
+    idOperacion.current = null;
+    setPedido(null);
+    setDatos({ semanas: null, medio: null, archivoId: "", archivo: "", franja: null, nota: "" });
+    setErrores({});
+    setPaso("datos");
   }
 
   if (paso === "pedido" && pedido) {
