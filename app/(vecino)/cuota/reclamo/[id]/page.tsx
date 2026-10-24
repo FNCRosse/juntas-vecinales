@@ -9,6 +9,12 @@ import { verMiReclamo } from "@/modulos/aportes/aplicacion/reclamos";
 
 export const metadata: Metadata = { title: "Su reclamo" };
 
+const TITULOS: Record<string, string> = {
+  "En revisión": "Su reclamo está en revisión",
+  Aprobado: "Su reclamo fue aprobado",
+  "Se mantiene su cuota": "La directiva revisó su reclamo",
+};
+
 // VEC-COB-10 (HU-COB-03 CA2): el reclamo enviado, en revisión, con su constancia. Se llega a él al enviarlo (con «enviado») y
 // desde «Ya tiene un reclamo en revisión». Solo de su casa: otra casa recibe 404 (AC-7).
 export default async function MiReclamo({
@@ -34,11 +40,7 @@ export default async function MiReclamo({
           <p>Avisamos a la directiva.</p>
         </MensajeEstado>
       )}
-      <h1 className="text-titulo-1">
-        {reclamo.estado === "En revisión"
-          ? "Su reclamo está en revisión"
-          : `Su reclamo: ${reclamo.estado.toLowerCase()}`}
-      </h1>
+      <h1 className="text-titulo-1">{TITULOS[reclamo.estado] ?? "Su reclamo"}</h1>
       <section
         aria-label="Su reclamo"
         className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
@@ -51,6 +53,12 @@ export default async function MiReclamo({
           {reclamo.estado}
         </span>
       </section>
+      {reclamo.respuesta && (
+        <section aria-label="Respuesta de la directiva" className="flex flex-col gap-2">
+          <h2 className="text-titulo-2">Lo que respondió la directiva</h2>
+          <p>{reclamo.respuesta}</p>
+        </section>
+      )}
       {reclamo.estado === "En revisión" && (
         <p>
           Su cuota figura como en reclamo hasta que la directiva responda. Le avisaremos aquí si la ajustan o

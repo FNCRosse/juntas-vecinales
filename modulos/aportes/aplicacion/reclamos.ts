@@ -34,11 +34,15 @@ const ROLES_VECINO = ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_M
 const MENSAJE_DOCUMENTO =
   "El documento tiene que ser una foto o un PDF de hasta 5 MB. Si no puede subirlo, envíe el reclamo sin él.";
 
-const ESTADO_EN_TEXTO = { EN_REVISION: "En revisión", APROBADO: "Aprobado", RECHAZADO: "Rechazado" } as const;
+export const ESTADO_EN_TEXTO = {
+  EN_REVISION: "En revisión",
+  APROBADO: "Aprobado",
+  RECHAZADO: "Se mantiene su cuota",
+} as const;
 
 type Reclamo = NonNullable<Awaited<ReturnType<typeof reclamoPorIdOperacion>>>;
 
-const aDto = (r: Reclamo) => ({
+export const aDto = (r: Reclamo) => ({
   id: r.id,
   numero: numeroDeReclamo(r.numero),
   enviado: fechaYHora(r.creadoEn),
@@ -46,6 +50,7 @@ const aDto = (r: Reclamo) => ({
   detalle: r.detalle,
   conDocumento: r.archivoId !== null,
   estado: ESTADO_EN_TEXTO[r.estado],
+  respuesta: r.respuesta,
 });
 
 export type ReclamoDto = ReturnType<typeof aDto>;

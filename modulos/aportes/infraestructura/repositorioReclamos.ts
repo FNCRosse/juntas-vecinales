@@ -10,6 +10,20 @@ export const reclamoPorIdOperacion = (idOperacion: string) =>
 export const reclamoDeLaCasa = (predioId: string, id: string) =>
   prisma.solicitudAjusteTarifa.findFirst({ where: { id, predioId } });
 
+export const reclamoPorId = (id: string) => prisma.solicitudAjusteTarifa.findUnique({ where: { id } });
+
+/** Los reclamos que esperan la respuesta de la directiva, el más reciente primero. */
+export const reclamosEnRevision = () =>
+  prisma.solicitudAjusteTarifa.findMany({
+    where: { estado: "EN_REVISION" },
+    orderBy: { creadoEn: "desc" },
+    take: 200,
+  });
+
+/** Cuántos reclamos ya respondidos tiene la casa (antecedentes del reclamo que se revisa). */
+export const reclamosRespondidosDe = (predioId: string) =>
+  prisma.solicitudAjusteTarifa.count({ where: { predioId, estado: { not: "EN_REVISION" } } });
+
 /** El reclamo que la casa todavía tiene en revisión (a lo más uno). */
 export const reclamoEnRevisionDe = (predioId: string) =>
   prisma.solicitudAjusteTarifa.findFirst({ where: { predioId, estado: "EN_REVISION" } });
