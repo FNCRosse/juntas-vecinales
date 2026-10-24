@@ -4,6 +4,7 @@ import { depurarVencidos } from "../compartido/retencion";
 import { alertarMorosidad } from "./tareas/alertarMorosidad";
 import { avisarCorteQuorum } from "./tareas/avisarCorteQuorum";
 import { calcularDeuda } from "./tareas/calcularDeuda";
+import { clasificarMorosidad } from "./tareas/clasificarMorosidad";
 
 // Número fijo del advisory lock del worker. Se usa la variante de transacción
 // (pg_try_advisory_xact_lock) porque la URL con pooling de Neon trabaja por transacción
@@ -21,7 +22,7 @@ const DURACION_MAXIMA_MS = 110_000;
  * Toma el cerrojo, corre las tareas y registra la ejecución. Si otra llamada tiene el cerrojo,
  * termina sin efecto. Tareas: despachar avisos, depurar lo vencido (DATOS.md §6) y avisar el
  * quórum al corte de cada asamblea (M4), emitir las cuotas de la semana (M5) y recordar con amabilidad la que lleva una semana de
- * retraso (HU-COB-05); suspender la garita a las 8 semanas llega con HU-COB-06.
+ * retraso (HU-COB-05) y suspender la apertura automática a las 8 semanas (HU-COB-06).
  */
 export async function ejecutarTareas(): Promise<ResultadoLlamada> {
   const iniciadaEn = new Date();
@@ -37,13 +38,14 @@ export async function ejecutarTareas(): Promise<ResultadoLlamada> {
         const avisosDeQuorum = await avisarCorteQuorum();
         const deuda = await calcularDeuda();
         const morosidad = await alertarMorosidad();
+        const suspensiones = await clasificarMorosidad();
 
         const ejecucion = await tx.ejecucionWorker.create({
           data: {
             iniciadaEn,
             terminadaEn: new Date(),
             resultado: "EXITOSA",
-            detalle: JSON.stringify({ avisos, depurados, avisosDeQuorum, deuda, morosidad }),
+            detalle: JSON.stringify({ avisos, depurados, avisosDeQuorum, deuda, morosidad, suspensiones }),
           },
         });
         return { estado: "ejecutada", id: ejecucion.id } as const;

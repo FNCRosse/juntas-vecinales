@@ -1,7 +1,7 @@
 // @HU-COB-08
 // Pago de la cuota (diagrama 02b): cuánto puede pagar una casa de lo que debe y cómo se numera la constancia de envío.
 // El dominio solo arma las opciones; no sabe de la BD ni de los archivos. Montos en céntimos enteros.
-import { sumarDias } from "./cuota";
+import { lunesDe, sumarDias } from "./cuota";
 
 export const MEDIOS = {
   YAPE_O_PLIN: "Yape o Plin",
@@ -39,6 +39,14 @@ const MESES = [
   "diciembre",
 ];
 const diaYMes = (dia: string) => ({ dia: Number(dia.slice(8)), mes: MESES[Number(dia.slice(5, 7)) - 1] });
+
+/** «3 semanas, del 7 al 27 de setiembre» para las semanas (periodos) que cubre un pago o que debe una casa. */
+export function textoDeSemanas(periodos: Date[]) {
+  if (!periodos.length) return "";
+  const lunes = periodos.map(lunesDe);
+  const cuantas = `${lunes.length} ${lunes.length === 1 ? "semana" : "semanas"}`;
+  return `${cuantas}, ${rangoDeSemanas(lunes[0], lunes.at(-1)!)}`;
+}
 
 /** «del 7 al 27 de setiembre» (o «del 28 de setiembre al 18 de octubre»): desde el lunes de la primera semana hasta el domingo de la última. */
 export function rangoDeSemanas(primera: string, ultima: string) {

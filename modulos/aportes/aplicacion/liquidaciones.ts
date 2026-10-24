@@ -8,8 +8,7 @@ import { encolarAvisos } from "@/compartido/notificaciones/encolar";
 import { aplicarPagoAprobado } from "@/modulos/aportes/aplicacion/abono";
 import { aReciboDto } from "@/modulos/aportes/aplicacion/recibos";
 import { prepararLiquidacion, repartirCobro } from "@/modulos/aportes/dominio/cobro";
-import { lunesDe } from "@/modulos/aportes/dominio/cuota";
-import { MEDIOS, rangoDeSemanas } from "@/modulos/aportes/dominio/pago";
+import { MEDIOS, textoDeSemanas } from "@/modulos/aportes/dominio/pago";
 import { cuotasPorPagarDe, ultimaCuotaDe } from "@/modulos/aportes/infraestructura/repositorioCuotas";
 import {
   bloquearCasa,
@@ -26,14 +25,6 @@ import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion
 const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 
 const minuscula = (texto: string) => texto.charAt(0).toLowerCase() + texto.slice(1);
-
-/** Las semanas que debe la casa, en palabras: «9 semanas, del 27 de julio al 27 de setiembre». */
-function textoDeSemanas(periodos: Date[]) {
-  if (!periodos.length) return "";
-  const lunes = periodos.map(lunesDe);
-  const cuantas = `${lunes.length} ${lunes.length === 1 ? "semana" : "semanas"}`;
-  return `${cuantas}, ${rangoDeSemanas(lunes[0], lunes.at(-1)!)}`;
-}
 
 /** Una casa como la ve la directiva al ponerla al día: lo que debe, desde cuándo y si la reja se le abre sola. */
 async function aCasa(predioId: string, esSuya: boolean, puedeRegistrar: boolean) {

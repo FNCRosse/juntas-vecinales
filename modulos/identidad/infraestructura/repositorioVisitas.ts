@@ -39,6 +39,15 @@ export async function anular(id: string, ahora: Date) {
   return prisma.visita.update({ where: { id }, data: { estado: "ANULADA", anuladaEn: ahora } });
 }
 
+/** Pasa el predio a ROJO solo si no lo estaba, y dice si esta llamada fue la que lo cambió (AC-5). */
+export async function suspenderGaritaSiNoLoEsta(tx: Transaccion, predioId: string) {
+  const { count } = await tx.predio.updateMany({
+    where: { id: predioId, estadoGarita: { not: "ROJO" } },
+    data: { estadoGarita: "ROJO" },
+  });
+  return count === 1;
+}
+
 export async function guardarEstadoGarita(tx: Transaccion, predioId: string, estado: EstadoGarita) {
   await tx.predio.update({ where: { id: predioId }, data: { estadoGarita: estado } });
 }

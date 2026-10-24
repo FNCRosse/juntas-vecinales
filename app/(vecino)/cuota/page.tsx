@@ -1,5 +1,6 @@
 import { CircleCheck, Info, ReceiptText, TriangleAlert, Wallet } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
@@ -39,6 +40,16 @@ export default async function MiCuota() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Mi cuota</h1>
+      {cuota.rejaSuspendida && (
+        <MensajeEstado tipo="aviso" titulo="Por ahora la reja no se abre sola">
+          <p>
+            Puede entrar abriéndola a mano, como siempre. Cuando se ponga al día, vuelve a abrirse sola.{" "}
+            <Link href="/cuota/reja" className="font-bold text-texto-enlace underline underline-offset-4">
+              Ver qué significa
+            </Link>
+          </p>
+        </MensajeEstado>
+      )}
       {cuota.cobroEnCasa && (
         <MensajeEstado tipo="info" titulo="Irán a su casa a cobrar">
           <p>

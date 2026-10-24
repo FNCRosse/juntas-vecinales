@@ -236,6 +236,8 @@ describe("@HU-COB-11 Cobro en efectivo", { defaultCommandTimeout: 15000 }, () =>
     pedirQueVayanACobrar();
 
     cy.clearCookies();
+    // Otra prueba (Equipo) le da a Pedro el rol de Directiva: aquí vuelve a ser mediador, sin depender del orden.
+    cy.task("rolDePrueba", { dni: "40000003", rol: "DIRECTIVO_MEDIADOR" });
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
     cy.visit("/directiva/cobros");
     cy.verTodos();
