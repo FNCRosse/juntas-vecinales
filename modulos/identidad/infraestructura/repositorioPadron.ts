@@ -164,3 +164,16 @@ export async function reemplazarVehiculos(tx: Transaccion, predioId: string, veh
   await tx.vehiculo.deleteMany({ where: { predioId, tipo: { in: ["AUTO_O_CAMIONETA", "MOTO"] } } });
   await tx.vehiculo.createMany({ data: vehiculos.map((v) => ({ ...v, predioId })) });
 }
+
+/** Quita una unidad de un rubro de la ocupación del predio (sin bajar de cero); devuelve antes y después, o `null` si ya estaba en cero. */
+export async function quitarUnidadDeOcupacion(
+  tx: Transaccion,
+  predioId: string,
+  rubro: "inquilinos" | "autos" | "motos" | "triciclos" | "negocios",
+) {
+  const predio = await tx.predio.findUniqueOrThrow({ where: { id: predioId } });
+  const antes = predio[rubro];
+  if (antes <= 0) return null;
+  await tx.predio.update({ where: { id: predioId }, data: { [rubro]: antes - 1 } });
+  return { antes, despues: antes - 1 };
+}

@@ -1,6 +1,7 @@
 // @HU-ASA-15
+import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import type { Transaccion } from "@/compartido/bd/cliente";
-import { contarPadron } from "@/modulos/identidad/infraestructura/repositorioPadron";
+import { contarPadron, quitarUnidadDeOcupacion } from "@/modulos/identidad/infraestructura/repositorioPadron";
 import {
   idsDeVecinosActivos,
   prediosConOcupacion,
@@ -95,4 +96,34 @@ export async function ocupacionDeLasCasas() {
     ) as Record<string, number>,
     vecinos: p.residencias.map((r) => r.usuarioId),
   }));
+}
+
+/**
+ * Puerto para M5 (HU-COB-04): cuando la directiva aprueba un reclamo de cuota («ya no tengo inquilino»), el padrón se corrige
+ * en la misma transacción para que las cuotas que vienen ya no cobren esa unidad. Quita una del rubro del concepto y lo deja
+ * en el historial del predio como un cambio de ocupación hecho por esa persona. Con los vehículos solo baja el contador:
+ * quitar la placa que ya no está sigue siendo de la administración. `null` si no hay nada que quitar.
+ */
+export async function quitarUnaUnidadDeOcupacion(
+  predioId: string,
+  clave: string,
+  actorId: string,
+  tx: Transaccion,
+) {
+  const rubro = RUBRO_DE_CONCEPTO[clave as keyof typeof RUBRO_DE_CONCEPTO];
+  if (!rubro || rubro === "familias") return null;
+  const cambio = await quitarUnidadDeOcupacion(tx, predioId, rubro);
+  if (!cambio) return null;
+  await registrarAuditoria(
+    {
+      actorId,
+      accion: "actualizar_predio",
+      entidad: "Predio",
+      entidadId: predioId,
+      antes: { [rubro]: cambio.antes },
+      despues: { [rubro]: cambio.despues },
+    },
+    tx,
+  );
+  return cambio;
 }

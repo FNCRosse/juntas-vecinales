@@ -298,17 +298,23 @@ enum EstadoReclamo {
 // (ReclamoCuota) para devolverlo si se mantiene el importe (HU-COB-04). Una casa tiene a lo más un reclamo en revisión
 // (índice único parcial). idOperacion evita enviarlo dos veces al reintentar (AC-5). El sustento es un archivo opcional.
 model SolicitudAjusteTarifa {
-  id            String         @id @default(uuid())
-  numero        Int            @unique @default(autoincrement())
-  idOperacion   String         @unique
-  predioId      String
-  solicitanteId String
-  motivo        MotivoReclamo
-  detalle       String?
-  archivoId     String?
-  estado        EstadoReclamo  @default(EN_REVISION)
-  creadoEn      DateTime       @default(now())
-  cuotas        ReclamoCuota[]
+  id               String         @id @default(uuid())
+  numero           Int            @unique @default(autoincrement())
+  idOperacion      String         @unique
+  predioId         String
+  solicitanteId    String
+  motivo           MotivoReclamo
+  detalle          String?
+  archivoId        String?
+  estado           EstadoReclamo  @default(EN_REVISION)
+  creadoEn         DateTime       @default(now())
+  // La respuesta de la directiva (HU-COB-04): quién y cuándo decidió, qué concepto se ajustó si se aprobó y el motivo que
+  // se le explica a la casa si el importe se mantiene.
+  decididoPorId    String?
+  decididoEn       DateTime?
+  conceptoAjustado String?
+  respuesta        String?
+  cuotas           ReclamoCuota[]
 
   @@index([predioId, estado])
   @@index([estado, creadoEn])
@@ -322,6 +328,9 @@ model ReclamoCuota {
   reclamo        SolicitudAjusteTarifa @relation(fields: [reclamoId], references: [id])
   cuotaId        String
   estadoAnterior EstadoCuota
+  // Lo que valía la cuota y lo que vale si se aprobó el ajuste (HU-COB-04).
+  montoAnterior  Int?
+  montoNuevo     Int?
 
   @@unique([reclamoId, cuotaId])
   @@index([cuotaId])

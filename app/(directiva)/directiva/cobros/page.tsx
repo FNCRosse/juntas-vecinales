@@ -1,4 +1,4 @@
-import { Banknote, CircleCheck, FileSearch, Info, TriangleAlert } from "lucide-react";
+import { Banknote, CircleCheck, FileSearch, Info, Scale, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
@@ -7,6 +7,7 @@ import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { soles } from "@/compartido/dinero";
 import { comprobantesPorRevisar } from "@/modulos/aportes/aplicacion/pagos";
 import { cobrosEnCasaPorAtender } from "@/modulos/aportes/aplicacion/cobros";
+import { reclamosPorAtender } from "@/modulos/aportes/aplicacion/decidirReclamos";
 import { recibosEnPapelPorEntregar } from "@/modulos/aportes/aplicacion/recibos";
 import { EntregarRecibo } from "./EntregarRecibo";
 
@@ -16,10 +17,11 @@ export const metadata: Metadata = { title: "Cobros" };
 // primero. Aprobarlos es de HU-COB-09; observarlos llega con HU-COB-10; los cobros en casa y los reclamos, con HU-COB-11 y 03.
 export default async function Cobros() {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
-  const [{ items }, { items: enPapel }, { items: enCasa }] = await Promise.all([
+  const [{ items }, { items: enPapel }, { items: enCasa }, { items: reclamos }] = await Promise.all([
     comprobantesPorRevisar(sesion),
     recibosEnPapelPorEntregar(sesion),
     cobrosEnCasaPorAtender(sesion),
+    reclamosPorAtender(sesion),
   ]);
   return (
     <div className="flex flex-col gap-6">
@@ -119,6 +121,49 @@ export default async function Cobros() {
                 {p.puedeCobrar && (
                   <BotonEnlace href={`/directiva/cobros/en-casa/${p.id}`} icono={Banknote}>
                     Ir a cobrar
+                  </BotonEnlace>
+                )}
+              </article>
+            ))}
+          />
+        </section>
+      )}
+      {reclamos.length > 0 && (
+        <section aria-labelledby="titulo-reclamos" className="flex flex-col gap-4">
+          <h2 id="titulo-reclamos" className="text-titulo-2">
+            Reclamos de cuota por atender
+          </h2>
+          <ListaVerMas
+            etiqueta="Reclamos de cuota por atender"
+            elementos={reclamos.map((r) => (
+              <article
+                key={r.id}
+                className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+              >
+                <p className="text-pequeno font-bold text-texto-secundario">
+                  Reclamo de cuota · N.° {r.numero}
+                </p>
+                <h3 className="text-titulo-3">{r.nombre}</h3>
+                <p>{r.vivienda}</p>
+                <p>{r.motivo}</p>
+                <p className="text-pequeno text-texto-secundario">{r.fecha}</p>
+                <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
+                  <Info aria-hidden className="size-icono-pequeno" />
+                  Por revisar
+                </span>
+                {r.esSuyo && (
+                  <p className="inline-flex items-center gap-1 font-bold">
+                    <CircleCheck aria-hidden className="size-icono-pequeno" />
+                    Es su casa: lo revisa otro miembro
+                  </p>
+                )}
+                {r.puedeRevisar && (
+                  <BotonEnlace
+                    href={`/directiva/cobros/reclamos/${r.id}`}
+                    variante="secundario"
+                    icono={Scale}
+                  >
+                    Revisar el reclamo
                   </BotonEnlace>
                 )}
               </article>

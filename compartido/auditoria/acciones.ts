@@ -77,6 +77,8 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   registrar_cobro_en_efectivo: { modulo: "Cobros", texto: "Registró un cobro en efectivo" },
   liquidar_deuda: { modulo: "Cobros", texto: "Registró el pago total de una deuda acumulada" },
   registrar_reclamo: { modulo: "Cobros", texto: "Reclamó el monto de su cuota" },
+  aprobar_reclamo: { modulo: "Cobros", texto: "Aprobó el ajuste de la cuota de una casa" },
+  mantener_cuota_por_reclamo: { modulo: "Cobros", texto: "Mantuvo la cuota de una casa tras su reclamo" },
   alertar_morosidad: { modulo: "Cobros", texto: "Envió recordatorios amables de cuota" },
   clasificar_morosidad: {
     modulo: "Cobros",
