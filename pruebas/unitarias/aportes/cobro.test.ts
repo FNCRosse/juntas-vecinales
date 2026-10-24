@@ -1,5 +1,6 @@
 import {
   fechaDelCobro,
+  prepararLiquidacion,
   numeroDePedidoDeCobro,
   prepararPedidoDeCobro,
   repartirCobro,
@@ -72,5 +73,24 @@ describe("@HU-COB-11 pedido y monto", () => {
     expect(fechaDelCobro("2026-10-30T16:05:00Z", ahora)).toBe(ahora);
     expect(fechaDelCobro("no es fecha", ahora)).toBe(ahora);
     expect(fechaDelCobro(undefined, ahora)).toBe(ahora);
+  });
+});
+
+describe("@HU-COB-07 CA1 cómo pagó la deuda acumulada", () => {
+  it("@HU-COB-07 CA1 hay que elegir cómo pagó; el número de operación es opcional", () => {
+    expect(prepararLiquidacion({ medio: "", numeroOperacion: "" }).errores).toEqual({
+      medio: "Elija cómo pagó.",
+    });
+    expect(prepararLiquidacion({ medio: "EFECTIVO", numeroOperacion: " " })).toEqual({
+      errores: {},
+      liquidacion: { medio: "EFECTIVO", numeroOperacion: null },
+    });
+    expect(prepararLiquidacion({ medio: "YAPE_O_PLIN", numeroOperacion: " 0045123 " }).liquidacion).toEqual({
+      medio: "YAPE_O_PLIN",
+      numeroOperacion: "0045123",
+    });
+    expect(
+      prepararLiquidacion({ medio: "TRANSFERENCIA", numeroOperacion: "9".repeat(31) }).errores,
+    ).toHaveProperty("numeroOperacion");
   });
 });

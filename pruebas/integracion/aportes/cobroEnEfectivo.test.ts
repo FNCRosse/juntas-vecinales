@@ -28,6 +28,9 @@ import { recibosEnPapelPorEntregar } from "@/modulos/aportes/aplicacion/recibos"
 import { iniciarSesionConClave } from "@/modulos/identidad/aplicacion/iniciarSesionConClave";
 import type { SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 
+// Emitir las cuotas en cada prueba tarda más que los 5 s de siempre cuando la máquina va cargada o corre con cobertura.
+jest.setTimeout(30_000);
+
 const LUNES_7 = new Date("2026-09-07T15:00:00Z");
 const LUNES_14 = new Date("2026-09-14T15:00:00Z");
 const LUNES_21 = new Date("2026-09-21T15:00:00Z");

@@ -236,6 +236,23 @@ export default defineConfig({
             await cliente.end();
           }
         },
+        // La reja de la casa de esa persona deja de abrirse sola (HU-COB-06 la suspenderá a las 8 semanas): para probar
+        // que ponerla al día la restituye (HU-COB-07). Solo la BD de pruebas.
+        async suspenderReja({ dni }: { dni: string }) {
+          const cliente = new Client({ connectionString: process.env.DATABASE_URL });
+          await cliente.connect();
+          try {
+            await cliente.query(
+              `UPDATE identidad_predios SET "estadoGarita" = 'ROJO'
+               WHERE id = (SELECT r."predioId" FROM identidad_residencias r JOIN identidad_usuarios u ON u.id = r."usuarioId"
+                           WHERE u.dni = $1 AND r."fechaFin" IS NULL)`,
+              [dni],
+            );
+            return null;
+          } finally {
+            await cliente.end();
+          }
+        },
         // Un archivo ya "subido" por esa persona (un comprobante o la evidencia de una queja): el CI no
         // habla con R2 (docs/PRUEBAS.md §2), así que la prueba simula la subida y usa este. Solo la BD de pruebas.
         async archivoDePrueba({ dni, uso = "comprobante_egreso" }: { dni: string; uso?: string }) {

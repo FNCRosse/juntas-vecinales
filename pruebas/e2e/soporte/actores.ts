@@ -70,6 +70,8 @@ export const ACTORES: Actor[] = [
       "/directiva/actividades/nueva",
       "/directiva/cobros",
       "/directiva/cobros/tarifa",
+      "/directiva/cobros/poner-al-dia",
+      "/directiva/cobros/guardados",
       "/directiva/historial",
     ],
   },
