@@ -19,8 +19,8 @@ enum TipoCambioTarifa {
 // cambio no las toca. El cambio que dio origen a la versión (qué concepto, de cuánto a cuánto) queda en la propia fila
 // para el historial. idOperacion evita programar dos veces el mismo cambio al reintentar (AC-5).
 model Tarifa {
-  id            String             @id @default(uuid())
-  idOperacion   String             @unique
+  id            String           @id @default(uuid())
+  idOperacion   String           @unique
   vigenciaDesde DateTime
   acta          String
   tipoCambio    TipoCambioTarifa
@@ -31,7 +31,7 @@ model Tarifa {
   montoNuevo    Int?
   autorId       String
   autor         String
-  creadaEn      DateTime           @default(now())
+  creadaEn      DateTime         @default(now())
   conceptos     ConceptoTarifa[]
 
   @@index([vigenciaDesde, creadaEn])
@@ -41,14 +41,14 @@ model Tarifa {
 // Un concepto de la tarifa en una versión (casa, auto o camioneta, moto, triciclo o carreta, inquilino, negocio y los
 // que apruebe la asamblea). `clave` es estable entre versiones («auto»); el monto va en céntimos enteros por semana.
 model ConceptoTarifa {
-  id        String      @id @default(uuid())
-  tarifaId  String
-  tarifa    Tarifa      @relation(fields: [tarifaId], references: [id])
-  clave     String
-  nombre    String
-  unidad    UnidadCobro
-  monto     Int
-  orden     Int
+  id       String      @id @default(uuid())
+  tarifaId String
+  tarifa   Tarifa      @relation(fields: [tarifaId], references: [id])
+  clave    String
+  nombre   String
+  unidad   UnidadCobro
+  monto    Int
+  orden    Int
 
   @@unique([tarifaId, clave])
   @@map("aportes_conceptos_tarifa")
@@ -164,14 +164,14 @@ model PagoCuota {
 // La captura o el PDF del pago (archivo en R2 con `compartido/archivos`). Un pago puede tener varios: si la directiva
 // lo observa, la casa manda otra foto.
 model Comprobante {
-  id                String            @id @default(uuid())
+  id                String             @id @default(uuid())
   pagoId            String
-  pago              Pago              @relation(fields: [pagoId], references: [id])
+  pago              Pago               @relation(fields: [pagoId], references: [id])
   archivoId         String
-  estado            EstadoComprobante @default(PENDIENTE_REVISION)
+  estado            EstadoComprobante  @default(PENDIENTE_REVISION)
   motivoObservacion MotivoObservacion?
   nota              String?
-  creadoEn          DateTime          @default(now())
+  creadoEn          DateTime           @default(now())
 
   @@index([pagoId])
   @@map("aportes_comprobantes")
@@ -262,4 +262,20 @@ model PedidoCobroEnCasa {
   @@index([estado, creadoEn])
   @@index([predioId, estado])
   @@map("aportes_pedidos_cobro_en_casa")
+}
+
+// Bitácora de los recordatorios amables (HU-COB-05): uno por cuota, cuando la casa cumple 7 días de retraso. UNIQUE por
+// cuota hace idempotente la tarea del worker: correrla varias veces, o dos a la vez, no avisa dos veces. Solo inserción
+// (trigger). No aplica sanciones en garita ni recargos: solo deja constancia de qué se avisó y cuándo.
+model AlertaPreventiva {
+  id                 String   @id @default(uuid())
+  cuotaId            String   @unique
+  predioId           String
+  diasDeRetraso      Int
+  debe               Int
+  residentesAvisados Int
+  enviadaEn          DateTime @default(now())
+
+  @@index([predioId, enviadaEn])
+  @@map("aportes_alertas_preventivas")
 }

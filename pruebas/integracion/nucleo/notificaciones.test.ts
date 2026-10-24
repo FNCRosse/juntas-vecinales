@@ -145,6 +145,7 @@ describe("@HU-INFRA ADR-006 Cola de avisos con copia interna garantizada", () =>
       avisosDeQuorum: 0,
       // Y emite las cuotas de la semana (HU-COB-01); lo prueban aportes/deuda.test.ts.
       deuda: { cuotas: expect.any(Number), avisos: expect.any(Number), vencidas: expect.any(Number) },
+      morosidad: { casas: expect.any(Number), alertas: expect.any(Number) },
     });
   });
 });
