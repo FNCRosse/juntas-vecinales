@@ -70,17 +70,17 @@ enum ModoConfirmacion {
 // genera el dispositivo y evita publicar dos veces al reintentar (AC-5). El autor se guarda tal como
 // figuraba al publicar.
 model Convocatoria {
-  id               String             @id @default(uuid())
+  id               String                   @id @default(uuid())
   tipo             TipoConvocatoria
   titulo           String
   fechaHora        DateTime
   lugar            String
   motivo           String
-  estado           EstadoConvocatoria @default(PUBLICADA)
+  estado           EstadoConvocatoria       @default(PUBLICADA)
   autorId          String
   autor            String
-  fechaPublicacion DateTime           @default(now())
-  idOperacion      String             @unique
+  fechaPublicacion DateTime                 @default(now())
+  idOperacion      String                   @unique
   asamblea         Asamblea?
   confirmaciones   ConfirmacionAsistencia[]
   delegaciones     DelegacionVoto[]
@@ -115,15 +115,15 @@ model ConfirmacionAsistencia {
 // publicar (un voto por predio); el conteo real de confirmaciones llega en HU-ASA-02/04. Una sesión
 // informativa (sin quórum, HU-ASA-05) no tendrá votaciones ni acuerdos resolutivos.
 model Asamblea {
-  convocatoriaId     String       @id
-  convocatoria       Convocatoria @relation(fields: [convocatoriaId], references: [id])
-  tipoAsamblea       TipoAsamblea
-  padronTotal        Int
-  quorumRequerido    Int
-  confirmacionesHasta DateTime
+  convocatoriaId       String       @id
+  convocatoria         Convocatoria @relation(fields: [convocatoriaId], references: [id])
+  tipoAsamblea         TipoAsamblea
+  padronTotal          Int
+  quorumRequerido      Int
+  confirmacionesHasta  DateTime
   // Cuándo el worker avisó a la directiva si el quórum proyectado alcanza al corte (HU-ASA-04 CA3). Se
   // reclama con un UPDATE condicionado a que siga vacío, así el aviso sale una sola vez aunque corran dos.
-  avisoCorteEn       DateTime?
+  avisoCorteEn         DateTime?
   // Cuándo la directiva abrió las votaciones tras comprobar el quórum definitivo (HU-ASA-07 CA3). Sin esta
   // marca no se registran votaciones ni acuerdos.
   votacionesAbiertasEn DateTime?
@@ -175,19 +175,19 @@ model CheckInPresencial {
 // directiva lo marque INCLUIDA o NO_INCLUIDA con un motivo (HU-ASA-14). idOperacion lo genera el dispositivo y
 // evita registrar dos veces al reintentar (AC-5).
 model PropuestaAgenda {
-  id             String           @id @default(uuid())
-  idOperacion    String           @unique
+  id             String          @id @default(uuid())
+  idOperacion    String          @unique
   convocatoriaId String
-  convocatoria   Convocatoria     @relation(fields: [convocatoriaId], references: [id])
+  convocatoria   Convocatoria    @relation(fields: [convocatoriaId], references: [id])
   autorId        String
   predioId       String
   titulo         String
   justificacion  String
-  estado         EstadoPropuesta  @default(PENDIENTE_REVISION)
+  estado         EstadoPropuesta @default(PENDIENTE_REVISION)
   motivoDecision String?
   decididaEn     DateTime?
   decididaPor    String?
-  creadaEn       DateTime         @default(now())
+  creadaEn       DateTime        @default(now())
 
   @@index([convocatoriaId, creadaEn])
   @@index([autorId])
@@ -197,13 +197,13 @@ model PropuestaAgenda {
 // Datos propios de una actividad pro fondos (HU-ASA-08, diagrama 02c). El nombre es el título de la convocatoria y
 // «para qué se juntará el dinero» su motivo. Los montos son céntimos enteros; la meta es opcional.
 model EventoProFondos {
-  convocatoriaId   String           @id
-  convocatoria     Convocatoria     @relation(fields: [convocatoriaId], references: [id])
-  tipoActividad    TipoActividad
-  precioUnidad     Int
-  metaRecaudacion  Int?
-  pagos            PagosDeActividad
-  pideVoluntarios  Boolean          @default(false)
+  convocatoriaId  String           @id
+  convocatoria    Convocatoria     @relation(fields: [convocatoriaId], references: [id])
+  tipoActividad   TipoActividad
+  precioUnidad    Int
+  metaRecaudacion Int?
+  pagos           PagosDeActividad
+  pideVoluntarios Boolean          @default(false)
 
   @@map("asambleas_eventos")
 }

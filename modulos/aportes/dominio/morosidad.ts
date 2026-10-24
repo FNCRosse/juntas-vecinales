@@ -25,3 +25,18 @@ export function clasificarMorosidad(impagas: { fechaLimite: Date }[], ahora: Dat
   if (dias >= DIAS_PARA_PREVENTIVO) return "MOROSO_PREVENTIVO";
   return "SOLVENTE";
 }
+
+/**
+ * La cuota por la que toca el recordatorio amable (HU-COB-05): la más antigua que todavía se debe, cuando la casa cumple
+ * 7 días de retraso y todavía no llega a las 8 semanas (desde ahí es otra cosa: HU-COB-06), y solo si no se avisó ya de
+ * esa cuota (una sola alerta por cuota). Si paga esa cuota y se atrasa la siguiente, la siguiente tiene su propio aviso.
+ */
+export function cuotaParaAlertar<T extends { id: string; fechaLimite: Date }>(
+  impagas: T[],
+  ahora: Date,
+  yaAlertadas: ReadonlySet<string>,
+): T | null {
+  if (clasificarMorosidad(impagas, ahora) !== "MOROSO_PREVENTIVO") return null;
+  const masAntigua = impagas.reduce((menor, c) => (c.fechaLimite < menor.fechaLimite ? c : menor));
+  return yaAlertadas.has(masAntigua.id) ? null : masAntigua;
+}
