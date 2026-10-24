@@ -29,7 +29,7 @@ Enums: `UnidadCobro` (POR_FAMILIA, POR_VEHICULO, POR_INQUILINO, POR_LOCAL) · `E
 
 **Morosidad (worker)**
 - Retraso = días desde la fecha límite de la cuota impaga más antigua.
-- ≥ 7 días y < 8 semanas: MOROSO_PREVENTIVO y una sola alerta preventiva por cuota, en tono cordial, sin sanciones ni recargos, con los canales y montos de pago (R-07).
+- ≥ 7 días y < 8 semanas: MOROSO_PREVENTIVO y una sola alerta preventiva por cuota, en tono cordial, sin sanciones ni recargos, con los canales y montos de pago (R-07). La tarea `alertarMorosidad` mira la cuota impaga más antigua de cada casa (`cuotaParaAlertar`), avisa a sus residentes (aviso de PAGOS, copia interna) y deja una fila en `AlertaPreventiva` (UNIQUE por cuota, solo inserción) que la hace idempotente; pagada esa cuota, la siguiente que se atrase tiene su propio aviso. No toca la garita ni cobra nada de más; a las 8 semanas ya no avisa: es de HU-COB-06.
 - ≥ 8 semanas continuas: MOROSO_CRITICO, semáforo ROJO en garita y aviso formal de la suspensión (notificación crítica que no se puede desactivar).
 - Hacia el vecino nunca se dice "moroso": "Al día", "Con retraso", "Pagos pendientes".
 
