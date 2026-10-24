@@ -7,8 +7,7 @@ import { soles } from "@/compartido/dinero";
 import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
 import { fechaCorta, fechaYHora } from "@/compartido/fechas";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
-import { aplicarAbono, lunesDe } from "@/modulos/aportes/dominio/cuota";
-import { clasificarMorosidad } from "@/modulos/aportes/dominio/morosidad";
+import { lunesDe } from "@/modulos/aportes/dominio/cuota";
 import {
   MOTIVOS,
   MOTIVOS_OBSERVACION,
@@ -23,7 +22,8 @@ import {
   opcionesDePago,
   rangoDeSemanas,
 } from "@/modulos/aportes/dominio/pago";
-import { numeroDeRecibo } from "@/modulos/aportes/dominio/recibo";
+import { FRANJAS, FRANJAS_DE_VISITA, numeroDeRecibo } from "@/modulos/aportes/dominio/recibo";
+import { aplicarPagoAprobado } from "@/modulos/aportes/aplicacion/abono";
 import { aReciboDto } from "@/modulos/aportes/aplicacion/recibos";
 import { cuotasPorPagarDe } from "@/modulos/aportes/infraestructura/repositorioCuotas";
 import {
@@ -46,13 +46,13 @@ import {
   semanasEnOtroPago,
   semanasYaEnPago,
 } from "@/modulos/aportes/infraestructura/repositorioPagos";
-import { crearRecibo } from "@/modulos/aportes/infraestructura/repositorioRecibos";
-import { directivaParaAvisar, nombresDe } from "@/modulos/identidad/aplicacion/barrio";
+import { directivaParaAvisar, nombresDe, telefonoDe } from "@/modulos/identidad/aplicacion/barrio";
 import { casasDe, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
-import { actualizarEstadoMorosidad } from "@/modulos/identidad/aplicacion/visitas";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 
 export const USO_COMPROBANTE_PAGO = "comprobante_pago";
+/** La opción de «Cómo va a pagar» que no sube una foto: pide que la directiva vaya a cobrar en efectivo (HU-COB-11). */
+export const MEDIO_EN_CASA = "EFECTIVO_EN_CASA";
 const ROLES_VECINO = ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 
@@ -98,7 +98,7 @@ async function aDto(pago: PagoConDetalle) {
 }
 
 /** Las cuotas de la casa que todavía se pueden pagar: sin pagar del todo y fuera de un pago en revisión. */
-async function cuotasPagables(predioId: string) {
+export async function cuotasPagables(predioId: string) {
   const cuotas = await cuotasPorPagarDe(predioId);
   const enRevision = await cuotasEnRevision(cuotas.map((c) => c.id));
   return cuotas
@@ -114,6 +114,7 @@ export async function datosParaPagar(sesion: SesionDto) {
   exigirRol(sesion, ...ROLES_VECINO);
   const casa = await predioDelVecino(sesion.usuarioId);
   if (!casa) throw new ErrorNoEncontrado();
+  const telefono = await telefonoDe(sesion.usuarioId);
   const opciones = opcionesDePago(await cuotasPagables(casa.id)).map(
     ({ semanas, monto, titulo, detalle }) => ({
       semanas,
@@ -125,7 +126,22 @@ export async function datosParaPagar(sesion: SesionDto) {
   return {
     vivienda: casa.vivienda,
     opciones,
-    medios: MEDIOS_DIGITALES.map((valor) => ({ valor, etiqueta: MEDIOS[valor] })),
+    medios: [
+      ...MEDIOS_DIGITALES.map((valor) => ({ valor: valor as string, etiqueta: MEDIOS[valor] as string })),
+      // Además de los digitales, la casa puede pedir que la directiva vaya a cobrarle en efectivo (HU-COB-11).
+      { valor: MEDIO_EN_CASA, etiqueta: "En efectivo: que la directiva venga a mi casa" },
+    ],
+    cobroEnCasa: {
+      quienPide: sesion.nombreCompleto,
+      direccion: casa.vivienda,
+      telefono: telefono ? `terminado en ${telefono.slice(-3)}` : "sin número registrado",
+      franjas: FRANJAS_DE_VISITA.map((valor) => ({
+        valor,
+        etiqueta: FRANJAS[valor].etiqueta,
+        detalle: FRANJAS[valor].detalle,
+        resumen: FRANJAS[valor].resumen,
+      })),
+    },
     datosDePago: {
       yape: process.env.DATOS_PAGO_YAPE ?? null,
       cuenta: process.env.DATOS_PAGO_CUENTA ?? null,
@@ -304,10 +320,12 @@ export async function comprobantesPorRevisar(sesion: SesionDto) {
 export type ComprobantesPorRevisar = Awaited<ReturnType<typeof comprobantesPorRevisar>>;
 
 /** Dónde se hizo el pago, para que la directiva compare con la captura (viene de la configuración, no del código). */
-const cuentaDeDestino = (medio: "YAPE_O_PLIN" | "TRANSFERENCIA") =>
+const cuentaDeDestino = (medio: "YAPE_O_PLIN" | "TRANSFERENCIA" | "EFECTIVO") =>
   medio === "YAPE_O_PLIN"
     ? `Yape o Plin: ${process.env.DATOS_PAGO_YAPE ?? "sin configurar"}`
-    : `Cuenta bancaria: ${process.env.DATOS_PAGO_CUENTA ?? "sin configurar"}`;
+    : medio === "TRANSFERENCIA"
+      ? `Cuenta bancaria: ${process.env.DATOS_PAGO_CUENTA ?? "sin configurar"}`
+      : "Efectivo recibido en su casa";
 
 /**
  * Revisar un comprobante (DIR-COB-02, HU-COB-09 CA1): la captura junto a lo que declaró la casa, lo que debe hoy, la
@@ -384,77 +402,30 @@ export async function aprobarComprobante(sesion: SesionDto, comprobanteId: strin
 
   const { aplicado, debeAhora, recibo } = await prisma.$transaction(async (tx) => {
     await bloquearCasa(tx, pago.predioId);
-    const reclamado = await reclamarAprobacion(tx, pago.id);
-    if (reclamado) {
-      await tx.comprobante.update({ where: { id: comprobante.id }, data: { estado: "APROBADO" } });
-      for (const parte of pago.cuotas) {
-        const cuota = await tx.cuota.findUniqueOrThrow({ where: { id: parte.cuotaId } });
-        if (cuota.estado === "PAGADA") continue;
-        const { saldo, estado } = aplicarAbono(
-          cuota.saldoPendiente,
-          parte.monto,
-          cuota.estado as "PENDIENTE" | "VENCIDA" | "EN_DISCREPANCIA",
-        );
-        await tx.cuota.update({ where: { id: cuota.id }, data: { saldoPendiente: saldo, estado } });
-      }
+    if (!(await reclamarAprobacion(tx, pago.id))) {
+      // Otra aprobación llegó primero: no se abona ni se avisa otra vez (AC-5).
+      const impagas = await cuotasImpagasDe(tx, pago.predioId);
+      return {
+        aplicado: false,
+        debeAhora: impagas.reduce((suma, c) => suma + c.saldoPendiente, 0),
+        recibo: await tx.recibo.findUnique({ where: { pagoId: pago.id } }),
+      };
     }
-    const impagas = await cuotasImpagasDe(tx, pago.predioId);
-    const debe = impagas.reduce((suma, c) => suma + c.saldoPendiente, 0);
-    let emitido: Awaited<ReturnType<typeof crearRecibo>> | null = null;
-    if (reclamado) {
-      // El recibo oficial nace con el pago aprobado y guarda lo que dice el papel (HU-COB-12 CA1).
-      emitido = await crearRecibo(tx, {
-        pagoId: pago.id,
-        predioId: pago.predioId,
-        titular: nombres.get(pago.autorId) ?? "",
-        vivienda: casas.get(pago.predioId)?.vivienda ?? "",
-        concepto,
-        medio: MEDIOS[pago.medio],
-        monto: pago.monto,
-        fecha: ahora,
-        registradoPor: sesion.nombreCompleto,
-        registradoPorId: sesion.usuarioId,
-      });
-      // Solo se restituye la garita si ya no hay atraso crítico; suspenderla es de la tarea de morosidad (HU-COB-06).
-      if (clasificarMorosidad(impagas, ahora) !== "MOROSO_CRITICO") {
-        await actualizarEstadoMorosidad(pago.predioId, "VERDE", tx);
-      }
-      await encolarAvisos(
-        [
-          {
-            destinatarioId: pago.autorId,
-            tipo: "PAGOS" as const,
-            titulo: "Su pago fue aprobado",
-            texto:
-              debe === 0
-                ? `Recibimos su pago de ${soles(pago.monto)}. Ya está al día. Gracias.`
-                : `Recibimos su pago de ${soles(pago.monto)}. Todavía le faltan ${soles(debe)} de su cuota. Puede pagarlo cuando pueda.`,
-          },
-        ],
-        tx,
-      );
-      await registrarAuditoria(
-        {
-          actorId: sesion.usuarioId,
-          accion: "aprobar_pago",
-          entidad: "Pago",
-          entidadId: pago.id,
-          antes: null,
-          despues: {
-            constancia: numeroDeConstancia(pago.numero),
-            monto: soles(pago.monto),
-            debeAhora: soles(debe),
-            recibo: numeroDeRecibo(emitido.numero),
-          },
-        },
-        tx,
-      );
-    }
-    return {
-      aplicado: reclamado,
-      debeAhora: debe,
-      recibo: emitido ?? (await tx.recibo.findUnique({ where: { pagoId: pago.id } })),
-    };
+    await tx.comprobante.update({ where: { id: comprobante.id }, data: { estado: "APROBADO" } });
+    const { debe, recibo } = await aplicarPagoAprobado(tx, {
+      pago,
+      partes: pago.cuotas,
+      titular: nombres.get(pago.autorId) ?? "",
+      vivienda: casas.get(pago.predioId)?.vivienda ?? "",
+      concepto,
+      registradoPor: { id: sesion.usuarioId, nombre: sesion.nombreCompleto },
+      fecha: ahora,
+      ahora,
+      avisarA: [pago.autorId],
+      accion: "aprobar_pago",
+      enviarRecibo: false,
+    });
+    return { aplicado: true, debeAhora: debe, recibo };
   });
   return {
     aplicado,

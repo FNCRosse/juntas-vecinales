@@ -215,7 +215,7 @@ const aPedidoDto = (p: PedidoConRecibo) => ({
   enviado: fechaYHora(p.creadoEn),
   recibo: lineaDelRecibo(p.recibo),
   donde: `En su casa, ${p.recibo.vivienda}`,
-  franja: FRANJAS[p.franja].resumen,
+  franja: p.franja ? FRANJAS[p.franja].resumen : "A convenir",
   estado: p.estado === "ENTREGADO" ? "Entregado" : "Pendiente de visita",
 });
 
@@ -298,7 +298,7 @@ export async function recibosEnPapelPorEntregar(sesion: SesionDto) {
       vivienda: p.recibo.vivienda,
       recibo: `Recibo ${lineaDelRecibo(p.recibo)}`,
       fecha: fechaCorta(p.creadoEn),
-      franja: FRANJAS[p.franja].resumen,
+      franja: p.franja ? FRANJAS[p.franja].resumen : "A convenir",
       nota: p.nota,
       puedeEntregar: sesion.roles.includes("DIRECTIVA"),
     })),

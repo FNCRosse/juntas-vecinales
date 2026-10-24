@@ -1,4 +1,10 @@
-import { MEDIOS, numeroDeConstancia, opcionesDePago, rangoDeSemanas } from "@/modulos/aportes/dominio/pago";
+import {
+  MEDIOS,
+  MEDIOS_DIGITALES,
+  numeroDeConstancia,
+  opcionesDePago,
+  rangoDeSemanas,
+} from "@/modulos/aportes/dominio/pago";
 
 const cuota = (periodo: string, saldo = 500) => ({ id: `c-${periodo}`, periodo, saldo });
 const TRES = [cuota("2026-09-07"), cuota("2026-09-14"), cuota("2026-09-21")];
@@ -46,6 +52,11 @@ describe("@HU-COB-08 constancia de envío", () => {
   });
 
   it("@HU-COB-08 los medios de pago digital se dicen como los ve la vecina", () => {
-    expect(MEDIOS).toEqual({ YAPE_O_PLIN: "Yape o Plin", TRANSFERENCIA: "Transferencia bancaria" });
+    expect(MEDIOS).toEqual({
+      YAPE_O_PLIN: "Yape o Plin",
+      TRANSFERENCIA: "Transferencia bancaria",
+      EFECTIVO: "Efectivo, en su casa",
+    });
+    expect(MEDIOS_DIGITALES).toEqual(["YAPE_O_PLIN", "TRANSFERENCIA"]);
   });
 });

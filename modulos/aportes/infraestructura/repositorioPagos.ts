@@ -115,7 +115,10 @@ export const archivoPorId = (id: string) =>
 
 /** Las cuotas que todavía se deben (con saldo), para medir el retraso de la casa después de un abono. */
 export const cuotasImpagasDe = (tx: Transaccion, predioId: string) =>
-  tx.cuota.findMany({ where: { predioId, estado: { not: "PAGADA" }, saldoPendiente: { gt: 0 } } });
+  tx.cuota.findMany({
+    where: { predioId, estado: { not: "PAGADA" }, saldoPendiente: { gt: 0 } },
+    orderBy: { periodo: "asc" },
+  });
 
 /**
  * Pasa el pago de «en revisión» a aprobado con un UPDATE condicionado: si otra aprobación llegó primero, no cambia
@@ -161,4 +164,30 @@ export async function reclamarReenvio(tx: Transaccion, pagoId: string) {
 export const semanasEnOtroPago = (tx: Transaccion, pagoId: string, cuotaIds: string[]) =>
   tx.pagoCuota.count({
     where: { cuotaId: { in: cuotaIds }, pago: { estado: "REGISTRADO", id: { not: pagoId } } },
+  });
+
+/** El pago en efectivo que cobra la directiva en la casa (HU-COB-11): nace aprobado y con lo que cubre fijado. */
+export const crearPagoPresencial = (
+  tx: Transaccion,
+  datos: {
+    idOperacion: string;
+    predioId: string;
+    autorId: string;
+    monto: number;
+    creadoEn: Date;
+    partes: { cuotaId: string; monto: number }[];
+  },
+) =>
+  tx.pago.create({
+    data: {
+      idOperacion: datos.idOperacion,
+      predioId: datos.predioId,
+      autorId: datos.autorId,
+      medio: "EFECTIVO",
+      monto: datos.monto,
+      estado: "APROBADO",
+      creadoEn: datos.creadoEn,
+      cuotas: { create: datos.partes },
+    },
+    include: conDetalle,
   });

@@ -118,10 +118,11 @@ enum MotivoObservacion {
   OTRO
 }
 
-// Cómo pagó una casa. Solo digitales por ahora (HU-COB-08); el efectivo con cobrador llega con HU-COB-11.
+// Cómo pagó una casa: digital (HU-COB-08) o efectivo que cobra la directiva en su casa (HU-COB-11).
 enum MedioDePago {
   YAPE_O_PLIN
   TRANSFERENCIA
+  EFECTIVO
 }
 
 // Pago que manda una casa (HU-COB-08): lo que declara pagar de sus cuotas y cómo. Nace REGISTRADO (en revisión) y la
@@ -222,7 +223,7 @@ model PedidoReciboPapel {
   reciboId       String
   recibo         Recibo             @relation(fields: [reciboId], references: [id])
   solicitanteId  String
-  franja         FranjaDeVisita
+  franja         FranjaDeVisita?
   nota           String?
   estado         EstadoPedidoRecibo @default(POR_ENTREGAR)
   creadoEn       DateTime           @default(now())
@@ -232,4 +233,33 @@ model PedidoReciboPapel {
   @@index([estado, creadoEn])
   @@index([reciboId, estado])
   @@map("aportes_pedidos_recibo_papel")
+}
+
+enum EstadoPedidoCobro {
+  PENDIENTE
+  COBRADO
+  CANCELADO
+}
+
+// La casa pide que la directiva vaya a cobrarle en efectivo (VEC-COB-02 y 13). No cobra nada ni reserva semanas: guarda
+// cuánto pensaba pagar y a qué hora le queda mejor. La directiva lo cobra (DIR-COB-08) y queda enlazado al pago.
+// idOperacion evita pedirlo dos veces al reintentar (AC-5); una casa tiene a lo más un pedido pendiente.
+model PedidoCobroEnCasa {
+  id            String            @id @default(uuid())
+  numero        Int               @unique @default(autoincrement())
+  idOperacion   String            @unique
+  predioId      String
+  solicitanteId String
+  semanas       Int
+  monto         Int
+  franja        FranjaDeVisita
+  nota          String?
+  estado        EstadoPedidoCobro @default(PENDIENTE)
+  creadoEn      DateTime          @default(now())
+  pagoId        String?           @unique
+  cobradoEn     DateTime?
+
+  @@index([estado, creadoEn])
+  @@index([predioId, estado])
+  @@map("aportes_pedidos_cobro_en_casa")
 }

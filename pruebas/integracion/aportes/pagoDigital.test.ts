@@ -92,6 +92,8 @@ describe("@HU-COB-08 CA1 Datos para pagar y validación del comprobante", () => 
     expect(datos.medios).toEqual([
       { valor: "YAPE_O_PLIN", etiqueta: "Yape o Plin" },
       { valor: "TRANSFERENCIA", etiqueta: "Transferencia bancaria" },
+      // La tercera, sin foto, la cobra la directiva en la casa (HU-COB-11).
+      { valor: "EFECTIVO_EN_CASA", etiqueta: "En efectivo: que la directiva venga a mi casa" },
     ]);
     expect(datos.datosDePago).toEqual({
       yape: "987 654 321, a nombre de Junta Vecinal",

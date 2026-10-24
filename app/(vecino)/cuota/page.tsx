@@ -39,6 +39,14 @@ export default async function MiCuota() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Mi cuota</h1>
+      {cuota.cobroEnCasa && (
+        <MensajeEstado tipo="info" titulo="Irán a su casa a cobrar">
+          <p>
+            Pedido N.° {cuota.cobroEnCasa.numero} por {soles(cuota.cobroEnCasa.monto)}. Hora preferida:{" "}
+            {cuota.cobroEnCasa.franja}. La directiva la llamará para confirmar el día.
+          </p>
+        </MensajeEstado>
+      )}
       {cuota.enRevision && (
         <MensajeEstado tipo="info" titulo="Su pago está en revisión">
           <p>
