@@ -2,10 +2,13 @@
 import type { Transaccion } from "@/compartido/bd/cliente";
 import { prisma } from "@/compartido/bd/cliente";
 
-/** Las cuotas que todavía se deben (con saldo), por casa y de la más antigua a la más nueva. */
+/**
+ * Las cuotas que todavía se deben (con saldo), por casa y de la más antigua a la más nueva. Las que la casa tiene en
+ * discrepancia (reclamo en revisión, HU-COB-03) no cuentan: «mientras tanto no tiene que pagar la diferencia que reclama».
+ */
 export async function cuotasImpagasPorCasa() {
   const cuotas = await prisma.cuota.findMany({
-    where: { estado: { not: "PAGADA" }, saldoPendiente: { gt: 0 } },
+    where: { estado: { notIn: ["PAGADA", "EN_DISCREPANCIA"] }, saldoPendiente: { gt: 0 } },
     orderBy: [{ predioId: "asc" }, { periodo: "asc" }],
   });
   const porCasa = new Map<string, typeof cuotas>();

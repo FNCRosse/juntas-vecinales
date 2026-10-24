@@ -15,6 +15,7 @@ import {
   periodosPorEmitir,
 } from "@/modulos/aportes/dominio/cuota";
 import { numeroDePedidoDeCobro } from "@/modulos/aportes/dominio/cobro";
+import { numeroDeReclamo } from "@/modulos/aportes/dominio/reclamo";
 import { FRANJAS } from "@/modulos/aportes/dominio/recibo";
 import { separarVersiones } from "@/modulos/aportes/dominio/tarifa";
 import {
@@ -26,6 +27,7 @@ import {
   ultimoPeriodoPorCasa,
 } from "@/modulos/aportes/infraestructura/repositorioCuotas";
 import { pedidoPendienteDeLaCasa } from "@/modulos/aportes/infraestructura/repositorioCobros";
+import { reclamoEnRevisionDe } from "@/modulos/aportes/infraestructura/repositorioReclamos";
 import { cuotasEnPagoObservado, cuotasEnRevision } from "@/modulos/aportes/infraestructura/repositorioPagos";
 import { versionesDeTarifa } from "@/modulos/aportes/infraestructura/repositorioTarifa";
 import { ocupacionDeLasCasas, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
@@ -121,11 +123,12 @@ export async function miCuota(sesion: SesionDto) {
   exigirRol(sesion, ...ROLES_VECINO);
   const casa = await predioDelVecino(sesion.usuarioId);
   if (!casa) return null;
-  const [pendientes, pagadas, ultima, pedido] = await Promise.all([
+  const [pendientes, pagadas, ultima, pedido, reclamo] = await Promise.all([
     cuotasPorPagarDe(casa.id),
     cuotasPagadasDe(casa.id),
     ultimaCuotaDe(casa.id),
     pedidoPendienteDeLaCasa(casa.id),
+    reclamoEnRevisionDe(casa.id),
   ]);
   const [enRevision, observadas] = await Promise.all([
     cuotasEnRevision(pendientes.map((c) => c.id)),
@@ -161,6 +164,8 @@ export async function miCuota(sesion: SesionDto) {
       : null,
     // Si todo lo pendiente ya está en un pago, no hay nada más que pagar por ahora.
     puedePagar: pendientes.some((c) => !enRevision.has(c.id)),
+    // El reclamo del monto de la cuota que la directiva todavía no responde (HU-COB-03).
+    reclamoEnRevision: reclamo ? { id: reclamo.id, numero: numeroDeReclamo(reclamo.numero) } : null,
     // El pedido de que vayan a cobrar en efectivo a su casa, mientras la directiva no lo cobre (HU-COB-11).
     cobroEnCasa: pedido
       ? {

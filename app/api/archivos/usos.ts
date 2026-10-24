@@ -25,6 +25,13 @@ export const USOS = {
     roles: ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"],
     ven: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"],
   },
+  // El documento que respalda un reclamo de cuota (HU-COB-03): lo sube el vecino y lo ve la directiva. Otro vecino nunca (AC-7).
+  sustento_reclamo: {
+    carpeta: "comprobantes",
+    clase: "documento",
+    roles: ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"],
+    ven: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"],
+  },
   // La evidencia de una queja la sube el vecino y la ve solo la directiva: otro vecino nunca (AC-7).
   evidencia_queja: {
     carpeta: "evidencias",

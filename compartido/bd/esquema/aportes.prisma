@@ -279,3 +279,51 @@ model AlertaPreventiva {
   @@index([predioId, enviadaEn])
   @@map("aportes_alertas_preventivas")
 }
+
+enum MotivoReclamo {
+  SIN_INQUILINO
+  MENOS_VEHICULOS
+  YA_PAGUE
+  OTRO
+}
+
+enum EstadoReclamo {
+  EN_REVISION
+  APROBADO
+  RECHAZADO
+}
+
+// Reclamo de la casa por el monto de su cuota (HU-COB-03; el nombre del diagrama 02b es SolicitudAjusteTarifa). Cubre las
+// cuotas que la casa todavía debe: mientras la directiva no responde, pasan a EN_DISCREPANCIA y guardan su estado anterior
+// (ReclamoCuota) para devolverlo si se mantiene el importe (HU-COB-04). Una casa tiene a lo más un reclamo en revisión
+// (índice único parcial). idOperacion evita enviarlo dos veces al reintentar (AC-5). El sustento es un archivo opcional.
+model SolicitudAjusteTarifa {
+  id            String         @id @default(uuid())
+  numero        Int            @unique @default(autoincrement())
+  idOperacion   String         @unique
+  predioId      String
+  solicitanteId String
+  motivo        MotivoReclamo
+  detalle       String?
+  archivoId     String?
+  estado        EstadoReclamo  @default(EN_REVISION)
+  creadoEn      DateTime       @default(now())
+  cuotas        ReclamoCuota[]
+
+  @@index([predioId, estado])
+  @@index([estado, creadoEn])
+  @@map("aportes_ajustes")
+}
+
+// Una cuota cubierta por un reclamo y el estado en que estaba, para devolverlo si el importe se mantiene.
+model ReclamoCuota {
+  id             String                @id @default(uuid())
+  reclamoId      String
+  reclamo        SolicitudAjusteTarifa @relation(fields: [reclamoId], references: [id])
+  cuotaId        String
+  estadoAnterior EstadoCuota
+
+  @@unique([reclamoId, cuotaId])
+  @@index([cuotaId])
+  @@map("aportes_ajuste_cuotas")
+}
