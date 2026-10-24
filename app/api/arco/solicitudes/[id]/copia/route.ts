@@ -1,6 +1,7 @@
 import { generarPdf } from "@/compartido/archivos/pdf";
 import { fechaYHora } from "@/compartido/fechas";
 import { manejar } from "@/compartido/manejar";
+import { datosPersonales as datosDeAportes } from "@/modulos/aportes/aplicacion/datosPersonales";
 import { datosPersonales as datosDeAccesibilidad } from "@/modulos/accesibilidad/aplicacion/datosPersonales";
 import { datosPersonales as datosDeAsambleas } from "@/modulos/asambleas/aplicacion/datosPersonales";
 import { copiaAutorizada, datosPersonales as datosDeIdentidad } from "@/modulos/identidad/aplicacion/arco";
@@ -19,6 +20,7 @@ export const GET = manejar<{ params: Promise<{ id: string }> }>(async (peticion,
     ...(await datosDeAccesibilidad(usuarioId)),
     ...(await datosDeIncidencias(usuarioId)),
     ...(await datosDeAsambleas(usuarioId)),
+    ...(await datosDeAportes(usuarioId)),
   ];
   const pdf = await generarPdf({
     titulo: "Mis datos en la Junta Vecinal",

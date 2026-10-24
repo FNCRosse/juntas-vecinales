@@ -59,7 +59,7 @@ const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 const MENSAJE_FOTO =
   "Falta la foto de su comprobante, o pesa más de 5 MB. Suba una captura de pantalla; si no puede, pida ayuda a una persona.";
 
-const ESTADO_EN_TEXTO = {
+export const ESTADO_EN_TEXTO = {
   REGISTRADO: "En revisión",
   APROBADO: "Aprobado",
   OBSERVADO: "Observado",
