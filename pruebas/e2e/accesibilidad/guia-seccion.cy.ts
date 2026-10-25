@@ -80,4 +80,28 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     cy.get('[role="note"]').should("not.exist");
     cy.guardarModo("normal");
   });
+
+  it("@HU-ACC-10 CA1 CA2 la guía de Mi cuota se ofrece la primera vez, nombra cada acción como se ve y se salta para siempre", () => {
+    cy.entrarComoVecinaNueva("Lucía Mendoza Rojas");
+    cy.viewport(360, 800);
+    cy.guardarModo("senior");
+    cy.visit("/cuota");
+    cy.get("h1").should("have.text", "Mi cuota");
+    cy.contains('[role="note"]', "¿Quiere ver cómo funciona esta sección?").should("exist");
+    cy.revisarAccesibilidad("cuota-oferta-guia-senior-360");
+    cy.contains("a", "Ver la guía").click();
+    cy.contains("p", "Guía de Mi cuota · paso 1 de 5 · es opcional").should("exist");
+    cy.get("h1").should("have.text", "Vea cuánto debe");
+    cy.contains("strong", "Lo que debe hoy").should("exist");
+    cy.revisarAccesibilidad("guia-cuota-paso1-senior-360");
+    cy.esperarHidratacion("Siguiente").click();
+    cy.get("h1").should("have.text", "Pague con una foto");
+    cy.contains("strong", "Pagar mi cuota").should("exist");
+    cy.contains("button", "Saltar la guía (no se volverá a mostrar)").click();
+    cy.location("pathname").should("eq", "/cuota");
+    cy.get('[role="note"]').should("not.exist");
+    cy.visit("/mas/ayuda-y-accesibilidad");
+    cy.get("main").contains("li", "Mi cuota").should("contain.text", "La saltó");
+    cy.guardarModo("normal");
+  });
 });

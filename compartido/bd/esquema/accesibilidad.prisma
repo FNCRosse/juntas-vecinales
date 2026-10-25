@@ -57,10 +57,11 @@ model SolicitudApoyo {
   @@map("accesibilidad_solicitudes_apoyo")
 }
 
-// Secciones con guía propia (HU-ACC-10). M3 dejó Incidentes, M4 agrega Asambleas y M5 agregará Mi cuota.
+// Secciones con guía propia (HU-ACC-10). M3 dejó Incidentes, M4 agregó Asambleas y M5, Mi cuota.
 enum SeccionGuia {
   INCIDENTES
   ASAMBLEAS
+  CUOTA
 }
 
 enum EstadoGuia {

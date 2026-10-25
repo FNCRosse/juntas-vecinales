@@ -1,12 +1,14 @@
 import { CircleCheck, Info, ReceiptText, TriangleAlert, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { OfertaDeGuia } from "@/app/_guias/OfertaDeGuia";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { soles } from "@/compartido/dinero";
 import { miCuota } from "@/modulos/aportes/aplicacion/deuda";
+import { guiaDeSeccion } from "@/modulos/accesibilidad/aplicacion/guias";
 
 export const metadata: Metadata = { title: "Mi cuota" };
 
@@ -25,7 +27,7 @@ const INSIGNIAS = {
 // su casa: el predio sale de su sesión. El reclamo llega con HU-COB-03.
 export default async function MiCuota() {
   const sesion = await exigirActor([...ROLES], "/entrar");
-  const cuota = await miCuota(sesion);
+  const [cuota, guia] = await Promise.all([miCuota(sesion), guiaDeSeccion(sesion.usuarioId, "CUOTA")]);
   if (!cuota) {
     return (
       <div className="flex flex-col gap-6">
@@ -40,6 +42,7 @@ export default async function MiCuota() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Mi cuota</h1>
+      {guia.ofrecer && <OfertaDeGuia seccion="CUOTA" enPausa={guia.estado === "PAUSADA"} paso={guia.paso} />}
       {cuota.rejaSuspendida && (
         <MensajeEstado tipo="aviso" titulo="Por ahora la reja no se abre sola">
           <p>
