@@ -17,12 +17,15 @@ import { cuotasImpagasPorCasa } from "@/modulos/aportes/infraestructura/reposito
 import {
   type CasasMiradas,
   cuotasPorCobrar,
+  deudaPorCasaDelPeriodo,
   pagosAprobadosDelPeriodo,
   pagosAprobadosSinRecibo,
   recibosDelPeriodo,
 } from "@/modulos/aportes/infraestructura/repositorioTablero";
-import { ocupacionDeLasCasas } from "@/modulos/identidad/aplicacion/comunidad";
+import { casasDe, ocupacionDeLasCasas } from "@/modulos/identidad/aplicacion/comunidad";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
+
+export { FILTROS_DE_ESTADO };
 
 const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 
@@ -40,6 +43,10 @@ export async function consultarTablero(
   ahora = new Date(),
 ) {
   exigirRol(sesion, ...ROLES_DIRECTIVA);
+  return (await calcular(entrada, ahora)).tablero;
+}
+
+async function calcular(entrada: { desde?: string; hasta?: string; estado?: string }, ahora: Date) {
   const { errores, consulta } = prepararConsulta(entrada, diaEnLima(ahora));
   if (!consulta) throw new ErrorValidacion(undefined, errores);
   const desde = desdeHoraDeLima(consulta.desde, "00:00");
@@ -77,7 +84,7 @@ export async function consultarTablero(
     consulta.hasta,
   );
   const porSemana = t.semanas.reduce((suma, s) => suma + s.total, 0);
-  return {
+  const tablero = {
     periodo: { desde: consulta.desde, hasta: consulta.hasta },
     estado: consulta.estado,
     seCobro: t.total,
@@ -95,9 +102,56 @@ export async function consultarTablero(
     },
     semanas: t.semanas,
   };
+  return {
+    tablero,
+    consulta,
+    desde,
+    hasta,
+    recibos,
+    casasConResidentes: [...conResidentes],
+    estadoDe: (predioId: string) => estados.get(predioId) ?? ("AL_DIA" as const),
+  };
 }
 
 export type TableroDto = Awaited<ReturnType<typeof consultarTablero>>;
+
+/**
+ * El tablero con su detalle por casa, para exportarlo (HU-COB-15 CA2): las mismas cifras de `consultarTablero` y, por cada casa
+ * del filtro, su estado, los recibos del periodo, lo cobrado y lo que debe. Solo para la directiva: es el único lugar donde se
+ * ve lo que paga cada casa, y no sale de la directiva.
+ */
+export async function detalleDeRecaudacion(
+  sesion: SesionDto,
+  entrada: { desde?: string; hasta?: string; estado?: string },
+  ahora = new Date(),
+) {
+  exigirRol(sesion, "DIRECTIVA");
+  const c = await calcular(entrada, ahora);
+  const ids = c.casasConResidentes.filter(
+    (id) => c.consulta.estado === "TODAS" || c.estadoDe(id) === c.consulta.estado,
+  );
+  const [viviendas, debe] = await Promise.all([
+    casasDe(ids),
+    deudaPorCasaDelPeriodo(c.desde, c.hasta, { en: ids }),
+  ]);
+  const cobrado = new Map<string, { recibos: number; monto: number }>();
+  for (const r of c.recibos) {
+    const fila = cobrado.get(r.predioId) ?? { recibos: 0, monto: 0 };
+    cobrado.set(r.predioId, { recibos: fila.recibos + 1, monto: fila.monto + r.monto });
+  }
+  const casas = ids
+    .map((id) => ({
+      vivienda: viviendas.get(id)?.vivienda ?? "",
+      estado: c.estadoDe(id),
+      recibos: cobrado.get(id)?.recibos ?? 0,
+      cobrado: cobrado.get(id)?.monto ?? 0,
+      debe: debe.get(id) ?? 0,
+    }))
+    .sort((a, b) => a.vivienda.localeCompare(b.vivienda, "es", { numeric: true }));
+  return { tablero: c.tablero, casas };
+}
+
+export type DetalleDeRecaudacion = Awaited<ReturnType<typeof detalleDeRecaudacion>>;
 
 /** Para las pantallas: los periodos y estados que ofrecen las listas, y el periodo elegido (el mes en curso si no es ninguno). */
 export function opcionesDelTablero(periodo: string | undefined, ahora = new Date()) {

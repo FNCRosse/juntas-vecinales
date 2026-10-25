@@ -11,7 +11,7 @@ const deLasCasas = (casas: CasasMiradas) =>
 export const recibosDelPeriodo = (desde: Date, hasta: Date, casas: CasasMiradas) =>
   prisma.recibo.findMany({
     where: { fecha: { gte: desde, lt: hasta }, ...deLasCasas(casas) },
-    select: { monto: true, fecha: true, pago: { select: { medio: true } } },
+    select: { predioId: true, monto: true, fecha: true, pago: { select: { medio: true } } },
   });
 
 /** Lo que suman los pagos aprobados cuyo recibo cae en el periodo: la segunda cuenta con la que se comprueba el total. */
@@ -44,4 +44,19 @@ export async function cuotasPorCobrar(desde: Date, hasta: Date, casas: CasasMira
     },
   });
   return { monto: _sum.saldoPendiente ?? 0, cuotas: _count };
+}
+
+/** Lo que todavía debe cada casa de las cuotas de las semanas que empiezan en el periodo (para el detalle por casa de la exportación). */
+export async function deudaPorCasaDelPeriodo(desde: Date, hasta: Date, casas: CasasMiradas) {
+  const filas = await prisma.cuota.groupBy({
+    by: ["predioId"],
+    _sum: { saldoPendiente: true },
+    where: {
+      periodo: { gte: desde, lt: hasta },
+      saldoPendiente: { gt: 0 },
+      estado: { not: "PAGADA" },
+      ...deLasCasas(casas),
+    },
+  });
+  return new Map(filas.map((f) => [f.predioId, f._sum.saldoPendiente ?? 0]));
 }

@@ -38,6 +38,7 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   publicar_acta: { modulo: "Transparencia", texto: "Publicó un acta de asamblea" },
   publicar_balance: { modulo: "Transparencia", texto: "Publicó el balance de una actividad" },
   publicar_comunicado: { modulo: "Transparencia", texto: "Publicó un comunicado" },
+  exportar_recaudacion: { modulo: "Transparencia", texto: "Exportó la recaudación a un archivo" },
   publicar_convocatoria: { modulo: "Asambleas", texto: "Publicó la convocatoria a una asamblea" },
   confirmar_asistencia: { modulo: "Asambleas", texto: "Confirmó la asistencia de una casa a la asamblea" },
   cancelar_asistencia: { modulo: "Asambleas", texto: "Canceló la asistencia de una casa a la asamblea" },
