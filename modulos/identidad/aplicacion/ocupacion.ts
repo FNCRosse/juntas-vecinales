@@ -6,4 +6,6 @@ export {
   MAXIMO_POR_CONCEPTO,
   NOMBRE_CONCEPTO,
   ocupacionEnTexto,
+  ocupacionPorClave,
+  RUBRO_DE_CONCEPTO,
 } from "@/modulos/identidad/dominio/predio";

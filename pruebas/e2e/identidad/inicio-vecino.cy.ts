@@ -23,7 +23,10 @@ describe("@HU-GAR-19 Panel de inicio", () => {
     cy.revisarAccesibilidad("inicio-vecino-senior-360");
     cy.contains("a", "Mis avisos").click();
     cy.location("pathname").should("eq", "/avisos");
+    // Se espera a que la petición termine: con la máquina cargada, visitar antes dejaba los avisos sin marcar.
+    cy.intercept("POST", "/api/notificaciones/leidas").as("leidas");
     cy.esperarHidratacion("Marcar todos como leídos").click();
+    cy.wait("@leidas");
     cy.visit("/");
     cy.contains("a", "Mis avisos").should("contain.text", "No tiene avisos nuevos");
   });

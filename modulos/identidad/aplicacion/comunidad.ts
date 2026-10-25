@@ -9,7 +9,7 @@ import {
   prediosConResidentesVigentes,
   vecinosPorNombreODni,
 } from "@/modulos/identidad/infraestructura/repositorioUsuarios";
-import { direccion } from "@/modulos/identidad/dominio/predio";
+import { direccion, RUBRO_DE_CONCEPTO } from "@/modulos/identidad/dominio/predio";
 import { viviendaDe } from "@/modulos/identidad/infraestructura/repositorioVisitas";
 
 /** Puerto para M2 y los demás módulos: a quién le llega lo que se publica a toda la comunidad. */
@@ -58,16 +58,6 @@ export async function buscarVecinos(texto: string) {
     dniTerminadoEn: r.usuario.dni.slice(-2),
   }));
 }
-
-/** El rubro de la ocupación del predio que corresponde a cada concepto de la tarifa (HU-COB-16, diagrama 02b). */
-const RUBRO_DE_CONCEPTO = {
-  casa: "familias",
-  inquilino: "inquilinos",
-  auto: "autos",
-  moto: "motos",
-  triciclo: "triciclos",
-  negocio: "negocios",
-} as const;
 
 /**
  * Puerto para M5: las casas que pagan por un concepto de la tarifa (las que tienen esa unidad registrada) y sus
@@ -126,4 +116,9 @@ export async function quitarUnaUnidadDeOcupacion(
     tx,
   );
   return cambio;
+}
+
+/** Puerto para M5 (HU-GAR-10): lo que hay registrado hoy en una casa con residentes, por clave de concepto; `null` si no figura. */
+export async function ocupacionDeLaCasa(predioId: string) {
+  return (await ocupacionDeLasCasas()).find((c) => c.predioId === predioId)?.ocupacion ?? null;
 }

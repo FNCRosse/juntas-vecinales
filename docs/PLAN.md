@@ -70,7 +70,7 @@ Equipo interno:
 - [x] HU-GAR-23 Reasignar el rol de un miembro interno
 
 Padrón:
-- [~] HU-GAR-10 Actualizar los datos del predio de un residente — `[~]` CA1 y CA3 hechos (ocupación e historial); se cierra en M5, cuando el cálculo de la cuota usa la ocupación nueva
+- [x] HU-GAR-10 Actualizar los datos del predio de un residente — CA1 y CA3 en M1 (ocupación e historial); M5 cierra CA2: la ficha muestra lo que paga hoy y lo que pagará desde el siguiente ciclo, y al guardar se avisa a la casa su monto nuevo (PR [#99](https://github.com/FNCRosse/juntas-vecinales/pull/99))
 - [x] HU-GAR-09 Desvincular a un ex residente
 
 Punto de entrada del vecino:
@@ -159,7 +159,7 @@ Al cerrar M4 también: bloque de próximo evento en el panel, recorrido guiado d
 
 ## M5 · Aportes Vecinales y Vigilancia
 
-- [~] HU-COB-16 Conceptos y montos de la tarifa — PR [#83](https://github.com/FNCRosse/juntas-vecinales/pull/83): tarifa por versiones, cambio en dos pasos con acta, aviso a las casas y historial de solo lectura (DIR-COB-20 a 23 y DIR-INI-05); `[~]` porque falta que el empadronamiento y la ficha del lote usen esta lista (CA1) y retirar un concepto, que el prototipo no tiene
+- [x] HU-COB-16 Conceptos y montos de la tarifa — PR [#83](https://github.com/FNCRosse/juntas-vecinales/pull/83): tarifa por versiones, cambio en dos pasos con acta, aviso a las casas y historial de solo lectura (DIR-COB-20 a 23 y DIR-INI-05); el empadronamiento y la actualización del predio muestran lo que cuesta cada concepto de esta lista y calculan la cuota con ella (PR [#99](https://github.com/FNCRosse/juntas-vecinales/pull/99)). Retirar un concepto no está: el prototipo no lo tiene
 - [x] HU-COB-01 Cálculo semanal de la deuda y estado de cuenta (worker) — PR [#84](https://github.com/FNCRosse/juntas-vecinales/pull/84): tarea `calcularDeuda` (cuota por casa y semana, aviso de cobro y vencidas) y Mi cuota con lo que debe y cómo se calcula; el detalle de pagos y el historial llegan con HU-COB-02
 - [~] HU-COB-02 Estado de cuenta privado — PR [#85](https://github.com/FNCRosse/juntas-vecinales/pull/85): `GET /api/aportes/estado-cuenta`, Mi cuota con lo ya pagado y los abonos parciales, y Mis pagos y recibos; `[~]` porque los pagos con su medio y su estado y los recibos (VEC-COB-05 completo) llegan con HU-COB-08, 09 y 12, y Cuentas del barrio (VEC-TRA-01) con HU-COB-14
 - [x] HU-COB-08 Subir el comprobante de pago digital — PR [#86](https://github.com/FNCRosse/juntas-vecinales/pull/86): Pagar mi cuota (VEC-COB-02 a 04) con la foto del comprobante, su constancia de envío en PDF, Mis pagos (VEC-COB-05) y Cobros con los comprobantes por revisar (DIR-COB-01); `[~]` porque la opción «En efectivo en mi casa» y su pedido (VEC-COB-13) llegan con HU-COB-11

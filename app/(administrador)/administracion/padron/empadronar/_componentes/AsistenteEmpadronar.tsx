@@ -9,6 +9,8 @@ import { fechaYHora, primerNombre } from "@/compartido/fechas";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo, MensajeDeCampo } from "@/componentes/a11y/Campo";
 import { ConceptosDelPredio } from "../../_componentes/ConceptosDelPredio";
+import { CuotaSemanal } from "../../_componentes/CuotaSemanal";
+import { type ConceptoDeTarifa, preciosPorRubro } from "../../_componentes/cuotaDelPredio";
 import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 import { CamposPlacas, type PlacasEscritas } from "../../_componentes/CamposPlacas";
 import { Interruptor } from "@/componentes/a11y/Interruptor";
@@ -82,7 +84,7 @@ function erroresDe(errores: Errores, prefijo: string): Errores {
   );
 }
 
-export function AsistenteEmpadronar() {
+export function AsistenteEmpadronar({ conceptos, desde }: { conceptos: ConceptoDeTarifa[]; desde: string }) {
   const [paso, setPaso] = useState<Paso>("vivienda");
   const [vivienda, setVivienda] = useState(VIVIENDA);
   const [placas, setPlacas] = useState<PlacasEscritas>({ autos: [], motos: [] });
@@ -467,6 +469,7 @@ export function AsistenteEmpadronar() {
       <ConceptosDelPredio
         idBase="campo-vivienda"
         valores={vivienda}
+        precios={preciosPorRubro(conceptos)}
         esNegocio={vivienda.uso === "NEGOCIO"}
         ayuda="Es la misma lista de conceptos de la tarifa que aprobó la directiva."
         errores={eVivienda}
@@ -479,6 +482,7 @@ export function AsistenteEmpadronar() {
         errores={erroresDe(errores, "placas")}
         alCambiar={setPlacas}
       />
+      <CuotaSemanal conceptos={conceptos} ocupacion={vivienda} desde={desde} />
       {falla && (
         <MensajeEstado tipo="error" titulo="No pudimos revisar los datos">
           <p>{falla}</p>

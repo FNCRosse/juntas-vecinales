@@ -12,6 +12,13 @@ import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { CamposPlacas, type PlacasEscritas } from "../../_componentes/CamposPlacas";
 import { ConceptosDelPredio } from "../../_componentes/ConceptosDelPredio";
+import { CuotaSemanal } from "../../_componentes/CuotaSemanal";
+import {
+  type ConceptoDeTarifa,
+  cuotaDeLasCantidades,
+  preciosPorRubro,
+} from "../../_componentes/cuotaDelPredio";
+import { soles } from "@/compartido/dinero";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
 
 type Uso = "VIVIENDA" | "NEGOCIO" | "VIVIENDA_Y_NEGOCIO";
@@ -39,11 +46,20 @@ export function ActualizarPredio({
   direccion,
   actual,
   placasActuales,
+  conceptos,
+  desde,
+  hoy,
+  titular,
 }: {
   predioId: string;
   direccion: string;
   actual: Ocupacion;
   placasActuales: PlacasEscritas;
+  /** La tarifa del siguiente ciclo (HU-COB-16 CA1), el lunes desde el que rige, lo que paga hoy la casa y a quién se le avisa. */
+  conceptos: ConceptoDeTarifa[];
+  desde: string;
+  hoy: number | null;
+  titular: string;
 }) {
   const [paso, setPaso] = useState<"editar" | "confirmar">("editar");
   const [datos, setDatos] = useState<Ocupacion>(actual);
@@ -88,6 +104,12 @@ export function ActualizarPredio({
       ),
   ];
 
+  const nueva = cuotaDeLasCantidades(conceptos, datos).total;
+  const filasDeCuota: [string, string][] = [
+    ["Cuota semanal", hoy === null ? soles(nueva) : `${soles(hoy)} → ${soles(nueva)}`],
+    ["Desde", desde],
+  ];
+
   async function guardar() {
     setEnviando(true);
     setFalla(null);
@@ -110,8 +132,8 @@ export function ActualizarPredio({
       <PasoConfirmacion
         referencia={titulo}
         titulo={`¿Desea guardar los datos nuevos de ${direccion}?`}
-        filas={filas}
-        efecto="El cambio queda en el historial de la vivienda. La cuota se recalcula con estos datos desde el siguiente ciclo de cobro."
+        filas={[...filas, ...filasDeCuota]}
+        efecto={`Recalcularemos la cuota desde el siguiente ciclo y le avisaremos a ${titular} el monto nuevo. El cambio queda en el historial.`}
         textoConfirmar="Sí, guardar los cambios"
         enviando={enviando}
         error={falla}
@@ -148,6 +170,7 @@ export function ActualizarPredio({
       <ConceptosDelPredio
         idBase="campo"
         valores={datos}
+        precios={preciosPorRubro(conceptos)}
         esNegocio={datos.uso === "NEGOCIO"}
         alCambiar={(concepto, valor) => setDatos({ ...datos, [concepto]: valor })}
       />
@@ -158,6 +181,7 @@ export function ActualizarPredio({
         errores={errores}
         alCambiar={setPlacas}
       />
+      <CuotaSemanal conceptos={conceptos} ocupacion={datos} desde={desde} hoy={hoy} />
       <ResumenErrores
         errores={Object.entries(errores).map(([campo, mensaje]) => ({
           campo: `campo-placas.${campo}`,
