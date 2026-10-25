@@ -129,7 +129,7 @@ Evidencia de cierre: [M2.md](evidencias/M2.md).
 - [x] HU-QUE-07 Expediente y derivación a PNP o Municipalidad — PR [#44](https://github.com/FNCRosse/juntas-vecinales/pull/44)
 - [x] HU-QUE-08 Mapa de incidentes — PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45)
 - [x] HU-ACC-07 Alternativa textual del mapa, imágenes e íconos — PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45)
-- [~] HU-ACC-10 Tutorial guiado por sección — `[~]` se cierra en M5: M3 dejó el mecanismo y la guía de Incidentes (PR [#46](https://github.com/FNCRosse/juntas-vecinales/pull/46)); M4 añadió la de Asambleas (PR [#79](https://github.com/FNCRosse/juntas-vecinales/pull/79)); M5 añade Mi cuota
+- [x] HU-ACC-10 Tutorial guiado por sección — M3 dejó el mecanismo y la guía de Incidentes (PR [#46](https://github.com/FNCRosse/juntas-vecinales/pull/46)); M4 añadió la de Asambleas (PR [#79](https://github.com/FNCRosse/juntas-vecinales/pull/79)); M5 añadió Mi cuota, de cinco pasos (PR [#100](https://github.com/FNCRosse/juntas-vecinales/pull/100))
 
 Al cerrar M3 también: cerrar la oposición de ubicación de M1, añadir el bloque de quejas al panel de inicio y la sección de quejas a la copia y la anonimización ARCO. Hecho en PR [#45](https://github.com/FNCRosse/juntas-vecinales/pull/45) (el mapa muestra todo por manzana) y PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47).
 

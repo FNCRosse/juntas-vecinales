@@ -1,6 +1,6 @@
 // @HU-ACC-10
 // Los recorridos guiados por sección: cada paso explica una sola acción y la nombra tal como se ve en la
-// pantalla (CA1). M3 dejó Incidentes, M4 agregó Asambleas y M5 agregará Mi cuota.
+// pantalla (CA1). M3 dejó Incidentes, M4 agregó Asambleas y M5, Mi cuota.
 
 export type PasoGuia = { titulo: string; texto: string; accion: string };
 
@@ -55,6 +55,38 @@ export const RECORRIDOS = {
         titulo: "Proponga un tema",
         texto: "Cuente qué tema le importa. La directiva decide si entra a la agenda y le avisamos.",
         accion: "Proponer un tema para la agenda",
+      },
+    ],
+  },
+  CUOTA: {
+    nombre: "Mi cuota",
+    href: "/cuota",
+    pasos: [
+      {
+        titulo: "Vea cuánto debe",
+        texto: "Arriba está lo que debe hoy y las semanas que faltan. Si está al día, lo dice.",
+        accion: "Lo que debe hoy",
+      },
+      {
+        titulo: "Pague con una foto",
+        texto: "Elija cuántas semanas paga y cómo. Suba la captura de su pago y la directiva la revisa.",
+        accion: "Pagar mi cuota",
+      },
+      {
+        titulo: "Guarde sus recibos",
+        texto: "Cuando la directiva aprueba su pago, el recibo queda aquí para verlo o bajarlo.",
+        accion: "Mis pagos y recibos",
+      },
+      {
+        titulo: "Vea cómo se calcula",
+        texto: "Más abajo está el detalle de su cuota semanal: cuánto cuesta cada cosa de su casa.",
+        accion: "Cómo se calcula su cuota semanal",
+      },
+      {
+        titulo: "Si el monto no es correcto",
+        texto:
+          "Cuéntenos por qué y adjunte un documento si lo tiene. Mientras se revisa, no paga esa diferencia.",
+        accion: "Hacer un reclamo",
       },
     ],
   },
