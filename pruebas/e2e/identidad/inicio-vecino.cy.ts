@@ -16,6 +16,8 @@ describe("@HU-GAR-19 Panel de inicio", () => {
     cy.guardarModo("senior");
     cy.visit("/");
     cy.get("h1").should("have.text", "Hola, Marta");
+    // En vista grande se ven 3 bloques: con la cuota de M5 al principio, el resto queda detrás de «Ver más».
+    cy.verTodos();
     cy.contains("a", "Mis avisos").should("contain.text", "nuevo");
     cy.contains("a", "Mis reportes").should("have.attr", "href", "/incidentes");
     cy.revisarAccesibilidad("inicio-vecino-senior-360");

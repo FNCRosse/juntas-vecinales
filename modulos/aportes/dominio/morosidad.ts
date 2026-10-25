@@ -40,3 +40,15 @@ export function cuotaParaAlertar<T extends { id: string; fechaLimite: Date }>(
   const masAntigua = impagas.reduce((menor, c) => (c.fechaLimite < menor.fechaLimite ? c : menor));
   return yaAlertadas.has(masAntigua.id) ? null : masAntigua;
 }
+
+/** Lo que se le avisa a la directiva cuando el worker envía recordatorios amables (HU-COB-05 CA3): cuántos y que no hubo recargo. */
+export const textoDeRecordatorios = (n: number) =>
+  n === 1
+    ? "Se envió 1 recordatorio amable a una casa con una semana de atraso. No se aplicó ningún recargo."
+    : `Se enviaron ${n} recordatorios amables a casas con una semana de atraso. No se aplicó ningún recargo.`;
+
+/** Lo que se le avisa a la directiva cuando casas llegan a 8 semanas sin pago y la reja deja de abrirse sola (HU-COB-06). */
+export const textoDeSuspensiones = (n: number) =>
+  n === 1
+    ? "1 casa llegó a 8 semanas sin pago. La reja ya no se le abre sola y se le avisó."
+    : `${n} casas llegaron a 8 semanas sin pago. La reja ya no se les abre sola y se les avisó.`;

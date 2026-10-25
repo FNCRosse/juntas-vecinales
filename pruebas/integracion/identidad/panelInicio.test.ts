@@ -27,6 +27,15 @@ describe("@HU-GAR-19 Panel de inicio consolidado", () => {
     expect(await (await pedir()).json()).toEqual({
       identidad: { nombre: "Marta", vivienda: "Mz. A, lote 12", avisosSinLeer: 0 },
       reportes: { abiertos: 0, ultimo: null },
+      cuota: {
+        porSemana: 0,
+        debe: 0,
+        semanas: 0,
+        rango: null,
+        estado: "SIN_CUOTAS",
+        rejaSuspendida: false,
+        reclamo: false,
+      },
     });
 
     await prisma.$transaction((tx) =>

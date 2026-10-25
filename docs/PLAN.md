@@ -77,7 +77,7 @@ Punto de entrada del vecino:
 - [x] HU-GAR-20 Centro de notificaciones unificado
 - [x] HU-GAR-18 Preferencias de notificación
 - [x] HU-ACC-04 Pedir ayuda humana desde cualquier pantalla
-- [~] HU-GAR-19 Panel de inicio consolidado — `[~]` M1 dejó el panel (saludo, vivienda) y el bloque de avisos; M3, el de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, el de la próxima asamblea y la próxima actividad (PR [#79](https://github.com/FNCRosse/juntas-vecinales/pull/79)); se cierra en M5: falta el bloque de deuda
+- [x] HU-GAR-19 Panel de inicio consolidado — M1 dejó el panel (saludo, vivienda) y el bloque de avisos; M3, el de reportes (PR [#47](https://github.com/FNCRosse/juntas-vecinales/pull/47)); M4, el de la próxima asamblea y la próxima actividad (PR [#79](https://github.com/FNCRosse/juntas-vecinales/pull/79)); M5, el de la cuota (lo que debe, desde cuándo, si hay un pago en revisión, un reclamo o la reja suspendida) y, para la directiva, «Cobros por atender» en su resumen (PR [#98](https://github.com/FNCRosse/juntas-vecinales/pull/98))
 
 Garita:
 - [x] HU-GAR-04 Pre-registrar visitas

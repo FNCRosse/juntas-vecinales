@@ -1,6 +1,7 @@
 // @HU-COB-05 @HU-COB-06
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import { prisma } from "@/compartido/bd/cliente";
+import type { Transaccion } from "@/compartido/bd/cliente";
 import { Prisma } from "@/compartido/bd/generado/client";
 import { soles } from "@/compartido/dinero";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
@@ -10,6 +11,8 @@ import {
   cuotaParaAlertar,
   diasDeRetraso,
   SEMANAS_PARA_CRITICO,
+  textoDeRecordatorios,
+  textoDeSuspensiones,
 } from "@/modulos/aportes/dominio/morosidad";
 import { textoDeSemanas } from "@/modulos/aportes/dominio/pago";
 import { cuotasPorPagarDe } from "@/modulos/aportes/infraestructura/repositorioCuotas";
@@ -18,9 +21,17 @@ import {
   cuotasYaAlertadas,
   registrarAlerta,
 } from "@/modulos/aportes/infraestructura/repositorioMorosidad";
+import { directivaParaAvisar } from "@/modulos/identidad/aplicacion/barrio";
 import { casasDe, predioDelVecino } from "@/modulos/identidad/aplicacion/comunidad";
 import { exigirRol, type SesionDto } from "@/modulos/identidad/aplicacion/sesion";
 import { suspenderAperturaAutomatica } from "@/modulos/identidad/aplicacion/visitas";
+
+/** Una alerta del sistema para la directiva (DIR-INI-02): un solo aviso por corrida del worker, no uno por casa. */
+const avisarALaDirectiva = (tx: Transaccion, directiva: string[], titulo: string, texto: string) =>
+  encolarAvisos(
+    directiva.map((destinatarioId) => ({ destinatarioId, tipo: "PAGOS" as const, titulo, texto })),
+    tx,
+  );
 
 const minuscula = (texto: string) => texto.charAt(0).toLowerCase() + texto.slice(1);
 
@@ -83,8 +94,9 @@ export async function alertarMorosidad(ahora = new Date()) {
     }
   }
   if (alertas) {
-    await prisma.$transaction((tx) =>
-      registrarAuditoria(
+    const directiva = await directivaParaAvisar();
+    await prisma.$transaction(async (tx) => {
+      await registrarAuditoria(
         {
           actorId: null,
           accion: "alertar_morosidad",
@@ -94,8 +106,14 @@ export async function alertarMorosidad(ahora = new Date()) {
           despues: { recordatorios: alertas },
         },
         tx,
-      ),
-    );
+      );
+      await avisarALaDirectiva(
+        tx,
+        directiva,
+        "Recordatorios de cuota enviados",
+        textoDeRecordatorios(alertas),
+      );
+    });
   }
   return { casas: candidatas.length, alertas };
 }
@@ -152,6 +170,12 @@ export async function suspenderCasasConAtrasoCritico(ahora = new Date()) {
       return true;
     });
     if (cambio) suspendidas += 1;
+  }
+  if (suspendidas) {
+    const directiva = await directivaParaAvisar();
+    await prisma.$transaction((tx) =>
+      avisarALaDirectiva(tx, directiva, "Casas con 8 semanas sin pago", textoDeSuspensiones(suspendidas)),
+    );
   }
   return { casas: criticas.length, suspendidas };
 }
