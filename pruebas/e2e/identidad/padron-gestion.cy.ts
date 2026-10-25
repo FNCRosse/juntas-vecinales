@@ -48,13 +48,25 @@ describe("@HU-GAR-10 @HU-GAR-09 Gestión del padrón", () => {
     cy.get("h1").should("have.text", `Actualizar los datos de Mz. G, lote ${LOTE}`);
     cy.esperarHidratacion("Revisar el cambio").click();
     cy.contains('[role="status"]', "No cambió ningún dato").should("exist");
+    // HU-COB-16 CA1 y HU-GAR-10 CA2: la cuota semanal sale de la lista de la tarifa, con lo que cuesta cada concepto.
+    cy.contains("section", "Cuota semanal")
+      .should("contain.text", "S/ 5.00")
+      .and("contain.text", "casa S/ 2.50 + inquilino S/ 2.50")
+      .and("contain.text", "Se recalcula sola con la tarifa vigente, desde el siguiente ciclo de cobro.");
     cy.contains("button", "Cambiar las cantidades").click();
+    cy.contains("p", "Inquilinos: S/ 2.50 por semana cada uno").should("exist");
+    cy.contains("p", "Motos: S/ ").should("contain.text", "por semana cada uno");
     cy.get('[id="campo.motos"]').click();
     cy.get("[role=dialog]").contains("button", /^1$/).click();
     cy.get('[id="campo-placas.motos.0"]').type(`M${sufijo.slice(-4)}`);
     cy.revisarAccesibilidad("predio-actualizar-normal");
     cy.contains("button", "Revisar el cambio").click();
     cy.contains("dd", "0 → 1").should("exist");
+    cy.contains("dt", "Cuota semanal").next("dd").should("contain.text", "S/ ");
+    cy.contains("dt", "Desde").next("dd").should("contain.text", "de 20");
+    cy.contains(
+      "Recalcularemos la cuota desde el siguiente ciclo y le avisaremos a Sofía el monto nuevo.",
+    ).should("exist");
     cy.contains("dt", "Placas de motos")
       .next("dd")
       .should("contain.text", `M${sufijo.slice(-4)}`);

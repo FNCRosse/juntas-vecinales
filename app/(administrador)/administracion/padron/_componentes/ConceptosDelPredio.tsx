@@ -30,6 +30,7 @@ export function ConceptosDelPredio({
   valores,
   esNegocio,
   ayuda,
+  precios = {},
   errores = {},
   alCambiar,
 }: {
@@ -38,6 +39,8 @@ export function ConceptosDelPredio({
   /** Un negocio puede no tener familias; lo demás pide al menos una. */
   esNegocio: boolean;
   ayuda?: string;
+  /** Lo que cuesta cada concepto con la tarifa vigente («S/ 2.50 por semana cada uno»), de la lista que aprobó la directiva. */
+  precios?: Partial<Record<Concepto, string>>;
   errores?: Partial<Record<Concepto, string>>;
   alCambiar: (concepto: Concepto, valor: number) => void;
 }) {
@@ -55,18 +58,24 @@ export function ConceptosDelPredio({
           {CONCEPTOS.map((c) => {
             const minimo = c === "familias" && !esNegocio ? 1 : 0;
             return (
-              <SelectorEnHoja
-                key={c}
-                id={`${idBase}.${c}`}
-                pregunta={ETIQUETA[c]}
-                opciones={Array.from({ length: MAXIMO_POR_CONCEPTO - minimo + 1 }, (_, i) => ({
-                  valor: String(i + minimo),
-                  etiqueta: String(i + minimo),
-                }))}
-                valor={String(valores[c])}
-                alElegir={(v) => alCambiar(c, Number(v))}
-                error={errores[c]}
-              />
+              <div key={c} className="flex flex-col gap-1">
+                {precios[c] && (
+                  <p className="text-pequeno text-texto-secundario">
+                    {ETIQUETA[c]}: {precios[c]}
+                  </p>
+                )}
+                <SelectorEnHoja
+                  id={`${idBase}.${c}`}
+                  pregunta={ETIQUETA[c]}
+                  opciones={Array.from({ length: MAXIMO_POR_CONCEPTO - minimo + 1 }, (_, i) => ({
+                    valor: String(i + minimo),
+                    etiqueta: String(i + minimo),
+                  }))}
+                  valor={String(valores[c])}
+                  alElegir={(v) => alCambiar(c, Number(v))}
+                  error={errores[c]}
+                />
+              </div>
             );
           })}
           <Boton icono={Check} variante="secundario" onClick={() => setAbierto(false)}>

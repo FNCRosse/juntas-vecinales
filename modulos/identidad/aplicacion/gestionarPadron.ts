@@ -1,5 +1,6 @@
 // @HU-GAR-10 @HU-GAR-09
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
+import type { Transaccion } from "@/compartido/bd/cliente";
 import { prisma } from "@/compartido/bd/cliente";
 import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compartido/errores";
 import { primerNombre } from "@/compartido/fechas";
@@ -13,6 +14,7 @@ import {
   type MotivoBajaResidente,
   normalizarPredio,
   type Ocupacion,
+  ocupacionPorClave,
   type UsoPredio,
 } from "@/modulos/identidad/dominio/predio";
 import { revocarSesionesDe } from "@/modulos/identidad/infraestructura/repositorioEquipo";
@@ -37,6 +39,8 @@ export async function actualizarPredio(
   sesion: SesionDto,
   predioId: string,
   datos: { uso: UsoPredio } & Ocupacion & { placas?: Placas },
+  /** Lo que otro módulo hace en la misma transacción con la ocupación nueva (por clave de concepto): M5 avisa la cuota nueva. */
+  alGuardar?: (tx: Transaccion, ocupacion: Record<string, number>) => Promise<void>,
 ) {
   exigirRol(sesion, "ADMINISTRADOR");
   const predio = await buscarPredio(predioId);
@@ -96,6 +100,7 @@ export async function actualizarPredio(
       },
       tx,
     );
+    await alGuardar?.(tx, ocupacionPorClave(ocupacion));
   });
   return { direccion: direccion(predio), cambios: cambios.length };
 }

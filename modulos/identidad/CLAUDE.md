@@ -25,7 +25,7 @@ Enums: `EstadoUsuario` (ACTIVA, SUSPENDIDA, DESVINCULADA) · `NombreRol` (VECINO
 **Padrón**
 - El DNI es único en el padrón (restricción en la BD). Toda alta, cambio o baja se audita con valores previos y posteriores.
 - Desvincular no borra: cierra la `Residencia` (`fechaFin`), pasa el usuario a `DESVINCULADA`, revoca sesiones, lo retira de la garita y le avisa. Pide confirmación en dos pasos.
-- La ocupación del predio (familias, vehículos por tipo, inquilinos, negocios) la guarda M1; el monto de la cuota lo calcula M5 con esa ocupación en cada ciclo. Mientras M5 no exista, las pantallas que muestran el cálculo (ADM-PAD-03) muestran solo la ocupación.
+- La ocupación del predio (familias, vehículos por tipo, inquilinos, negocios) la guarda M1; el monto de la cuota lo calcula M5 con esa ocupación en cada ciclo. Las pantallas del padrón (ADM-PAD-03, 08 y 09) muestran la cuota con la lista de la tarifa que les pasa `app/` desde M5 (M1 no importa M5); `actualizarPredio` admite un gancho `alGuardar(tx, ocupacionPorClave)` para que otro módulo actúe en la misma transacción.
 
 **Garita**
 - El semáforo sale de una **proyección propia de M1** por predio: VERDE (al día) por defecto, ROJO cuando M5 llama a `actualizarEstadoMorosidad(predioId, estado, tx)`. AMBAR es para la visita no anunciada.

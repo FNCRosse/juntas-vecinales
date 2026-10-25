@@ -7,6 +7,22 @@ export const CONCEPTOS = ["familias", "inquilinos", "autos", "motos", "triciclos
 export type Concepto = (typeof CONCEPTOS)[number];
 export type Ocupacion = Record<Concepto, number>;
 
+/** El rubro de la ocupación del predio que corresponde a cada concepto de la tarifa (HU-COB-16, diagrama 02b). */
+export const RUBRO_DE_CONCEPTO = {
+  casa: "familias",
+  inquilino: "inquilinos",
+  auto: "autos",
+  moto: "motos",
+  triciclo: "triciclos",
+  negocio: "negocios",
+} as const;
+
+/** La ocupación de un predio por la clave de cada concepto de la tarifa («auto»: 2), como la usa M5 para calcular la cuota. */
+export const ocupacionPorClave = (ocupacion: Ocupacion) =>
+  Object.fromEntries(
+    Object.entries(RUBRO_DE_CONCEPTO).map(([clave, rubro]) => [clave, ocupacion[rubro]]),
+  ) as Record<string, number>;
+
 /** Tope por concepto del contador de la pantalla (prototipo ADM-PAD-03). */
 export const MAXIMO_POR_CONCEPTO = 9;
 

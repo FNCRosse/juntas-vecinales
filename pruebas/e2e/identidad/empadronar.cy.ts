@@ -31,10 +31,16 @@ describe("@HU-GAR-01 Empadronar una vivienda", () => {
     cy.esperarHidratacion("Siguiente: las personas");
     porId("campo-vivienda.manzana").type("c");
     porId("campo-vivienda.lote").type("7");
+    // HU-COB-16 CA1 y HU-COB-01 CA1: las cantidades siguen la lista de la tarifa y la cuota se calcula con ella.
+    cy.contains("section", "Cuota semanal calculada").should("contain.text", "casa S/ 2.50");
     cy.esperarHidratacion("Cambiar las cantidades").click();
+    cy.contains("p", "Autos o camionetas: S/ ").should("contain.text", "por semana cada uno");
     cy.get('[id="campo-vivienda.autos"]').click();
     cy.get("[role=dialog]").contains("button", /^1$/).click();
     cy.get('[id="campo-vivienda.autos"]').should("contain.text", "1");
+    cy.contains("section", "Cuota semanal calculada")
+      .should("contain.text", "casa S/ 2.50 + auto o camioneta S/ ")
+      .and("contain.text", "Empieza a cobrarse el lunes");
     cy.contains("button", "Siguiente: las personas").click();
     porId("campo-vivienda.lote-error").should("contain.text", "es de Carmen Huamán");
     cy.focused().should("have.attr", "role", "alert");
