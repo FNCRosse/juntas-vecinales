@@ -1,4 +1,4 @@
-import { Bell, ChevronRight, CircleCheck, Info, MapPin, Plus, TriangleAlert } from "lucide-react";
+import { Bell, ChevronRight, CircleCheck, Info, MapPin, Plus, TriangleAlert, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
@@ -6,6 +6,7 @@ import { sesionActual } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { soles } from "@/compartido/dinero";
 import { fechaLarga, horaCorta, primerNombre, saludo } from "@/compartido/fechas";
+import { bandejaDeCobros } from "@/modulos/aportes/aplicacion/inicio";
 import { consultarTablero, opcionesDelTablero } from "@/modulos/aportes/aplicacion/tablero";
 import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 import { quejasPorAtender } from "@/modulos/incidencias/aplicacion/quejas";
@@ -20,6 +21,7 @@ export default async function ResumenDirectiva() {
   const quejas = sesion && (await quejasPorAtender(sesion));
   const proxima = sesion ? await proximaAsamblea(sesion, ahora) : null;
   const recaudacion = sesion && (await consultarTablero(sesion, {}, ahora));
+  const cobros = sesion && (await bandejaDeCobros(sesion));
   const mes = opcionesDelTablero(undefined, ahora).periodo.etiqueta;
   return (
     <div className="flex flex-col gap-2">
@@ -32,30 +34,64 @@ export default async function ResumenDirectiva() {
           <CambiarDePerfil sesion={sesion} actual="directiva" estilo="boton" />
         </div>
       )}
-      {quejas && (
+      {(quejas || cobros) && (
         <section aria-labelledby="titulo-para-atender" className="flex flex-col gap-4 pt-4">
           <h2 id="titulo-para-atender" className="text-titulo-2">
             Para atender
           </h2>
-          <Link
-            href="/directiva/incidentes?estado=porEvaluar"
-            className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
-          >
-            <span className="flex items-center gap-2 font-bold">
-              <MapPin aria-hidden className="size-icono text-accion-primaria" />
-              Incidentes por evaluar
-            </span>
-            <span className="text-dato font-bold">{quejas.porEvaluar}</span>
-            <span>{quejas.enRevision} en revisión</span>
-            <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-              <Info aria-hidden className="size-icono-pequeno" />
-              {quejas.porEvaluar === 0
-                ? "Nada pendiente"
-                : quejas.porEvaluar === 1
-                  ? "1 reporte nuevo"
-                  : `${quejas.porEvaluar} reportes nuevos`}
-            </span>
-          </Link>
+          {cobros && (
+            <Link
+              href="/directiva/cobros"
+              className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+            >
+              <span className="flex items-center gap-2 font-bold">
+                <Wallet aria-hidden className="size-icono text-accion-primaria" />
+                Cobros por atender
+              </span>
+              <span className="text-dato font-bold">{cobros.total}</span>
+              {[
+                [cobros.comprobantes, "comprobantes por revisar", "comprobante por revisar"],
+                [cobros.cobrosEnCasa, "cobros en casa", "cobro en casa"],
+                [cobros.reclamos, "reclamos de cuota", "reclamo de cuota"],
+                [cobros.recibosEnPapel, "recibos en papel por entregar", "recibo en papel por entregar"],
+              ]
+                .filter(([n]) => Number(n) > 0)
+                .map(([n, plural, singular]) => (
+                  <span key={String(plural)}>
+                    {n} {n === 1 ? singular : plural}
+                  </span>
+                ))}
+              <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
+                <Info aria-hidden className="size-icono-pequeno" />
+                {cobros.total === 0
+                  ? "Nada pendiente"
+                  : cobros.total === 1
+                    ? "1 pendiente"
+                    : `${cobros.total} pendientes`}
+              </span>
+            </Link>
+          )}
+          {quejas && (
+            <Link
+              href="/directiva/incidentes?estado=porEvaluar"
+              className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+            >
+              <span className="flex items-center gap-2 font-bold">
+                <MapPin aria-hidden className="size-icono text-accion-primaria" />
+                Incidentes por evaluar
+              </span>
+              <span className="text-dato font-bold">{quejas.porEvaluar}</span>
+              <span>{quejas.enRevision} en revisión</span>
+              <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
+                <Info aria-hidden className="size-icono-pequeno" />
+                {quejas.porEvaluar === 0
+                  ? "Nada pendiente"
+                  : quejas.porEvaluar === 1
+                    ? "1 reporte nuevo"
+                    : `${quejas.porEvaluar} reportes nuevos`}
+              </span>
+            </Link>
+          )}
           <Link
             href="/directiva/alertas"
             className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"

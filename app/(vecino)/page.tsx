@@ -8,16 +8,20 @@ import {
   Info,
   MapPin,
   Newspaper,
+  TriangleAlert,
+  Wallet,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { soles } from "@/compartido/dinero";
 import { fechaLarga, horaCorta, primerNombre } from "@/compartido/fechas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { bloqueDeCuota } from "@/modulos/aportes/aplicacion/inicio";
 import { bloqueDeInicio } from "@/modulos/asambleas/aplicacion/inicio";
 import { bloqueDeIdentidad } from "@/modulos/identidad/aplicacion/panelInicio";
 import { visitaEnLaPuerta } from "@/modulos/identidad/aplicacion/garita";
@@ -60,15 +64,59 @@ const ICONO = "size-icono shrink-0 text-accion-primaria";
 // al final, lo que se puede dejar detrás de "Ver más" (R-11): actividad (M4) y noticias. Se lee en cada carga (CA3).
 export default async function Inicio() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
-  const [{ avisosSinLeer }, [noticia], reportes, enLaPuerta, { asamblea, actividad }] = await Promise.all([
-    bloqueDeIdentidad(sesion),
-    ultimasNoticias(sesion, 1),
-    bloqueDeReportes(sesion),
-    visitaEnLaPuerta(sesion),
-    bloqueDeInicio(sesion),
-  ]);
+  const [{ avisosSinLeer }, [noticia], reportes, enLaPuerta, { asamblea, actividad }, cuota] =
+    await Promise.all([
+      bloqueDeIdentidad(sesion),
+      ultimasNoticias(sesion, 1),
+      bloqueDeReportes(sesion),
+      visitaEnLaPuerta(sesion),
+      bloqueDeInicio(sesion),
+      bloqueDeCuota(sesion),
+    ]);
   const ahora = new Date();
   const bloques: ReactNode[] = [];
+  if (cuota) {
+    bloques.push(
+      <Bloque
+        key="cuota"
+        href="/cuota"
+        icono={<Wallet aria-hidden className={ICONO} />}
+        titulo={cuota.porSemana ? `Mi cuota semanal: ${soles(cuota.porSemana)}` : "Mi cuota semanal"}
+      >
+        {cuota.estado === "SIN_CUOTAS" && (
+          <span className="text-texto-secundario">Todavía no se emitió su primera cuota.</span>
+        )}
+        {cuota.estado === "AL_DIA" && (
+          <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-exito bg-fondo-exito px-3 text-pequeno font-bold text-texto-exito">
+            <CircleCheck aria-hidden className="size-icono-pequeno" />
+            Está al día
+          </span>
+        )}
+        {(cuota.estado === "PENDIENTE" || cuota.estado === "EN_REVISION") && (
+          <>
+            <span className="text-dato font-bold">Debe {soles(cuota.debe)}</span>
+            <span className="text-texto-secundario">{cuota.rango}</span>
+            <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
+              <Info aria-hidden className="size-icono-pequeno" />
+              {cuota.estado === "EN_REVISION"
+                ? "Pago en revisión"
+                : cuota.semanas === 1
+                  ? "1 semana pendiente"
+                  : `${cuota.semanas} semanas pendientes`}
+            </span>
+            {cuota.estado === "PENDIENTE" && <span>Puede ponerse al día cuando pueda.</span>}
+          </>
+        )}
+        {cuota.reclamo && <span className="font-bold">Su reclamo está en revisión</span>}
+        {cuota.rejaSuspendida && (
+          <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-aviso bg-fondo-aviso px-3 text-pequeno font-bold text-texto-aviso">
+            <TriangleAlert aria-hidden className="size-icono-pequeno" />
+            Por ahora la reja no se abre sola
+          </span>
+        )}
+      </Bloque>,
+    );
+  }
   if (asamblea) {
     const cuando = new Date(asamblea.fechaHora);
     bloques.push(
