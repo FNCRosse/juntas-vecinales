@@ -1,7 +1,8 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Download } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { GraficoRecaudacion } from "@/componentes/a11y/GraficoRecaudacion";
 import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 import { soles } from "@/compartido/dinero";
@@ -14,8 +15,7 @@ const RUTA = "/directiva/cobros/recaudacion";
 
 // DIR-COB-18 (HU-COB-13): lo cobrado en un periodo, sumando los recibos digitales y en efectivo, con los filtros por periodo y
 // por estado de las casas, la comprobación de que cuadra y la tabla equivalente del gráfico. Solo se mira: la directiva y el
-// mediador lo ven igual. Falta el gasto y el saldo de caja del prototipo (no hay dónde registrar los gastos de la caja) y la
-// exportación (HU-COB-15).
+// mediador lo ven igual; exportar es solo de la directiva (HU-COB-15). Falta el gasto y el saldo de caja del prototipo.
 export default async function Recaudacion({
   searchParams,
 }: {
@@ -90,6 +90,15 @@ export default async function Recaudacion({
       </dl>
       <Cuadre t={t} />
       <GraficoRecaudacion semanas={t.semanas} digital={t.digital.monto} efectivo={t.efectivo.monto} />
+      {sesion.roles.includes("DIRECTIVA") && (
+        <BotonEnlace
+          href={`${RUTA}/exportar?periodo=${periodo.valor}&estado=${estado.valor}`}
+          variante="secundario"
+          icono={Download}
+        >
+          Exportar a Excel o CSV
+        </BotonEnlace>
+      )}
     </div>
   );
 }

@@ -20,7 +20,7 @@ Enum: `NivelUrgencia` (INFORMATIVO, URGENTE).
 - El feed lista por fecha, los urgentes primero, de forma lineal y sin jerarquías. El historial público es visible para todo vecino con sesión.
 - Con la lectura en voz alta activa en el perfil (M6), cada publicación del feed muestra "Escuchar" con controles de reproducir, pausar y detener (Web Speech API, voz `es-PE` o `es`). Si el navegador no tiene voz en español, el botón no aparece.
 - **Balance agregado (invariante `garantizarNoIdentificacion`):** solo totales del periodo; ningún filtro accesible al vecino baja a nivel de lote, manzana o persona. Se calcula pidiendo a `aportes/aplicacion` los totales; nunca lee tablas de M5.
-- La exportación es CSV ([BACKEND.md §7](../../docs/BACKEND.md#7-adaptadores-externos)) con los mismos totales y desgloses del tablero de recaudación de M5, y queda auditada (fecha y responsable).
+- La exportación (`GET /api/transparencia/exportar`) es un CSV con BOM ([BACKEND.md §7](../../docs/BACKEND.md#7-adaptadores-externos)), solo para `DIRECTIVA` porque trae lo que paga cada casa. Trae los mismos totales del tablero de recaudación de M5 (`detalleDeRecaudacion`) y su desglose por semana, por estado y por casa, filtrado por rango de fechas y estado de las casas; una celda que empieza con `=`, `+`, `-` o `@` se escribe con apóstrofo para que no se ejecute como fórmula. Cada descarga se audita (`exportar_recaudacion`, fecha y responsable, en la misma transacción que la entrega). No se arma un `.xlsx`: el CSV lo abren Excel y Google Sheets sin sumar una dependencia.
 - Las dos HU de recaudación se implementan al cerrar M5 (ver [PLAN](../../docs/PLAN.md)).
 
 ## Historias de usuario
