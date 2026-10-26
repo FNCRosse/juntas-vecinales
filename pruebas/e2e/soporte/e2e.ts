@@ -91,12 +91,15 @@ Cypress.Commands.add("verTodos", () => {
 Cypress.Commands.add("entrarComoVecinaNueva", (nombre: string) => {
   const sufijo = String(Date.now()).slice(-6);
   const datos = { telefono: `9${sufijo}03`, dni: `7${sufijo}1` };
+  // El lote sale del reloj en base 36 (4 caracteres, ~28 minutos antes de repetirse): con los 4 últimos dígitos de la hora, dos
+  // vecinas de la misma corrida chocaban en el mismo lote cada tantas corridas («Ese lote ya está en el padrón»).
+  const lote = (Date.now() % 36 ** 4).toString(36).toUpperCase().padStart(4, "0");
   cy.clearCookies();
   cy.request("POST", "/api/auth/clave", { dni: "40000001", clave: "clave-de-prueba" });
   cy.request("POST", "/api/admin/padron/empadronar", {
     vivienda: {
       manzana: "F",
-      lote: sufijo.slice(-4),
+      lote,
       uso: "VIVIENDA",
       familias: 1,
       inquilinos: 0,
