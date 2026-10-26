@@ -176,5 +176,7 @@ Al cerrar M4 también: bloque de próximo evento en el panel, recorrido guiado d
 
 Al cerrar M5 también: la foto del sustento documental de la rectificación (HU-GAR-13), las dos HU diferidas de M2, el bloque de deuda del panel, el recálculo por cambio de ocupación, el recorrido guiado de Mi cuota y las secciones de pagos en la copia y la anonimización ARCO: todo hecho (PR #97 a #103).
 
-**Pantallas:** ADM-INI-01 · ADM-PAD-01–03, 08–09 · DIR-COB-01–18, 20–23 · DIR-INI-01–02, 05 · DIR-TRA-05 · VEC-ACC-09, 11 · VEC-COB-01–08, 10–15 · VEC-GAR-06 · VEC-TRA-01 · VIG-CON-01–03.
+Evidencia de cierre: [M5.md](evidencias/M5.md).
+
+**Pantallas:** ADM-INI-01 · ADM-PAD-01–03, 08–09 · DIR-COB-01–23 · DIR-INI-01–02, 05 · DIR-TRA-01–05 · VEC-ACC-09, 11 · VEC-COB-01–08, 10–15 · VEC-GAR-06 · VEC-TRA-01 · VIG-CON-01–03.
 **Riesgos:** dinero duplicado al sincronizar (idempotencia por `idOperacionLocal` con `UNIQUE`); semanas y fechas límite en `America/Lima`; cambios de tarifa que no deben tocar cuotas ya emitidas; el tablero debe cuadrar al céntimo con los recibos; es el módulo con más trabajo diferido de otros.
