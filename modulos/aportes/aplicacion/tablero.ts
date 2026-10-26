@@ -18,6 +18,7 @@ import {
   type CasasMiradas,
   cuotasPorCobrar,
   deudaPorCasaDelPeriodo,
+  fechaDelUltimoRecibo,
   pagosAprobadosDelPeriodo,
   pagosAprobadosSinRecibo,
   recibosDelPeriodo,
@@ -152,6 +153,27 @@ export async function detalleDeRecaudacion(
 }
 
 export type DetalleDeRecaudacion = Awaited<ReturnType<typeof detalleDeRecaudacion>>;
+
+/**
+ * Los totales de la recaudación para todo el barrio (HU-COB-14 CA1): lo que se juntó, lo que falta cobrar y lo que se juntó cada
+ * semana, de todas las casas juntas. Lo puede pedir cualquier vecino con sesión, así que no trae nada de una casa ni de una persona
+ * (CA2): ni el estado de las casas, ni el detalle por casa, ni el medio de pago. Se calcula en cada consulta, así que cambia con
+ * cada pago que la directiva valida (CA3); `actualizado` es el día y la hora del último recibo.
+ */
+export async function totalesDelBarrio(
+  sesion: SesionDto,
+  entrada: { desde: string; hasta: string },
+  ahora = new Date(),
+) {
+  exigirRol(sesion, "VECINO", "VECINO_ADULTO_MAYOR", ...ROLES_DIRECTIVA);
+  const { tablero } = await calcular({ ...entrada, estado: "TODAS" }, ahora);
+  return {
+    seJunto: tablero.seCobro,
+    faltaCobrar: tablero.faltaCobrar,
+    semanas: tablero.semanas.map((s) => ({ etiqueta: s.etiqueta, total: s.total })),
+    actualizado: await fechaDelUltimoRecibo(),
+  };
+}
 
 /** Para las pantallas: los periodos y estados que ofrecen las listas, y el periodo elegido (el mes en curso si no es ninguno). */
 export function opcionesDelTablero(periodo: string | undefined, ahora = new Date()) {

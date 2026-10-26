@@ -60,3 +60,9 @@ export async function deudaPorCasaDelPeriodo(desde: Date, hasta: Date, casas: Ca
   });
   return new Map(filas.map((f) => [f.predioId, f._sum.saldoPendiente ?? 0]));
 }
+
+/** El día y la hora del último recibo emitido: la última vez que se actualizaron las cuentas; `null` si todavía no hay ninguno. */
+export async function fechaDelUltimoRecibo() {
+  const { _max } = await prisma.recibo.aggregate({ _max: { fecha: true } });
+  return _max.fecha;
+}

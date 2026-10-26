@@ -8,7 +8,7 @@ import { solicitudesPorAtender } from "@/modulos/accesibilidad/aplicacion/mediac
 export const metadata: Metadata = { title: "Más opciones" };
 
 // Más opciones de la directiva (prototipo DMA01): pedidos de ayuda, poner al día a un vecino (HU-COB-07), la tarifa de la
-// cuota semanal y "Cerrar sesión". «Poner al día» vive aquí y no en Cobros, que ya está en el máximo de objetivos (R-11).
+// cuota semanal, la rendición de cuentas (HU-COB-14) y "Cerrar sesión". «Poner al día» vive aquí y no en Cobros, que ya está en el máximo de objetivos (R-11).
 export default async function MasOpciones() {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
   const pedidos = await solicitudesPorAtender({
@@ -28,6 +28,9 @@ export default async function MasOpciones() {
       </TarjetaEnlace>
       <TarjetaEnlace href="/directiva/cobros/tarifa" titulo="Tarifa de la cuota semanal">
         <span>Conceptos, montos y su historial</span>
+      </TarjetaEnlace>
+      <TarjetaEnlace href="/directiva/cuentas" titulo="Rendición de cuentas">
+        <span>Ingresos, gastos y saldo de la caja</span>
       </TarjetaEnlace>
       <TarjetaEnlace href="/directiva/historial" titulo="Historial de acciones">
         <span>Quién hizo cada acción y cuándo</span>

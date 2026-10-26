@@ -86,3 +86,49 @@ model Egreso {
   @@index([balanceId])
   @@map("transparencia_egresos")
 }
+
+enum TipoMovimiento {
+  INGRESO
+  GASTO
+}
+
+// Lo que entra y sale de la caja de vigilancia además de las cuotas, que se suman solas con los recibos (HU-COB-14, DIR-TRA-03 y
+// 04). Solo inserción (trigger): un error se corrige con otro movimiento, no se borra. Un gasto lleva la foto de su comprobante.
+// idOperacion evita registrarlo dos veces al reintentar (AC-5). Montos en céntimos enteros.
+model MovimientoDeCaja {
+  id          String         @id @default(uuid())
+  idOperacion String         @unique
+  tipo        TipoMovimiento
+  // La clave del concepto de la lista (dominio/caja.ts): «VIGILANTES», «DONACION»…
+  concepto    String
+  detalle     String?
+  monto       Int
+  fecha       DateTime
+  archivoId   String?
+  autorId     String
+  autor       String
+  creadoEn    DateTime       @default(now())
+
+  @@index([fecha])
+  @@map("transparencia_movimientos_caja")
+}
+
+// La rendición de cuentas de un mes que la directiva publica a los vecinos (DIR-TRA-02): una por mes y para siempre (trigger). Guarda
+// los totales y los gastos por concepto como estaban al publicar; los vecinos ven solo esto (VEC-TRA-01), nunca los comprobantes.
+model RendicionPublicada {
+  id                String   @id @default(uuid())
+  idOperacion       String   @unique
+  // «2026-09».
+  mes               String   @unique
+  ingresosPorCuotas Int
+  ingresosOtros     Int
+  gastos            Int
+  comprobantes      Int
+  // [{ concepto: "Pago a vigilantes", monto: 140000 }], del mayor al menor.
+  gastosPorConcepto Json
+  publicadaPorId    String
+  publicadaPor      String
+  publicadaEn       DateTime @default(now())
+
+  @@map("transparencia_rendiciones")
+}

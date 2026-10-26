@@ -1,4 +1,4 @@
-import { CalendarDays, FileText, HandHeart, Landmark, Megaphone } from "lucide-react";
+import { CalendarDays, FileText, HandHeart, Landmark, Megaphone, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
@@ -32,6 +32,9 @@ export default async function CrearDirectiva() {
         </BotonEnlace>
         <BotonEnlace href="/directiva/balances/nuevo" variante="secundario" icono={Landmark}>
           Publicar un balance
+        </BotonEnlace>
+        <BotonEnlace href="/directiva/cuentas/registrar" variante="secundario" icono={Wallet}>
+          Registrar un ingreso o gasto
         </BotonEnlace>
       </div>
     </div>
