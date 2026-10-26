@@ -36,7 +36,9 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
     cy.contains("a", "Registrar un ingreso o gasto").click();
     cy.get("h1").should("have.text", "Registrar un ingreso o gasto");
     cy.contains("p", "Paso 1 de 2").should("exist");
-    cy.contains("Las cuotas de vigilancia se suman solas con cada recibo. Aquí se anota todo lo demás.").should("exist");
+    cy.contains(
+      "Las cuotas de vigilancia se suman solas con cada recibo. Aquí se anota todo lo demás.",
+    ).should("exist");
     cy.revisarAccesibilidad("registrar-gasto-paso1-360");
     cy.esperarHidratacion("Revisar").click();
     cy.get("#campo-monto-error").should("contain.text", "Escriba cuánto fue.");
@@ -71,7 +73,10 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
     // DIR-TRA-05: el movimiento queda en la lista, con su comprobante, junto a las cuotas que se suman solas.
     cy.contains("a", "Ver todos los ingresos y gastos").click();
     cy.get("h1").should("have.text", "Ingresos y gastos");
-    cy.contains("article", "Cuotas de vigilancia (recibos del mes)").should("contain.text", "Se suma solo con los recibos emitidos");
+    cy.contains("article", "Cuotas de vigilancia (recibos del mes)").should(
+      "contain.text",
+      "Se suma solo con los recibos emitidos",
+    );
     cy.contains("article", "Mantenimiento o reparación")
       .should("contain.text", "Foco LED para la garita")
       .and("contain.text", "− S/ 35.50")
@@ -91,7 +96,9 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
     // DIR-TRA-02: publicar.
     cy.contains("a", "Revisar y publicar").click();
     cy.get("h1").should("have.text", "¿Desea publicar la rendición de cuentas?");
-    cy.contains("Los vecinos la verán en Cuentas del barrio, solo con totales. Después de publicarla no se puede modificar.").should("exist");
+    cy.contains(
+      "Los vecinos la verán en Cuentas del barrio, solo con totales. Después de publicarla no se puede modificar.",
+    ).should("exist");
     cy.revisarAccesibilidad("publicar-rendicion-360");
     cy.contains("button", "Sí, publicar").click();
     cy.contains('[role="status"]', "Rendición publicada").should("exist");
@@ -122,7 +129,10 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
     cy.contains("figcaption", "Lo que se juntó cada semana").should("exist");
     cy.contains("table th", "Mantenimiento o reparación").should("exist");
     cy.contains("Se actualiza cada vez que la directiva valida un pago.").should("exist");
-    cy.get("main").should("not.contain.text", "Mz.").and("not.contain.text", "Foco LED").and("not.contain.text", "boleta-foco");
+    cy.get("main")
+      .should("not.contain.text", "Mz.")
+      .and("not.contain.text", "Foco LED")
+      .and("not.contain.text", "boleta-foco");
     cy.get("main a[href*='/api/archivos']").should("not.exist");
     cy.revisarAccesibilidad("cuentas-del-barrio-360");
     cy.contains("a", "Descargar las cuentas (PDF)")
@@ -146,7 +156,9 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
     cy.get("h1").should("contain.text", "Rendición de cuentas de");
     cy.contains("a", "Registrar un ingreso o gasto").should("not.exist");
     cy.contains("a", "Revisar y publicar").should("not.exist");
-    cy.get("main").then(($main) => expect($main.find(OBJETIVOS).length, "objetivos en la rendición").to.be.lte(6));
+    cy.get("main").then(($main) =>
+      expect($main.find(OBJETIVOS).length, "objetivos en la rendición").to.be.lte(6),
+    );
     cy.revisarAccesibilidad("rendicion-mediador-senior-360");
     cy.request({
       method: "POST",
@@ -164,7 +176,9 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
     cy.viewport(360, 800);
     cy.visit("/transparencia/cuentas");
     cy.get("h1").should("have.text", "Cuentas del barrio");
-    cy.get("main").then(($main) => expect($main.find(OBJETIVOS).length, "objetivos en las cuentas").to.be.lte(6));
+    cy.get("main").then(($main) =>
+      expect($main.find(OBJETIVOS).length, "objetivos en las cuentas").to.be.lte(6),
+    );
     cy.revisarAccesibilidad("cuentas-del-barrio-senior-360");
     cy.request("/api/transparencia/balance-agregado?periodo=2026-09&predioId=cualquiera&dni=08123478")
       .its("body")
@@ -173,7 +187,9 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
         expect(texto).not.to.contain("Mz.");
         expect(texto).not.to.contain("predio");
       });
-    cy.request({ url: "/directiva/cuentas", failOnStatusCode: false, followRedirect: false }).its("status").should("not.eq", 200);
+    cy.request({ url: "/directiva/cuentas", failOnStatusCode: false, followRedirect: false })
+      .its("status")
+      .should("not.eq", 200);
     cy.request({
       method: "POST",
       url: "/api/transparencia/movimientos",
