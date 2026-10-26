@@ -1,4 +1,4 @@
-// @HU-COB-01
+// @HU-COB-01 @HU-COB-02
 import { Prisma } from "@/compartido/bd/generado/client";
 import { prisma } from "@/compartido/bd/cliente";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
