@@ -28,23 +28,66 @@ export function CorregirDato({ campos }: { campos: Record<CampoRectificable, { o
   const [campo, setCampo] = useState<CampoRectificable | null>(null);
   const [valor, setValor] = useState("");
   const [detalle, setDetalle] = useState("");
+  const [documento, setDocumento] = useState({ id: "", nombre: "", subiendo: false, falla: "" });
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [falla, setFalla] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+
+  // El documento se sube al elegirlo, directo al almacenamiento con una URL firmada (HU-GAR-13 CA1); es opcional.
+  async function subirDocumento(archivo: File) {
+    setDocumento({ id: "", nombre: "", subiendo: true, falla: "" });
+    const pedido = await enviarJson<{
+      id: string;
+      url: string;
+      metodo: string;
+      cabeceras: Record<string, string>;
+    }>("/api/archivos", "POST", { uso: "sustento_arco", tipo: archivo.type, tamano: archivo.size });
+    if (!pedido.ok) {
+      return setDocumento({
+        id: "",
+        nombre: "",
+        subiendo: false,
+        falla: pedido.campos.archivo ?? pedido.error,
+      });
+    }
+    try {
+      const r = await fetch(pedido.datos.url, {
+        method: "PUT",
+        headers: pedido.datos.cabeceras,
+        body: archivo,
+      });
+      if (!r.ok) throw new Error();
+      setDocumento({ id: pedido.datos.id, nombre: archivo.name, subiendo: false, falla: "" });
+    } catch {
+      setDocumento({
+        id: "",
+        nombre: "",
+        subiendo: false,
+        falla:
+          "No pudimos subir el documento. Revise su internet y vuelva a elegirlo, o envíe la solicitud sin él.",
+      });
+    }
+  }
 
   async function enviar(evento: FormEvent) {
     evento.preventDefault();
     setFalla(null);
     if (!campo) return setErrores({ campo: "Elija qué dato quiere corregir." });
+    if (documento.subiendo) return setErrores({ sustento: "Espere a que termine de subir el documento." });
     setEnviando(true);
     const r =
       campo === "WHATSAPP"
-        ? await enviarJson("/api/perfil/contacto", "POST", { telefono: valor, detalle: detalle || undefined })
+        ? await enviarJson("/api/perfil/contacto", "POST", {
+            telefono: valor,
+            detalle: detalle || undefined,
+            sustentoId: documento.id || undefined,
+          })
         : await enviarJson("/api/arco/solicitudes", "POST", {
             tipo: "RECTIFICACION",
             campo,
             valor,
             detalle: detalle || undefined,
+            sustentoId: documento.id || undefined,
           });
     if (r.ok) return router.push("/mas/perfil?aviso=correccion");
     setEnviando(false);
@@ -103,6 +146,24 @@ export function CorregirDato({ campos }: { campos: Record<CampoRectificable, { o
             value={detalle}
             error={errores.detalle}
             onChange={(e) => setDetalle(e.target.value)}
+          />
+          <Campo
+            name="sustento"
+            etiqueta="Documento que lo respalda (opcional)"
+            ayuda={
+              documento.subiendo
+                ? "Subiendo el documento…"
+                : documento.nombre
+                  ? `Documento cargado: ${documento.nombre}`
+                  : "Por ejemplo, la foto de su DNI. JPG, PNG o PDF de hasta 5 MB. Solo la administración lo ve."
+            }
+            type="file"
+            accept="image/jpeg,image/png,application/pdf"
+            error={errores.sustento ?? (documento.falla || undefined)}
+            onChange={(e) => {
+              const archivo = e.target.files?.[0];
+              if (archivo) void subirDocumento(archivo);
+            }}
           />
         </>
       )}

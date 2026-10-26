@@ -15,6 +15,7 @@ const esquema = z.discriminatedUnion("tipo", [
     campo: z.enum(["NOMBRE", "DNI", "DIRECCION"], { message: "Elija qué dato quiere corregir." }),
     valor: z.string().max(120, "Escriba como mucho 120 letras."),
     detalle: z.string().max(500, "Escriba como mucho 500 letras.").optional(),
+    sustentoId: z.string().optional(),
   }),
   z.object({
     tipo: z.literal("CANCELACION"),

@@ -1,4 +1,5 @@
 // @HU-GAR-12 @HU-GAR-13 @HU-GAR-14 @HU-GAR-15 @HU-GAR-16 @HU-GAR-17
+import { archivosSubidosPor } from "@/compartido/archivos/registro";
 import { registrarAuditoria } from "@/compartido/auditoria/registrar";
 import type { SeccionPdf } from "@/compartido/archivos/pdf";
 import { prisma, type Transaccion } from "@/compartido/bd/cliente";
@@ -200,13 +201,18 @@ export async function datosPersonales(usuarioId: string): Promise<SeccionPdf[]> 
   ];
 }
 
+/** El uso con el que se sube el documento que respalda una corrección (`app/api/archivos/usos.ts`). */
+export const USO_SUSTENTO = "sustento_arco";
+const MENSAJE_SUSTENTO =
+  "El documento tiene que ser una foto o un PDF de hasta 5 MB. Si no puede subirlo, envíe la solicitud sin él.";
+
 /**
  * Pide corregir su nombre, su DNI o su vivienda (HU-GAR-13 CA1), o cambiar su número (HU-GAR-17
  * CA1). Queda pendiente hasta que el administrador la resuelva (HU-GAR-13 CA2).
  */
 export async function solicitarRectificacion(
   sesion: SesionDto,
-  datos: { campo: CampoRectificable; valor: string; detalle?: string },
+  datos: { campo: CampoRectificable; valor: string; detalle?: string; sustentoId?: string },
   ahora = new Date(),
 ) {
   const usuario = await cargarUsuario(sesion.usuarioId);
@@ -229,6 +235,13 @@ export async function solicitarRectificacion(
     errorDeRectificacion(datos.campo, datos.valor, anterior) ??
     (nuevo === anterior ? "Es igual al dato que ya tenemos." : null);
   if (error) throw new ErrorValidacion(undefined, { valor: error });
+  // El documento que respalda la corrección es opcional, pero tiene que ser uno que subió ella para eso (HU-GAR-13 CA1).
+  if (
+    datos.sustentoId &&
+    !(await archivosSubidosPor(sesion.usuarioId, USO_SUSTENTO, [datos.sustentoId])).has(datos.sustentoId)
+  ) {
+    throw new ErrorValidacion(undefined, { sustento: MENSAJE_SUSTENTO });
+  }
   if (await pendienteDelMismoCampo(sesion.usuarioId, datos.campo))
     throw new ErrorConflicto("Ya pidió corregir ese dato. Espere la respuesta de la administración.");
   const solicitud = await prisma.$transaction((tx) =>
@@ -239,6 +252,7 @@ export async function solicitarRectificacion(
       valorAnterior: anterior,
       valorNuevo: nuevo,
       detalle: datos.detalle?.trim() || null,
+      sustentoId: datos.sustentoId || null,
       creadaEn: ahora,
     }),
   );
@@ -410,6 +424,8 @@ export async function verSolicitudArco(sesion: SesionDto, id: string, ahora = ne
     pideVerificacion: s.campo === "WHATSAPP",
     verificacion: s.verificacion,
     detalle: s.detalle,
+    /** El documento que respaldó la corrección, si lo adjuntó (HU-GAR-13 CA1). */
+    sustento: s.sustentoId ? { id: s.sustentoId } : null,
     vence: fechaEnFrase(fechaLimite(s.creadaEn, s.tipo)),
     motivoResolucion: s.motivoResolucion,
     /** Qué se borra y qué se conserva si se aprueba una cancelación (ADM-ARC-04). */

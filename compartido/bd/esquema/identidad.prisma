@@ -287,6 +287,8 @@ model SolicitudArco {
   motivoResolucion String?
   /// Cómo se verificó la identidad antes de cambiar el número (HU-GAR-17 CA2).
   verificacion     String?
+  /// El documento que respalda la corrección (HU-GAR-13 CA1): la foto del DNI u otro; opcional. Es un archivo de `nucleo_archivos`.
+  sustentoId       String?
 
   @@index([estado, tipo])
   @@index([usuarioId])
