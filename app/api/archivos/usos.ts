@@ -32,6 +32,14 @@ export const USOS = {
     roles: ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"],
     ven: ["DIRECTIVA", "DIRECTIVO_MEDIADOR"],
   },
+  // El documento que respalda la corrección de un dato personal (HU-GAR-13): lo sube quien la pide y lo ve solo la administración, que
+  // resuelve la solicitud. Otra persona nunca (AC-7).
+  sustento_arco: {
+    carpeta: "comprobantes",
+    clase: "documento",
+    roles: ["VECINO", "VECINO_ADULTO_MAYOR", "DIRECTIVA", "DIRECTIVO_MEDIADOR"],
+    ven: ["ADMINISTRADOR"],
+  },
   // La evidencia de una queja la sube el vecino y la ve solo la directiva: otro vecino nunca (AC-7).
   evidencia_queja: {
     carpeta: "evidencias",

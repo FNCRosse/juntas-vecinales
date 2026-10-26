@@ -1,7 +1,7 @@
 "use client";
 // @HU-GAR-13 @HU-GAR-14 @HU-GAR-16 @HU-GAR-17
 
-import { ArrowRight, ChevronLeft } from "lucide-react";
+import { ArrowRight, ChevronLeft, FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -28,6 +28,7 @@ type Solicitud = {
   antes: string | null;
   nuevo: string | null;
   detalle: string | null;
+  sustento: { id: string } | null;
   motivoResolucion: string | null;
   pideVerificacion: boolean;
   verificacion: string | null;
@@ -235,7 +236,20 @@ export function ResolverSolicitud({
           </div>
           <div className="flex flex-col sm:col-span-2">
             <dt className="text-pequeno text-texto-secundario">Sustento</dt>
-            <dd>{s.detalle ?? "No escribió un sustento."}</dd>
+            <dd className="flex flex-col gap-2">
+              {s.detalle ?? "No escribió un sustento."}
+              {s.sustento && (
+                <a
+                  href={`/api/archivos/${s.sustento.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace underline underline-offset-4"
+                >
+                  <FileText aria-hidden className="size-icono" />
+                  Ver el documento (se abre en otra pestaña)
+                </a>
+              )}
+            </dd>
           </div>
         </dl>
       )}

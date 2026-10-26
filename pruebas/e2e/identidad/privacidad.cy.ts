@@ -34,6 +34,19 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
 
   it("@HU-GAR-13 CA1 CA2 @HU-GAR-16 CA1 CA2 CA3 pide corregir su DNI; la administración lo rechaza con motivo", () => {
     entrarComo("40000002");
+    // El CI no habla con R2: la subida del documento se simula y el archivo «subido» se crea en la BD de pruebas.
+    cy.task<string>("archivoDePrueba", { dni: "40000002", uso: "sustento_arco" }).then((archivoId) => {
+      cy.intercept("POST", "/api/archivos", {
+        statusCode: 201,
+        body: {
+          id: archivoId,
+          url: "https://r2-simulado.invalid/sustento-arco",
+          metodo: "PUT",
+          cabeceras: { "content-type": "image/jpeg" },
+        },
+      });
+      cy.intercept("PUT", "https://r2-simulado.invalid/sustento-arco", { statusCode: 200 }).as("subir");
+    });
     cy.visit("/mas/perfil/corregir");
     cy.esperarHidratacion("Enviar mi solicitud").click();
     cy.contains("Elija qué dato quiere corregir.").should("exist");
@@ -41,6 +54,15 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
     cy.get("[role=dialog]").contains("button", "Mi DNI").click();
     cy.get("#campo-valor").type(DNI_NUEVO);
     cy.get("#campo-detalle").type("Así figura en mi DNI");
+    // HU-GAR-13 CA1: el documento que respalda la corrección, opcional.
+    cy.contains("label", "Documento que lo respalda (opcional)").should("exist");
+    cy.get("#campo-sustento").selectFile({
+      contents: Cypress.Buffer.from("foto"),
+      fileName: "mi-dni.jpg",
+      mimeType: "image/jpeg",
+    });
+    cy.wait("@subir");
+    cy.contains("Documento cargado: mi-dni.jpg").should("exist");
     cy.revisarAccesibilidad("corregir-dato-normal");
     cy.contains("button", "Enviar mi solicitud").click();
     cy.contains('[role="status"]', "Solicitud enviada").should("contain.text", "Mis solicitudes");
@@ -61,6 +83,9 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
 
     cy.get("h1").should("have.text", "Corregir el DNI de Marta Rojas");
     cy.contains("dd", DNI_NUEVO).should("exist");
+    cy.contains("a", "Ver el documento")
+      .should("have.attr", "href")
+      .and("match", /^\/api\/archivos\/[0-9a-f-]{36}$/);
     cy.revisarAccesibilidad("resolver-solicitud-normal");
     cy.contains("label", "Rechazar").click();
     cy.esperarHidratacion("Revisar la decisión").click();
