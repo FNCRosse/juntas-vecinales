@@ -28,6 +28,8 @@ describe("@HU-ASA-10 Balance de ingresos y egresos de actividades pro fondos", (
     });
     cy.viewport(360, 800);
     cy.visit("/directiva/crear");
+    // En vista grande las últimas opciones van detrás de "Ver más" (R-11).
+    cy.verTodos();
     cy.contains("a", "Balance de una actividad").click();
     cy.get("h1").should("have.text", "Balance de una actividad");
     cy.contains("p", "Paso 1 de 2").should("exist");

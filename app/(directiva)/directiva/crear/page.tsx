@@ -11,6 +11,7 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { Volver } from "@/componentes/a11y/Volver";
 
 export const metadata: Metadata = { title: "Crear o registrar" };
@@ -80,10 +81,16 @@ export default async function CrearDirectiva({
           Elija una opción. Cada una tiene dos pasos y siempre puede revisar antes de publicar.
         </p>
       </div>
-      <ul className="grid gap-separacion md:grid-cols-2">
-        {OPCIONES.map(({ href, icono: Icono, titulo, detalle }) => (
-          <li key={href}>
+      {/* Seis opciones: en vista grande se ven cuatro y el resto, detrás de "Ver más" (R-11). */}
+      <div data-ancho="completo" className="flex flex-col gap-separacion">
+        <ListaVerMas
+          etiqueta="Qué crear o registrar"
+          normal={6}
+          senior={4}
+          columnas={2}
+          elementos={OPCIONES.map(({ href, icono: Icono, titulo, detalle }) => (
             <Link
+              key={href}
               href={href}
               className="flex h-full min-h-16 items-center gap-3 rounded-tarjeta border-(length:--borde-ancho-control) border-accion-primaria bg-fondo-superficie px-4 py-3 text-texto-principal no-underline shadow-tarjeta hover:bg-accion-secundaria-hover senior:px-6"
             >
@@ -99,9 +106,9 @@ export default async function CrearDirectiva({
               </span>
               <Plus aria-hidden className="size-icono shrink-0" />
             </Link>
-          </li>
-        ))}
-      </ul>
+          ))}
+        />
+      </div>
     </div>
   );
 }

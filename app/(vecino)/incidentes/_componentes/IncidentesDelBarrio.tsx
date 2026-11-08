@@ -55,26 +55,19 @@ export function IncidentesDelBarrio({
       <h2 id="titulo-barrio" className="text-titulo-2">
         En el barrio · {nombreDelPeriodo.toLowerCase()}
       </h2>
-      <SelectorDeFiltro
-        id="periodo-incidentes"
-        pregunta="Periodo"
-        valor={periodo}
-        opciones={(Object.keys(PERIODOS_DEL_MAPA) as PeriodoDelMapa[]).map((clave) => ({
-          valor: clave,
-          etiqueta: PERIODOS_DEL_MAPA[clave].etiqueta,
-          href: enlace(vista, clave),
-        }))}
-      />
+      {/* Periodo y vista en un solo selector: un objetivo menos en la pantalla (R-11). */}
       <SelectorDeFiltro
         id="vista-incidentes"
-        pregunta="Ver los incidentes como"
-        valor={vista}
-        opciones={(Object.keys(VISTAS) as Vista[]).map((clave) => ({
-          valor: clave,
-          etiqueta: VISTAS[clave].etiqueta,
-          detalle: VISTAS[clave].detalle,
-          href: enlace(clave, periodo),
-        }))}
+        pregunta="Ver los incidentes"
+        valor={`${vista}|${periodo}`}
+        opciones={(Object.keys(PERIODOS_DEL_MAPA) as PeriodoDelMapa[]).flatMap((p) =>
+          (Object.keys(VISTAS) as Vista[]).map((v) => ({
+            valor: `${v}|${p}`,
+            etiqueta: `${VISTAS[v].etiqueta} · ${PERIODOS_DEL_MAPA[p].etiqueta}`,
+            detalle: VISTAS[v].detalle,
+            href: enlace(v, p),
+          })),
+        )}
       />
       <p>
         {cantidad(totales.total, "reporte", "reportes")}:{" "}

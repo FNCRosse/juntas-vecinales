@@ -75,6 +75,8 @@ export default async function Padron({ searchParams }: { searchParams: Parametro
       {viviendas.length ? (
         <ListaVerMas
           etiqueta="Viviendas"
+          normal={3}
+          senior={1}
           elementos={viviendas.map((v) => (
             <TarjetaEnlace key={v.id} href={`/administracion/padron/${v.id}`} titulo={v.direccion}>
               <span>
