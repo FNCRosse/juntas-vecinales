@@ -50,7 +50,9 @@ export function Encabezado({
             <span className="text-pequeno text-texto-secundario">Villa de Fátima</span>
           </p>
         </div>
-        <div className={`grid gap-separacion md:flex ${rutaAyuda ? "grid-cols-2" : "grid-cols-1"}`}>
+        <div
+          className={`grid gap-separacion md:flex ${rutaAyuda ? "grid-cols-2 senior:max-md:grid-cols-1" : "grid-cols-1"}`}
+        >
           <InterruptorLetraGrande activoAlInicio={modoSenior} />
           {rutaAyuda && <EnlaceAyuda ruta={rutaAyuda} />}
         </div>

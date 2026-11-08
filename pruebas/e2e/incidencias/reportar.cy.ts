@@ -79,13 +79,14 @@ describe("@HU-QUE-01 @HU-QUE-04 Registrar una queja y emitir su ticket", () => {
     cy.request("POST", "/api/auth/clave", { dni: "40000002", clave: "clave-de-prueba" });
     cy.viewport(1280, 900);
     cy.visit("/directiva");
+    cy.visit("/directiva/para-atender");
     cy.contains("a", "Incidentes por evaluar").should("exist");
     cy.revisarAccesibilidad("resumen-directiva-para-atender-normal");
     cy.task("copiaInternaDeLaCola", { dni: "40000002" });
     cy.contains("a", "Ver todas las alertas de la directiva").click();
     cy.contains("article", "Llegó un reporte nuevo").should("contain.text", "Mz. F, frente al parque");
     cy.revisarAccesibilidad("alertas-directiva-normal");
-    cy.visit("/directiva");
+    cy.visit("/directiva/para-atender");
     cy.contains("a", "Incidentes por evaluar").click();
     cy.get("h1").should("have.text", "Incidentes");
     cy.contains("li", "Mz. F, frente al parque")

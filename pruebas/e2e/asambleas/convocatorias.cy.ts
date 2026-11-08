@@ -448,7 +448,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.guardarModo("senior");
 
     cy.visit("/directiva/asambleas");
-    cy.contains("h3", "Quórum proyectado").should("exist");
+    cy.contains("h2", "Quórum proyectado").should("exist");
     cy.get('[role="img"][aria-label^="Barra de quórum"]').should("exist");
     cy.contains(/Falta(n)? \d+ casas? para el mínimo/).should("exist");
     cy.contains("Todavía no alcanza el quórum").should("exist");

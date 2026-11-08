@@ -25,7 +25,7 @@ export function Cuadre({ t, enLinea = false }: { t: TableroDto; enLinea?: boolea
   // En el resumen (prototipo DIN01) va en una línea, sin caja.
   if (enLinea)
     return (
-      <p className="flex items-start gap-2">
+      <p role="status" className="flex items-start gap-2">
         <CircleCheck aria-hidden className="size-icono shrink-0 text-texto-exito" />
         <span>
           <strong>Cuadra.</strong> {texto}

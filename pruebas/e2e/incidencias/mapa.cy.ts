@@ -34,9 +34,16 @@ describe("@HU-QUE-08 @HU-ACC-07 Mapa de incidentes", () => {
     cy.get('section[aria-labelledby="titulo-barrio"]').should("not.contain.text", "lote 5");
     cy.revisarAccesibilidad("incidentes-lista-senior-360");
 
-    cy.esperarHidratacion("Cambiar").click();
+    cy.get("#vista-incidentes")
+      .should(($b) =>
+        expect(
+          Object.keys($b[0]).some((k) => k.startsWith("__reactProps")),
+          "hidratado",
+        ).to.eq(true),
+      )
+      .click();
     cy.get("[role=dialog]").contains("button", "Mapa").click();
-    cy.location("search").should("eq", "?vista=mapa");
+    cy.location("search").should("eq", "?vista=mapa&periodo=mes");
     cy.get('[role="img"]')
       .should("have.attr", "aria-label")
       .and("contain", "Mz. B:")
@@ -45,7 +52,14 @@ describe("@HU-QUE-08 @HU-ACC-07 Mapa de incidentes", () => {
     cy.get('[role="img"] svg').each(($svg) => expect($svg.attr("aria-hidden")).to.eq("true"));
     cy.revisarAccesibilidad("incidentes-mapa-senior-360");
 
-    cy.esperarHidratacion("Cambiar").click();
+    cy.get("#vista-incidentes")
+      .should(($b) =>
+        expect(
+          Object.keys($b[0]).some((k) => k.startsWith("__reactProps")),
+          "hidratado",
+        ).to.eq(true),
+      )
+      .click();
     cy.get("[role=dialog]").contains("button", "Resumen").click();
     cy.contains("caption", "Reportes del último mes por zona y tipo").should("exist");
     cy.contains("th", "Todo el barrio").should("exist");

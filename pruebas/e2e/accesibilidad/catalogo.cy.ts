@@ -51,7 +51,7 @@ describe("@HU-ACC-05 Catálogo de componentes sin violaciones WCAG 2.2 AA", () =
     });
   });
 
-  it("@HU-ACC-05 R-11 la barra del vecino en el teléfono tiene cuatro destinos, en normal y en Senior; la tablet suma Incidentes", () => {
+  it("@HU-ACC-05 R-11 la barra del vecino en el teléfono tiene cuatro destinos, en normal y en Senior; la tablet suma Incidentes y Actividades", () => {
     const destinos = ["Inicio", "Mi cuota", "Asambleas", "Más"];
     (["senior", "normal"] as const).forEach((modo) => {
       cy.viewport(360, 800);
@@ -63,6 +63,6 @@ describe("@HU-ACC-05 Catálogo de componentes sin violaciones WCAG 2.2 AA", () =
     });
     cy.viewport(1280, 800);
     cy.visit("/catalogo");
-    cy.get('nav[aria-label="Principal"] a:visible').should("have.length", 5);
+    cy.get('nav[aria-label="Principal"] a:visible').should("have.length", 6);
   });
 });

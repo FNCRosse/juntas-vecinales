@@ -44,13 +44,10 @@ export function Voluntarios({ pide, voluntarios }: { pide: boolean; voluntarios:
                   {v.quien} · {v.vivienda}
                 </strong>
                 <p>Se ofreció para ayudar: {v.descripcion} Si lo aprueba, no paga la colaboración.</p>
-                {v.estado === "PENDIENTE" ? (
-                  <EvaluarVoluntario voluntariadoId={v.id} nombre={v.quien} />
-                ) : (
-                  <Insignia tono={tono} icono={Icono}>
-                    {texto(v.rolAsignado)}
-                  </Insignia>
-                )}
+                <Insignia tono={tono} icono={Icono}>
+                  {texto(v.rolAsignado)}
+                </Insignia>
+                {v.estado === "PENDIENTE" && <EvaluarVoluntario voluntariadoId={v.id} nombre={v.quien} />}
               </article>
             );
           })}

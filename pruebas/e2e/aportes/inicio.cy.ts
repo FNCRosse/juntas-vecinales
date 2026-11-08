@@ -58,9 +58,12 @@ describe("@HU-GAR-19 El inicio con lo de cobros", { defaultCommandTimeout: 15000
     cy.guardarModo("senior");
     cy.viewport(360, 800);
     cy.visit("/directiva");
-    cy.contains("a", "Cobros por atender").should("contain.text", "reclamo").and("contain.text", "pendiente");
+    // El resumen cuenta lo que espera en una sola tarjeta, "Para atender", que lleva a la lista de lo pendiente.
+    cy.contains("section", "Para atender").should("contain.text", "Reclamos de cuota");
     cy.revisarAccesibilidad("resumen-directiva-cobros-senior-360");
-    cy.contains("a", "Cobros por atender").click();
+    cy.contains("a", "Ver lo que hay que atender").click();
+    cy.location("pathname").should("eq", "/directiva/para-atender");
+    cy.contains("a", "Reclamos de cuota").click();
     cy.location("pathname").should("eq", "/directiva/cobros");
     cy.get("h1").should("have.text", "Cobros");
   });
