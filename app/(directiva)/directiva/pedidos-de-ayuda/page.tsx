@@ -2,6 +2,8 @@ import { CircleCheck, Clock, Phone } from "lucide-react";
 import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaYHora } from "@/compartido/fechas";
+import { clasesBoton } from "@/componentes/a11y/Boton";
+import { Insignia } from "@/componentes/a11y/Insignia";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { solicitudesPorAtender } from "@/modulos/accesibilidad/aplicacion/mediacion";
 import { telefonosParaLlamar } from "@/modulos/identidad/aplicacion/datosParaAyuda";
@@ -22,9 +24,9 @@ export default async function PedidosDeAyuda() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <p className="text-texto-secundario">Mediación</p>
+        <p className="text-pequeno font-bold text-texto-secundario">Mediación</p>
         <h1 className="text-titulo-1">Pedidos de ayuda</h1>
-        <p>
+        <p className="text-texto-secundario">
           Vecinos que no pudieron terminar algo en la app. Se ve en qué pantalla se quedaron para saber qué
           explicarles.
         </p>
@@ -48,20 +50,16 @@ export default async function PedidosDeAyuda() {
               </span>
               <span>Prefiere: {p.modo.toLowerCase()}</span>
               {p.detalle && <p className="rounded-control bg-fondo-suave p-3">«{p.detalle}»</p>}
-              <span
-                className={`inline-flex items-center gap-2 font-bold ${p.estado === "ATENDIDA" ? "text-texto-exito" : "text-texto-aviso"}`}
+              <Insignia
+                tono={p.estado === "ATENDIDA" ? "exito" : "aviso"}
+                icono={p.estado === "ATENDIDA" ? CircleCheck : Clock}
               >
-                {p.estado === "ATENDIDA" ? (
-                  <CircleCheck aria-hidden className="size-icono-pequeno" />
-                ) : (
-                  <Clock aria-hidden className="size-icono-pequeno" />
-                )}
                 {p.estadoTexto}
-              </span>
+              </Insignia>
               {p.estado !== "ATENDIDA" && telefonos.get(p.usuarioId) && (
                 <a
                   href={`tel:+51${telefonos.get(p.usuarioId)!.replaceAll(" ", "")}`}
-                  className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace underline underline-offset-4"
+                  className={`${clasesBoton("secundario", false, true)}`}
                 >
                   <Phone aria-hidden className="size-icono" />
                   Llamar al {telefonos.get(p.usuarioId)}

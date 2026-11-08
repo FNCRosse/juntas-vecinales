@@ -21,7 +21,7 @@ describe("@HU-ASA-15 Comunicados generales y feed comunitario", () => {
   it("@HU-ASA-15 CA1 CA2 CA3 la directiva redacta, revisa y publica un comunicado urgente en teléfono", () => {
     cy.viewport(360, 800);
     cy.visit("/directiva/crear");
-    cy.contains("a", "Publicar un comunicado").click();
+    cy.contains("a", "Comunicado a la comunidad").click();
     cy.get("h1").should("have.text", "Comunicado a la comunidad");
     cy.contains("p", "Paso 1 de 2").should("exist");
     cy.revisarAccesibilidad("comunicado-redactar-360");
@@ -43,9 +43,8 @@ describe("@HU-ASA-15 Comunicados generales y feed comunitario", () => {
     cy.revisarAccesibilidad("comunicado-confirmar-360");
     cy.contains("button", "Sí, publicar el comunicado").click();
 
-    cy.contains('[role="status"]', "Comunicado publicado").should("exist");
-    cy.get("h1").should("have.text", URGENTE);
-    cy.revisarAccesibilidad("comunicado-publicado-360");
+    // Al publicar vuelve a la pantalla de la que se abrió el formulario.
+    cy.location("pathname").should("eq", "/directiva/crear");
   });
 
   it("@HU-ASA-15 CA2 CA3 en modo Senior el vecino ve los urgentes primero, con la palabra Urgente", () => {

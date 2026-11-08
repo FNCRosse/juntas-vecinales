@@ -12,22 +12,35 @@ import type { AvanceDto } from "@/modulos/incidencias/aplicacion/seguimiento";
 
 // VEC-QUE-09: buscar el reporte con el código de la constancia; sirve sin sesión, para el reporte anónimo
 // o el que registró la directiva (HU-QUE-09 CA1, HU-QUE-02 CA3).
-export function BuscarConCodigo({ volver }: { volver: { href: string; texto: string } }) {
-  const [codigo, setCodigo] = useState<string>("");
+export function BuscarConCodigo({
+  volver,
+  codigoInicial = "",
+}: {
+  volver: { href: string; texto: string };
+  /** El código que se escribió en Incidentes: se busca apenas se abre la pantalla. */
+  codigoInicial?: string;
+}) {
+  const [codigo, setCodigo] = useState<string>(codigoInicial);
   const [error, setError] = useState<string | undefined>();
   const [buscando, setBuscando] = useState<boolean>(false);
   const [avance, setAvance] = useState<AvanceDto | null>(null);
   const resultado = useRef<HTMLDivElement>(null);
 
+  // Llegó con un código desde Incidentes: se busca una sola vez, al abrir.
+  useEffect(() => {
+    if (codigoInicial.trim()) void buscar(codigoInicial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (avance) resultado.current?.querySelector<HTMLElement>("h2")?.focus();
   }, [avance]);
 
-  async function buscar() {
-    if (!codigo.trim()) return setError("Escriba el código que está en su constancia.");
+  async function buscar(texto = codigo) {
+    if (!texto.trim()) return setError("Escriba el código que está en su constancia.");
     setBuscando(true);
     const r = await enviarJson<AvanceDto>(
-      `/api/quejas/seguimiento/${encodeURIComponent(codigo.trim())}`,
+      `/api/quejas/seguimiento/${encodeURIComponent(texto.trim())}`,
       "GET",
     );
     setBuscando(false);

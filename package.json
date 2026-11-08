@@ -20,6 +20,7 @@
     "estilos": "bash guiones/revisar-estilos.sh",
     "matriz": "node guiones/matriz-hu.mjs",
     "semillas": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/semillas.js",
+    "semillas:demo": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/semillasDemo.js",
     "administrador:crear": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/administradorInicial.js"
   },
   "dependencies": {

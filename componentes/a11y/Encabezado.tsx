@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { EnlaceAyuda } from "./EnlaceAyuda";
 import { InterruptorLetraGrande } from "./InterruptorLetraGrande";
 
@@ -6,7 +7,7 @@ import { InterruptorLetraGrande } from "./InterruptorLetraGrande";
 
 function Isologo() {
   return (
-    <svg viewBox="0 0 32 36" aria-hidden className="h-10 w-9 shrink-0 senior:h-12 senior:w-11">
+    <svg viewBox="0 0 32 36" aria-hidden className="h-9 w-8 shrink-0 senior:h-12 senior:w-11">
       <path
         className="fill-accion-primaria"
         d="M16 1 L30 6 V17 C30 26 23.5 32.5 16 35 C8.5 32.5 2 26 2 17 V6 Z"
@@ -29,11 +30,20 @@ function Isologo() {
   );
 }
 
-export function Encabezado({ modoSenior, rutaAyuda }: { modoSenior: boolean; rutaAyuda?: string }) {
+export function Encabezado({
+  modoSenior,
+  rutaAyuda,
+  selector,
+}: {
+  modoSenior: boolean;
+  rutaAyuda?: string;
+  /** Selector de vista (Mi casa / Directiva…): siempre a la vista para saber en qué rol está y cambiarlo. */
+  selector?: ReactNode;
+}) {
   return (
     <header className="border-b border-borde-sutil bg-fondo-superficie">
-      <div className="mx-auto flex max-w-300 flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
+      <div className="mx-auto flex max-w-300 flex-col gap-separacion px-4 py-2 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-2">
           <Isologo />
           <p className="flex flex-col leading-titulo">
             <strong className="text-base">Junta Vecinal</strong>
@@ -45,6 +55,9 @@ export function Encabezado({ modoSenior, rutaAyuda }: { modoSenior: boolean; rut
           {rutaAyuda && <EnlaceAyuda ruta={rutaAyuda} />}
         </div>
       </div>
+      {selector && (
+        <div className="mx-auto max-w-180 px-4 py-separacion empty:hidden lg:max-w-300">{selector}</div>
+      )}
     </header>
   );
 }

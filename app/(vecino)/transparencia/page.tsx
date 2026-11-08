@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { soles } from "@/compartido/dinero";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { Volver } from "@/componentes/a11y/Volver";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { historialPublico } from "@/modulos/transparencia/aplicacion/historial";
 
@@ -17,6 +18,7 @@ export default async function ActasYBalances() {
   const historial = await historialPublico(sesion);
   return (
     <div className="flex flex-col gap-6">
+      <Volver href="/transparencia/cuentas">Volver a Transparencia</Volver>
       <div className="flex flex-col gap-2">
         <h1 className="text-titulo-1">Actas y balances</h1>
         <p className="text-texto-secundario">

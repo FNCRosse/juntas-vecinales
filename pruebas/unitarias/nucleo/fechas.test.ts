@@ -5,6 +5,8 @@ describe("@HU-ACC-08 Fechas en palabras y en hora de Lima", () => {
     expect(fechaLarga(new Date("2026-09-27T15:00:00Z"))).toBe("Domingo 27 de setiembre de 2026");
     // 3:00 a. m. UTC del lunes todavía es domingo en Lima.
     expect(fechaLarga(new Date("2026-09-28T03:00:00Z"))).toBe("Domingo 27 de setiembre de 2026");
+    // Las tarjetas del inicio (VEC-ACC-09) la muestran sin el año.
+    expect(fechaLarga(new Date("2026-10-10T23:00:00Z"), { conAnio: false })).toBe("Sábado 10 de octubre");
   });
 
   it("@HU-ACC-08 el saludo sigue la hora de Lima", () => {

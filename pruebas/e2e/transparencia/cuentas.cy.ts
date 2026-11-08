@@ -33,7 +33,7 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
 
     // DIR-TRA-03: registrar un gasto (con sus errores).
     cy.visit("/directiva/crear");
-    cy.contains("a", "Registrar un ingreso o gasto").click();
+    cy.contains("a", "Ingreso o gasto").click();
     cy.get("h1").should("have.text", "Registrar un ingreso o gasto");
     cy.contains("p", "Paso 1 de 2").should("exist");
     cy.contains(
@@ -121,7 +121,7 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
       cy.setCookie("sesion", valor);
     });
     cy.visit("/mas");
-    cy.contains("a", "Cuentas del barrio").click();
+    cy.contains("a", "Transparencia").click();
     cy.get("h1").should("have.text", "Cuentas del barrio");
     cy.contains("Son totales del barrio: no se ve lo que paga ninguna casa.").should("exist");
     cy.contains("dt", "Se juntó").next("dd").should("contain.text", "S/ ");

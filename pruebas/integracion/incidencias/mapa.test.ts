@@ -82,6 +82,7 @@ describe("@HU-QUE-08 @HU-ACC-07 Mapa de incidentes", () => {
         zona: "Mz. C",
         fecha: AHORA.toISOString(),
         estado: "Resuelto",
+        clave: "RESUELTO",
       },
     ]);
   });

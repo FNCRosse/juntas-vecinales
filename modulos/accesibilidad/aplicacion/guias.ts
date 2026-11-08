@@ -31,10 +31,13 @@ export async function guiaDeSeccion(usuarioId: string, seccion: string) {
 }
 export type GuiaDto = Awaited<ReturnType<typeof guiaDeSeccion>>;
 
+/** Orden del prototipo (VEC-AYU-03), el mismo de la barra: Mi cuota, Asambleas, Incidentes. */
+const ORDEN_EN_AYUDA: Seccion[] = ["CUOTA", "ASAMBLEAS", "INCIDENTES"];
+
 /** "Guías de uso" del panel de ayuda (CA2): cada sección con su estado en palabras. */
 export async function guiasDeUso(usuarioId: string) {
   const filas = await guiasDe(usuarioId);
-  return (Object.keys(RECORRIDOS) as Seccion[]).map((seccion) => {
+  return ORDEN_EN_AYUDA.map((seccion) => {
     const fila = filas.find((g) => g.seccion === seccion);
     return {
       seccion,

@@ -1,11 +1,10 @@
 "use client";
 // @HU-ACC-09
 
-import { Check, ListFilter } from "lucide-react";
+import { ChevronDown, CircleCheck, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { clasesBoton } from "./Boton";
-import { CerrarDialogo, Dialogo } from "./Dialogo";
+import { CerrarDialogo, clasesOpcionHoja, Dialogo } from "./Dialogo";
 
 // Los filtros de una lista van detrás de un solo botón "Filtrar: …" que abre una hoja inferior
 // (prototipo, R-11): en la pantalla queda un objetivo en vez de uno por opción. Cada opción es un
@@ -34,11 +33,15 @@ export function FiltroEnHoja({
       variante="hoja"
       titulo={titulo}
       disparador={
-        <button type="button" className={clasesBoton("secundario", true)}>
-          <ListFilter aria-hidden className="size-icono shrink-0" />
-          <span>
-            {etiquetaBoton}: {actual}
+        <button
+          type="button"
+          className="flex min-h-tactil w-full cursor-pointer items-center gap-3 rounded-control border-(length:--borde-ancho-control) border-borde-control bg-fondo-superficie px-4 py-2 text-left text-base text-texto-principal hover:bg-accion-secundaria-hover"
+        >
+          <SlidersHorizontal aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+          <span className="min-w-0 flex-1">
+            <strong>{etiquetaBoton}:</strong> {actual}
           </span>
+          <ChevronDown aria-hidden className="size-icono shrink-0" />
         </button>
       }
     >
@@ -50,10 +53,12 @@ export function FiltroEnHoja({
                 <Link
                   href={o.href}
                   aria-current={o.activa ? "true" : undefined}
-                  className={`flex min-h-tactil items-center gap-2 rounded-control border-(length:--borde-ancho-control) px-4 font-bold no-underline ${o.activa ? "border-accion-primaria bg-fondo-suave text-accion-primaria" : "border-borde-control bg-fondo-superficie text-accion-primaria hover:bg-accion-secundaria-hover"}`}
+                  className={clasesOpcionHoja(o.activa)}
                 >
-                  {o.activa && <Check aria-hidden className="size-icono-pequeno" />}
-                  {o.etiqueta}
+                  <strong className="min-w-0 flex-1">{o.etiqueta}</strong>
+                  {o.activa && (
+                    <CircleCheck aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+                  )}
                 </Link>
               </CerrarDialogo>
             </li>

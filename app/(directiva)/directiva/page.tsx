@@ -1,189 +1,224 @@
-import { Bell, ChevronRight, CircleCheck, Info, MapPin, Plus, TriangleAlert, Wallet } from "lucide-react";
+import {
+  CalendarDays,
+  ChartColumn,
+  ChevronRight,
+  CircleCheck,
+  CirclePlus,
+  Inbox,
+  Info,
+  type LucideIcon,
+  OctagonAlert,
+  Plus,
+  TriangleAlert,
+  Wallet,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { sesionActual } from "@/app/_sesion/sesion";
-import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { soles } from "@/compartido/dinero";
 import { fechaLarga, horaCorta, primerNombre, saludo } from "@/compartido/fechas";
-import { bandejaDeCobros } from "@/modulos/aportes/aplicacion/inicio";
+import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
+import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { Cifra } from "@/componentes/a11y/Cifra";
+import { EncabezadoPagina } from "@/componentes/a11y/EncabezadoPagina";
+import { Insignia, type TonoInsignia } from "@/componentes/a11y/Insignia";
+import { Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { consultarTablero, opcionesDelTablero } from "@/modulos/aportes/aplicacion/tablero";
 import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
-import { quejasPorAtender } from "@/modulos/incidencias/aplicacion/quejas";
+import { rendicionDeCuentas } from "@/modulos/transparencia/aplicacion/caja";
+import { bandejasDeLaDirectiva } from "./_bandejas";
 import { Cuadre } from "./cobros/recaudacion/Cuadre";
 
 export const metadata: Metadata = { title: "Resumen de la directiva" };
 
-// DIR-INI-01. Las bandejas llegan con las HU de cada módulo; la recaudación del mes es de HU-COB-13.
+/** Fila de "Estado de las casas": qué es, cuántas y una insignia con ícono y texto. */
+function FilaEstado({
+  nombre,
+  casas,
+  tono,
+  icono,
+  insignia,
+}: {
+  nombre: string;
+  casas: number;
+  tono: TonoInsignia;
+  icono: LucideIcon;
+  insignia: string;
+}) {
+  return (
+    <li className="flex flex-wrap items-center justify-between gap-2 border-b border-borde-sutil py-3">
+      <span className="flex flex-col">
+        <strong>{nombre}</strong>
+        <span>{casas} casas</span>
+      </span>
+      <Insignia tono={tono} icono={icono}>
+        {insignia}
+      </Insignia>
+    </li>
+  );
+}
+
+// DIR-INI-01 Resumen de la directiva (prototipo DIN01): crear o registrar, lo que hay por atender (el detalle está en
+// "Para atender"), la recaudación del mes y la próxima asamblea con su quórum.
 export default async function ResumenDirectiva() {
   const sesion = await sesionActual();
   const ahora = new Date();
-  const quejas = sesion && (await quejasPorAtender(sesion));
   const proxima = sesion ? await proximaAsamblea(sesion, ahora) : null;
   const recaudacion = sesion && (await consultarTablero(sesion, {}, ahora));
-  const cobros = sesion && (await bandejaDeCobros(sesion));
+  const cuentas = sesion && (await rendicionDeCuentas(sesion, undefined));
+  const bandejas = sesion && (await bandejasDeLaDirectiva(sesion, ahora));
   const mes = opcionesDelTablero(undefined, ahora).periodo.etiqueta;
   return (
-    <div className="flex flex-col gap-2">
-      <h1 className="text-titulo-1">
-        {saludo(ahora)}, {primerNombre(sesion?.nombreCompleto ?? "")}
-      </h1>
-      <p className="text-texto-secundario">{fechaLarga(ahora)} · Resumen de la directiva</p>
-      {sesion && (
-        <div className="pt-4">
-          <CambiarDePerfil sesion={sesion} actual="directiva" estilo="boton" />
-        </div>
-      )}
-      {(quejas || cobros) && (
-        <section aria-labelledby="titulo-para-atender" className="flex flex-col gap-4 pt-4">
-          <h2 id="titulo-para-atender" className="text-titulo-2">
-            Para atender
-          </h2>
-          {cobros && (
-            <Link
-              href="/directiva/cobros"
-              className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
-            >
-              <span className="flex items-center gap-2 font-bold">
-                <Wallet aria-hidden className="size-icono text-accion-primaria" />
-                Cobros por atender
-              </span>
-              <span className="text-dato font-bold">{cobros.total}</span>
-              {[
-                [cobros.comprobantes, "comprobantes por revisar", "comprobante por revisar"],
-                [cobros.cobrosEnCasa, "cobros en casa", "cobro en casa"],
-                [cobros.reclamos, "reclamos de cuota", "reclamo de cuota"],
-                [cobros.recibosEnPapel, "recibos en papel por entregar", "recibo en papel por entregar"],
-              ]
-                .filter(([n]) => Number(n) > 0)
-                .map(([n, plural, singular]) => (
-                  <span key={String(plural)}>
-                    {n} {n === 1 ? singular : plural}
-                  </span>
-                ))}
-              <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                <Info aria-hidden className="size-icono-pequeno" />
-                {cobros.total === 0
-                  ? "Nada pendiente"
-                  : cobros.total === 1
-                    ? "1 pendiente"
-                    : `${cobros.total} pendientes`}
-              </span>
-            </Link>
-          )}
-          {quejas && (
-            <Link
-              href="/directiva/incidentes?estado=porEvaluar"
-              className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
-            >
-              <span className="flex items-center gap-2 font-bold">
-                <MapPin aria-hidden className="size-icono text-accion-primaria" />
-                Incidentes por evaluar
-              </span>
-              <span className="text-dato font-bold">{quejas.porEvaluar}</span>
-              <span>{quejas.enRevision} en revisión</span>
-              <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                <Info aria-hidden className="size-icono-pequeno" />
-                {quejas.porEvaluar === 0
-                  ? "Nada pendiente"
-                  : quejas.porEvaluar === 1
-                    ? "1 reporte nuevo"
-                    : `${quejas.porEvaluar} reportes nuevos`}
-              </span>
-            </Link>
-          )}
-          <Link
-            href="/directiva/alertas"
-            className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
-          >
-            <Bell aria-hidden className="size-icono" />
-            Ver todas las alertas de la directiva
-            <ChevronRight aria-hidden className="size-icono" />
-          </Link>
-        </section>
-      )}
-      {recaudacion && (
-        <section aria-labelledby="titulo-recaudacion" className="flex flex-col gap-4 pt-4">
-          <h2 id="titulo-recaudacion" className="text-titulo-2">
-            Recaudación
-          </h2>
-          <p className="text-texto-secundario">{mes}</p>
-          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {[
-              ["Se cobró", soles(recaudacion.seCobro), `${recaudacion.recibos} recibos`],
-              [
-                "Falta cobrar",
-                soles(recaudacion.faltaCobrar.monto),
-                `${recaudacion.faltaCobrar.cuotas} cuotas semanales`,
-              ],
-            ].map(([titulo, valor, detalle]) => (
-              <div
-                key={titulo}
-                className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
-              >
-                <dt className="text-pequeno text-texto-secundario">{titulo}</dt>
-                <dd className="text-titulo-2 font-bold">{valor}</dd>
-                <dd className="text-pequeno text-texto-secundario">{detalle}</dd>
-              </div>
-            ))}
-          </dl>
-          <Cuadre t={recaudacion} />
-          <div className="flex flex-col gap-2">
-            <h3 className="text-titulo-3">Estado de las casas</h3>
-            <p className="text-texto-secundario">{recaudacion.casas.total} casas</p>
-            <ul className="flex flex-col gap-2">
-              <li className="flex items-center gap-2">
-                <CircleCheck aria-hidden className="size-icono-pequeno text-texto-exito" />
-                <span className="font-bold">Al día:</span> {recaudacion.casas.alDia} casas
-              </li>
-              <li className="flex items-center gap-2">
-                <TriangleAlert aria-hidden className="size-icono-pequeno text-texto-aviso" />
-                <span className="font-bold">Atraso de 1 a 7 semanas:</span> {recaudacion.casas.atraso} casas
-              </li>
-              <li className="flex items-center gap-2">
-                <TriangleAlert aria-hidden className="size-icono-pequeno text-texto-error" />
-                <span className="font-bold">8 semanas o más:</span> {recaudacion.casas.critico} casas
-              </li>
-            </ul>
+    <div className="flex flex-col gap-6">
+      <EncabezadoPagina
+        titulo={`${saludo(ahora)}, ${primerNombre(sesion?.nombreCompleto ?? "")}`}
+        descripcion={`${fechaLarga(ahora)} · Resumen de la directiva`}
+        accion={
+          <div className="hidden lg:block">
+            <BotonEnlace href="/directiva/crear?desde=resumen" icono={Plus}>
+              Crear o registrar
+            </BotonEnlace>
           </div>
-          <BotonEnlace href="/directiva/cobros/recaudacion" variante="secundario" icono={ChevronRight}>
-            Ver la recaudación completa
-          </BotonEnlace>
-        </section>
-      )}
-      <section aria-labelledby="titulo-proxima-asamblea" className="flex flex-col gap-4 pt-4">
-        <h2 id="titulo-proxima-asamblea" className="text-titulo-2">
-          Próxima asamblea
-        </h2>
-        {proxima ? (
-          <Link
-            href="/directiva/asambleas"
-            className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
-          >
-            <span className="font-bold">{proxima.titulo}</span>
-            <span>{fechaLarga(new Date(proxima.fechaHora))}</span>
-            <span className="text-texto-secundario">
-              {horaCorta(new Date(proxima.fechaHora))} · {proxima.lugar}
-            </span>
-            <span className="pt-1">
-              Quórum proyectado: {proxima.confirmados.total} de {proxima.padronTotal} casas
-            </span>
-          </Link>
-        ) : (
-          <p>No hay ninguna asamblea convocada.</p>
-        )}
-      </section>
-      <section aria-labelledby="titulo-crear" className="flex flex-col gap-2 pt-4">
-        <h2 id="titulo-crear" className="text-titulo-2">
-          Crear o registrar
-        </h2>
-        <p className="text-texto-secundario">Asambleas, comunicados, actas y balances de la junta.</p>
-        <div className="flex flex-col items-start gap-separacion pt-2">
-          <BotonEnlace href="/directiva/crear" variante="secundario" icono={Plus}>
+        }
+      />
+
+      <div className="lg:hidden">
+        <Tarjeta titulo="Crear o registrar" icono={CirclePlus}>
+          <p className="text-texto-secundario">
+            Asambleas, actividades pro-fondos, comunicados e ingresos o gastos.
+          </p>
+          <BotonEnlace href="/directiva/crear?desde=resumen" icono={Plus} anchoCompleto>
             Crear o registrar
           </BotonEnlace>
+        </Tarjeta>
+      </div>
+
+      <div
+        data-ancho="completo"
+        className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start"
+      >
+        {bandejas && (
+          <div className="lg:col-start-1 lg:row-start-1">
+            <Tarjeta titulo="Para atender" icono={Inbox}>
+              <strong className="text-grande">{bandejas.texto}</strong>
+              {bandejas.conPendiente.length > 0 && (
+                <ul className="flex flex-col gap-1">
+                  {bandejas.conPendiente.slice(0, 3).map(({ icono: Icono, titulo, n }) => (
+                    <li key={titulo} className="flex items-center gap-2">
+                      <Icono aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+                      <span>
+                        {titulo}: <strong>{n}</strong>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <BotonEnlace href="/directiva/para-atender" icono={Inbox} anchoCompleto>
+                Ver lo que hay que atender
+              </BotonEnlace>
+            </Tarjeta>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-[repeat(auto-fit,minmax(min(100%,400px),1fr))] md:items-start lg:contents">
+          {recaudacion && cuentas && (
+            <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+              <Tarjeta titulo="Recaudación" icono={Wallet}>
+                <p className="text-texto-secundario">{mes}</p>
+                <div className="grid grid-cols-2 gap-separacion">
+                  <Cifra
+                    titulo="Se cobró"
+                    valor={soles(recaudacion.seCobro)}
+                    detalle={`${recaudacion.recibos} recibos`}
+                  />
+                  <Cifra titulo="Se gastó" valor={soles(cuentas.gastos)} />
+                  <Cifra titulo="Saldo de caja" valor={soles(cuentas.saldo)} />
+                  <Cifra
+                    titulo="Falta cobrar"
+                    valor={soles(recaudacion.faltaCobrar.monto)}
+                    detalle={`${recaudacion.faltaCobrar.cuotas} cuotas semanales`}
+                  />
+                </div>
+                <Cuadre t={recaudacion} enLinea />
+                <strong>Estado de las casas</strong>
+                <ul className="flex flex-col">
+                  <FilaEstado
+                    nombre="Al día"
+                    casas={recaudacion.casas.alDia}
+                    tono="exito"
+                    icono={CircleCheck}
+                    insignia="Al día"
+                  />
+                  <FilaEstado
+                    nombre="Atraso de 1 a 7 semanas"
+                    casas={recaudacion.casas.atraso}
+                    tono="aviso"
+                    icono={TriangleAlert}
+                    insignia="Advertencia"
+                  />
+                  <FilaEstado
+                    nombre="8 semanas o más"
+                    casas={recaudacion.casas.critico}
+                    tono="error"
+                    icono={OctagonAlert}
+                    insignia="Atraso crítico"
+                  />
+                </ul>
+                <BotonEnlace
+                  href="/directiva/cobros/recaudacion"
+                  variante="secundario"
+                  icono={ChartColumn}
+                  compacto
+                >
+                  Ver la recaudación completa
+                </BotonEnlace>
+              </Tarjeta>
+            </div>
+          )}
+
+          <div className="lg:col-start-1 lg:row-start-2">
+            <Tarjeta titulo="Próxima asamblea" icono={CalendarDays}>
+              {proxima ? (
+                <>
+                  <span className="text-titulo-2 font-bold leading-titulo">
+                    {fechaLarga(new Date(proxima.fechaHora), { conAnio: false })}
+                  </span>
+                  <span>
+                    {horaCorta(new Date(proxima.fechaHora))} · {proxima.lugar}
+                  </span>
+                  <strong>
+                    Quórum proyectado: {proxima.confirmados.total} de {proxima.padronTotal} casas
+                  </strong>
+                  <BarraQuorum
+                    confirmados={proxima.quorum.confirmados}
+                    padronTotal={proxima.padronTotal}
+                    requerido={proxima.quorumRequerido}
+                    alcanza={proxima.quorum.alcanza}
+                  />
+                  <span className="text-pequeno text-texto-secundario">
+                    La línea marca el mínimo: {proxima.quorumRequerido} casas (la mitad del padrón más una).
+                  </span>
+                  <Insignia
+                    tono={proxima.quorum.alcanza ? "exito" : "info"}
+                    icono={proxima.quorum.alcanza ? CircleCheck : Info}
+                  >
+                    {proxima.quorum.alcanza ? "Quórum proyectado suficiente" : "Todavía no alcanza el quórum"}
+                  </Insignia>
+                  <Link
+                    href="/directiva/asambleas"
+                    className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
+                  >
+                    Ver la asamblea
+                    <ChevronRight aria-hidden className="size-icono shrink-0" />
+                  </Link>
+                </>
+              ) : (
+                <p>No hay ninguna asamblea convocada.</p>
+              )}
+            </Tarjeta>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

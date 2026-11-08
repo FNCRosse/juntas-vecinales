@@ -8,25 +8,28 @@ export const horaCorta = (fecha: Date) =>
     .format(fecha)
     .replace(/[\u00a0\u202f]/g, " ");
 
-/** "Domingo 27 de setiembre de 2026" */
-export function fechaLarga(fecha: Date) {
+/** "Domingo 27 de setiembre de 2026"; sin el año, "Domingo 27 de setiembre" (las tarjetas del inicio). */
+export function fechaLarga(fecha: Date, { conAnio = true } = {}) {
   const texto = new Intl.DateTimeFormat("es-PE", {
     timeZone: ZONA,
     weekday: "long",
     day: "numeric",
     month: "long",
-    year: "numeric",
+    year: conAnio ? "numeric" : undefined,
   })
     .format(fecha)
     .replace(",", "");
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
-/** "27 de setiembre de 2026", sin el día de la semana. */
-export const fechaCorta = (fecha: Date) =>
-  new Intl.DateTimeFormat("es-PE", { timeZone: ZONA, day: "numeric", month: "long", year: "numeric" }).format(
-    fecha,
-  );
+/** "27 de setiembre de 2026", sin el día de la semana; sin el año, "27 de setiembre" (listas de incidentes). */
+export const fechaCorta = (fecha: Date, { conAnio = true } = {}) =>
+  new Intl.DateTimeFormat("es-PE", {
+    timeZone: ZONA,
+    day: "numeric",
+    month: "long",
+    year: conAnio ? "numeric" : undefined,
+  }).format(fecha);
 
 /** La fecha larga dentro de una frase: "el viernes 16 de octubre de 2026" (sin la mayúscula del título). */
 export function fechaEnFrase(fecha: Date) {

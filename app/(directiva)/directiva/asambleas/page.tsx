@@ -1,40 +1,92 @@
-import { CalendarDays, ClipboardCheck, HandHeart, Lightbulb, UserCheck, UsersRound } from "lucide-react";
+import {
+  Bell,
+  CircleCheck,
+  CirclePlus,
+  ClipboardCheck,
+  FileText,
+  Info,
+  Lightbulb,
+  Megaphone,
+  UserCheck,
+  Users,
+  UsersRound,
+} from "lucide-react";
 import type { Metadata } from "next";
 import { sesionActual } from "@/app/_sesion/sesion";
-import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { fechaEnFrase, fechaLarga, horaCorta } from "@/compartido/fechas";
 import { BarraQuorum } from "@/componentes/a11y/BarraQuorum";
+import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { EncabezadoPagina } from "@/componentes/a11y/EncabezadoPagina";
+import { Insignia } from "@/componentes/a11y/Insignia";
+import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { FilaEnlace, Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { casoSinQuorum } from "@/modulos/asambleas/aplicacion/contingencia";
 import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
+import { bandejaDePropuestas } from "@/modulos/asambleas/aplicacion/propuestas";
 
-export const metadata: Metadata = { title: "Asambleas y actividades" };
+export const metadata: Metadata = { title: "Asambleas" };
 
-// DIR-ASA-01 (HU-ASA-01, HU-ASA-04): la próxima asamblea con su quórum proyectado y el acceso para convocar.
+// DIR-ASA-01 (HU-ASA-01, HU-ASA-04): la próxima asamblea con su quórum proyectado y, debajo, las tareas de la
+// asamblea (prototipo DAS01). Convocar, cargar la asistencia, el pase de lista, las propuestas y el acta se abren desde
+// su fila. Las actividades pro-fondos van aparte, en su propia sección.
 export default async function AsambleasDirectiva() {
   const sesion = await sesionActual();
   const proxima = sesion ? await proximaAsamblea(sesion) : null;
   const sinQuorum = sesion ? await casoSinQuorum(sesion) : null;
+  const porRevisar =
+    sesion && proxima
+      ? (await bandejaDePropuestas(sesion, proxima.id)).filter((p) => p.estado === "PENDIENTE_REVISION")
+          .length
+      : 0;
+  const tareas = [
+    {
+      href: "/directiva/asambleas/asistencia",
+      icono: UserCheck,
+      titulo: "Registrar la asistencia de un vecino",
+      detalle: "Como mediador",
+    },
+    {
+      href: "/directiva/asambleas/propuestas",
+      icono: Lightbulb,
+      titulo: "Propuestas para la agenda",
+      detalle: `${porRevisar} por revisar`,
+    },
+    {
+      href: "/directiva/asambleas/pase-de-lista",
+      icono: ClipboardCheck,
+      titulo: "Hacer el pase de lista",
+      detalle: "Quórum definitivo y votaciones",
+    },
+    {
+      href: "/directiva/asambleas/nueva",
+      icono: Megaphone,
+      titulo: "Nueva convocatoria",
+      detalle: "Convocar una asamblea, con afiche para imprimir",
+    },
+    {
+      href: "/directiva/actas/nueva",
+      icono: FileText,
+      titulo: "Acta de la asamblea",
+      detalle: "Acuerdos y PDF oficial",
+    },
+    {
+      href: "/directiva/comunicados",
+      icono: Bell,
+      titulo: "Comunicados a la comunidad",
+      detalle: "Ver, publicar y corregir avisos",
+    },
+  ];
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-titulo-1">Asambleas y actividades</h1>
-      <div className="flex flex-col items-start gap-separacion">
-        <BotonEnlace href="/directiva/asambleas/nueva" icono={CalendarDays}>
-          Convocar una asamblea
-        </BotonEnlace>
-        <BotonEnlace href="/directiva/asambleas/asistencia" variante="secundario" icono={UserCheck}>
-          Registrar la asistencia de un vecino
-        </BotonEnlace>
-        <BotonEnlace href="/directiva/asambleas/pase-de-lista" variante="secundario" icono={ClipboardCheck}>
-          Hacer el pase de lista
-        </BotonEnlace>
-        <BotonEnlace href="/directiva/asambleas/propuestas" variante="secundario" icono={Lightbulb}>
-          Propuestas para la agenda
-        </BotonEnlace>
-        <BotonEnlace href="/directiva/actividades" variante="secundario" icono={HandHeart}>
-          Actividad pro-fondos
-        </BotonEnlace>
-      </div>
+      <EncabezadoPagina
+        titulo="Asambleas"
+        accion={
+          <BotonEnlace href="/directiva/asambleas/nueva" icono={CirclePlus} anchoCompleto>
+            Convocar una asamblea
+          </BotonEnlace>
+        }
+      />
       {sinQuorum && (
         <MensajeEstado tipo="aviso" titulo="No se llegó al quórum">
           <p>
@@ -53,62 +105,98 @@ export default async function AsambleasDirectiva() {
         </MensajeEstado>
       )}
       {proxima?.estado === "INFORMATIVA" && (
-        <MensajeEstado tipo="info" titulo="Será una sesión informativa">
+        <MensajeEstado tipo="aviso" icono={Info} titulo="Será una sesión informativa">
           <p>Avisamos a la comunidad que no se votará ni se tomarán acuerdos.</p>
         </MensajeEstado>
       )}
-      <section aria-labelledby="titulo-proxima" className="flex flex-col gap-4">
-        <h2 id="titulo-proxima" className="text-titulo-2">
-          Próxima asamblea
-        </h2>
-        {proxima ? (
-          <div className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6">
-            <p className="font-bold">{proxima.titulo}</p>
-            <p>{fechaLarga(new Date(proxima.fechaHora))}</p>
-            <p className="text-texto-secundario">
+      {proxima ? (
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] md:items-start">
+          <section
+            aria-labelledby="titulo-proxima"
+            className="flex flex-col gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+          >
+            <h2 id="titulo-proxima" className="text-pequeno font-bold text-texto-secundario">
+              Próxima asamblea
+            </h2>
+            <strong className="text-titulo-2">{proxima.titulo}</strong>
+            <span className="text-dato font-bold leading-titulo">
+              {fechaLarga(new Date(proxima.fechaHora), { conAnio: false })}
+            </span>
+            <span>
               {horaCorta(new Date(proxima.fechaHora))} · {proxima.lugar}
-            </p>
-            <p className="text-texto-secundario">
+            </span>
+            <span className="text-pequeno text-texto-secundario">
               Confirmaciones hasta {fechaEnFrase(new Date(proxima.confirmacionesHasta))} a las{" "}
               {horaCorta(new Date(proxima.confirmacionesHasta))}
-            </p>
-            <h3 className="pt-2 text-titulo-3">Quórum proyectado</h3>
-            <p className="text-texto-secundario">Se actualiza cada vez que alguien confirma.</p>
-            <p className="text-dato font-bold">
+            </span>
+          </section>
+          <Tarjeta titulo="Quórum proyectado" icono={Users}>
+            <span className="text-pequeno text-texto-secundario">
+              Se actualiza cada vez que alguien confirma.
+            </span>
+            <span className="text-dato font-bold leading-titulo">
               {proxima.quorum.confirmados} de {proxima.padronTotal} casas
-            </p>
+            </span>
+            <span>{proxima.quorum.texto}</span>
             <BarraQuorum
               confirmados={proxima.quorum.confirmados}
               padronTotal={proxima.padronTotal}
               requerido={proxima.quorumRequerido}
               alcanza={proxima.quorum.alcanza}
-              texto={proxima.quorum.texto}
             />
-            <p className="text-texto-secundario">
+            <span className="text-pequeno text-texto-secundario">
               La línea marca el mínimo: {proxima.quorumRequerido} casas (la mitad del padrón más una).
-            </p>
-            <dl className="flex flex-col gap-1 pt-2">
-              <div className="flex justify-between gap-4">
-                <dt>Confirmaron en la app</dt>
-                <dd className="font-bold">{proxima.confirmados.digital}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt>Registradas por un mediador</dt>
-                <dd className="font-bold">{proxima.confirmados.asistida}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt>Total</dt>
-                <dd className="font-bold">{proxima.quorum.confirmados}</dd>
-              </div>
-            </dl>
-            <p className="pt-2 text-texto-secundario">
+            </span>
+            <table className="w-full border-collapse">
+              <caption className="pb-2 text-left text-texto-secundario">
+                De dónde salen las confirmaciones
+              </caption>
+              <tbody>
+                <tr>
+                  <td className="border-b border-borde-sutil py-3 pr-2">Confirmaron en la app</td>
+                  <td className="whitespace-nowrap border-b border-borde-sutil py-3 text-right">
+                    {proxima.confirmados.digital}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border-b border-borde-sutil py-3 pr-2">Registradas por un mediador</td>
+                  <td className="whitespace-nowrap border-b border-borde-sutil py-3 text-right">
+                    {proxima.confirmados.asistida}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" className="py-3 text-left">
+                    Total
+                  </th>
+                  <td className="py-3 text-right font-bold">{proxima.quorum.confirmados}</td>
+                </tr>
+              </tbody>
+            </table>
+            <Insignia
+              tono={proxima.quorum.alcanza ? "exito" : "info"}
+              icono={proxima.quorum.alcanza ? CircleCheck : Info}
+            >
+              {proxima.quorum.alcanza ? "Quórum proyectado suficiente" : "Todavía no alcanza el quórum"}
+            </Insignia>
+            <span className="text-pequeno text-texto-secundario">
               Al corte le avisaremos si alcanza. Si no, tendrá que decidir: reprogramar o hacer una sesión
               informativa.
-            </p>
-          </div>
-        ) : (
-          <p>No hay asambleas convocadas. Use «Convocar una asamblea» para crear la primera.</p>
-        )}
+            </span>
+          </Tarjeta>
+        </div>
+      ) : (
+        <p>No hay asambleas convocadas. Use «Nueva convocatoria» para crear la primera.</p>
+      )}
+      <section aria-labelledby="titulo-tareas" className="flex flex-col gap-3">
+        <h2 id="titulo-tareas" className="text-titulo-3">
+          Tareas de la asamblea
+        </h2>
+        <ListaVerMas
+          etiqueta="Tareas de la asamblea"
+          elementos={tareas.map((t) => (
+            <FilaEnlace key={t.href} href={t.href} icono={t.icono} titulo={t.titulo} detalle={t.detalle} />
+          ))}
+        />
       </section>
     </div>
   );

@@ -1,19 +1,32 @@
-import { ChevronRight } from "lucide-react";
+import {
+  ChevronRight,
+  CircleCheck,
+  DoorOpen,
+  Info,
+  Inbox,
+  ScrollText,
+  ShieldCheck,
+  TriangleAlert,
+} from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaLarga, horaCorta, primerNombre, saludo } from "@/compartido/fechas";
-import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { Cifra } from "@/componentes/a11y/Cifra";
+import { Insignia } from "@/componentes/a11y/Insignia";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
-import { TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
+import { Tarjeta } from "@/componentes/a11y/Tarjeta";
 import { resumenArco } from "@/modulos/identidad/aplicacion/arco";
 import { auditoriaGlobal } from "@/modulos/identidad/aplicacion/auditoria";
 import { instantanea } from "@/modulos/identidad/aplicacion/garita";
 
 export const metadata: Metadata = { title: "Panel de administración" };
 
+const ENLACE = "inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace";
+
 // ADM-INI-01 Panel de administración (prototipo XIN01): lo que espera, con la alerta de las solicitudes de
 // privacidad que vencen pronto (HU-GAR-16 CA2); cómo está la lista de la garita; y las últimas acciones de la
-// auditoría global (HU-GAR-26), con un botón para verla completa.
+// auditoría global (HU-GAR-26), con un enlace para verla completa.
 export default async function PanelAdministracion() {
   const sesion = await exigirActor(["ADMINISTRADOR"], "/entrar/equipo");
   const ahora = new Date();
@@ -27,7 +40,7 @@ export default async function PanelAdministracion() {
   const casas = (n: number) => (n === 1 ? "1 casa" : `${n} casas`);
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <h1 className="text-titulo-1">
           {saludo(ahora)}, {primerNombre(sesion.nombreCompleto)}
         </h1>
@@ -45,54 +58,64 @@ export default async function PanelAdministracion() {
           <p>Resuélvala antes de que venza el plazo legal.</p>
         </MensajeEstado>
       )}
-      <section aria-labelledby="titulo-para-atender" className="flex flex-col gap-4">
-        <h2 id="titulo-para-atender" className="text-titulo-2">
+      <section aria-labelledby="titulo-para-atender" className="flex flex-col gap-3">
+        <h2 id="titulo-para-atender" className="flex items-center gap-2 text-titulo-3">
+          <Inbox aria-hidden className="size-icono shrink-0 text-accion-primaria" />
           Para atender
         </h2>
-        <TarjetaEnlace href="/administracion/privacidad" titulo="Solicitudes de privacidad">
-          <span>
-            {pendientes === 0
-              ? "No hay solicitudes por resolver."
-              : pendientes === 1
-                ? "1 solicitud por resolver."
-                : `${pendientes} solicitudes por resolver.`}
+        <Link
+          href="/administracion/privacidad"
+          className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte active:bg-fondo-suave senior:p-6"
+        >
+          <span className="flex items-center gap-2 font-bold">
+            <ShieldCheck aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+            Solicitudes de privacidad
           </span>
-        </TarjetaEnlace>
+          {pendientes === 0 ? (
+            <Insignia tono="exito" icono={CircleCheck}>
+              No hay solicitudes por resolver
+            </Insignia>
+          ) : (
+            <Insignia tono="info" icono={Info}>
+              {pendientes === 1 ? "1 solicitud por resolver" : `${pendientes} solicitudes por resolver`}
+            </Insignia>
+          )}
+        </Link>
       </section>
-      <section aria-labelledby="titulo-garita" className="flex flex-col gap-3">
-        <h2 id="titulo-garita" className="text-titulo-2">
-          Lista de la garita
-        </h2>
-        <dl className="grid grid-cols-2 gap-separacion">
-          <div className="flex flex-col rounded-control bg-fondo-suave p-4 senior:p-6">
-            <dt className="text-pequeno text-texto-secundario">Al día</dt>
-            <dd className="text-titulo-3 font-bold">{casas(alDia)}</dd>
+      <div className="flex flex-col gap-6 md:grid md:grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] md:items-start">
+        <Tarjeta titulo="Lista de la garita" icono={DoorOpen}>
+          <div className="grid grid-cols-2 gap-separacion">
+            <Cifra titulo="Al día" valor={casas(alDia)} />
+            <Cifra titulo="Atrasados" valor={casas(atrasados)} />
           </div>
-          <div className="flex flex-col rounded-control bg-fondo-suave p-4 senior:p-6">
-            <dt className="text-pequeno text-texto-secundario">Atrasados</dt>
-            <dd className="text-titulo-3 font-bold">{casas(atrasados)}</dd>
+          <p className="flex items-start gap-2">
+            <CircleCheck aria-hidden className="size-icono shrink-0 text-texto-exito" />
+            Última sincronización: hoy a las {horaCorta(new Date(garita.generadaEn))}
+          </p>
+          {atrasados > 0 && (
+            <p className="flex items-start gap-2 text-pequeno text-texto-secundario">
+              <TriangleAlert aria-hidden className="size-icono-pequeno shrink-0" />A los atrasados la reja no
+              se abre sola.
+            </p>
+          )}
+        </Tarjeta>
+        <Tarjeta titulo="Últimas acciones" icono={ScrollText}>
+          <div className="flex flex-col">
+            {auditoria.filas.slice(0, 3).map((f) => (
+              <article key={f.id} className="flex flex-col gap-1 border-b border-borde-sutil py-3">
+                <span className="text-pequeno text-texto-secundario">
+                  {f.fecha} · {f.responsable}
+                </span>
+                <span>{f.texto}</span>
+              </article>
+            ))}
           </div>
-        </dl>
-        <p className="text-pequeno text-texto-secundario">
-          Última sincronización: hoy a las {horaCorta(new Date(garita.generadaEn))}.
-        </p>
-      </section>
-      <section aria-labelledby="titulo-ultimas" className="flex flex-col gap-3">
-        <h2 id="titulo-ultimas" className="text-titulo-2">
-          Últimas acciones
-        </h2>
-        {auditoria.filas.slice(0, 3).map((f) => (
-          <article key={f.id} className="flex flex-col gap-1 border-b border-borde-sutil pb-3">
-            <span className="text-pequeno text-texto-secundario">
-              {f.fecha} · {f.responsable}
-            </span>
-            <span>{f.texto}</span>
-          </article>
-        ))}
-        <BotonEnlace href="/administracion/auditoria" variante="secundario" icono={ChevronRight}>
-          Ver toda la auditoría
-        </BotonEnlace>
-      </section>
+          <Link href="/administracion/auditoria" className={ENLACE}>
+            Ver toda la auditoría
+            <ChevronRight aria-hidden className="size-icono shrink-0" />
+          </Link>
+        </Tarjeta>
+      </div>
     </div>
   );
 }

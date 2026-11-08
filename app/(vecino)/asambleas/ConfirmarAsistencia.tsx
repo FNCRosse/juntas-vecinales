@@ -1,11 +1,12 @@
 "use client";
 // @HU-ASA-02
 
-import { Check, X } from "lucide-react";
+import { CircleCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { Boton } from "@/componentes/a11y/Boton";
+import { Insignia } from "@/componentes/a11y/Insignia";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 
 // VEC-ASA-02: el estado de la confirmación dentro de VEC-ASA-01. Confirmar asistencia es reversible hasta
@@ -56,21 +57,23 @@ export function ConfirmarAsistencia({
       )}
       {confirmado ? (
         <>
-          <p className="font-bold">Usted confirmó que asistirá (una confirmación por su casa).</p>
-          <Boton
-            type="button"
-            variante="secundario"
-            icono={X}
-            cargando={enviando}
-            onClick={() => cambiar("DELETE")}
-          >
+          <Insignia tono="exito" icono={CircleCheck}>
+            Usted confirmó que asistirá (una confirmación por su casa)
+          </Insignia>
+          <Boton type="button" variante="enlace" cargando={enviando} onClick={() => cambiar("DELETE")}>
             Cambiar mi respuesta: ya no podré ir
           </Boton>
         </>
       ) : (
         <>
-          <p>Puede confirmar hasta {plazoTexto}.</p>
-          <Boton type="button" icono={Check} cargando={enviando} onClick={() => cambiar("POST")}>
+          <p className="text-texto-secundario">Puede confirmar hasta {plazoTexto}</p>
+          <Boton
+            type="button"
+            icono={CircleCheck}
+            anchoCompleto
+            cargando={enviando}
+            onClick={() => cambiar("POST")}
+          >
             Sí, asistiré
           </Boton>
         </>

@@ -45,7 +45,7 @@ export default async function Auditoria({ searchParams }: { searchParams: Promis
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-titulo-1">Auditoría</h1>
-        <p>
+        <p className="text-texto-secundario">
           Las acciones importantes de todo el sistema en un solo lugar, de la más reciente a la más antigua.
           Nadie puede editarlas ni borrarlas.
         </p>

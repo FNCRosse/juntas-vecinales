@@ -1,21 +1,58 @@
-import { Banknote, CircleCheck, FileSearch, Info, Scale, TriangleAlert } from "lucide-react";
+import {
+  CalendarClock,
+  CircleCheck,
+  FileSearch,
+  HandCoins,
+  House,
+  Info,
+  Printer,
+  Receipt,
+  Scale,
+  TriangleAlert,
+  Wallet,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { EncabezadoPagina } from "@/componentes/a11y/EncabezadoPagina";
+import { Insignia } from "@/componentes/a11y/Insignia";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
+import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 import { soles } from "@/compartido/dinero";
 import { comprobantesPorRevisar } from "@/modulos/aportes/aplicacion/pagos";
 import { cobrosEnCasaPorAtender } from "@/modulos/aportes/aplicacion/cobros";
 import { reclamosPorAtender } from "@/modulos/aportes/aplicacion/decidirReclamos";
 import { recibosEnPapelPorEntregar } from "@/modulos/aportes/aplicacion/recibos";
 import { EntregarRecibo } from "./EntregarRecibo";
+import { TarjetaDeCobro } from "./_componentes/TarjetaDeCobro";
 
 export const metadata: Metadata = { title: "Cobros" };
 
-// DIR-COB-01 (HU-COB-08 CA3): los comprobantes que mandaron los vecinos y esperan a la directiva, el más reciente
-// primero. Aprobarlos es de HU-COB-09; observarlos llega con HU-COB-10; los cobros en casa y los reclamos, con HU-COB-11 y 03.
-export default async function Cobros() {
+const TIPOS = [
+  { valor: "todos", etiqueta: "Todo lo que espera" },
+  { valor: "comprobantes", etiqueta: "Comprobantes por revisar" },
+  { valor: "en-casa", etiqueta: "Cobros en casa" },
+  { valor: "reclamos", etiqueta: "Reclamos de cuota" },
+  { valor: "papel", etiqueta: "Recibos en papel" },
+];
+
+const ENLACE = "inline-flex min-h-tactil items-center font-bold text-texto-enlace";
+
+/** Quien ve su propio cobro no lo revisa: lo hace otro miembro (regla de dos personas). */
+function EsSuyo({ children }: { children: string }) {
+  return (
+    <p className="inline-flex items-center gap-1 font-bold">
+      <CircleCheck aria-hidden className="size-icono-pequeno" />
+      {children}
+    </p>
+  );
+}
+
+// DIR-COB-01 (HU-COB-08 CA3): lo que mandaron los vecinos y espera a la directiva, con las tarjetas del prototipo
+// (DCO01 a DCO04): comprobantes, cobros en casa, reclamos y recibos en papel. Aprobar, observar, cobrar y auditar
+// se hacen en la pantalla de cada tarjeta.
+export default async function Cobros({ searchParams }: { searchParams: Promise<{ tipo?: string }> }) {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
   const [{ items }, { items: enPapel }, { items: enCasa }, { items: reclamos }] = await Promise.all([
     comprobantesPorRevisar(sesion),
@@ -23,199 +60,200 @@ export default async function Cobros() {
     cobrosEnCasaPorAtender(sesion),
     reclamosPorAtender(sesion),
   ]);
+  const { tipo: pedido } = await searchParams;
+  const cuantos: Record<string, number> = {
+    comprobantes: items.length,
+    "en-casa": enCasa.length,
+    reclamos: reclamos.length,
+    papel: enPapel.length,
+  };
+  const tipo = pedido && pedido in cuantos ? pedido : "todos";
+  const ver = (t: string) => tipo === "todos" || tipo === t;
+  const opciones = TIPOS.map(({ valor, etiqueta }) => ({
+    valor,
+    etiqueta,
+    detalle: valor === "todos" ? undefined : String(cuantos[valor]),
+    href: valor === "todos" ? "/directiva/cobros" : `/directiva/cobros?tipo=${valor}`,
+  }));
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-titulo-1">Cobros</h1>
-        <p>Revise lo que mandaron los vecinos.</p>
-      </div>
-      {items.length > 0 ? (
-        <>
-          <p role="status">
-            {items.length === 1 ? "Hay 1 por atender." : `Hay ${items.length} por atender.`}
-          </p>
-          <ListaVerMas
-            etiqueta="Comprobantes por revisar"
-            elementos={items.map((i) => (
-              <article
-                key={i.id}
-                className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
-              >
-                <p className="text-pequeno font-bold text-texto-secundario">
-                  Comprobante digital · {i.medio}
-                </p>
-                <h2 className="text-titulo-3">{i.nombre}</h2>
-                <p>{i.vivienda}</p>
-                <p>
-                  Debía {soles(i.debia)}
-                  {i.etiqueta === "Pago parcial" ? " · pago parcial" : ""}
-                </p>
-                <p className="text-pequeno text-texto-secundario">{i.fecha}</p>
-                <p className="text-titulo-3">{soles(i.monto)}</p>
-                <span
-                  className={`inline-flex items-center gap-1 self-start rounded-pastilla border px-3 text-pequeno font-bold ${i.etiqueta === "Pago parcial" ? "border-borde-aviso bg-fondo-aviso text-texto-aviso" : "border-borde-info bg-fondo-info text-texto-info"}`}
-                >
-                  {i.etiqueta === "Pago parcial" ? (
-                    <TriangleAlert aria-hidden className="size-icono-pequeno" />
-                  ) : (
-                    <Info aria-hidden className="size-icono-pequeno" />
-                  )}
-                  {i.etiqueta}
-                </span>
-                {i.esSuyo && (
-                  <p className="inline-flex items-center gap-1 font-bold">
-                    <CircleCheck aria-hidden className="size-icono-pequeno" />
-                    Es su pago: lo revisa otro miembro
-                  </p>
-                )}
-                {!i.esSuyo && i.comprobanteId && (
-                  <BotonEnlace
-                    href={`/directiva/cobros/comprobantes/${i.comprobanteId}`}
-                    variante="secundario"
-                    icono={FileSearch}
-                  >
-                    Revisar el comprobante
-                  </BotonEnlace>
-                )}
-              </article>
-            ))}
-          />
-        </>
-      ) : (
-        <div role="status" className="flex flex-col items-center gap-2 p-6 text-center">
+      <EncabezadoPagina
+        titulo="Cobros"
+        descripcion="Revise lo que mandaron los vecinos."
+        accion={
+          <BotonEnlace href="/directiva/cobros/poner-al-dia" icono={HandCoins} anchoCompleto>
+            Poner al día a un vecino
+          </BotonEnlace>
+        }
+      />
+      <SelectorDeFiltro id="campo-tipo" pregunta="Mostrar" valor={tipo} opciones={opciones} />
+      {tipo !== "todos" && cuantos[tipo] === 0 && tipo !== "comprobantes" && (
+        <div role="status" className="flex flex-col items-center gap-2 px-4 pt-8 pb-4 text-center">
           <CircleCheck aria-hidden className="size-icono text-texto-secundario" />
-          <strong>No hay comprobantes por revisar</strong>
-          <span>Cuando un vecino mande un pago, lo verá aquí.</span>
+          <strong>No hay nada de este tipo por atender</strong>
+          <span className="text-texto-secundario">Elija otro tipo para ver el resto.</span>
         </div>
       )}
-      {enCasa.length > 0 && (
-        <section aria-labelledby="titulo-en-casa" className="flex flex-col gap-4">
+      {ver("comprobantes") &&
+        (items.length > 0 ? (
+          <>
+            <p role="status" className="text-pequeno text-texto-secundario">
+              {items.length === 1 ? "Hay 1 por atender." : `Hay ${items.length} por atender.`}
+            </p>
+            <div data-ancho="completo" className="flex flex-col gap-separacion">
+              <ListaVerMas
+                etiqueta="Comprobantes por revisar"
+                elementos={items.map((i) => {
+                  const parcial = i.etiqueta === "Pago parcial";
+                  return (
+                    <TarjetaDeCobro
+                      key={i.id}
+                      icono={Receipt}
+                      tipo={`Comprobante digital · ${i.medio}`}
+                      titulo={i.nombre}
+                      casa={i.vivienda}
+                      dato={{
+                        icono: Wallet,
+                        texto: `Debía ${soles(i.debia)}${parcial ? " · pago parcial" : ""}`,
+                      }}
+                      fecha={i.fecha}
+                      monto={soles(i.monto)}
+                      estado={
+                        <Insignia tono={parcial ? "aviso" : "info"} icono={parcial ? TriangleAlert : Info}>
+                          {i.etiqueta}
+                        </Insignia>
+                      }
+                      accion={
+                        !i.esSuyo && i.comprobanteId
+                          ? {
+                              href: `/directiva/cobros/comprobantes/${i.comprobanteId}`,
+                              texto: "Revisar el comprobante",
+                            }
+                          : undefined
+                      }
+                    >
+                      {i.esSuyo && <EsSuyo>Es su pago: lo revisa otro miembro</EsSuyo>}
+                    </TarjetaDeCobro>
+                  );
+                })}
+              />
+            </div>
+          </>
+        ) : (
+          <div role="status" className="flex flex-col items-center gap-2 px-4 pt-8 pb-4 text-center">
+            <CircleCheck aria-hidden className="size-icono text-texto-secundario" />
+            <strong>No hay comprobantes por revisar</strong>
+            <span className="text-texto-secundario">Cuando un vecino mande un pago, lo verá aquí.</span>
+          </div>
+        ))}
+      {ver("en-casa") && enCasa.length > 0 && (
+        <section aria-labelledby="titulo-en-casa" data-ancho="completo" className="flex flex-col gap-4">
           <h2 id="titulo-en-casa" className="text-titulo-2">
             Cobros en casa por atender
           </h2>
           <ListaVerMas
             etiqueta="Cobros en casa por atender"
             elementos={enCasa.map((p) => (
-              <article
+              <TarjetaDeCobro
                 key={p.id}
-                className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+                nivel={3}
+                icono={House}
+                tipo={`Cobro en casa · pedido N.° ${p.numero}`}
+                titulo={p.nombre}
+                casa={p.vivienda}
+                dato={{ icono: CalendarClock, texto: p.franja }}
+                fecha={`Pedido el ${p.fecha}`}
+                monto={soles(p.monto)}
+                estado={
+                  <Insignia tono="info" icono={Info}>
+                    Pendiente de visita
+                  </Insignia>
+                }
+                accion={
+                  p.puedeCobrar
+                    ? { href: `/directiva/cobros/en-casa/${p.id}`, texto: "Ir a cobrar" }
+                    : undefined
+                }
               >
-                <p className="text-pequeno font-bold text-texto-secundario">
-                  Cobro en casa · pedido N.° {p.numero}
-                </p>
-                <h3 className="text-titulo-3">{p.nombre}</h3>
-                <p>{p.vivienda}</p>
-                <p>{p.franja}</p>
-                <p className="text-pequeno text-texto-secundario">Pedido el {p.fecha}</p>
-                <p className="text-titulo-3">{soles(p.monto)}</p>
-                <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                  <Info aria-hidden className="size-icono-pequeno" />
-                  Pendiente de visita
-                </span>
-                {p.esSuyo && (
-                  <p className="inline-flex items-center gap-1 font-bold">
-                    <CircleCheck aria-hidden className="size-icono-pequeno" />
-                    Es su casa: lo cobra otro miembro
-                  </p>
-                )}
-                {p.puedeCobrar && (
-                  <BotonEnlace href={`/directiva/cobros/en-casa/${p.id}`} icono={Banknote}>
-                    Ir a cobrar
-                  </BotonEnlace>
-                )}
-              </article>
+                {p.esSuyo && <EsSuyo>Es su casa: lo cobra otro miembro</EsSuyo>}
+              </TarjetaDeCobro>
             ))}
           />
         </section>
       )}
-      {reclamos.length > 0 && (
-        <section aria-labelledby="titulo-reclamos" className="flex flex-col gap-4">
+      {ver("reclamos") && reclamos.length > 0 && (
+        <section aria-labelledby="titulo-reclamos" data-ancho="completo" className="flex flex-col gap-4">
           <h2 id="titulo-reclamos" className="text-titulo-2">
             Reclamos de cuota por atender
           </h2>
           <ListaVerMas
             etiqueta="Reclamos de cuota por atender"
             elementos={reclamos.map((r) => (
-              <article
+              <TarjetaDeCobro
                 key={r.id}
-                className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+                nivel={3}
+                icono={Scale}
+                tipo={`Reclamo de cuota · N.° ${r.numero}`}
+                titulo={r.nombre}
+                casa={r.vivienda}
+                dato={{ icono: FileSearch, texto: r.motivo }}
+                fecha={r.fecha}
+                estado={
+                  <Insignia tono="info" icono={Info}>
+                    Por revisar
+                  </Insignia>
+                }
+                accion={
+                  r.puedeRevisar
+                    ? { href: `/directiva/cobros/reclamos/${r.id}`, texto: "Revisar el reclamo" }
+                    : undefined
+                }
               >
-                <p className="text-pequeno font-bold text-texto-secundario">
-                  Reclamo de cuota · N.° {r.numero}
-                </p>
-                <h3 className="text-titulo-3">{r.nombre}</h3>
-                <p>{r.vivienda}</p>
-                <p>{r.motivo}</p>
-                <p className="text-pequeno text-texto-secundario">{r.fecha}</p>
-                <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                  <Info aria-hidden className="size-icono-pequeno" />
-                  Por revisar
-                </span>
-                {r.esSuyo && (
-                  <p className="inline-flex items-center gap-1 font-bold">
-                    <CircleCheck aria-hidden className="size-icono-pequeno" />
-                    Es su casa: lo revisa otro miembro
-                  </p>
-                )}
-                {r.puedeRevisar && (
-                  <BotonEnlace
-                    href={`/directiva/cobros/reclamos/${r.id}`}
-                    variante="secundario"
-                    icono={Scale}
-                  >
-                    Revisar el reclamo
-                  </BotonEnlace>
-                )}
-              </article>
+                {r.esSuyo && <EsSuyo>Es su casa: lo revisa otro miembro</EsSuyo>}
+              </TarjetaDeCobro>
             ))}
           />
         </section>
       )}
-      {enPapel.length > 0 && (
-        <section aria-labelledby="titulo-papel" className="flex flex-col gap-4">
+      {ver("papel") && enPapel.length > 0 && (
+        <section aria-labelledby="titulo-papel" data-ancho="completo" className="flex flex-col gap-4">
           <h2 id="titulo-papel" className="text-titulo-2">
             Recibos en papel por entregar
           </h2>
           <ListaVerMas
             etiqueta="Recibos en papel por entregar"
             elementos={enPapel.map((p) => (
-              <article
+              <TarjetaDeCobro
                 key={p.id}
-                className="flex flex-col gap-2 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
+                nivel={3}
+                icono={Printer}
+                tipo={`Recibo en papel · pedido N.° ${p.numero}`}
+                titulo={p.nombre}
+                casa={p.vivienda}
+                dato={{ icono: Receipt, texto: p.recibo }}
+                fecha={`Pedido el ${p.fecha}`}
+                estado={
+                  <Insignia tono="info" icono={Info}>
+                    Por entregar en su casa
+                  </Insignia>
+                }
               >
-                <p className="text-pequeno font-bold text-texto-secundario">
-                  Recibo en papel · pedido N.° {p.numero}
-                </p>
-                <h3 className="text-titulo-3">{p.nombre}</h3>
-                <p>{p.vivienda}</p>
-                <p>{p.recibo}</p>
-                <p className="text-pequeno text-texto-secundario">Pedido el {p.fecha}</p>
                 <p>Hora preferida: {p.franja}</p>
                 {p.nota && <p>Nota: {p.nota}</p>}
-                <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                  <Info aria-hidden className="size-icono-pequeno" />
-                  Por entregar en su casa
-                </span>
                 <EntregarRecibo pedidoId={p.id} reciboId={p.reciboId} puedeEntregar={p.puedeEntregar} />
-              </article>
+              </TarjetaDeCobro>
             ))}
           />
         </section>
       )}
-      <section aria-labelledby="titulo-otras" className="flex flex-col gap-3">
+      <section aria-labelledby="titulo-otras" data-ancho="completo" className="flex flex-col gap-3">
         <h2 id="titulo-otras" className="text-titulo-2">
           Otras tareas de cobro
         </h2>
-        <Link
-          href="/directiva/cobros/guardados"
-          className="inline-flex min-h-tactil items-center font-bold text-texto-enlace"
-        >
+        <Link href="/directiva/cobros/guardados" className={ENLACE}>
           Cobros en efectivo guardados
         </Link>
-        <Link
-          href="/directiva/cobros/tarifa"
-          className="inline-flex min-h-tactil items-center font-bold text-texto-enlace"
-        >
+        <Link href="/directiva/cobros/tarifa" className={ENLACE}>
           Tarifa de la cuota semanal
         </Link>
       </section>

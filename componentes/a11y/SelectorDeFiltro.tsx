@@ -14,7 +14,7 @@ export function SelectorDeFiltro({
 }: {
   id: string;
   pregunta: string;
-  opciones: { valor: string; etiqueta: string; href: string }[];
+  opciones: { valor: string; etiqueta: string; detalle?: string; href: string }[];
   valor: string;
 }) {
   const router = useRouter();

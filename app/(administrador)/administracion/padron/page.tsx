@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
-import { FiltroEnHoja } from "@/componentes/a11y/FiltroEnHoja";
+import { EncabezadoPagina } from "@/componentes/a11y/EncabezadoPagina";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
+import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 import { TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
 import { listarPadron } from "@/modulos/identidad/aplicacion/consultarPadron";
 
@@ -33,47 +34,42 @@ export default async function Padron({ searchParams }: { searchParams: Parametro
     ...manzanas.map((m) => ({ etiqueta: `Mz. ${m}`, valor: m })),
   ];
 
-  const descripcionDelFiltro =
-    [filtros.find(({ valor }) => valor === mz)?.etiqueta, q && `«${q}»`].filter(Boolean).join(" · ") ||
-    "Todas";
-
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-titulo-1">Padrón de viviendas y residentes</h1>
-        <p className="text-texto-secundario">
-          {plural(totales.predios, "vivienda", "viviendas")} ·{" "}
-          {plural(totales.residentes, "residente", "residentes")}
-        </p>
-      </div>
-      <BotonEnlace href="/administracion/padron/empadronar" icono={HousePlus}>
-        Empadronar una vivienda
-      </BotonEnlace>
+      <EncabezadoPagina
+        titulo="Padrón de viviendas y residentes"
+        descripcion={`${plural(totales.predios, "vivienda", "viviendas")} · ${plural(totales.residentes, "residente", "residentes")}`}
+        accion={
+          <BotonEnlace href="/administracion/padron/empadronar" icono={HousePlus} anchoCompleto>
+            Empadronar una vivienda
+          </BotonEnlace>
+        }
+      />
 
-      <FiltroEnHoja
-        actual={descripcionDelFiltro}
-        titulo="Buscar y filtrar viviendas"
+      <search>
+        <form method="get" className="flex flex-col gap-3">
+          {mz && <input type="hidden" name="mz" value={mz} />}
+          <Campo
+            name="q"
+            etiqueta="Buscar por nombre, DNI o lote"
+            ayuda="Ejemplo: Carmen Huamán, 08123478 o Mz. C lote 7"
+            defaultValue={q}
+          />
+          <Boton type="submit" variante="secundario" compacto icono={Search}>
+            Buscar
+          </Boton>
+        </form>
+      </search>
+
+      <SelectorDeFiltro
+        id="manzana-padron"
+        pregunta="Manzana"
+        valor={mz ?? "todas"}
         opciones={filtros.map(({ etiqueta, valor }) => ({
+          valor: valor ?? "todas",
           etiqueta,
           href: enlaceFiltro(q, valor),
-          activa: mz === valor || (!mz && !valor),
         }))}
-        pie={
-          <search>
-            <form method="get" className="flex flex-col gap-3">
-              {mz && <input type="hidden" name="mz" value={mz} />}
-              <Campo
-                name="q"
-                etiqueta="Buscar por nombre, DNI o lote"
-                ayuda="Ejemplo: Carmen Huamán, 08123478 o Mz. C lote 7"
-                defaultValue={q}
-              />
-              <Boton type="submit" icono={Search} anchoCompleto>
-                Buscar
-              </Boton>
-            </form>
-          </search>
-        }
       />
 
       {viviendas.length ? (

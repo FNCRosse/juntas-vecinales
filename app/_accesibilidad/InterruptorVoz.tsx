@@ -50,6 +50,7 @@ export function InterruptorVoz({ activoAlInicio }: { activoAlInicio: boolean }) 
         descripcion="Aparece el botón Escuchar en cada noticia."
         activo={activo}
         alCambiar={cambiar}
+        sinBorde
         icono={<Volume2 aria-hidden className="size-icono shrink-0 text-accion-primaria" />}
       />
       {hecho && (

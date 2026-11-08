@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
+import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { MarcoActor } from "@/componentes/a11y/MarcoActor";
 import { RenovarSesion } from "@/app/_sesion/RenovarSesion";
@@ -11,7 +12,11 @@ export default async function Layout({ children }: { children: ReactNode }) {
   // Sin aceptar la política vigente, el vecino no sigue (HU-GAR-02 CA2).
   if (!sesion.politicaAceptada) redirect("/entrar/privacidad");
   return (
-    <MarcoActor actor="vecino" modoSenior={await modoSeniorAlRenderizar()}>
+    <MarcoActor
+      actor="vecino"
+      modoSenior={await modoSeniorAlRenderizar()}
+      selector={<CambiarDePerfil sesion={sesion} actual="vecino" estilo="boton" />}
+    >
       <RenovarSesion />
       {children}
     </MarcoActor>

@@ -41,6 +41,7 @@ export function OposicionUbicacion({ activaAlInicio }: { activaAlInicio: boolean
         descripcion="Sus reportes se verán solo por manzana, también los que ya hizo."
         activo={activa}
         alCambiar={cambiar}
+        sinBorde
       />
       {guardado && (
         <AvisoDeshacer

@@ -74,7 +74,7 @@ export function MarcarLeido({ id, titulo }: { id: string; titulo: string }) {
     <Boton
       variante="secundario"
       icono={Check}
-      className="self-start"
+      compacto
       cargando={enviando}
       onClick={async () => {
         setEnviando(true);
@@ -94,7 +94,7 @@ export function MarcarTodos() {
   const [enviando, setEnviando] = useState(false);
   return (
     <Boton
-      variante="secundario"
+      variante="enlace"
       cargando={enviando}
       onClick={async () => {
         setEnviando(true);

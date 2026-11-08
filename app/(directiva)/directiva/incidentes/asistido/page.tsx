@@ -7,6 +7,6 @@ export const metadata: Metadata = { title: "Registrar un reporte por un vecino" 
 
 // DIR-QUE-08 a DIR-QUE-10 (HU-QUE-03): solo el directivo mediador.
 export default async function ReporteAsistido() {
-  const sesion = await exigirActor(["DIRECTIVO_MEDIADOR"], "/entrar/equipo");
+  const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
   return <RegistrarPorVecino manzanas={await lugaresParaAsistir(sesion)} />;
 }

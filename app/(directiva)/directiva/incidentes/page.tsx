@@ -1,8 +1,11 @@
-import { ChevronRight, Info, UserRoundPlus } from "lucide-react";
+import { ChevronRight, UserPlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
+import { ICONO_CATEGORIA } from "@/app/_incidentes/iconos";
+import { InsigniaDeEstado } from "@/app/_incidentes/InsigniaDeEstado";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { EncabezadoPagina } from "@/componentes/a11y/EncabezadoPagina";
 import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { fechaYHora } from "@/compartido/fechas";
@@ -35,18 +38,15 @@ export default async function BandejaIncidentes({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-titulo-1">Incidentes</h1>
-        <p className="text-texto-secundario">
-          {conteo.total === 1 ? "1 reporte" : `${conteo.total} reportes`}: {conteo.porEvaluar} por evaluar,{" "}
-          {conteo.enRevision} en revisión, {cerrados} {cerrados === 1 ? "cerrado" : "cerrados"}.
-        </p>
-      </div>
-      {sesion.roles.includes("DIRECTIVO_MEDIADOR") && (
-        <BotonEnlace href="/directiva/incidentes/asistido" icono={UserRoundPlus}>
-          Registrar un reporte por un vecino
-        </BotonEnlace>
-      )}
+      <EncabezadoPagina
+        titulo="Incidentes"
+        descripcion={`${conteo.total === 1 ? "1 reporte" : `${conteo.total} reportes`}: ${conteo.porEvaluar} por evaluar, ${conteo.enRevision} en revisión, ${cerrados} ${cerrados === 1 ? "cerrado" : "cerrados"}.`}
+        accion={
+          <BotonEnlace href="/directiva/incidentes/asistido" icono={UserPlus} anchoCompleto>
+            Registrar un reporte por un vecino
+          </BotonEnlace>
+        }
+      />
       <SelectorDeFiltro
         id="estado-reportes"
         pregunta="Mostrar"
@@ -60,29 +60,32 @@ export default async function BandejaIncidentes({
       {quejas.length ? (
         <ListaVerMas
           etiqueta="Reportes"
-          elementos={quejas.map((q) => (
-            <Link
-              key={q.id}
-              href={`/directiva/incidentes/${q.id}`}
-              className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
-            >
-              <span className="text-pequeno text-texto-secundario">
-                {q.numero} · {fechaYHora(new Date(q.fechaRegistro))}
-              </span>
-              <strong className="text-titulo-3">{q.categoriaTexto}</strong>
-              <span>
-                {q.lugar} · {q.quien}
-              </span>
-              <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                <Info aria-hidden className="size-icono-pequeno" />
-                {q.estadoTexto}
-              </span>
-              <span className="inline-flex items-center gap-1 font-bold text-texto-enlace">
-                {q.estado === "RECIBIDO" ? "Evaluar" : "Ver el reporte"}
-                <ChevronRight aria-hidden className="size-icono" />
-              </span>
-            </Link>
-          ))}
+          elementos={quejas.map((q) => {
+            const Icono = ICONO_CATEGORIA[q.categoria];
+            return (
+              <Link
+                key={q.id}
+                href={`/directiva/incidentes/${q.id}`}
+                className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
+              >
+                <Icono aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+                <span className="flex min-w-0 flex-1 basis-60 flex-col gap-1">
+                  <span className="text-pequeno text-texto-secundario">
+                    {q.numero} · {fechaYHora(new Date(q.fechaRegistro))}
+                  </span>
+                  <strong className="text-titulo-3">{q.categoriaTexto}</strong>
+                  <span>
+                    {q.lugar} · {q.quien}
+                  </span>
+                </span>
+                <InsigniaDeEstado estado={q.estado} texto={q.estadoTexto} />
+                <span className="inline-flex items-center gap-1 font-bold text-texto-enlace">
+                  {q.estado === "RECIBIDO" ? "Evaluar" : "Ver el reporte"}
+                  <ChevronRight aria-hidden className="size-icono" />
+                </span>
+              </Link>
+            );
+          })}
         />
       ) : (
         <div role="status" className="flex flex-col gap-1 rounded-control bg-fondo-suave p-4">

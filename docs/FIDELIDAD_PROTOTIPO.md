@@ -70,3 +70,45 @@ Una HU o un grupo pequeño de pantallas por rama y por PR, como siempre ([FLUJO_
 La sección "Demostración" del prototipo (semanas pendientes, hora de la asamblea, sin conexión) y la opción "Volver al selector de actor" son de demostración y no van en el sitio.
 
 **Pruebas de densidad (R-11) y de área táctil (R-03):** `pruebas/e2e/accesibilidad/densidad.cy.ts` cuenta los objetivos de contenido de cada ruta real de los cuatro actores (vecino, directiva, administración y garita, listadas en `pruebas/e2e/soporte/actores.ts`) a 360 px, en normal (8) y en vista grande (6), con las semillas. `area-tactil.cy.ts` mide tamaño y separación de esas mismas rutas y la separación de las acciones opuestas. Una pantalla nueva se agrega a la lista de `actores.ts`; no queda ninguna "pendiente".
+
+## 6. Revisión del 5 de noviembre de 2026 (rama `hu/fidelidad-prototipo`)
+
+Se comparó el sitio con la versión vigente del prototipo de la autora (la que dice "Vista grande"). **La copia de `docs/prototipo/prototipo.html` es anterior** (todavía dice "Letra grande"): hay que reemplazarla por una exportación sin conexión de la versión vigente antes de seguir comparando con ella.
+
+Componentes compartidos que quedaron como el prototipo (afectan a los cuatro actores):
+
+| Componente del prototipo | En el sitio |
+| --- | --- |
+| C-05 Tarjeta (con ícono en el título; la principal con borde fuerte) | `Tarjeta` (`icono`, `destacada`) |
+| C-05 Tarjeta pulsable (título con ícono, dato grande, "Ver …" con flecha) | `TarjetaPulsable` |
+| C-05 Fila pulsable (64 px; la de entrada con ícono en círculo y fondo arena) | `FilaEnlace` (`variante="suave"`) |
+| C-06 Badge | `Insignia` (`app/_incidentes/InsigniaDeEstado.tsx` para los estados de un reporte) |
+| C-08 Switch (riel 56 × 32, 72 × 40 en Senior; sin borde dentro de una tarjeta) | `Interruptor` (`sinBorde`) |
+| C-09 Barra superior (8/16 px, isologo de 32 px, 8 px entre ícono y texto) | `Encabezado`, `clasesBotonBarra` |
+| C-10 Barra inferior: el destino que se marca en cada pantalla | `destinoActual` (Mis visitas, Transparencia y "Qué avisos recibo" marcan Más; Avisos, Actividades y Noticias marcan Inicio; en el teléfono, Incidentes marca Inicio) |
+| C-19 Botón Filtrar (borde gris, "**Filtrar:** valor" y flecha abajo) y C-20 opciones de la hoja (texto oscuro, ✓ a la derecha) | `FiltroEnHoja`, `SelectorEnHoja`, `clasesOpcionHoja` |
+| Botón compacto (48 px y texto de 18 px), de texto subrayado y de peligro con contorno | `Boton` (`compacto`, `variante="enlace"`, `variante="peligroContorno"`) |
+| Radio y casilla en fila con borde y etiqueta en negrita | `Opcion` |
+| Barra de quórum de 16 px con la línea del mínimo punteada | `BarraQuorum` (sin `texto`, solo la barra) |
+
+Pantallas del vecino revisadas contra el prototipo: VEC-ACC-01 (y la entrada sin enlace), VEC-ACC-09, VEC-ACC-11, VEC-ACC-13, VEC-ACC-16, VEC-AYU-03, VEC-COB-01, VEC-ASA-01/02, VEC-QUE-01, VEC-GAR-01, VEC-GAR-02 y VEC-TRA-01. Se corrigió además "Ver más (0)", que aparecía en vista grande en listas cortas (el `hidden` del botón perdía contra su `inline-flex`).
+
+Pendiente: el resto de pantallas del vecino (pasos de pago, reclamo, delegar, proponer, reportar, avance, noticias, guía de primer uso) y las de directiva, administración y garita, que heredan los componentes de arriba pero no se compararon una por una.
+
+### 6.1 Directiva, mediador y administración (5 de noviembre de 2026, segunda pasada)
+
+Se rehízo con la estructura del prototipo (se conservaron las funciones que el sitio ya tenía y el prototipo no muestra: poner al día a un vecino, actas, balances, cobros guardados, cambio de perfil, "Ver como"):
+
+| Prototipo | Sitio |
+| --- | --- |
+| DIN01 Resumen: Crear o registrar, Para atender (resumen y 3 primeras), Recaudación con 4 cifras, "Cuadra", Estado de las casas con insignias, Próxima asamblea con barra de quórum | `app/(directiva)/directiva/page.tsx`, `_bandejas.ts`, `componentes/a11y/Cifra.tsx` |
+| DIN05 Para atender (una fila por bandeja con su número, 5 y "Ver más") | `app/(directiva)/directiva/para-atender/` (ruta nueva) |
+| DMA01, DMA03 a DMA05 Más: tres categorías (Cuentas y cobros, Comunidad, Seguimiento) | `directiva/mas/` y `mas/{cuentas-y-cobros,comunidad,seguimiento}/` (rutas nuevas) |
+| C-16 selector "Mi casa / Directiva", C-10 con la cantidad de cobros e incidentes en la barra | `app/_sesion/CambiarDePerfil.tsx`, `BarraNavegacion` (`conteos`), layout de la directiva |
+| DCO01 a DCO04 tarjeta de cobro | `directiva/cobros/_componentes/TarjetaDeCobro.tsx` |
+| DQU01 bandeja de incidentes (ícono por tipo, insignia de estado, botón "+ Vecino" del mediador) | `directiva/incidentes/page.tsx`, `app/_incidentes/` |
+| DAS01 Asambleas y actividades (quórum en dos tarjetas y "Tareas de la asamblea"), DAS11 Crear | `directiva/asambleas/page.tsx`, `directiva/crear/page.tsx` |
+| DAY01 Pedidos de ayuda | `directiva/pedidos-de-ayuda/` |
+| XIN01 Panel de administración, XMA01 Más, XEQ01 Equipo, XPA01 Padrón (búsqueda y manzana a la vista), XAR01 Privacidad | `app/(administrador)/administracion/` |
+
+Falta comparar una por una las pantallas de los pasos (formularios "Paso 1 de 2", confirmaciones) de directiva y administración, la recaudación, la tarifa, el pase de lista, el acta, las actividades, la ficha de vivienda, el empadronamiento y la garita: heredan los componentes de arriba, pero su disposición interna no se revisó contra el prototipo.

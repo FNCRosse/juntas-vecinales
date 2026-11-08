@@ -250,3 +250,28 @@ model Voluntariado {
   @@unique([convocatoriaId, predioId])
   @@map("asambleas_voluntarios")
 }
+
+enum TipoMovimientoActividad {
+  GASTO
+  INGRESO_EN_PUERTA
+}
+
+// Lo que la directiva va anotando de una actividad pro fondos antes de publicar su balance (HU-ASA-10, prototipo DAS09): cada
+// gasto con la foto de su comprobante y lo que se cobró en la puerta. Lo pagado por adelantado sale de las colaboraciones. Solo
+// inserción (trigger): un error se corrige con otro movimiento. Al publicar, el balance copia estos montos y queda inalterable.
+// idOperacion evita registrarlo dos veces al reintentar (AC-5). Montos en céntimos enteros.
+model MovimientoDeActividad {
+  id             String                  @id @default(uuid())
+  idOperacion    String                  @unique
+  convocatoriaId String
+  tipo           TipoMovimientoActividad
+  concepto       String
+  monto          Int
+  archivoId      String?
+  autorId        String
+  autor          String
+  creadoEn       DateTime                @default(now())
+
+  @@index([convocatoriaId, creadoEn])
+  @@map("asambleas_movimientos_actividad")
+}

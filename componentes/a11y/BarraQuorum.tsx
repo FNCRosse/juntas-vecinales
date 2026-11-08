@@ -16,25 +16,30 @@ export function BarraQuorum({
   padronTotal: number;
   requerido: number;
   alcanza: boolean;
-  texto: string;
+  /** Sin texto, solo la barra (el vecino lee la frase arriba, VEC-ASA-01). */
+  texto?: string;
   /** Lo que dice la insignia en cada caso (el pase de lista dice «Hay quórum», no «proyectado»). */
   insignias?: { alcanza: string; noAlcanza: string };
 }) {
   const pct = (n: number) => `${padronTotal > 0 ? Math.min(100, Math.round((n / padronTotal) * 100)) : 0}%`;
+  const barra = (
+    <div
+      role="img"
+      aria-label={`Barra de quórum: ${confirmados} de ${padronTotal} casas. El mínimo es ${requerido}.`}
+      className="relative h-4 w-full overflow-hidden rounded-pastilla border border-borde-control bg-fondo-suave"
+    >
+      <div className="h-full bg-accion-primaria" style={{ width: pct(confirmados) }} />
+      <div
+        className="absolute inset-y-0 border-l-(length:--borde-ancho-control) border-dashed border-borde-fuerte"
+        style={{ left: pct(requerido) }}
+        aria-hidden
+      />
+    </div>
+  );
+  if (!texto) return barra;
   return (
     <div className="flex flex-col gap-3">
-      <div
-        role="img"
-        aria-label={`Barra de quórum: ${confirmados} de ${padronTotal} casas. El mínimo es ${requerido}.`}
-        className="relative h-6 w-full overflow-hidden rounded-pastilla border border-borde-control bg-fondo-suave"
-      >
-        <div className="h-full bg-accion-primaria" style={{ width: pct(confirmados) }} />
-        <div
-          className="absolute inset-y-0 w-1 bg-texto-principal"
-          style={{ left: pct(requerido) }}
-          aria-hidden
-        />
-      </div>
+      {barra}
       <p>{texto}</p>
       <span
         className={`inline-flex items-center gap-1 self-start rounded-pastilla border px-3 text-pequeno font-bold ${

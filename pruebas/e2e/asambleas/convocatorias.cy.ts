@@ -24,7 +24,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
   it("@HU-ASA-01 CA1 CA2 CA3 la directiva convoca, revisa y publica el afiche en teléfono", () => {
     cy.viewport(360, 800);
     cy.visit("/directiva/asambleas");
-    cy.get("h1").should("have.text", "Asambleas y actividades");
+    cy.get("h1").should("have.text", "Asambleas");
     cy.revisarAccesibilidad("asambleas-directiva-360");
 
     cy.contains("a", "Convocar una asamblea").click();
@@ -266,7 +266,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
 
     // La directiva publica la actividad en dos pasos.
     cy.visit("/directiva/crear");
-    cy.contains("a", "Nueva actividad pro-fondos").click();
+    cy.contains("a", "Actividad pro-fondos").click();
     cy.get("h1").should("have.text", "Nueva actividad pro-fondos");
     cy.contains("p", "Paso 1 de 2").should("exist");
     cy.revisarAccesibilidad("actividad-nueva-360");
@@ -304,9 +304,11 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     // La vecina la ve, elige cuántos platos y cómo, y confirma.
     cy.visit("/actividades");
     cy.get("h1").should("have.text", "Actividades pro-fondos");
-    cy.contains("h2", nombre).should("exist");
-    cy.contains("Colaboración: S/ 15.00 por plato.").should("exist");
     cy.revisarAccesibilidad("actividades-vecino-360");
+    cy.contains("a", nombre).click();
+    cy.get("h1").should("have.text", nombre);
+    cy.contains("Colaboración: S/ 15.00 por plato.").should("exist");
+    cy.revisarAccesibilidad("actividad-vecino-360");
     cy.contains("a", "Colaborar con la actividad").click();
 
     cy.contains("p", "Paso 1 de 2").should("exist");
@@ -325,7 +327,8 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.revisarAccesibilidad("colaborar-confirmar-360");
     cy.contains("button", "Sí, confirmar mi aporte").click();
 
-    cy.location("pathname").should("eq", "/actividades");
+    // Confirmado, vuelve al detalle de la actividad.
+    cy.location("pathname").should("match", /^\/actividades\/[0-9a-f-]+$/);
     cy.contains("Usted ya registró su aporte").should("exist");
     cy.contains("3 platos · S/ 45.00").should("exist");
     cy.contains("label", "Foto del comprobante de Yape o Plin").should("exist");
@@ -343,6 +346,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
         });
       });
     cy.visit("/actividades");
+    cy.contains("a", nombre).click();
     cy.contains("Recibimos su comprobante").should("exist");
   });
 
@@ -368,7 +372,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
 
     // La vecina elige «voluntaria» y cuenta cómo ayudaría.
     cy.visit("/actividades");
-    cy.contains("h2", nombre).should("exist");
+    cy.contains("a", nombre).click();
     cy.contains("a", "Colaborar con la actividad").click();
     cy.contains("button", "Elegir una opción").click();
     cy.contains("button", "Prefiero ayudar como voluntaria").click();
@@ -383,13 +387,14 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("dd", "Ayuda como voluntaria (sin pago)").should("exist");
     cy.revisarAccesibilidad("voluntario-confirmar-360");
     cy.contains("button", "Sí, confirmar mi aporte").click();
-    cy.location("pathname").should("eq", "/actividades");
+    cy.location("pathname").should("match", /^\/actividades\/[0-9a-f-]+$/);
     cy.contains("Usted ofreció su ayuda").should("exist");
     cy.revisarAccesibilidad("voluntario-ofrecida-360");
 
     // La directiva la aprueba registrando el rol.
     cy.visit("/directiva/actividades");
-    cy.get("h1").should("have.text", nombre);
+    cy.contains("a", nombre).click();
+    cy.get("h1").should("have.text", `${nombre}: ingresos y gastos`);
     cy.contains("article", "Puedo atender la mesa de la entrada.").should("contain.text", "Por aprobar");
     cy.revisarAccesibilidad("voluntarios-directiva-360");
     cy.contains("article", "Puedo atender la mesa").contains("button", "Aprobar la ayuda").click();
@@ -404,6 +409,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
 
     // Aprobada, la casa no paga: la página lo dice y el servidor rechaza un aporte.
     cy.visit("/actividades");
+    cy.contains("a", nombre).click();
     cy.contains("Ayuda aprobada").should("exist");
     cy.contains("no paga la colaboración").should("exist");
     cy.revisarAccesibilidad("voluntario-aprobada-360");
@@ -453,7 +459,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
   it("@HU-GAR-19 CA1 CA3 el inicio muestra la próxima asamblea y se actualiza cuando la vecina confirma", () => {
     cy.viewport(360, 800);
     cy.visit("/");
-    cy.contains("a", "Próxima asamblea").should("contain.text", "Falta confirmar su asistencia");
+    cy.contains("a", "Próxima asamblea").should("contain.text", "Falta confirmar");
     cy.revisarAccesibilidad("inicio-asamblea-sin-confirmar-360");
 
     cy.visit("/asambleas");

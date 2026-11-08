@@ -25,11 +25,23 @@ export function CambiarEstado({ id, estado, quien }: { id: string; estado: strin
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-separacion md:flex-row">
         {estado === "PENDIENTE" && (
-          <Boton variante="secundario" icono={Hand} cargando={enviando} onClick={() => pasarA("EN_ATENCION")}>
+          <Boton
+            variante="secundario"
+            compacto
+            icono={Hand}
+            cargando={enviando}
+            onClick={() => pasarA("EN_ATENCION")}
+          >
             Lo atiendo yo<span className="sr-only">: {quien}</span>
           </Boton>
         )}
-        <Boton variante="secundario" icono={Check} cargando={enviando} onClick={() => pasarA("ATENDIDA")}>
+        <Boton
+          variante="secundario"
+          compacto
+          icono={Check}
+          cargando={enviando}
+          onClick={() => pasarA("ATENDIDA")}
+        >
           Marcar como atendido<span className="sr-only">: {quien}</span>
         </Boton>
       </div>

@@ -1,8 +1,10 @@
-import { ChevronLeft, FileText, Plus } from "lucide-react";
+import { ChevronLeft, CircleMinus, CirclePlus, FileText, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { Cifra } from "@/componentes/a11y/Cifra";
+import { EncabezadoPagina } from "@/componentes/a11y/EncabezadoPagina";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 import { soles } from "@/compartido/dinero";
@@ -59,72 +61,87 @@ export default async function Movimientos({
         <ChevronLeft aria-hidden className="size-icono" />
         Volver a la rendición
       </Link>
-      <div className="flex flex-col gap-2">
-        <h1 className="text-titulo-1">Ingresos y gastos</h1>
-        <p>{r.etiqueta}. Todo lo que registre aquí entra a la rendición de cuentas.</p>
-      </div>
-      <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {[
-          ["Ingresos de la caja", soles(r.ingresos), null],
+      <EncabezadoPagina
+        titulo="Ingresos y gastos"
+        descripcion={`${r.etiqueta}. Todo lo que registre aquí entra a la rendición de cuentas.`}
+        accion={
+          sesion.roles.includes("DIRECTIVA") ? (
+            <BotonEnlace href="/directiva/cuentas/registrar" icono={Plus} anchoCompleto>
+              Registrar un ingreso o gasto
+            </BotonEnlace>
+          ) : undefined
+        }
+      />
+      <ul data-ancho="completo" className="grid gap-separacion sm:grid-cols-3">
+        {(
           [
-            "Gastos de la caja",
-            soles(r.gastos),
-            r.comprobantes === 1 ? "1 comprobante adjunto" : `${r.comprobantes} comprobantes adjuntos`,
-          ],
-          ["Saldo de la caja", soles(r.saldo), null],
-        ].map(([titulo, valor, detalle]) => (
-          <div
-            key={titulo}
-            className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
-          >
-            <dt className="text-pequeno text-texto-secundario">{titulo}</dt>
-            <dd className="text-titulo-2 font-bold">{valor}</dd>
-            {detalle && <dd className="text-pequeno text-texto-secundario">{detalle}</dd>}
-          </div>
+            ["Ingresos de la caja", soles(r.ingresos), undefined],
+            [
+              "Gastos de la caja",
+              soles(r.gastos),
+              r.comprobantes === 1 ? "1 comprobante adjunto" : `${r.comprobantes} comprobantes adjuntos`,
+            ],
+            ["Saldo de la caja", soles(r.saldo), undefined],
+          ] as [string, string, string | undefined][]
+        ).map(([titulo, valor, detalle]) => (
+          <li key={titulo} className="flex">
+            <Cifra titulo={titulo} valor={valor} detalle={detalle} />
+          </li>
         ))}
-      </dl>
-      <SelectorDeFiltro
-        id="campo-tipo"
-        pregunta="Mostrar"
-        valor={tipo.valor}
-        opciones={TIPOS.map((t) => ({ ...t, href: enlace(r.mes, t.valor) }))}
-      />
-      <ListaVerMas
-        etiqueta="Ingresos y gastos"
-        elementos={filas.map((m) => (
-          <article
-            key={m.id}
-            className="flex flex-col gap-1 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
-          >
-            <p className="text-pequeno text-texto-secundario">
-              {m.fecha} · {m.autor}
-            </p>
-            <h2 className="text-titulo-3">{m.concepto}</h2>
-            <p>{m.tipo === "GASTO" ? "Gasto" : "Ingreso"} · Caja de vigilancia</p>
-            {m.nota && <p className="text-texto-secundario">{m.nota}</p>}
-            <p className="text-titulo-3">
-              {m.tipo === "GASTO" ? "− " : "+ "}
-              {soles(m.monto)}
-            </p>
-            {m.comprobanteId && (
-              <Link
-                href={`/api/archivos/${m.comprobanteId}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace underline underline-offset-4"
+      </ul>
+      {/* El filtro va debajo de las cifras, en su propia fila, y la lista a todo el ancho. */}
+      <div data-ancho="completo" className="lg:w-1/2">
+        <SelectorDeFiltro
+          id="campo-tipo"
+          pregunta="Mostrar"
+          valor={tipo.valor}
+          opciones={TIPOS.map((t) => ({ ...t, href: enlace(r.mes, t.valor) }))}
+        />
+      </div>
+      <div data-ancho="completo" className="flex flex-col gap-separacion">
+        <ListaVerMas
+          etiqueta="Ingresos y gastos"
+          elementos={filas.map((m) => {
+            const gasto = m.tipo === "GASTO";
+            const Icono = gasto ? CircleMinus : CirclePlus;
+            return (
+              <article
+                key={m.id}
+                className="flex items-center gap-4 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 shadow-tarjeta senior:p-6"
               >
-                <FileText aria-hidden className="size-icono" />
-                Ver el comprobante
-              </Link>
-            )}
-          </article>
-        ))}
-      />
-      {sesion.roles.includes("DIRECTIVA") && (
-        <BotonEnlace href="/directiva/cuentas/registrar" variante="secundario" icono={Plus}>
-          Registrar un ingreso o gasto
-        </BotonEnlace>
-      )}
+                <Icono
+                  aria-hidden
+                  className={`size-icono shrink-0 ${gasto ? "text-texto-error" : "text-texto-exito"}`}
+                />
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  <p className="text-pequeno text-texto-secundario">
+                    {m.fecha} · {m.autor}
+                  </p>
+                  <h2 className="text-titulo-3">{m.concepto}</h2>
+                  <p>{gasto ? "Gasto" : "Ingreso"} · Caja de vigilancia</p>
+                  {m.nota && <p className="text-pequeno text-texto-secundario">{m.nota}</p>}
+                  {m.comprobanteId && (
+                    <Link
+                      href={`/api/archivos/${m.comprobanteId}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace underline underline-offset-4"
+                    >
+                      <FileText aria-hidden className="size-icono shrink-0" />
+                      Ver el comprobante
+                      <span className="sr-only"> de {m.concepto}</span>
+                    </Link>
+                  )}
+                </div>
+                <strong className="shrink-0 text-titulo-3">
+                  {gasto ? "− " : "+ "}
+                  {soles(m.monto)}
+                </strong>
+              </article>
+            );
+          })}
+        />
+      </div>
     </div>
   );
 }

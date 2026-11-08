@@ -112,11 +112,11 @@ describe("@HU-ACC-03 Listo con Deshacer", () => {
     });
   });
 
-  it("@HU-ACC-03 CA4 Cerrar quita el aviso y deja el cambio hecho", () => {
+  it("@HU-ACC-03 CA4 Okay quita el aviso y deja el cambio hecho", () => {
     cy.visit("/catalogo");
     cy.esperarHidratacion("Revisar y enviar mi comprobante");
     cy.contains('[role="switch"]', "Recordatorios de pago").click();
-    cy.contains("button", "Cerrar").click();
+    cy.contains("button", "Okay").click();
     cy.contains("[role=status]", "Listo.").should("not.exist");
     cy.contains('[role="switch"]', "Recordatorios de pago").should("have.attr", "aria-checked", "true");
   });
