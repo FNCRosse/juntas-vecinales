@@ -53,7 +53,7 @@ describe("@HU-COB-07 Poner al día a un vecino", { defaultCommandTimeout: 15000 
     cy.viewport(360, 800);
 
     // DIR-COB-15: la ficha.
-    cy.visit("/directiva/mas");
+    cy.visit("/directiva/mas/cuentas-y-cobros");
     cy.contains("a", "Poner al día a un vecino").click();
     cy.get("h1").should("have.text", "Poner al día a un vecino");
     cy.revisarAccesibilidad("poner-al-dia-buscar-360");

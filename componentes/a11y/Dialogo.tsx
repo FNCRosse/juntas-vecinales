@@ -39,7 +39,7 @@ export function Dialogo({
       <Radix.Portal>
         <Radix.Overlay className="fixed inset-0 z-40 bg-texto-principal/60" />
         <Radix.Content
-          className={`fixed z-50 flex flex-col gap-4 overflow-y-auto border border-borde-sutil bg-fondo-superficie p-4 senior:p-6 shadow-elevada ${POSICION[variante]}`}
+          className={`fixed z-50 flex flex-col gap-6 overflow-y-auto border border-borde-sutil bg-fondo-superficie p-4 senior:p-6 shadow-elevada ${POSICION[variante]}`}
           // Sin descripción, Radix pide declararlo para no enlazar una que no existe.
           {...(descripcion ? {} : { "aria-describedby": undefined })}
         >
@@ -47,7 +47,7 @@ export function Dialogo({
             <Radix.Title className="text-titulo-2">{titulo}</Radix.Title>
             <Radix.Close
               aria-label="Cerrar"
-              className="inline-flex min-h-tactil min-w-tactil shrink-0 items-center justify-center gap-2 rounded-control px-2 text-base font-bold text-accion-primaria hover:bg-accion-secundaria-hover"
+              className="inline-flex min-h-tactil min-w-tactil shrink-0 items-center justify-center gap-2 rounded-control px-2 text-base font-bold text-texto-principal hover:bg-fondo-suave"
             >
               <X aria-hidden className="size-icono" />
               <span className="hidden senior:inline">Cerrar</span>
@@ -60,6 +60,14 @@ export function Dialogo({
     </Radix.Root>
   );
 }
+
+/** Opción de una hoja (prototipo C-20): texto oscuro en negrita y, la elegida, borde y ✓ del color de la acción. */
+export const clasesOpcionHoja = (elegida: boolean) =>
+  `flex min-h-tactil w-full items-center gap-3 rounded-control border-(length:--borde-ancho-control) px-4 py-2 text-left text-base text-texto-principal no-underline cursor-pointer ${
+    elegida
+      ? "border-accion-primaria bg-accion-secundaria-hover"
+      : "border-borde-control bg-fondo-superficie hover:bg-accion-secundaria-hover"
+  }`;
 
 /** Botón que cierra el diálogo con el aspecto que se le dé (asChild). */
 export const CerrarDialogo = Radix.Close;

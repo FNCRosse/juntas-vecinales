@@ -62,6 +62,10 @@ export const ACCIONES: Record<string, { modulo: ModuloAuditoria; texto: string }
   decidir_propuesta: { modulo: "Asambleas", texto: "Decidió sobre una propuesta de agenda" },
   reabrir_propuesta: { modulo: "Asambleas", texto: "Cambió su decisión sobre una propuesta de agenda" },
   publicar_actividad: { modulo: "Asambleas", texto: "Publicó una actividad pro fondos" },
+  registrar_movimiento_actividad: {
+    modulo: "Asambleas",
+    texto: "Anotó un gasto o un cobro en la puerta de una actividad pro fondos",
+  },
   colaborar_con_actividad: { modulo: "Asambleas", texto: "Eligió su aporte a una actividad pro fondos" },
   adjuntar_comprobante_aporte: { modulo: "Asambleas", texto: "Adjuntó el comprobante de un aporte" },
   ofrecer_ayuda: { modulo: "Asambleas", texto: "Ofreció su ayuda como voluntario" },

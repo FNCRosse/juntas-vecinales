@@ -27,7 +27,7 @@ describe("@HU-GAR-04 @HU-GAR-05 Visitas de la vecina", () => {
     cy.get("#campo-nombre").type(NOMBRE);
     cy.get("#campo-fecha").type(manana);
     cy.get("#campo-hora").type("16:30");
-    cy.contains("label", "Sí, viene en auto o moto").click();
+    cy.contains("label", /^Sí$/).click();
     cy.get("#campo-placa").type("abc123");
     cy.revisarAccesibilidad("registrar-visita-normal");
     cy.contains("button", "Registrar la visita").click();

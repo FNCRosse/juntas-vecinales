@@ -12,7 +12,7 @@ export function BotonCerrarSesion({ destino }: { destino: string }) {
     <Boton
       variante="secundario"
       icono={LogOut}
-      anchoCompleto
+      compacto
       cargando={enviando}
       onClick={async () => {
         setEnviando(true);

@@ -68,7 +68,7 @@ describe("@HU-GAR-20 @HU-GAR-18 Avisos de la vecina", () => {
     cy.esperarHidratacion("Marcar todos como leídos").click();
     cy.contains("p", "0 sin leer").should("exist");
     cy.visit("/");
-    cy.contains("a", "Mis avisos").should("contain.text", "No tiene avisos nuevos");
+    cy.contains("a", "Mis avisos").should("not.contain.text", "nuevo");
   });
 
   it("@HU-ACC-03 CA4 marcar como leído y marcar todos se aplican sin confirmar y Deshacer los devuelve a sin leer (R-12)", () => {

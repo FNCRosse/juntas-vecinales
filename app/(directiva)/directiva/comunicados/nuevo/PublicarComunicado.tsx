@@ -1,14 +1,14 @@
 "use client";
 // @HU-ASA-15
 
-import { ArrowRight, ChevronLeft, Newspaper } from "lucide-react";
+import { ArrowRight, ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
-import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
+import { Boton } from "@/componentes/a11y/Boton";
 import { AreaTexto } from "@/componentes/a11y/AreaTexto";
 import { Campo } from "@/componentes/a11y/Campo";
-import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { GrupoOpciones, Opcion } from "@/componentes/a11y/Opcion";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
@@ -22,9 +22,17 @@ const URGENCIAS: Record<Urgencia, { etiqueta: string; ayuda: string }> = {
   },
 };
 
-export function PublicarComunicado() {
-  const [paso, setPaso] = useState<"redactar" | "confirmar" | "publicado">("redactar");
-  const [datos, setDatos] = useState({ titulo: "", cuerpo: "", urgencia: "INFORMATIVO" as Urgencia });
+/** `corrige`: el comunicado que se corrige; el formulario empieza con su texto para cambiar solo lo que estaba mal. */
+type Corrige = { id: string; titulo: string; cuerpo: string; urgencia: Urgencia };
+
+export function PublicarComunicado({ corrige }: { corrige?: Corrige }) {
+  const router = useRouter();
+  const [paso, setPaso] = useState<"redactar" | "confirmar">("redactar");
+  const [datos, setDatos] = useState({
+    titulo: corrige?.titulo ?? "",
+    cuerpo: corrige?.cuerpo ?? "",
+    urgencia: corrige?.urgencia ?? ("INFORMATIVO" as Urgencia),
+  });
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [falla, setFalla] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -56,48 +64,43 @@ export function PublicarComunicado() {
     const r = await enviarJson("/api/transparencia/comunicados", "POST", {
       ...datos,
       idOperacion: idOperacion.current,
+      corrigeAId: corrige?.id ?? null,
     });
     setEnviando(false);
-    if (r.ok) return setPaso("publicado");
+    // Publicado: de vuelta a la pantalla anterior (de donde se abrió el formulario), o al resumen si no hay.
+    if (r.ok) {
+      // Una corrección vuelve a la lista de comunicados, donde ya aparece; un comunicado nuevo, a la pantalla anterior.
+      if (corrige) return router.push("/directiva/comunicados");
+      return window.history.length > 1 ? router.back() : router.push("/directiva");
+    }
     if (r.estado === 400) {
       setErrores(r.campos);
       setPaso("redactar");
     } else setFalla(r.error);
   }
 
-  if (paso === "publicado") {
-    return (
-      <div className="flex flex-col gap-6">
-        <MensajeEstado tipo="exito" titulo="Comunicado publicado">
-          <p>Está en Noticias de la junta y llegó a Avisos de cada vecino.</p>
-        </MensajeEstado>
-        <h1 ref={titulo} tabIndex={-1} className="text-titulo-1">
-          {datos.titulo.trim()}
-        </h1>
-        <BotonEnlace href="/directiva" icono={Newspaper}>
-          Volver al resumen
-        </BotonEnlace>
-      </div>
-    );
-  }
-
   if (paso === "confirmar") {
     return (
       <PasoConfirmacion
         referencia={titulo}
-        titulo="¿Desea publicar el comunicado?"
+        titulo={corrige ? "¿Desea publicar la corrección?" : "¿Desea publicar el comunicado?"}
         filas={[
+          ...(corrige ? [["Corrige a", corrige.titulo] as [string, string]] : []),
           ["Título", datos.titulo.trim()],
           ["Urgencia", URGENCIAS[datos.urgencia].etiqueta],
           ["Llega a", "Todos los vecinos"],
         ]}
-        efecto="Se publicará en Noticias de la junta y aparecerá en Avisos de cada vecino. Una vez publicado ya no se puede cambiar."
-        textoConfirmar="Sí, publicar el comunicado"
+        efecto={
+          corrige
+            ? "Reemplazará al comunicado anterior en Noticias de la junta y llegará a Avisos de cada vecino como corrección. Una vez publicada ya no se puede cambiar."
+            : "Se publicará en Noticias de la junta y aparecerá en Avisos de cada vecino. Una vez publicado ya no se puede cambiar."
+        }
+        textoConfirmar={corrige ? "Sí, publicar la corrección" : "Sí, publicar el comunicado"}
         enviando={enviando}
         error={falla}
         alConfirmar={publicar}
         alCorregir={() => setPaso("redactar")}
-        hrefCancelar="/directiva"
+        hrefCancelar={corrige ? `/directiva/comunicados/${corrige.id}` : "/directiva/comunicados"}
       />
     );
   }
@@ -116,16 +119,16 @@ export function PublicarComunicado() {
       className="flex flex-col gap-6"
     >
       <Link
-        href="/directiva"
+        href={corrige ? `/directiva/comunicados/${corrige.id}` : "/directiva/comunicados"}
         className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
       >
         <ChevronLeft aria-hidden className="size-icono" />
-        Volver al resumen
+        {corrige ? "Volver al comunicado" : "Volver a comunicados"}
       </Link>
       <div className="flex flex-col gap-2">
         <p className="text-texto-secundario">Paso 1 de 2</p>
         <h1 ref={titulo} tabIndex={-1} className="text-titulo-1">
-          Comunicado a la comunidad
+          {corrige ? "Corregir un comunicado" : "Comunicado a la comunidad"}
         </h1>
         <p>
           Para avisos que no son de una asamblea ni de una actividad: cortes de servicio, seguridad o

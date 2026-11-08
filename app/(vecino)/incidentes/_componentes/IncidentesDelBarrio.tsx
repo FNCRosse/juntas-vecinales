@@ -1,8 +1,10 @@
 // @HU-QUE-08 @HU-ACC-07
-import { Car, CircleHelp, Info, List, Map, ShieldAlert, Table, Trash2, Volume2 } from "lucide-react";
-import { fechaLarga } from "@/compartido/fechas";
+import { List, Map, Table } from "lucide-react";
+import { ICONO_CATEGORIA as ICONOS } from "@/app/_incidentes/iconos";
+import { fechaCorta } from "@/compartido/fechas";
+import { InsigniaDeEstado } from "@/app/_incidentes/InsigniaDeEstado";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
-import type { MapaDto } from "@/modulos/incidencias/aplicacion/mapa";
+import { PERIODOS_DEL_MAPA, type MapaDto, type PeriodoDelMapa } from "@/modulos/incidencias/aplicacion/mapa";
 import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 
 // VEC-QUE-01, 02 y 03: los incidentes del barrio como lista, como mapa por manzanas o como tabla. El mapa
@@ -10,19 +12,12 @@ import { SelectorDeFiltro } from "@/componentes/a11y/SelectorDeFiltro";
 // Los íconos son decorativos: el tipo siempre está escrito al lado.
 
 export const VISTAS = {
-  lista: { etiqueta: "Lista", Icono: List },
-  mapa: { etiqueta: "Mapa", Icono: Map },
-  resumen: { etiqueta: "Resumen", Icono: Table },
+  lista: { etiqueta: "Lista", detalle: "Los reportes uno debajo del otro", Icono: List },
+  mapa: { etiqueta: "Mapa", detalle: "Dónde pasó cada uno", Icono: Map },
+  resumen: { etiqueta: "Resumen", detalle: "Cuántos hay por zona y tipo", Icono: Table },
 } as const;
 export type Vista = keyof typeof VISTAS;
 
-const ICONOS = {
-  RUIDOS: Volume2,
-  BASURA: Trash2,
-  COCHERAS: Car,
-  SEGURIDAD: ShieldAlert,
-  OTROS: CircleHelp,
-} as const;
 const TIPOS = ["RUIDOS", "BASURA", "COCHERAS", "SEGURIDAD", "OTROS"] as const;
 const CORTO = {
   RUIDOS: "Ruido",
@@ -42,22 +37,37 @@ const CALOR = {
 
 const cantidad = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
 
-export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vista }) {
+const enlace = (vista: Vista, periodo: PeriodoDelMapa) => `/incidentes?vista=${vista}&periodo=${periodo}`;
+
+export function IncidentesDelBarrio({
+  mapa,
+  vista,
+  periodo,
+}: {
+  mapa: MapaDto;
+  vista: Vista;
+  periodo: PeriodoDelMapa;
+}) {
   const { totales } = mapa;
+  const { etiqueta: nombreDelPeriodo, frase, de } = PERIODOS_DEL_MAPA[periodo];
   return (
     <section aria-labelledby="titulo-barrio" className="flex flex-col gap-4">
       <h2 id="titulo-barrio" className="text-titulo-2">
-        En el barrio · último mes
+        En el barrio · {nombreDelPeriodo.toLowerCase()}
       </h2>
+      {/* Periodo y vista en un solo selector: un objetivo menos en la pantalla (R-11). */}
       <SelectorDeFiltro
         id="vista-incidentes"
-        pregunta="Ver los incidentes como"
-        valor={vista}
-        opciones={(Object.keys(VISTAS) as Vista[]).map((clave) => ({
-          valor: clave,
-          etiqueta: VISTAS[clave].etiqueta,
-          href: `/incidentes?vista=${clave}`,
-        }))}
+        pregunta="Ver los incidentes"
+        valor={`${vista}|${periodo}`}
+        opciones={(Object.keys(PERIODOS_DEL_MAPA) as PeriodoDelMapa[]).flatMap((p) =>
+          (Object.keys(VISTAS) as Vista[]).map((v) => ({
+            valor: `${v}|${p}`,
+            etiqueta: `${VISTAS[v].etiqueta} · ${PERIODOS_DEL_MAPA[p].etiqueta}`,
+            detalle: VISTAS[v].detalle,
+            href: enlace(v, p),
+          })),
+        )}
       />
       <p>
         {cantidad(totales.total, "reporte", "reportes")}:{" "}
@@ -69,7 +79,7 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
       {vista === "lista" &&
         (mapa.recientes.length ? (
           <ListaVerMas
-            etiqueta="Incidentes del último mes"
+            etiqueta={`Incidentes ${de}`}
             elementos={mapa.recientes.map((r, i) => {
               const Icono = ICONOS[r.categoria];
               return (
@@ -81,19 +91,16 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
                   <span className="flex flex-col gap-1">
                     <strong>{r.tipo}</strong>
                     <span className="text-texto-secundario">
-                      {r.zona} · {fechaLarga(new Date(r.fecha))}
+                      {r.zona} · {fechaCorta(new Date(r.fecha), { conAnio: false })}
                     </span>
-                    <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                      <Info aria-hidden className="size-icono-pequeno" />
-                      {r.estado}
-                    </span>
+                    <InsigniaDeEstado estado={r.clave} texto={r.estado} />
                   </span>
                 </div>
               );
             })}
           />
         ) : (
-          <p role="status">No hay reportes validados en el último mes.</p>
+          <p role="status">No hay reportes validados en {frase}.</p>
         ))}
 
       {vista === "mapa" && (
@@ -134,7 +141,7 @@ export function IncidentesDelBarrio({ mapa, vista }: { mapa: MapaDto; vista: Vis
           className="overflow-x-auto"
         >
           <table className="w-full border-collapse text-left">
-            <caption className="mb-2 text-left font-bold">Reportes del último mes por zona y tipo</caption>
+            <caption className="mb-2 text-left font-bold">Reportes {de} por zona y tipo</caption>
             <thead>
               <tr>
                 <th scope="col" className="border-b border-borde-fuerte p-2">

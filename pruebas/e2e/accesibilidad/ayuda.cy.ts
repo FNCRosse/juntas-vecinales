@@ -32,7 +32,7 @@ describe("@HU-ACC-04 Pedir ayuda humana desde cualquier pantalla", () => {
 
     cy.clearCookies();
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: CLAVE });
-    cy.visit("/directiva/mas");
+    cy.visit("/directiva/mas/seguimiento");
     cy.contains("a", "Pedidos de ayuda").should("contain.text", "por atender").click();
     cy.contains("li", "Marta Rojas, Mz. A, lote 12")
       .as("pedido")

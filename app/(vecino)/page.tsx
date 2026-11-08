@@ -4,23 +4,25 @@ import {
   ChevronRight,
   CircleCheck,
   DoorOpen,
+  HandCoins,
   HandHeart,
   Info,
   MapPin,
-  Newspaper,
+  Megaphone,
   TriangleAlert,
   Wallet,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { soles } from "@/compartido/dinero";
 import { fechaLarga, horaCorta, primerNombre } from "@/compartido/fechas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { Insignia } from "@/componentes/a11y/Insignia";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { FilaEnlace, Tarjeta, TarjetaPulsable } from "@/componentes/a11y/Tarjeta";
 import { bloqueDeCuota } from "@/modulos/aportes/aplicacion/inicio";
 import { bloqueDeInicio } from "@/modulos/asambleas/aplicacion/inicio";
 import { bloqueDeIdentidad } from "@/modulos/identidad/aplicacion/panelInicio";
@@ -30,38 +32,73 @@ import { ultimasNoticias } from "@/modulos/transparencia/aplicacion/comunicados"
 
 export const metadata: Metadata = { title: "Inicio" };
 
-/** Un bloque del inicio: toda la tarjeta es un enlace a su sección (HU-GAR-19 CA2). */
-function Bloque({
-  href,
-  icono,
-  titulo,
-  children,
-}: {
-  href: string;
-  icono: ReactNode;
-  titulo: string;
-  children: ReactNode;
-}) {
+type Cuota = NonNullable<Awaited<ReturnType<typeof bloqueDeCuota>>>;
+
+const ENLACE = "inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace";
+
+/** C-05 Tarjeta · Mi cuota semanal: lo que debe, su estado y, si debe, "Pagar mi cuota" (HU-COB-02 CA1). */
+function TarjetaCuota({ cuota }: { cuota: Cuota }) {
+  const debe = cuota.estado === "PENDIENTE" || cuota.estado === "EN_REVISION";
+  const semanas = cuota.semanas === 1 ? "1 semana" : `${cuota.semanas} semanas`;
   return (
-    <Link
-      href={href}
-      className="flex min-h-tactil items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 senior:p-6 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte"
+    <Tarjeta
+      destacada
+      icono={Wallet}
+      titulo={cuota.porSemana ? `Mi cuota semanal: ${soles(cuota.porSemana)}` : "Mi cuota semanal"}
     >
-      {icono}
-      <span className="flex flex-1 flex-col gap-1">
-        <strong className="text-titulo-3 text-texto-enlace underline underline-offset-4">{titulo}</strong>
-        {children}
-      </span>
-      <ChevronRight aria-hidden className="size-icono shrink-0" />
-    </Link>
+      {cuota.estado === "SIN_CUOTAS" && (
+        <p className="text-texto-secundario">Todavía no se emitió su primera cuota.</p>
+      )}
+      {cuota.estado === "AL_DIA" && (
+        <>
+          <p className="text-dato font-bold leading-titulo">No debe nada</p>
+          <Insignia tono="exito" icono={CircleCheck}>
+            Al día
+          </Insignia>
+        </>
+      )}
+      {debe && (
+        <>
+          <p className="text-dato font-bold leading-titulo">Debe {soles(cuota.debe)}</p>
+          <p className="text-texto-secundario">{cuota.rango}</p>
+          {cuota.estado === "EN_REVISION" ? (
+            <Insignia tono="info" icono={Info}>
+              Pago en revisión
+            </Insignia>
+          ) : (
+            <Insignia tono={cuota.rejaSuspendida ? "error" : "aviso"} icono={TriangleAlert}>
+              {semanas} pendientes
+            </Insignia>
+          )}
+        </>
+      )}
+      {cuota.reclamo && (
+        <Insignia tono="aviso" icono={TriangleAlert}>
+          Reclamo en revisión
+        </Insignia>
+      )}
+      {cuota.estado === "PENDIENTE" ? (
+        <>
+          {!cuota.rejaSuspendida && <p>Puede ponerse al día cuando pueda.</p>}
+          <BotonEnlace href="/cuota/pagar" icono={HandCoins} anchoCompleto>
+            Pagar mi cuota
+          </BotonEnlace>
+        </>
+      ) : (
+        cuota.estado !== "SIN_CUOTAS" && (
+          <Link href="/cuota" className={ENLACE}>
+            Ver el detalle de mi cuota
+            <ChevronRight aria-hidden className="size-icono shrink-0" />
+          </Link>
+        )
+      )}
+    </Tarjeta>
   );
 }
 
-const ICONO = "size-icono shrink-0 text-accion-primaria";
-
-// VEC-ACC-09 Inicio del vecino (HU-GAR-19). El panel se compone aquí (modulos/identidad/CLAUDE.md), en el
-// orden del prototipo: lo que espera respuesta, la cuota (M5), la asamblea (M4), Mis reportes, Mis avisos y,
-// al final, lo que se puede dejar detrás de "Ver más" (R-11): actividad (M4) y noticias. Se lee en cada carga (CA3).
+// VEC-ACC-09 Inicio del vecino (HU-GAR-19). El panel se compone aquí (modulos/identidad/CLAUDE.md), en este
+// orden: lo que espera respuesta, la cuota (M5), la asamblea y la actividad (M4) lado a lado, y a todo el ancho Mis avisos,
+// Noticias de la junta y Mis reportes. En vista grande, lo que pasa de 3 va detrás de "Ver más" (R-11). Se lee en cada carga (CA3).
 export default async function Inicio() {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
   const [{ avisosSinLeer }, [noticia], reportes, enLaPuerta, { asamblea, actividad }, cuota] =
@@ -73,159 +110,166 @@ export default async function Inicio() {
       bloqueDeInicio(sesion),
       bloqueDeCuota(sesion),
     ]);
-  const ahora = new Date();
-  const bloques: ReactNode[] = [];
-  if (cuota) {
-    bloques.push(
-      <Bloque
-        key="cuota"
-        href="/cuota"
-        icono={<Wallet aria-hidden className={ICONO} />}
-        titulo={cuota.porSemana ? `Mi cuota semanal: ${soles(cuota.porSemana)}` : "Mi cuota semanal"}
-      >
-        {cuota.estado === "SIN_CUOTAS" && (
-          <span className="text-texto-secundario">Todavía no se emitió su primera cuota.</span>
-        )}
-        {cuota.estado === "AL_DIA" && (
-          <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-exito bg-fondo-exito px-3 text-pequeno font-bold text-texto-exito">
-            <CircleCheck aria-hidden className="size-icono-pequeno" />
-            Está al día
-          </span>
-        )}
-        {(cuota.estado === "PENDIENTE" || cuota.estado === "EN_REVISION") && (
-          <>
-            <span className="text-dato font-bold">Debe {soles(cuota.debe)}</span>
-            <span className="text-texto-secundario">{cuota.rango}</span>
-            <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-              <Info aria-hidden className="size-icono-pequeno" />
-              {cuota.estado === "EN_REVISION"
-                ? "Pago en revisión"
-                : cuota.semanas === 1
-                  ? "1 semana pendiente"
-                  : `${cuota.semanas} semanas pendientes`}
-            </span>
-            {cuota.estado === "PENDIENTE" && <span>Puede ponerse al día cuando pueda.</span>}
-          </>
-        )}
-        {cuota.reclamo && <span className="font-bold">Su reclamo está en revisión</span>}
-        {cuota.rejaSuspendida && (
-          <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-aviso bg-fondo-aviso px-3 text-pequeno font-bold text-texto-aviso">
-            <TriangleAlert aria-hidden className="size-icono-pequeno" />
-            Por ahora la reja no se abre sola
-          </span>
-        )}
-      </Bloque>,
-    );
-  }
+  // El orden del inicio: la asamblea y la actividad lado a lado (en escritorio), y debajo, a todo el ancho, Mis avisos,
+  // Noticias de la junta y Mis reportes. Las dos primeras comparten fila; el resto ocupa la fila entera.
+  const bloques: { nodo: ReactNode; completo: boolean }[] = [];
   if (asamblea) {
     const cuando = new Date(asamblea.fechaHora);
-    bloques.push(
-      <Bloque
-        key="asamblea"
-        href="/asambleas"
-        icono={<CalendarDays aria-hidden className={ICONO} />}
-        titulo="Próxima asamblea"
-      >
-        <span>{fechaLarga(cuando)}</span>
-        <span className="text-texto-secundario">
-          {horaCorta(cuando)} · {asamblea.lugar}
-        </span>
-        {asamblea.estado === "INFORMATIVA" ? (
-          <span className="font-bold">Será una sesión informativa</span>
-        ) : asamblea.confirmo ? (
-          <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-exito bg-fondo-exito px-3 text-pequeno font-bold text-texto-exito">
-            <CircleCheck aria-hidden className="size-icono-pequeno" />
-            Usted asistirá
+    bloques.push({
+      completo: false,
+      nodo: (
+        <TarjetaPulsable
+          key="asamblea"
+          href="/asambleas"
+          icono={CalendarDays}
+          titulo="Próxima asamblea"
+          dato={fechaLarga(cuando, { conAnio: false })}
+          accion="Ver la asamblea"
+        >
+          <span>
+            {horaCorta(cuando)} · {asamblea.lugar}
           </span>
-        ) : (
-          <span className="font-bold text-texto-enlace">Falta confirmar su asistencia</span>
-        )}
-      </Bloque>,
-    );
-  }
-  bloques.push(
-    <Bloque
-      key="reportes"
-      href="/incidentes"
-      icono={<MapPin aria-hidden className={ICONO} />}
-      titulo="Mis reportes"
-    >
-      {reportes.abiertos === 0 ? (
-        <>
-          <span>Ninguno abierto</span>
-          <span className="text-texto-secundario">Si ve un problema en el barrio, puede reportarlo.</span>
-          <span className="font-bold text-texto-enlace">Ver incidentes</span>
-        </>
-      ) : (
-        <>
-          <span>{reportes.abiertos === 1 ? "1 abierto" : `${reportes.abiertos} abiertos`}</span>
-          {reportes.ultimo && (
-            <>
-              <span className="text-texto-secundario">
-                N.° {reportes.ultimo.numero} · {reportes.ultimo.categoria}
-              </span>
-              <span className="inline-flex items-center gap-1 self-start rounded-pastilla border border-borde-info bg-fondo-info px-3 text-pequeno font-bold text-texto-info">
-                <Info aria-hidden className="size-icono-pequeno" />
-                {reportes.ultimo.estado}
-              </span>
-            </>
+          {asamblea.estado === "INFORMATIVA" ? (
+            <span className="font-bold">Será una sesión informativa</span>
+          ) : asamblea.confirmo ? (
+            <Insignia tono="exito" icono={CircleCheck}>
+              Usted asistirá
+            </Insignia>
+          ) : (
+            <Insignia tono="info" icono={Info}>
+              Falta confirmar
+            </Insignia>
           )}
-        </>
-      )}
-    </Bloque>,
-  );
-  bloques.push(
-    <Bloque key="avisos" href="/avisos" icono={<Bell aria-hidden className={ICONO} />} titulo="Mis avisos">
-      {avisosSinLeer ? (
-        <span className="inline-flex items-center gap-1 font-bold text-texto-info">
-          <Info aria-hidden className="size-icono-pequeno" />
-          {avisosSinLeer === 1 ? "1 nuevo" : `${avisosSinLeer} nuevos`}
-        </span>
-      ) : (
-        <span className="text-texto-secundario">No tiene avisos nuevos</span>
-      )}
-    </Bloque>,
-  );
-  if (actividad)
-    bloques.push(
-      <Bloque
-        key="actividad"
-        href="/actividades"
-        icono={<HandHeart aria-hidden className={ICONO} />}
-        titulo="Actividad pro-fondos"
-      >
-        <span>{actividad.nombre}</span>
-        <span className="text-texto-secundario">{fechaLarga(new Date(actividad.fechaHora))}</span>
-      </Bloque>,
-    );
+        </TarjetaPulsable>
+      ),
+    });
+  }
+  if (actividad) {
+    const cuando = new Date(actividad.fechaHora);
+    bloques.push({
+      completo: false,
+      nodo: (
+        <TarjetaPulsable
+          key="actividad"
+          href="/actividades"
+          icono={HandHeart}
+          titulo="Próxima actividad"
+          dato={fechaLarga(cuando, { conAnio: false })}
+          accion="Ver la actividad"
+        >
+          <span>
+            {actividad.nombre} · {horaCorta(cuando)}
+          </span>
+        </TarjetaPulsable>
+      ),
+    });
+  }
+  bloques.push({
+    completo: true,
+    nodo: (
+      <FilaEnlace
+        key="avisos"
+        href="/avisos"
+        icono={Bell}
+        titulo="Mis avisos"
+        extra={
+          avisosSinLeer > 0 && (
+            <Insignia tono="info" icono={Info}>
+              {avisosSinLeer === 1 ? "1 nuevo" : `${avisosSinLeer} nuevos`}
+            </Insignia>
+          )
+        }
+      />
+    ),
+  });
   if (noticia)
-    bloques.push(
-      <Bloque
-        key="noticias"
-        href="/noticias"
-        icono={<Newspaper aria-hidden className={ICONO} />}
-        titulo="Noticias de la junta"
+    bloques.push({
+      completo: true,
+      nodo: (
+        <FilaEnlace
+          key="noticias"
+          href="/noticias"
+          icono={Megaphone}
+          titulo="Noticias de la junta"
+          detalle={noticia.titulo}
+        />
+      ),
+    });
+  const abiertos =
+    reportes.abiertos === 0
+      ? "Ninguno abierto"
+      : reportes.abiertos === 1
+        ? "1 abierto"
+        : `${reportes.abiertos} abiertos`;
+  bloques.push({
+    completo: true,
+    nodo: (
+      <TarjetaPulsable
+        key="reportes"
+        href="/incidentes"
+        icono={MapPin}
+        titulo="Mis reportes"
+        dato={abiertos}
+        accion="Ver incidentes"
       >
-        <span>{noticia.titulo}</span>
-      </Bloque>,
-    );
+        {reportes.abiertos === 0 ? (
+          <span>Si ve un problema en el barrio, puede reportarlo.</span>
+        ) : (
+          reportes.ultimo && (
+            <>
+              <span>
+                {reportes.ultimo.numero} · {reportes.ultimo.categoria}
+              </span>
+              <Insignia tono="info" icono={Info}>
+                {reportes.ultimo.estado}
+              </Insignia>
+            </>
+          )
+        )}
+      </TarjetaPulsable>
+    ),
+  });
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <h1 className="text-titulo-1">Hola, {primerNombre(sesion.nombreCompleto)}</h1>
-        <p className="text-texto-secundario">{fechaLarga(ahora)}</p>
+        <p className="text-texto-secundario">{fechaLarga(new Date())}</p>
       </div>
-      <CambiarDePerfil sesion={sesion} actual="vecino" estilo="boton" />
+      {cuota?.rejaSuspendida && (
+        <MensajeEstado tipo="aviso" titulo="Por ahora la reja no se abre sola para su casa">
+          <p>Puede entrar abriéndola a mano. Apenas se ponga al día, vuelve a abrirse sola.</p>
+          <Link href="/cuota/reja" className={ENLACE}>
+            Ver qué pasa y cómo ponerme al día
+          </Link>
+        </MensajeEstado>
+      )}
       {enLaPuerta && (
-        <MensajeEstado tipo="aviso" titulo={`${enLaPuerta.nombre} está en la garita y pregunta por usted`}>
+        <MensajeEstado
+          tipo="info"
+          icono={DoorOpen}
+          titulo={`${enLaPuerta.nombre} está en la garita y pregunta por usted`}
+        >
           <p>No estaba anunciado. {enLaPuerta.vigilante}, el vigilante, espera su respuesta.</p>
-          <BotonEnlace href={`/visitas/${enLaPuerta.id}/responder`} icono={DoorOpen} variante="secundario">
+          <BotonEnlace href={`/visitas/${enLaPuerta.id}/responder`} variante="secundario" anchoCompleto>
             Responder
           </BotonEnlace>
         </MensajeEstado>
       )}
-      <ListaVerMas etiqueta="Su resumen" elementos={bloques} normal={5} senior={3} />
+      {cuota && (
+        <div data-ancho="completo">
+          <TarjetaCuota cuota={cuota} />
+        </div>
+      )}
+      <div data-ancho="completo" className="flex flex-col gap-separacion">
+        <ListaVerMas
+          etiqueta="Su resumen"
+          elementos={bloques.map((b) => b.nodo)}
+          anchoCompleto={bloques.map((b) => b.completo)}
+          normal={5}
+          senior={3}
+        />
+      </div>
     </div>
   );
 }

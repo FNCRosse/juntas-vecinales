@@ -29,7 +29,7 @@ Prefijos de tabla (la primera del módulo M6 es `accesibilidad_perfiles`): `iden
 
 Se escriben como SQL dentro de la migración que crea la tabla:
 
-- **Solo inserción** (trigger que lanza error en UPDATE y DELETE): `nucleo_auditoria` (HU-GAR-26 CA3), bitácora de garita (HU-GAR-08 CA3; admite borrar solo lo de más de un año, por la retención), historial de tarifas (HU-COB-16 CA3), publicaciones de transparencia ya emitidas (`esInalterable`).
+- **Solo inserción** (trigger que lanza error en UPDATE y DELETE): `nucleo_auditoria` (HU-GAR-26 CA3), bitácora de garita (HU-GAR-08 CA3; admite borrar solo lo de más de un año, por la retención), historial de tarifas (HU-COB-16 CA3), publicaciones de transparencia ya emitidas (`esInalterable`), gastos y cobros en la puerta anotados de una actividad pro-fondos (`asambleas_movimientos_actividad`, HU-ASA-10; su balance los copia al publicarse).
 - **Idempotencia:** `UNIQUE` sobre `idOperacion` / `idOperacionLocal` y sobre `(predioId, periodo)` de la cuota.
 - **Unicidad del padrón:** `UNIQUE` sobre el DNI de la persona (HU-GAR-01 CA3).
 - **Un reclamo abierto por cuota:** índice único parcial (HU-COB-03 CA3).
@@ -60,6 +60,8 @@ Personajes del prototipo (todos ficticios; DNI, teléfonos y placas inventados):
 | Rosa Díaz | Vecina | Mz. B, lote 2 (auto CDF-220) | Semáforo verde, bitácora |
 | Elena Soto | Vecina | Mz. D, lote 9 (auto y moto) | Varios vehículos en la tarifa |
 | Víctor Salas | Vecino | Mz. B, lote 11 | Cancelación ARCO |
+
+**Datos de demostración.** `npm run semillas:demo` (`compartido/bd/semillasDemo.ts`) llena el barrio para ver cada pantalla con datos: 16 casas más en el padrón (DNI `4100xxxx`, todos inventados), diez semanas de cuotas con pagos aprobados y recibos, comprobantes por revisar y uno observado, un reclamo, un cobro en casa, caja y rendiciones de los últimos meses, comunicados, un acta y un balance, una asamblea pasada y otra próxima (con confirmaciones, poderes y temas propuestos), tres actividades pro-fondos (una con su balance publicado, otra ya hecha con gastos anotados y su balance por publicar, y una próxima), nueve reportes en todos los estados, visitas, bitácora de la garita, solicitudes de privacidad, avisos y auditoría. Las fechas son relativas a hoy y se puede correr varias veces sin duplicar. Va aparte de `npm run semillas` a propósito: el CI y las pruebas e2e parten de un barrio casi vacío. En el sitio publicado (una demostración) corre con `SEMILLA_EN_NUBE=si` y la `DATABASE_URL` de Neon puesta por la autora en su terminal; las fotos de comprobantes son filas sin archivo real.
 
 Tarifa semanal de ejemplo, la del prototipo (HU-COB-16): casa S/ 2.50, inquilino S/ 2.50, auto o camioneta S/ 2.00, moto S/ 1.00, triciclo o carreta S/ 0.50 y negocio S/ 3.00 (vigente desde el 6 de abril de 2026). `npm run semillas` la crea con dos cambios de historial; en producción la primera versión la registra la directiva.
 

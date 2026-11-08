@@ -16,20 +16,24 @@ const ESTILOS: Record<TipoMensaje, { clases: string; icono: string; Icono: Lucid
 export function MensajeEstado({
   tipo,
   titulo,
+  icono,
   children,
 }: {
   tipo: TipoMensaje;
   titulo: string;
+  /** Otro ícono que nombre el tema (la puerta de la garita); el color sigue diciendo el tipo. */
+  icono?: LucideIcon;
   /** Qué hacer a continuación, o la acción ("Volver a intentar"). */
   children?: ReactNode;
 }) {
-  const { clases, icono, Icono } = ESTILOS[tipo];
+  const { clases, icono: colorIcono, Icono: IconoDelTipo } = ESTILOS[tipo];
+  const Icono = icono ?? IconoDelTipo;
   return (
     <div
       role={tipo === "error" ? "alert" : "status"}
       className={`flex gap-3 p-4 senior:p-6 rounded-control border-(length:--borde-ancho-control) text-texto-principal ${clases}`}
     >
-      <Icono aria-hidden className={`size-icono shrink-0 ${icono}`} />
+      <Icono aria-hidden className={`size-icono shrink-0 ${colorIcono}`} />
       <div className="flex flex-col gap-2">
         <p className="font-bold">{titulo}</p>
         {children}

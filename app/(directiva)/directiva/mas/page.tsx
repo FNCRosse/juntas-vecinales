@@ -1,42 +1,28 @@
+import { Bell, Users, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { BotonCerrarSesion } from "@/app/_sesion/BotonCerrarSesion";
 import { exigirActor } from "@/app/_sesion/sesion";
-import { TarjetaEnlace } from "@/componentes/a11y/Tarjeta";
-import { solicitudesPorAtender } from "@/modulos/accesibilidad/aplicacion/mediacion";
+import { FilaEnlace } from "@/componentes/a11y/Tarjeta";
 
 export const metadata: Metadata = { title: "Más opciones" };
 
-// Más opciones de la directiva (prototipo DMA01): pedidos de ayuda, poner al día a un vecino (HU-COB-07), la tarifa de la
-// cuota semanal, la rendición de cuentas (HU-COB-14) y "Cerrar sesión". «Poner al día» vive aquí y no en Cobros, que ya está en el máximo de objetivos (R-11).
+// DIR-INI-04 Más opciones de la directiva (prototipo DMA01): tres categorías y "Cerrar sesión" aparte. Lo que hay
+// dentro de cada una está en sus pantallas (DMA03 a DMA05).
 export default async function MasOpciones() {
   const sesion = await exigirActor(["DIRECTIVA", "DIRECTIVO_MEDIADOR"], "/entrar/equipo");
-  const pedidos = await solicitudesPorAtender({
-    usuarioId: sesion.usuarioId,
-    nombre: sesion.nombreCompleto,
-    roles: sesion.roles,
-  });
-  const pendientes = pedidos.filter((p) => p.estado !== "ATENDIDA").length;
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <h1 className="text-titulo-1">Más opciones</h1>
-      <TarjetaEnlace href="/directiva/pedidos-de-ayuda" titulo="Pedidos de ayuda">
-        <span>{pendientes ? `${pendientes} por atender` : "No hay pedidos por atender"}</span>
-      </TarjetaEnlace>
-      <TarjetaEnlace href="/directiva/cobros/poner-al-dia" titulo="Poner al día a un vecino">
-        <span>Registrar el pago de toda su deuda</span>
-      </TarjetaEnlace>
-      <TarjetaEnlace href="/directiva/cobros/tarifa" titulo="Tarifa de la cuota semanal">
-        <span>Conceptos, montos y su historial</span>
-      </TarjetaEnlace>
-      <TarjetaEnlace href="/directiva/cuentas" titulo="Rendición de cuentas">
-        <span>Ingresos, gastos y saldo de la caja</span>
-      </TarjetaEnlace>
-      <TarjetaEnlace href="/directiva/historial" titulo="Historial de acciones">
-        <span>Quién hizo cada acción y cuándo</span>
-      </TarjetaEnlace>
-      <CambiarDePerfil sesion={sesion} actual="directiva" estilo="tarjeta" />
-      <BotonCerrarSesion destino="/entrar/equipo" />
+      <div className="flex flex-col gap-separacion">
+        <FilaEnlace href="/directiva/mas/cuentas-y-cobros" icono={Wallet} titulo="Cuentas y cobros" />
+        <FilaEnlace href="/directiva/mas/comunidad" icono={Users} titulo="Comunidad" />
+        <FilaEnlace href="/directiva/mas/seguimiento" icono={Bell} titulo="Seguimiento" />
+      </div>
+      <div className="mt-12 flex flex-col gap-opuestas">
+        <CambiarDePerfil sesion={sesion} actual="directiva" estilo="tarjeta" />
+        <BotonCerrarSesion destino="/entrar/equipo" />
+      </div>
     </div>
   );
 }

@@ -160,14 +160,14 @@ export function RegistrarVisita({
           <Opcion
             tipo="radio"
             name="vehiculo"
-            etiqueta="No, viene a pie"
+            etiqueta="No"
             checked={!datos.conVehiculo}
             onChange={() => setDatos({ ...datos, conVehiculo: false })}
           />
           <Opcion
             tipo="radio"
             name="vehiculo"
-            etiqueta="Sí, viene en auto o moto"
+            etiqueta="Sí"
             checked={datos.conVehiculo}
             onChange={() => setDatos({ ...datos, conVehiculo: true })}
           />

@@ -19,6 +19,7 @@ const CLAVE = "clave-de-prueba";
 let pedro: SesionDto;
 let tokenPedro: string;
 let marta: SesionDto;
+let luis: SesionDto;
 let carmenId: string;
 
 const datos = (cambios: Partial<Parameters<typeof registrarQuejaAsistida>[1]> = {}) => ({
@@ -38,6 +39,7 @@ beforeEach(async () => {
   await sembrar(CLAVE);
   ({ sesion: pedro, token: tokenPedro } = await iniciarSesionConClave({ dni: "40000003", clave: CLAVE }));
   ({ sesion: marta } = await iniciarSesionConClave({ dni: "40000002", clave: CLAVE }));
+  ({ sesion: luis } = await iniciarSesionConClave({ dni: "40000004", clave: CLAVE }));
   carmenId = (await prisma.usuario.findUniqueOrThrow({ where: { dni: "08123478" } })).id;
 });
 
@@ -127,12 +129,15 @@ describe("@HU-QUE-03 Queja asistida por el mediador", () => {
         descripcion: expect.stringContaining("Falta contar qué pasó"),
       },
     });
-    await expect(registrarQuejaAsistida(marta, datos(), T0)).rejects.toBeInstanceOf(ErrorNoAutorizado);
-    await expect(vecinosParaAsistir(marta, "carmen")).rejects.toBeInstanceOf(ErrorNoAutorizado);
+    // El vigilante no registra por un vecino; la directiva sí, igual que el mediador.
+    await expect(registrarQuejaAsistida(luis, datos(), T0)).rejects.toBeInstanceOf(ErrorNoAutorizado);
+    await expect(vecinosParaAsistir(luis, "carmen")).rejects.toBeInstanceOf(ErrorNoAutorizado);
     const pedido = datos();
     const primera = await registrarQuejaAsistida(pedro, pedido, T0);
     expect((await registrarQuejaAsistida(pedro, pedido, T0)).creada).toBe(false);
     expect(await prisma.queja.count()).toBe(1);
     expect(primera.creada).toBe(true);
+    // La directiva también registra por un vecino.
+    expect((await registrarQuejaAsistida(marta, datos(), T0)).creada).toBe(true);
   });
 });

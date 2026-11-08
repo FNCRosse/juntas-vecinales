@@ -184,21 +184,21 @@ export async function registrarQueja(
   return { queja: quejaADto(fila), creada };
 }
 
-/** Las manzanas para el formulario del mediador (DIR-QUE-08). */
+/** Las manzanas para el formulario de quien registra por un vecino (DIR-QUE-08). */
 export async function lugaresParaAsistir(sesion: SesionDto) {
-  exigirRol(sesion, "DIRECTIVO_MEDIADOR");
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
   return manzanasDelBarrio();
 }
 
-/** Vecinos que el mediador puede elegir al registrar por ellos (DIR-QUE-08): por nombre, DNI, manzana o lote. */
+/** Vecinos que la directiva o el mediador pueden elegir al registrar por ellos (DIR-QUE-08): por nombre, DNI, manzana o lote. */
 export async function vecinosParaAsistir(sesion: SesionDto, texto: string) {
-  exigirRol(sesion, "DIRECTIVO_MEDIADOR");
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
   return buscarVecinos(texto);
 }
 
 /**
- * El mediador registra la queja en nombre de un vecino (HU-QUE-03): con sus palabras, con anonimato si
- * el vecino lo pide (CA2) y sin exigir foto. `registradaPor` guarda al mediador. Devuelve los datos de
+ * La directiva o el mediador registran la queja en nombre de un vecino (HU-QUE-03): con sus palabras, con anonimato si
+ * el vecino lo pide (CA2) y sin exigir foto. `registradaPor` guarda a quien la registró. Devuelve los datos de
  * la constancia con el código (CA3).
  */
 export async function registrarQuejaAsistida(
@@ -206,7 +206,7 @@ export async function registrarQuejaAsistida(
   datos: DatosQueja & { vecinoId: string; idOperacion: string },
   ahora = new Date(),
 ) {
-  exigirRol(sesion, "DIRECTIVO_MEDIADOR");
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
   const vecino = await vecinoActivo(datos.vecinoId);
   if (!vecino) throw new ErrorNoEncontrado("No encontramos a ese vecino. Búsquelo de nuevo.");
   const queja = await validar(sesion.usuarioId, datos, { asistida: true });

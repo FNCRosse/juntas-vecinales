@@ -1,10 +1,10 @@
 "use client";
 // @HU-ACC-09
 
-import { Check, ChevronRight } from "lucide-react";
+import { CircleCheck } from "lucide-react";
 import { useState } from "react";
 import { MensajeDeCampo } from "./Campo";
-import { Dialogo } from "./Dialogo";
+import { clasesOpcionHoja, Dialogo } from "./Dialogo";
 
 // Fila de selección del prototipo (C-20): en la pantalla queda un solo objetivo con lo elegido y
 // "Cambiar"; las opciones se abren en una hoja inferior (R-11, un botón en vez de una opción por fila).
@@ -59,10 +59,7 @@ export function SelectorEnHoja<T extends string>({
                 <span className="text-pequeno text-texto-secundario">{elegida.detalle}</span>
               )}
             </span>
-            <span className="inline-flex shrink-0 items-center gap-1 font-bold text-texto-enlace">
-              Cambiar
-              <ChevronRight aria-hidden className="size-icono-pequeno" />
-            </span>
+            <span className="shrink-0 font-bold text-texto-enlace underline underline-offset-4">Cambiar</span>
           </button>
         }
       >
@@ -76,15 +73,15 @@ export function SelectorEnHoja<T extends string>({
                   alElegir(o.valor);
                   setAbierto(false);
                 }}
-                className={`flex min-h-tactil w-full items-center gap-2 rounded-control border-(length:--borde-ancho-control) px-4 py-2 text-left font-bold cursor-pointer ${o.valor === valor ? "border-accion-primaria bg-fondo-suave text-accion-primaria" : "border-borde-control bg-fondo-superficie text-accion-primaria hover:bg-accion-secundaria-hover"}`}
+                className={clasesOpcionHoja(o.valor === valor)}
               >
-                {o.valor === valor && <Check aria-hidden className="size-icono-pequeno shrink-0" />}
                 <span className="flex min-w-0 flex-1 flex-col">
-                  {o.etiqueta}
-                  {o.detalle && (
-                    <span className="text-pequeno font-regular text-texto-secundario">{o.detalle}</span>
-                  )}
+                  <strong>{o.etiqueta}</strong>
+                  {o.detalle && <span className="text-pequeno text-texto-secundario">{o.detalle}</span>}
                 </span>
+                {o.valor === valor && (
+                  <CircleCheck aria-hidden className="size-icono shrink-0 text-accion-primaria" />
+                )}
               </button>
             </li>
           ))}

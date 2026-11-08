@@ -33,8 +33,8 @@ export default async function EntrarConEnlace({ params }: { params: Promise<{ to
             Va a entrar a su cuenta de <strong>{bienvenida.direccion}</strong>.
           </p>
         )}
-        <p>
-          Llegó aquí con <strong>un enlace mágico</strong>: es el enlace que le mandamos por WhatsApp y que le
+        <p className="text-texto-secundario">
+          Llegó aquí con un <strong>enlace mágico</strong>: es el enlace que le mandamos por WhatsApp y que le
           deja entrar sin clave. Al pulsar el botón, entrará directo a su cuenta.
         </p>
       </div>

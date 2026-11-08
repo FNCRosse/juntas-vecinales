@@ -23,7 +23,7 @@ describe("@HU-GAR-19 El inicio con lo de cobros", { defaultCommandTimeout: 15000
     cy.viewport(360, 800);
     cy.visit("/");
     cy.get("h1").should("contain.text", "Hola,");
-    cy.contains("a", "Mi cuota semanal: S/ 2.50")
+    cy.contains("section", "Mi cuota semanal: S/ 2.50")
       .should("contain.text", "Debe S/ 7.50")
       .and("contain.text", "3 semanas, del 7 al 27 de setiembre")
       .and("contain.text", "3 semanas pendientes")
@@ -33,18 +33,19 @@ describe("@HU-GAR-19 El inicio con lo de cobros", { defaultCommandTimeout: 15000
     // La reja suspendida se ve sin entrar a Mi cuota.
     cy.get<string>("@dni").then((dni) => cy.task("suspenderReja", { dni }));
     cy.reload();
-    cy.contains("a", "Mi cuota semanal").should("contain.text", "Por ahora la reja no se abre sola");
+    cy.contains("[role=status]", "Por ahora la reja no se abre sola").should("exist");
 
     // Al pagar todo, el bloque cambia.
     cy.get<string>("@dni").then((dni) =>
       SEMANAS.forEach((periodo) => cy.task("abonarCuota", { dni, periodo, saldo: 0, estado: "PAGADA" })),
     );
     cy.reload();
-    cy.contains("a", "Mi cuota semanal")
-      .should("contain.text", "Está al día")
-      .and("not.contain.text", "Debe");
+    cy.contains("section", "Mi cuota semanal")
+      .should("contain.text", "No debe nada")
+      .and("contain.text", "Al día")
+      .and("not.contain.text", "Debe S/");
     cy.revisarAccesibilidad("inicio-cuota-al-dia-360");
-    cy.contains("a", "Mi cuota semanal").click();
+    cy.contains("a", "Ver el detalle de mi cuota").click();
     cy.location("pathname").should("eq", "/cuota");
   });
 
@@ -57,9 +58,12 @@ describe("@HU-GAR-19 El inicio con lo de cobros", { defaultCommandTimeout: 15000
     cy.guardarModo("senior");
     cy.viewport(360, 800);
     cy.visit("/directiva");
-    cy.contains("a", "Cobros por atender").should("contain.text", "reclamo").and("contain.text", "pendiente");
+    // El resumen cuenta lo que espera en una sola tarjeta, "Para atender", que lleva a la lista de lo pendiente.
+    cy.contains("section", "Para atender").should("contain.text", "Reclamos de cuota");
     cy.revisarAccesibilidad("resumen-directiva-cobros-senior-360");
-    cy.contains("a", "Cobros por atender").click();
+    cy.contains("a", "Ver lo que hay que atender").click();
+    cy.location("pathname").should("eq", "/directiva/para-atender");
+    cy.contains("a", "Reclamos de cuota").click();
     cy.location("pathname").should("eq", "/directiva/cobros");
     cy.get("h1").should("have.text", "Cobros");
   });

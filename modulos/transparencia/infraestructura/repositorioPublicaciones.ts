@@ -2,7 +2,11 @@ import type { Transaccion } from "@/compartido/bd/cliente";
 import { prisma } from "@/compartido/bd/cliente";
 import type { NivelUrgencia } from "@/compartido/bd/generado/client";
 
-const conComunicado = { comunicado: true } as const;
+// Con su texto y, si se corrigió, cuál lo corrige (una publicación no cambia: se corrige con otra, docs/DATOS.md §3).
+const conComunicado = {
+  comunicado: true,
+  correcciones: { select: { id: true }, orderBy: { fechaPublicacion: "asc" }, take: 1 },
+} as const;
 
 export async function buscarPorIdOperacion(idOperacion: string) {
   return prisma.publicacion.findUnique({ where: { idOperacion }, include: conComunicado });
@@ -18,6 +22,7 @@ export async function crearComunicado(
     autorId: string;
     autor: string;
     fechaPublicacion: Date;
+    corrigeAId?: string | null;
   },
 ) {
   const { cuerpo, urgencia, ...publicacion } = datos;
@@ -25,6 +30,11 @@ export async function crearComunicado(
     data: { ...publicacion, tipo: "COMUNICADO", comunicado: { create: { cuerpo, urgencia } } },
     include: conComunicado,
   });
+}
+
+/** Un comunicado publicado, o null. */
+export async function buscarComunicado(id: string) {
+  return prisma.publicacion.findFirst({ where: { id, tipo: "COMUNICADO" }, include: conComunicado });
 }
 
 /** Los comunicados publicados hasta ahora: el orden del feed lo da el dominio. */
@@ -133,5 +143,14 @@ export async function listarBalances() {
     include: conBalance,
     orderBy: { fechaPublicacion: "desc" },
     take: 100,
+  });
+}
+
+/** El balance publicado de una actividad pro fondos de la plataforma, si ya lo tiene (una por actividad). */
+export async function balanceDeConvocatoria(convocatoriaId: string) {
+  return prisma.publicacion.findFirst({
+    where: { tipo: "BALANCE", balance: { is: { convocatoriaId } } },
+    include: conBalance,
+    orderBy: { fechaPublicacion: "asc" },
   });
 }

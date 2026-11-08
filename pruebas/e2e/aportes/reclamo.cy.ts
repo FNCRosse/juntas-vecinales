@@ -102,7 +102,7 @@ describe("@HU-COB-03 Reclamo sobre mi cuota", { defaultCommandTimeout: 15000 }, 
 
     // CA2: la cuota figura en revisión en Mi cuota.
     cy.contains("a", "Volver a Mi cuota").click();
-    cy.contains('[role="status"]', "Su reclamo está en revisión").should("exist");
+    cy.contains("section", "Lo que debe hoy").should("contain.text", "Reclamo en revisión");
     cy.contains("article", "Semana del 7 al 13 de setiembre").should("contain.text", "En revisión");
     cy.contains("a", "Ver mi reclamo").should("exist");
     cy.revisarAccesibilidad("cuota-con-reclamo-360");

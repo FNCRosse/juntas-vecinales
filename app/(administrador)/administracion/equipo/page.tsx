@@ -4,6 +4,8 @@ import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaYHora } from "@/compartido/fechas";
 import { BotonEnlace } from "@/componentes/a11y/Boton";
+import { EncabezadoPagina } from "@/componentes/a11y/EncabezadoPagina";
+import { Insignia } from "@/componentes/a11y/Insignia";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { Tarjeta } from "@/componentes/a11y/Tarjeta";
@@ -34,10 +36,15 @@ export default async function Equipo({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-titulo-1">Cuentas del equipo</h1>
-        <p>Cada persona entra con su propio acceso de equipo, distinto del enlace de los vecinos.</p>
-      </div>
+      <EncabezadoPagina
+        titulo="Cuentas del equipo"
+        descripcion="Cada persona entra con su propio acceso de equipo, distinto del enlace de los vecinos."
+        accion={
+          <BotonEnlace href="/administracion/equipo/agregar" icono={UserPlus} anchoCompleto>
+            Agregar a una persona
+          </BotonEnlace>
+        }
+      />
       {aviso === "rol" && nombre && rol && (
         <MensajeEstado tipo="exito" titulo="Rol cambiado">
           <p>
@@ -57,10 +64,6 @@ export default async function Equipo({
           <p>Cerramos su sesión en todos sus equipos.</p>
         </MensajeEstado>
       )}
-      <BotonEnlace href="/administracion/equipo/agregar" icono={UserPlus}>
-        Agregar a una persona
-      </BotonEnlace>
-
       <ListaVerMas
         etiqueta="Personas del equipo"
         elementos={miembros.map((m) => (
@@ -73,17 +76,15 @@ export default async function Equipo({
               {m.rolTexto} · {m.vivienda ? `Vive en ${m.vivienda}` : "Personal externo"}
             </span>
             {m.tieneAcceso ? (
-              <span className="inline-flex items-center gap-2 text-texto-exito">
-                <CircleCheck aria-hidden className="size-icono-pequeno" />
+              <Insignia tono="exito" icono={CircleCheck}>
                 {m.ultimoAcceso
                   ? `Entró por última vez el ${fechaYHora(new Date(m.ultimoAcceso))}`
                   : "Con acceso; todavía no entra"}
-              </span>
+              </Insignia>
             ) : (
-              <span className="inline-flex items-center gap-2 text-texto-aviso">
-                <Clock aria-hidden className="size-icono-pequeno" />
+              <Insignia tono="aviso" icono={Clock}>
                 Invitación enviada: todavía no crea su acceso
-              </span>
+              </Insignia>
             )}
             {m.esUsted && <span className="font-bold text-texto-secundario">Es usted</span>}
             <div className="flex flex-col items-start gap-separacion">

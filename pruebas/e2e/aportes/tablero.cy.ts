@@ -19,8 +19,8 @@ const entrarComo = (dni: string, politica: boolean) => {
 
 const seCobro = () =>
   cy
-    .contains("dt", "Se cobró")
-    .next("dd")
+    .contains("span", "Se cobró")
+    .next("strong")
     .invoke("text")
     .then((t) => centimos(t));
 
@@ -47,12 +47,12 @@ describe("@HU-COB-13 Recaudación", { defaultCommandTimeout: 15000 }, () => {
     // DIR-INI-01: el bloque de recaudación del resumen.
     cy.visit("/directiva");
     cy.contains("h2", "Recaudación").should("exist");
-    cy.contains("dt", "Se cobró").should("exist");
-    cy.contains("dt", "Falta cobrar").should("exist");
-    cy.contains("h3", "Estado de las casas").should("exist");
-    cy.contains("li", "Al día:").should("exist");
-    cy.contains("li", "Atraso de 1 a 7 semanas:").should("exist");
-    cy.contains("li", "8 semanas o más:").should("contain.text", "casas");
+    cy.contains("span", "Se cobró").should("exist");
+    cy.contains("span", "Falta cobrar").should("exist");
+    cy.contains("strong", "Estado de las casas").should("exist");
+    cy.contains("li", "Al día").should("contain.text", "casas");
+    cy.contains("li", "Atraso de 1 a 7 semanas").should("contain.text", "casas");
+    cy.contains("li", "8 semanas o más").should("contain.text", "casas");
     cy.contains('[role="status"]', "Cuadra").should("exist");
     cy.revisarAccesibilidad("resumen-recaudacion-360");
     cy.contains("a", "Ver la recaudación completa").click();
@@ -60,8 +60,8 @@ describe("@HU-COB-13 Recaudación", { defaultCommandTimeout: 15000 }, () => {
     // DIR-COB-18: el tablero.
     cy.get("h1").should("have.text", "Recaudación");
     cy.contains("Suma los recibos digitales y en efectivo del periodo elegido.").should("exist");
-    cy.contains("dt", "Recibos emitidos").should("exist");
-    cy.contains("dt", "Falta cobrar").should("exist");
+    cy.contains("span", "Recibos emitidos").should("exist");
+    cy.contains("Falta cobrar").should("exist");
     cy.contains('[role="status"]', "Cuadra").should("exist");
     cy.contains("figcaption", "Lo cobrado cada semana, por medio de pago").should("exist");
     cy.contains("Los mismos datos del gráfico").should("exist");

@@ -8,6 +8,24 @@ import { CATEGORIAS, type Categoria, type Estado } from "./queja";
 
 export const ESTADOS_EN_EL_MAPA = ["EN_REVISION", "RESUELTO", "DERIVADO_ENTIDAD_EXTERNA"] as const;
 export const DIAS_DEL_MAPA = 30;
+
+/** Los periodos que se pueden elegir para ver los incidentes del barrio (HU-QUE-08): por defecto, el último mes. */
+export const PERIODOS_DEL_MAPA = {
+  mes: { dias: DIAS_DEL_MAPA, etiqueta: "Último mes", frase: "el último mes", de: "del último mes" },
+  trimestre: {
+    dias: 90,
+    etiqueta: "Últimos 3 meses",
+    frase: "los últimos 3 meses",
+    de: "de los últimos 3 meses",
+  },
+  semestre: {
+    dias: 180,
+    etiqueta: "Últimos 6 meses",
+    frase: "los últimos 6 meses",
+    de: "de los últimos 6 meses",
+  },
+} as const;
+export type PeriodoDelMapa = keyof typeof PERIODOS_DEL_MAPA;
 export const OTROS_LUGARES = "Otros lugares del barrio";
 
 /** Cómo se nombra cada tipo en el mapa y la tabla, en corto. */
@@ -70,13 +88,13 @@ const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno
  * La descripción textual alternativa del mapa (HU-ACC-07 CA2): qué hay en cada zona con reportes, en el
  * orden del mapa, y la frase que resume lo principal.
  */
-export function descripcionTextualAlternativa(zonas: Zona[]) {
+export function descripcionTextualAlternativa(zonas: Zona[], periodo: string = "el último mes") {
   const conReportes = zonas.filter((z) => z.total > 0);
   const total = conReportes.reduce((s, z) => s + z.total, 0);
   if (!total) {
     return {
-      etiqueta: "Mapa del barrio por manzanas, sin reportes en el último mes.",
-      resumen: "No hay reportes validados en el último mes.",
+      etiqueta: `Mapa del barrio por manzanas, sin reportes en ${periodo}.`,
+      resumen: `No hay reportes validados en ${periodo}.`,
     };
   }
   const partes = conReportes.map(
@@ -92,6 +110,6 @@ export function descripcionTextualAlternativa(zonas: Zona[]) {
   }
   return {
     etiqueta: `Mapa del barrio por manzanas. ${partes.join(". ")}.`,
-    resumen: `${plural(total, "reporte", "reportes")} en el último mes. Lo que más se repite: ${CATEGORIAS[mayor.tipo].toLowerCase()} en ${mayor.zona === OTROS_LUGARES ? "otros lugares del barrio" : `la ${mayor.zona}`} (${mayor.cantidad}).`,
+    resumen: `${plural(total, "reporte", "reportes")} en ${periodo}. Lo que más se repite: ${CATEGORIAS[mayor.tipo].toLowerCase()} en ${mayor.zona === OTROS_LUGARES ? "otros lugares del barrio" : `la ${mayor.zona}`} (${mayor.cantidad}).`,
   };
 }

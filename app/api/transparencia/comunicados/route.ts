@@ -8,6 +8,7 @@ const esquema = z.object({
   cuerpo: z.string(),
   urgencia: z.enum(["INFORMATIVO", "URGENTE"], { error: "Elija si el comunicado es informativo o urgente." }),
   idOperacion: z.uuid(),
+  corrigeAId: z.uuid().nullish(),
 });
 
 /** Publicar un comunicado general (HU-ASA-15): 201 al publicarlo; 200 si ya estaba publicado (AC-5). */

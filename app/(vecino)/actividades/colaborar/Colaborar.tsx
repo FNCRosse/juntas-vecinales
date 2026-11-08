@@ -110,7 +110,7 @@ export function Colaborar({
             idOperacion: idOperacion.current,
           });
     setEnviando(false);
-    if (r.ok) return router.push("/actividades");
+    if (r.ok) return router.push(`/actividades/${actividadId}`);
     setFalla(r.error);
   }
 
@@ -148,7 +148,7 @@ export function Colaborar({
         error={falla}
         alConfirmar={confirmar}
         alCorregir={() => setPaso("elegir")}
-        hrefCancelar="/actividades"
+        hrefCancelar={`/actividades/${actividadId}`}
       />
     );
   }
@@ -163,11 +163,11 @@ export function Colaborar({
       className="flex flex-col gap-6"
     >
       <Link
-        href="/actividades"
+        href={`/actividades/${actividadId}`}
         className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
       >
         <ChevronLeft aria-hidden className="size-icono" />
-        Volver a Actividades
+        Volver a la actividad
       </Link>
       <div className="flex flex-col gap-2">
         <p className="text-texto-secundario">Paso 1 de 2</p>

@@ -44,10 +44,12 @@ describe("@HU-ACC-06 Teclado y lector de pantalla", () => {
     cy.focused().should("contain.text", "Vista grande");
     tab();
     cy.focused().should("contain.text", "Pedir ayuda");
-    ["Inicio", "Mi cuota", "Asambleas", "Incidentes", "Más", "Ver mis recibos"].forEach((texto) => {
-      tab();
-      cy.focused().should("contain.text", texto);
-    });
+    ["Inicio", "Mi cuota", "Asambleas", "Incidentes", "Actividades", "Más", "Ver mis recibos"].forEach(
+      (texto) => {
+        tab();
+        cy.focused().should("contain.text", texto);
+      },
+    );
   });
 
   it("@HU-ACC-06 CA1 el enlace para saltar lleva el foco al contenido", () => {

@@ -18,7 +18,7 @@ describe("@HU-COB-16 Tarifa de la cuota semanal", () => {
   it("@HU-COB-16 CA1 CA3 la directiva ve los conceptos con su unidad y su monto, y el historial de solo lectura", () => {
     entrarComo("40000002", true);
     cy.viewport(360, 800);
-    cy.visit("/directiva/mas");
+    cy.visit("/directiva/mas/cuentas-y-cobros");
     cy.contains("a", "Tarifa de la cuota semanal").click();
     cy.get("h1").should("have.text", "Tarifa de la cuota semanal");
     cy.contains("p", "Vigente desde el").should("contain.text", "aprobada en");
@@ -136,7 +136,7 @@ describe("@HU-COB-16 CA3 Historial de acciones de la directiva", () => {
   it("@HU-COB-16 CA3 el historial de solo lectura muestra el cambio de tarifa programado, en teléfono y en modo Senior", () => {
     entrarComo("40000002", true);
     cy.viewport(360, 800);
-    cy.visit("/directiva/mas");
+    cy.visit("/directiva/mas/seguimiento");
     cy.contains("a", "Historial de acciones").click();
     cy.get("h1").should("have.text", "Historial de acciones");
     cy.contains("Solo lectura").should("exist");

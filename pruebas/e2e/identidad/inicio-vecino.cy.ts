@@ -28,6 +28,6 @@ describe("@HU-GAR-19 Panel de inicio", () => {
     cy.esperarHidratacion("Marcar todos como leídos").click();
     cy.wait("@leidas");
     cy.visit("/");
-    cy.contains("a", "Mis avisos").should("contain.text", "No tiene avisos nuevos");
+    cy.contains("a", "Mis avisos").should("not.contain.text", "nuevo");
   });
 });

@@ -83,9 +83,9 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     const pausa = await accionHttp(pedir({ seccion: "INCIDENTES", accion: "pausar", paso: 1 }), undefined);
     expect(await pausa.json()).toMatchObject({ estado: "PAUSADA", paso: 1, ofrecer: true });
     expect(await (await guiasHttp(pedir(), undefined)).json()).toEqual([
-      { seccion: "INCIDENTES", nombre: "Incidentes", estado: "La dejó en el paso 2 de 4" },
-      ASAMBLEAS_SIN_VER,
       CUOTA_SIN_VER,
+      ASAMBLEAS_SIN_VER,
+      { seccion: "INCIDENTES", nombre: "Incidentes", estado: "La dejó en el paso 2 de 4" },
     ]);
     await registrarAccionDeGuia(marta, "INCIDENTES", "omitir");
     expect((await guiaDeSeccion(marta, "INCIDENTES")).ofrecer).toBe(false);
@@ -93,9 +93,9 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     await registrarAccionDeGuia(marta, "INCIDENTES", "completar");
     expect(await guiaDeSeccion(marta, "INCIDENTES")).toMatchObject({ estado: "COMPLETADA", ofrecer: false });
     expect(await guiasDeUso(marta)).toEqual([
-      { seccion: "INCIDENTES", nombre: "Incidentes", estado: "Ya la vio" },
-      ASAMBLEAS_SIN_VER,
       CUOTA_SIN_VER,
+      ASAMBLEAS_SIN_VER,
+      { seccion: "INCIDENTES", nombre: "Incidentes", estado: "Ya la vio" },
     ]);
     expect((await accionHttp(pedir({ seccion: "INCIDENTES", accion: "borrar" }), undefined)).status).toBe(
       400,
