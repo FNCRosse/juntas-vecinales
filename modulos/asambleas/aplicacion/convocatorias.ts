@@ -337,19 +337,12 @@ export async function miAsistencia(sesion: SesionDto, asambleaId: string): Promi
 export function aficheDeAsamblea(asamblea: AsambleaDto) {
   const fecha = new Date(asamblea.fechaHora);
   return {
-    titulo: "Junta Vecinal de Villa de Fátima",
-    subtitulos: [asamblea.titulo],
-    secciones: [
-      {
-        titulo: "Cuándo y dónde",
-        filas: [
-          ["Fecha", fechaLarga(fecha)] as [string, string],
-          ["Hora", horaCorta(fecha)] as [string, string],
-          ["Lugar", asamblea.lugar] as [string, string],
-        ],
-      },
-      { titulo: "Motivo", parrafos: [asamblea.motivo] },
-    ],
+    junta: "Junta Vecinal de Villa de Fátima",
+    titulo: asamblea.titulo,
+    fecha: fechaLarga(fecha),
+    hora: horaCorta(fecha),
+    lugar: asamblea.lugar,
+    motivo: asamblea.motivo,
     pie: `Confirme su asistencia en la app o con un mediador de la directiva, hasta ${fechaEnFrase(new Date(asamblea.confirmacionesHasta))}.`,
     nombreArchivo: `asamblea-${asamblea.id}.pdf`,
   };

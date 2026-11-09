@@ -1,4 +1,4 @@
-import { generarPdf } from "@/compartido/archivos/pdf";
+import { generarAfiche } from "@/compartido/archivos/afiche";
 import { manejar } from "@/compartido/manejar";
 import { exigirSesion } from "@/modulos/identidad/aplicacion/sesion";
 import { aficheDeAsamblea, verAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
@@ -7,7 +7,7 @@ import { aficheDeAsamblea, verAsamblea } from "@/modulos/asambleas/aplicacion/co
 export const GET = manejar<{ params: Promise<{ id: string }> }>(async (peticion, { params }) => {
   const sesion = await exigirSesion(peticion);
   const afiche = aficheDeAsamblea(await verAsamblea(sesion, (await params).id));
-  const pdf = await generarPdf(afiche);
+  const pdf = await generarAfiche(afiche);
   return new Response(new Uint8Array(pdf), {
     headers: {
       "content-type": "application/pdf",
