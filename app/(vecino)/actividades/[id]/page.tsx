@@ -56,7 +56,7 @@ export default async function Actividad({ params }: { params: Promise<{ id: stri
                   {aporte.cantidad} {unidad} · {aporte.montoTexto} ·{" "}
                   {aporte.modalidad === "ANTICIPADA"
                     ? "pago antes con Yape o Plin"
-                    : "pago en la puerta el día de la actividad"}
+                    : "pago en persona el día de la actividad"}
                   .
                 </p>
               </MensajeEstado>

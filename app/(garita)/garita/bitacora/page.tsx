@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { clasesBoton } from "@/componentes/a11y/Boton";
+import { Campo } from "@/componentes/a11y/Campo";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { bitacora } from "@/modulos/identidad/aplicacion/garita";
@@ -20,11 +21,11 @@ const FILTROS = [
 export default async function Bitacora({
   searchParams,
 }: {
-  searchParams: Promise<{ ver?: string; aviso?: string; nombre?: string }>;
+  searchParams: Promise<{ ver?: string; aviso?: string; nombre?: string; q?: string }>;
 }) {
   const sesion = await exigirActor(["VIGILANTE"], "/entrar/equipo");
-  const { ver = "todo", aviso, nombre } = await searchParams;
-  const { filas, dentro } = await bitacora(sesion);
+  const { ver = "todo", aviso, nombre, q = "" } = await searchParams;
+  const { filas, dentro } = await bitacora(sesion, new Date(), q);
   const lista = ver === "dentro" ? dentro : filas;
   const sigueDentro = new Set(dentro.map((f) => f.id));
 
@@ -68,7 +69,7 @@ export default async function Bitacora({
           return (
             <Link
               key={filtro.ver}
-              href={`/garita/bitacora?ver=${filtro.ver}`}
+              href={`/garita/bitacora?ver=${filtro.ver}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
               aria-current={activo ? "page" : undefined}
               className={clasesBoton(activo ? "primario" : "secundario")}
             >
@@ -78,6 +79,19 @@ export default async function Bitacora({
           );
         })}
       </nav>
+
+      <form action="/garita/bitacora" method="get" role="search">
+        <input type="hidden" name="ver" value={ver} />
+        <Campo
+          name="q"
+          type="search"
+          etiqueta="Buscar por vecino, placa o lote"
+          ayuda="Escriba y pulse Buscar en el teclado."
+          defaultValue={q}
+          enterKeyHint="search"
+          autoComplete="off"
+        />
+      </form>
 
       {lista.length ? (
         <ListaVerMas
@@ -118,7 +132,13 @@ export default async function Bitacora({
           ))}
         />
       ) : (
-        <p>{ver === "dentro" ? "No hay nadie dentro por ahora." : "Todavía no hay entradas hoy."}</p>
+        <p>
+          {q.trim()
+            ? "No encontramos entradas con eso. Revise lo que escribió."
+            : ver === "dentro"
+              ? "No hay nadie dentro por ahora."
+              : "Todavía no hay entradas hoy."}
+        </p>
       )}
     </div>
   );

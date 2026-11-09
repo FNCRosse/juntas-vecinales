@@ -26,6 +26,10 @@ describe("@HU-QUE-03 Queja asistida por el mediador", () => {
     cy.get("[role=dialog]").contains("button", "Mz. D").click();
     cy.get("#campo-descripcion").type("Dejan bolsas de basura en la esquina desde hace una semana.");
     cy.get('[role="switch"]').click();
+    // MED-03: la política se puede leer desde esta pantalla, en otra pestaña.
+    cy.contains("a", "Leer la política de privacidad")
+      .should("have.attr", "href", "/privacidad")
+      .and("have.attr", "target", "_blank");
     cy.contains("label", "El vecino aceptó la política de privacidad").click();
     cy.revisarAccesibilidad("asistido-completo-senior-360");
     cy.contains("button", "Revisar el reporte").click();

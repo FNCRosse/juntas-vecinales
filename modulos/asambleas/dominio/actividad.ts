@@ -33,9 +33,9 @@ export type PagosDeActividad = "AMBOS" | "ANTICIPADO" | "PUERTA";
 export const PAGOS: readonly PagosDeActividad[] = ["AMBOS", "ANTICIPADO", "PUERTA"];
 
 export const PAGOS_EN_TEXTO: Record<PagosDeActividad, string> = {
-  AMBOS: "Por Yape o Plin y en la puerta",
+  AMBOS: "Por Yape o Plin y en persona",
   ANTICIPADO: "Solo por Yape o Plin",
-  PUERTA: "Solo en la puerta",
+  PUERTA: "Solo en persona",
 };
 
 export type ModalidadAporte = "ANTICIPADA" | "EN_PUERTA";

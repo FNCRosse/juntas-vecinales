@@ -26,9 +26,9 @@ const TIPOS: { valor: Tipo; etiqueta: string }[] = [
   { valor: "OTRA", etiqueta: "Otra actividad" },
 ];
 const PAGOS: { valor: Pagos; etiqueta: string }[] = [
-  { valor: "AMBOS", etiqueta: "Por Yape o Plin y en la puerta" },
+  { valor: "AMBOS", etiqueta: "Por Yape o Plin y en persona" },
   { valor: "ANTICIPADO", etiqueta: "Solo por Yape o Plin" },
-  { valor: "PUERTA", etiqueta: "Solo en la puerta" },
+  { valor: "PUERTA", etiqueta: "Solo en persona" },
 ];
 
 const VACIOS = { nombre: "", paraQue: "", fecha: "", hora: "", lugar: "", precio: "", meta: "" };

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { modoSeniorAlRenderizar } from "@/app/_accesibilidad/perfil";
+import { BotonCerrarSesion } from "@/app/_sesion/BotonCerrarSesion";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { MarcoActor } from "@/componentes/a11y/MarcoActor";
@@ -12,7 +13,12 @@ export default async function Layout({ children }: { children: ReactNode }) {
     <MarcoActor
       actor="garita"
       modoSenior={await modoSeniorAlRenderizar()}
-      selector={<CambiarDePerfil sesion={sesion} actual="garita" estilo="boton" />}
+      selector={
+        <div className="flex flex-wrap items-center gap-separacion">
+          <CambiarDePerfil sesion={sesion} actual="garita" estilo="boton" />
+          <BotonCerrarSesion destino="/entrar/equipo" />
+        </div>
+      }
     >
       <RenovarSesion />
       {children}

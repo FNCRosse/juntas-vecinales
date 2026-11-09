@@ -68,7 +68,7 @@ export default async function FichaVivienda({
               </span>
               <span className="text-texto-secundario">
                 {r.whatsapp
-                  ? `WhatsApp ${r.whatsapp}`
+                  ? `WhatsApp terminado en ${r.whatsapp.slice(-3)}`
                   : "Sin cuenta propia: los avisos le llegan a la persona titular"}
               </span>
               {r.whatsapp && <BotonReenviar usuarioId={r.usuarioId} nombre={primerNombre(r.nombre)} />}
