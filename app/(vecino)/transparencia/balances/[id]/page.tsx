@@ -44,7 +44,7 @@ export default async function Balance({ params }: { params: Promise<{ id: string
             <dd className="font-bold">{soles(balance.ingresosVirtuales)}</dd>
           </div>
           <div className="flex justify-between gap-2">
-            <dt>Ingresos en puerta</dt>
+            <dt>Ingresos en persona</dt>
             <dd className="font-bold">{soles(balance.ingresosEnPuerta)}</dd>
           </div>
         </dl>

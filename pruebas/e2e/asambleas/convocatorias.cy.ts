@@ -285,11 +285,12 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.get("#campo-fecha").type(enDias(40));
     cy.get("#campo-hora").type("12:00");
     cy.get("#campo-lugar").type("Parque Central");
-    cy.get("#campo-precio").type("15");
+    // DIR-42: un monto solo acepta números positivos; las letras y el signo menos no se escriben.
+    cy.get("#campo-precio").type("a-b1x5").should("have.value", "15");
     cy.get("#campo-meta").type("1200");
     cy.contains("button", "Listo").click();
     cy.contains("button", "Elegir una opción").click();
-    cy.contains("button", "Por Yape o Plin y en la puerta").click();
+    cy.contains("button", "Por Yape o Plin y en persona").click();
     cy.contains("button", "Revisar la actividad").click();
 
     cy.get("h1").should("have.text", "¿Desea publicar la actividad?");
@@ -599,7 +600,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("Presentes: 1 · Poderes validados: 0").should("exist");
 
     // El poder de Marta se valida en su pantalla y suma su casa al quórum definitivo.
-    cy.contains("a", "Poderes (delegaciones de voto)").click();
+    cy.contains("a", "Validar poderes (delegaciones de voto)").click();
     cy.get("h1").should("have.text", "Poderes (delegaciones de voto)");
     cy.contains("Rosa Huamán representa a Marta").should("exist");
     cy.revisarAccesibilidad("poderes-360");

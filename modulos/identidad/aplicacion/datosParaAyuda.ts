@@ -42,7 +42,7 @@ export async function telefonosParaLlamar(sesion: SesionDto, usuarioIds: string[
   return new Map(
     personas.flatMap((p) =>
       p.telefonoWhatsApp
-        ? [[p.id, p.telefonoWhatsApp.replace(/^51(d{3})(d{3})(d{3})$/, "$1 $2 $3")] as const]
+        ? [[p.id, p.telefonoWhatsApp.slice(-9)] as const] // los 9 dígitos, para el enlace «tel:»; no se muestran
         : [],
     ),
   );

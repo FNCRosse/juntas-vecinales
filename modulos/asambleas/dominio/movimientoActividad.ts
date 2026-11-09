@@ -9,7 +9,7 @@ export const MAXIMO_MONTO = 100_000_000;
 
 export const TIPO_DE_MOVIMIENTO_EN_TEXTO: Record<TipoMovimientoActividad, string> = {
   GASTO: "Un gasto",
-  INGRESO_EN_PUERTA: "Lo cobrado en la puerta",
+  INGRESO_EN_PUERTA: "Lo cobrado en persona",
 };
 
 export type DatosMovimiento = {
@@ -24,7 +24,7 @@ export function prepararMovimiento(datos: DatosMovimiento) {
   const errores: Record<string, string> = {};
   const tipo: TipoMovimientoActividad | null =
     datos.tipo === "GASTO" || datos.tipo === "INGRESO_EN_PUERTA" ? datos.tipo : null;
-  if (!tipo) errores.tipo = "Elija si es un gasto o lo cobrado en la puerta.";
+  if (!tipo) errores.tipo = "Elija si es un gasto o lo cobrado en persona.";
   const concepto = datos.concepto.trim().replace(/\s+/g, " ");
   if (!concepto) errores.concepto = "Escriba en qué se gastó o qué se cobró.";
   else if (concepto.length > MAXIMO_CONCEPTO) errores.concepto = `Use ${MAXIMO_CONCEPTO} letras como máximo.`;

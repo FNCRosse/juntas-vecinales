@@ -213,7 +213,10 @@ export function CobrarEnCasa({ pedido }: { pedido: PedidoParaCobrar }) {
       <dl className="flex flex-col gap-3">
         {[
           ["Dirección", pedido.vivienda],
-          ["Teléfono", pedido.telefono ?? "Sin teléfono registrado"],
+          [
+            "Teléfono",
+            pedido.telefono ? `Terminado en ${pedido.telefono.slice(-3)}` : "Sin teléfono registrado",
+          ],
           ["Hora que prefiere", pedido.franja],
           ["Lo que pidió pagar", soles(pedido.monto)],
           ["Semanas", pedido.semanas],

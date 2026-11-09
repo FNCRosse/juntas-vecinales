@@ -260,7 +260,7 @@ export async function registrarComprobante(sesion: SesionDto, actividadId: strin
   const colaboracion = predio ? await colaboracionDePredio(actividadId, predio.id) : null;
   if (!colaboracion) throw new ErrorNoEncontrado();
   if (colaboracion.modalidad !== "ANTICIPADA") {
-    throw new ErrorReglaNegocio("Su aporte es en la puerta: no necesita comprobante.");
+    throw new ErrorReglaNegocio("Su aporte es en persona: no necesita comprobante.");
   }
   const propios = await archivosSubidosPor(sesion.usuarioId, USO_COMPROBANTE_APORTE, [archivoId]);
   if (!propios.has(archivoId)) {
