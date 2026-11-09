@@ -38,7 +38,7 @@ describe("@HU-COB-03 Reclamo sobre mi cuota", { defaultCommandTimeout: 15000 }, 
     });
     cy.viewport(360, 800);
     cy.visit("/cuota");
-    cy.contains("¿Cree que el monto no es correcto?").should("exist");
+    cy.contains("p", "¿Cree que el monto no es correcto?").should("exist");
     cy.contains("a", "Hacer un reclamo").click();
 
     // VEC-COB-08: el formulario.
@@ -64,6 +64,10 @@ describe("@HU-COB-03 Reclamo sobre mi cuota", { defaultCommandTimeout: 15000 }, 
     cy.contains("button", "Otro motivo").click();
     cy.contains("button", "Ya pagué y no aparece").click();
     cy.get("#campo-detalle").type("Pagué el lunes por Yape");
+    // VEC-24: la zona para subir el documento va centrada, con borde punteado y el botón a todo el ancho.
+    cy.get("[data-zona-archivo]")
+      .should("have.css", "text-align", "center")
+      .and("have.css", "border-top-style", "dashed");
     cy.get("#campo-archivoId").selectFile({
       contents: Cypress.Buffer.from("pdf"),
       fileName: "recibo.pdf",

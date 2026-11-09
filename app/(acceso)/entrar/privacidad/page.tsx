@@ -39,7 +39,7 @@ export default async function Privacidad() {
         ))}
       </ul>
       <Link
-        href="/privacidad"
+        href="/privacidad?desde=entrar"
         className="inline-flex min-h-tactil items-center self-start font-bold text-texto-enlace"
       >
         Leer la política de privacidad completa
