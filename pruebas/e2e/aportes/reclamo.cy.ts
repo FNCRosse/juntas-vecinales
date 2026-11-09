@@ -38,7 +38,7 @@ describe("@HU-COB-03 Reclamo sobre mi cuota", { defaultCommandTimeout: 15000 }, 
     });
     cy.viewport(360, 800);
     cy.visit("/cuota");
-    cy.contains("¿Cree que el monto no es correcto?").should("exist");
+    cy.contains("p", "¿Cree que el monto no es correcto?").should("exist");
     cy.contains("a", "Hacer un reclamo").click();
 
     // VEC-COB-08: el formulario.
