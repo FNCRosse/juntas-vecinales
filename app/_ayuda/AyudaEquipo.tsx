@@ -18,7 +18,7 @@ export async function AyudaEquipo() {
                 href={`tel:+51${contacto.telefono.replace(/\s/g, "")}`}
                 className="inline-flex min-h-tactil items-center font-bold text-texto-enlace"
               >
-                Llamar al {contacto.telefono}
+                Llamar a {contacto.nombre}
               </a>
             )}
           </div>

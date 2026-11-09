@@ -37,6 +37,14 @@ describe("@HU-ACC-04 Pedir ayuda humana desde cualquier pantalla", () => {
     cy.contains("li", "Marta Rojas, Mz. A, lote 12")
       .as("pedido")
       .should("contain.text", "Se quedó en: Avisos");
+    // DIR-50 y MED-18: se llama con un botón, sin mostrar el número.
+    cy.get("@pedido")
+      .find('a[href^="tel:"]')
+      .should("have.attr", "href", "tel:+51900000002")
+      .and("contain.text", "Llamar a Marta Rojas");
+    cy.get("@pedido")
+      .invoke("text")
+      .should("not.match", /9\d{2} \d{3} \d{3}/);
     cy.revisarAccesibilidad("pedidos-de-ayuda-normal");
     cy.esperarHidratacion("Lo atiendo yo").click();
     cy.get("@pedido").should("contain.text", "En atención");
@@ -52,7 +60,8 @@ describe("@HU-ACC-04 Pedir ayuda humana desde cualquier pantalla", () => {
     cy.visit("/garita");
     cy.contains("header a", "Pedir ayuda").click();
     cy.get("h1").should("have.text", "Pedir ayuda");
-    cy.contains("a", "Llamar al 900 000 001").should("have.attr", "href", "tel:+51900000001");
+    cy.contains("a", "Llamar a Ana Flores").should("have.attr", "href", "tel:+51900000001");
+    cy.contains("900 000 001").should("not.exist");
     cy.revisarAccesibilidad("ayuda-equipo-senior-360");
   });
 });

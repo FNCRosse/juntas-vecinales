@@ -58,11 +58,11 @@ export default async function PedidosDeAyuda() {
               </Insignia>
               {p.estado !== "ATENDIDA" && telefonos.get(p.usuarioId) && (
                 <a
-                  href={`tel:+51${telefonos.get(p.usuarioId)!.replaceAll(" ", "")}`}
+                  href={`tel:+51${telefonos.get(p.usuarioId)}`}
                   className={`${clasesBoton("secundario", false, true)}`}
                 >
                   <Phone aria-hidden className="size-icono" />
-                  Llamar al {telefonos.get(p.usuarioId)}
+                  Llamar a {p.quien.split(",")[0]}
                 </a>
               )}
               {p.estado !== "ATENDIDA" && <CambiarEstado id={p.id} estado={p.estado} quien={p.quien} />}
