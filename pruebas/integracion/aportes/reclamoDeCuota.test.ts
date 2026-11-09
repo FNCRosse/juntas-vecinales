@@ -11,7 +11,7 @@ import {
 } from "@/compartido/errores";
 import { calcularDeuda, miCuota } from "@/modulos/aportes/aplicacion/deuda";
 import { alertarMorosidad, suspenderCasasConAtrasoCritico } from "@/modulos/aportes/aplicacion/morosidad";
-import { datosParaPagar } from "@/modulos/aportes/aplicacion/pagos";
+import { datosParaPagar, registrarPagoDigital } from "@/modulos/aportes/aplicacion/pagos";
 import {
   constanciaDeReclamo,
   datosParaReclamar,
@@ -199,6 +199,22 @@ describe("@HU-COB-03 CA3 Un solo reclamo abierto", () => {
     await prisma.solicitudAjusteTarifa.update({ where: { id: reclamo.id }, data: { estado: "RECHAZADO" } });
     await prisma.cuota.updateMany({ data: { estado: "PENDIENTE" } });
     expect((await reclamar(carmen, { motivo: "YA_PAGUE" })).reclamo.numero).toBe("R-0002");
+  });
+
+  it("@HU-COB-03 [VEC-25] con el comprobante ya enviado, las cuotas en revisión no se pueden reclamar", async () => {
+    await registrarPagoDigital(
+      carmen,
+      {
+        semanas: 3,
+        medio: "YAPE_O_PLIN",
+        archivoId: await sustento(carmen, "comprobante_pago"),
+        idOperacion: randomUUID(),
+      },
+      RECLAMA,
+    );
+    expect((await datosParaReclamar(carmen)).puedeReclamar).toBe(false);
+    await expect(reclamar(carmen)).rejects.toThrow(/No tiene cuotas pendientes que reclamar/);
+    expect(await prisma.solicitudAjusteTarifa.count()).toBe(0);
   });
 
   it("@HU-COB-03 sin cuotas pendientes no hay nada que reclamar", async () => {
