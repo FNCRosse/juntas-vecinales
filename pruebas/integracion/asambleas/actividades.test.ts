@@ -74,7 +74,7 @@ describe("@HU-ASA-08 Modalidad de aporte en eventos pro fondos", () => {
       precioUnidad: 1500,
       precioTexto: "S/ 15.00",
       metaTexto: "S/ 1,200.00",
-      pagosTexto: "Por Yape o Plin y en la puerta",
+      pagosTexto: "Por Yape o Plin y en persona",
       modalidades: ["ANTICIPADA", "EN_PUERTA"],
     });
     const avisos = await prisma.avisoEnCola.findMany({

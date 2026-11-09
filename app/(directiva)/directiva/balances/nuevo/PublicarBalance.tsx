@@ -290,7 +290,7 @@ export function PublicarBalance({ actividades }: { actividades: ActividadElegibl
       />
       <Campo
         name="ingresosEnPuerta"
-        etiqueta="Ingresos en puerta (efectivo)"
+        etiqueta="Ingresos en persona (efectivo)"
         ayuda="En soles. Déjelo vacío si no hubo."
         inputMode="decimal"
         autoComplete="off"

@@ -29,7 +29,7 @@ export default async function Publicar({ params }: { params: Promise<{ id: strin
         ["Actividad", actividad.nombre],
         [
           "Ingresos",
-          `${soles(totales.ingresos)} (${soles(totales.ingresosVirtuales)} por Yape o Plin y ${soles(totales.ingresosEnPuerta)} en la puerta)`,
+          `${soles(totales.ingresos)} (${soles(totales.ingresosVirtuales)} por Yape o Plin y ${soles(totales.ingresosEnPuerta)} en persona)`,
         ],
         [
           "Costos",
