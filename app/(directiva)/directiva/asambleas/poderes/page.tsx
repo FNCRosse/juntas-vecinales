@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
+import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { paseDeLista } from "@/modulos/asambleas/aplicacion/checkin";
 import { proximaAsamblea } from "@/modulos/asambleas/aplicacion/convocatorias";
 import { ValidarPoder } from "./ValidarPoder";
@@ -26,6 +27,9 @@ export default async function Poderes() {
         Volver al pase de lista
       </Link>
       <h1 className="text-titulo-1">Poderes (delegaciones de voto)</h1>
+      <MensajeEstado tipo="info" titulo="Los poderes se validan solo el día de la asamblea">
+        <p>Valide cada poder cuando el apoderado llegue y muestre su DNI. Antes de ese día no se puede.</p>
+      </MensajeEstado>
       {proxima && ordenados.length > 0 ? (
         <ListaVerMas
           etiqueta="Poderes"

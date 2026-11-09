@@ -1,4 +1,5 @@
 import {
+  Bell,
   CalendarDays,
   ChartColumn,
   ChevronRight,
@@ -115,6 +116,9 @@ export default async function ResumenDirectiva() {
               )}
               <BotonEnlace href="/directiva/para-atender" icono={Inbox} anchoCompleto>
                 Ver lo que hay que atender
+              </BotonEnlace>
+              <BotonEnlace href="/directiva/alertas" icono={Bell} variante="secundario" anchoCompleto>
+                Ver alertas
               </BotonEnlace>
             </Tarjeta>
           </div>

@@ -1,12 +1,13 @@
-import { MessageCircleMore } from "lucide-react";
+import { MessageCircleMore, Search } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FilaEnlace } from "@/componentes/a11y/Tarjeta";
 import { OtrasFormasDeEntrar } from "../_componentes/Opciones";
 
 export const metadata: Metadata = { title: "Entrar" };
 
 // Entrada del vecino sin enlace: pedir uno nuevo (HU-GAR-11) o entrar con la clave de respaldo
-// (HU-GAR-24 CA1).
+// (HU-GAR-24 CA1). Seguir un reporte con su código no pide entrar (HU-QUE-09, VEC-08).
 export default function Entrar() {
   return (
     <div className="flex flex-col gap-6">
@@ -16,6 +17,13 @@ export default function Entrar() {
         <p>Para entrar, abra el enlace que le enviamos por WhatsApp. No necesita clave.</p>
       </div>
       <OtrasFormasDeEntrar />
+      <FilaEnlace
+        href="/seguimiento"
+        icono={Search}
+        titulo="Seguir un reporte con mi código"
+        detalle="Sin entrar a su cuenta"
+        variante="suave"
+      />
       <Link
         href="/entrar/equipo"
         className="inline-flex min-h-tactil items-center self-start font-bold text-texto-enlace"
