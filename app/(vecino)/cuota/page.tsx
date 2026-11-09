@@ -68,8 +68,11 @@ export default async function MiCuota() {
         </div>
       )}
       {cuota.rejaSuspendida && (
-        <MensajeEstado tipo="aviso" titulo="Por ahora la reja no se abre sola">
-          <p>Puede entrar abriéndola a mano, como siempre. Cuando se ponga al día, vuelve a abrirse sola.</p>
+        <MensajeEstado tipo="aviso" titulo="Por favor, pague su deuda pendiente">
+          <p>
+            Favor de ponerse al día, para asegurar la seguridad del barrio. Mientras tenga atrasos, el
+            vigilante no podrá abrirle la reja a su vehículo: tendrá que abrirla usted mismo.
+          </p>
           <Link href="/cuota/reja" className={ENLACE}>
             Ver qué significa
           </Link>
@@ -141,6 +144,21 @@ export default async function MiCuota() {
             Pagar mi cuota
           </BotonEnlace>
         )}
+        {/* VEC-25: reclamar el monto solo antes de enviar el comprobante; con un reclamo abierto, se ve ese. */}
+        {cuota.reclamoEnRevision ? (
+          <Link href={`/cuota/reclamo/${cuota.reclamoEnRevision.id}`} className={ENLACE}>
+            Ver mi reclamo N.° {cuota.reclamoEnRevision.numero}
+          </Link>
+        ) : (
+          cuota.puedePagar && (
+            <>
+              <p>¿Cree que el monto no es correcto?</p>
+              <BotonEnlace href="/cuota/reclamo" variante="secundario" anchoCompleto>
+                Hacer un reclamo
+              </BotonEnlace>
+            </>
+          )
+        )}
         <p className="flex gap-2 text-pequeno text-texto-secundario">
           <Lock aria-hidden className="size-icono-pequeno shrink-0" />
           Solo usted y la directiva ven esta información.
@@ -185,15 +203,6 @@ export default async function MiCuota() {
                 </tr>
               </tfoot>
             </table>
-            {cuota.reclamoEnRevision ? (
-              <Link href={`/cuota/reclamo/${cuota.reclamoEnRevision.id}`} className={ENLACE}>
-                Ver mi reclamo N.° {cuota.reclamoEnRevision.numero}
-              </Link>
-            ) : (
-              <Link href="/cuota/reclamo" className={ENLACE}>
-                ¿Cree que el monto no es correcto? Hacer un reclamo
-              </Link>
-            )}
           </>
         ) : (
           <p>Todavía no tiene cuotas. La primera se calcula el lunes.</p>

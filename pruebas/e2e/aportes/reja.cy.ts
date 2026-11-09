@@ -28,9 +28,10 @@ describe("@HU-COB-06 La reja no se abre sola", { defaultCommandTimeout: 15000 },
     });
     cy.viewport(360, 800);
     cy.visit("/cuota");
-    cy.contains('[role="status"]', "Por ahora la reja no se abre sola").should(
+    // VEC-28: el aviso pide ponerse al día y dice que el vigilante no podrá abrir la reja al vehículo.
+    cy.contains('[role="status"]', "Por favor, pague su deuda pendiente").should(
       "contain.text",
-      "Puede entrar abriéndola a mano, como siempre.",
+      "el vigilante no podrá abrirle la reja a su vehículo",
     );
     cy.revisarAccesibilidad("cuota-reja-suspendida-360");
     cy.contains("a", "Ver qué significa").click();
