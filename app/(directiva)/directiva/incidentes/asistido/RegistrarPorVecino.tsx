@@ -1,7 +1,7 @@
 "use client";
 // @HU-QUE-03
 
-import { ArrowLeft, ArrowRight, EyeOff, Printer, Search, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, EyeOff, FileText, Printer, Search, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
@@ -362,6 +362,17 @@ export function RegistrarPorVecino({ manzanas }: { manzanas: string[] }) {
             cierto.
           </span>
         </label>
+        {/* Se abre en otra pestaña: se lee sin perder lo escrito (MED-03). */}
+        <a
+          href="/privacidad"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace underline underline-offset-4"
+        >
+          <FileText aria-hidden className="size-icono shrink-0" />
+          Leer la política de privacidad
+          <span className="sr-only"> (se abre en otra pestaña)</span>
+        </a>
         {errores.consentimiento && (
           <MensajeDeCampo id="consentimiento-error">{errores.consentimiento}</MensajeDeCampo>
         )}
