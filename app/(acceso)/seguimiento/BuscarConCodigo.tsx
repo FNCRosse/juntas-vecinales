@@ -59,7 +59,10 @@ export function BuscarConCodigo({
       </Link>
       <div className="flex flex-col gap-2">
         <h1 className="text-titulo-1">Buscar con mi código</h1>
-        <p>Sirve también si envió el reporte sin su nombre, o si la directiva lo registró por usted.</p>
+        <p>
+          Escriba el código que le dimos al enviar su reporte. No necesita entrar a su cuenta. Sirve también
+          si envió el reporte sin su nombre, o si la directiva lo registró por usted.
+        </p>
       </div>
       <form
         noValidate
