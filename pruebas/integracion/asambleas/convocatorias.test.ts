@@ -3,7 +3,9 @@ import { GET as listarHttp, POST as publicarHttp } from "@/app/api/asambleas/rou
 import { GET as aficheHttp } from "@/app/api/asambleas/[id]/afiche/route";
 import { prisma } from "@/compartido/bd/cliente";
 import { sembrar } from "@/compartido/bd/semillas";
+import { generarAfiche } from "@/compartido/archivos/afiche";
 import { fechaLarga, horaCorta } from "@/compartido/fechas";
+import { MAXIMO_LUGAR, MAXIMO_MOTIVO } from "@/modulos/asambleas/dominio/convocatoria";
 import {
   aficheDeAsamblea,
   proximaAsamblea,
@@ -96,12 +98,27 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
       (await (await publicar({ ...CONVOCATORIA, idOperacion: randomUUID() })).json()).id,
     );
     const afiche = aficheDeAsamblea(asamblea);
-    const filas = Object.fromEntries(afiche.secciones[0].filas!);
     const fecha = new Date(asamblea.fechaHora);
-    expect(filas.Fecha).toBe(fechaLarga(fecha));
-    expect(filas.Hora).toBe(horaCorta(fecha));
-    expect(filas.Lugar).toBe(CONVOCATORIA.lugar);
-    expect(afiche.secciones[1].parrafos).toEqual([CONVOCATORIA.motivo]);
+    expect(afiche.titulo).toBe(asamblea.titulo);
+    expect(afiche.fecha).toBe(fechaLarga(fecha));
+    expect(afiche.hora).toBe(horaCorta(fecha));
+    expect(afiche.lugar).toBe(CONVOCATORIA.lugar);
+    expect(afiche.motivo).toBe(CONVOCATORIA.motivo);
+  });
+
+  it("@HU-ASA-01 CA2 [DIR-34] el afiche cabe en una sola hoja A4 con el lugar y el motivo más largos permitidos", async () => {
+    const asamblea = await verAsamblea(
+      directiva,
+      (await (await publicar({ ...CONVOCATORIA, idOperacion: randomUUID() })).json()).id,
+    );
+    const largo = {
+      ...aficheDeAsamblea(asamblea),
+      lugar: "Local comunal del Parque Central, frente al mercado. ".repeat(4).slice(0, MAXIMO_LUGAR),
+      motivo: "Revisar el presupuesto del barrio. ".repeat(60).slice(0, MAXIMO_MOTIVO),
+    };
+    const pdf = await generarAfiche(largo);
+    expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
+    expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)).toHaveLength(1);
   });
 
   it("@HU-ASA-01 AC-5 reintentar con el mismo idOperacion no publica ni avisa dos veces", async () => {
