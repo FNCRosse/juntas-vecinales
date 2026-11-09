@@ -31,18 +31,32 @@ export const reclamoEnRevisionDe = (predioId: string) =>
 export const hayReclamoEnRevision = (tx: Transaccion, predioId: string) =>
   tx.solicitudAjusteTarifa.count({ where: { predioId, estado: "EN_REVISION" } });
 
-/** Las cuotas de la casa que se pueden reclamar: las que debe y que no están ya en discrepancia. */
-export const cuotasReclamables = (tx: Transaccion, predioId: string) =>
-  tx.cuota.findMany({
-    where: { predioId, estado: { in: ["PENDIENTE", "VENCIDA"] }, saldoPendiente: { gt: 0 } },
-    orderBy: { periodo: "asc" },
+const REGLA_RECLAMABLES = {
+  estado: { in: ["PENDIENTE", "VENCIDA"] as ("PENDIENTE" | "VENCIDA")[] },
+  saldoPendiente: { gt: 0 },
+};
+
+/** Quita las cuotas que ya van en un pago que la directiva todavía revisa: con el comprobante enviado no hay nada que reclamar. */
+async function sinPagoEnRevision<T extends { id: string }>(db: Pick<Transaccion, "pagoCuota">, cuotas: T[]) {
+  if (!cuotas.length) return cuotas;
+  const enRevision = await db.pagoCuota.findMany({
+    where: { cuotaId: { in: cuotas.map((c) => c.id) }, pago: { estado: "REGISTRADO" } },
+    select: { cuotaId: true },
   });
+  const ids = new Set(enRevision.map((f) => f.cuotaId));
+  return cuotas.filter((c) => !ids.has(c.id));
+}
+
+/** Las cuotas de la casa que se pueden reclamar: las que debe, que no están en discrepancia ni en un pago en revisión. */
+export const cuotasReclamables = async (tx: Transaccion, predioId: string) =>
+  sinPagoEnRevision(
+    tx,
+    await tx.cuota.findMany({ where: { predioId, ...REGLA_RECLAMABLES }, orderBy: { periodo: "asc" } }),
+  );
 
 /** Cuántas cuotas de la casa se podrían reclamar ahora. */
-export const cuantasCuotasReclamables = (predioId: string) =>
-  prisma.cuota.count({
-    where: { predioId, estado: { in: ["PENDIENTE", "VENCIDA"] }, saldoPendiente: { gt: 0 } },
-  });
+export const cuantasCuotasReclamables = async (predioId: string) =>
+  (await cuotasReclamables(prisma, predioId)).length;
 
 /** Crea el reclamo y pone en discrepancia las cuotas que cubre, guardando el estado en que estaban. */
 export async function crearReclamo(
