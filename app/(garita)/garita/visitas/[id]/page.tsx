@@ -149,7 +149,7 @@ export default async function VisitaEnGarita({ params }: { params: Promise<{ id:
                 className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace"
               >
                 <Phone aria-hidden className="size-icono" />
-                Llamar a {p.nombre} ({p.telefono})
+                Llamar a {p.nombre}
               </a>
             ))}
           <section className="flex flex-col gap-4">
