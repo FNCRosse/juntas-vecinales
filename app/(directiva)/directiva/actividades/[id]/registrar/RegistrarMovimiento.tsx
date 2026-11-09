@@ -16,7 +16,7 @@ import { aCentimos, soles } from "@/compartido/dinero";
 type Tipo = "GASTO" | "INGRESO_EN_PUERTA";
 const TIPOS: Record<Tipo, string> = {
   GASTO: "Un gasto, con la foto de su comprobante",
-  INGRESO_EN_PUERTA: "Lo cobrado en la puerta el día de la actividad",
+  INGRESO_EN_PUERTA: "Lo cobrado en persona el día de la actividad",
 };
 const MENSAJE_MONTO = "Escriba un monto en soles, por ejemplo 150.50.";
 
@@ -117,9 +117,7 @@ export function RegistrarMovimiento({ actividadId, nombre }: { actividadId: stri
     return (
       <PasoConfirmacion
         referencia={titulo}
-        titulo={
-          datos.tipo === "GASTO" ? "¿Desea anotar este gasto?" : "¿Desea anotar lo cobrado en la puerta?"
-        }
+        titulo={datos.tipo === "GASTO" ? "¿Desea anotar este gasto?" : "¿Desea anotar lo cobrado en persona?"}
         filas={[
           ["Actividad", nombre],
           [datos.tipo === "GASTO" ? "En qué se gastó" : "Qué se cobró", datos.concepto.trim()],
@@ -177,7 +175,7 @@ export function RegistrarMovimiento({ actividadId, nombre }: { actividadId: stri
         ayuda={
           datos.tipo === "GASTO"
             ? "Por ejemplo: Pollos (40 unidades)"
-            : "Por ejemplo: 52 platos vendidos en la puerta"
+            : "Por ejemplo: 52 platos vendidos en persona"
         }
         autoComplete="off"
         maxLength={80}

@@ -12,6 +12,14 @@ type PropsCampo = InputHTMLAttributes<HTMLInputElement> & {
 };
 
 export function Campo({ etiqueta, ayuda, error, id, name, className, ...resto }: PropsCampo) {
+  // Un monto (inputMode decimal) solo recibe números positivos: se quitan letras y signos al escribir (DIR-42).
+  if (resto.inputMode === "decimal" && resto.onChange) {
+    const alCambiar = resto.onChange;
+    resto.onChange = (e) => {
+      e.target.value = e.target.value.replace(/[^\d.,]/g, "");
+      alCambiar(e);
+    };
+  }
   const idCampo = id ?? `campo-${name}`;
   const idAyuda = ayuda ? `${idCampo}-ayuda` : undefined;
   const idError = error ? `${idCampo}-error` : undefined;

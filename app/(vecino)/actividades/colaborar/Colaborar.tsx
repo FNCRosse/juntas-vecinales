@@ -20,8 +20,8 @@ const ETIQUETAS: Record<Modalidad, { opcion: string; detalle?: string; resumen: 
     resumen: "Pago antes con Yape o Plin",
   },
   EN_PUERTA: {
-    opcion: "Pagar en la puerta el día de la actividad",
-    resumen: "Pago en la puerta el día de la actividad",
+    opcion: "Pagar en persona el día de la actividad",
+    resumen: "Pago en persona el día de la actividad",
   },
   VOLUNTARIO: {
     opcion: "Prefiero ayudar como voluntaria",
@@ -140,7 +140,7 @@ export function Colaborar({
         efecto={
           modalidad === "VOLUNTARIO"
             ? "La directiva revisará su ofrecimiento y le avisará. Si lo aprueba, no paga la colaboración. Puede cancelar ahora sin problema."
-            : "Si elige pagar en la puerta, ese día le cobrarán y le darán su recibo. Puede cancelar ahora sin problema."
+            : "Si elige pagar en persona, ese día le cobrarán y le darán su recibo. Puede cancelar ahora sin problema."
         }
         textoConfirmar="Sí, confirmar mi aporte"
         textoCancelar="Cancelar, no aportar ahora"
