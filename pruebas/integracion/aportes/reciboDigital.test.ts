@@ -23,6 +23,7 @@ import {
   pedirReciboEnPapel,
   recibosEnPapelPorEntregar,
   verMiRecibo,
+  recibosDeLaDirectiva,
   verReciboDeLaDirectiva,
 } from "@/modulos/aportes/aplicacion/recibos";
 import { iniciarSesionConClave } from "@/modulos/identidad/aplicacion/iniciarSesionConClave";
@@ -93,6 +94,27 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await prisma.$disconnect();
+});
+
+describe("@HU-COB-12 [DIR-13] Lista de todos los recibos con buscador", () => {
+  it("@HU-COB-12 [DIR-13] la directiva y el mediador ven todos los recibos, el más nuevo primero, y los buscan", async () => {
+    await pagarYAprobar(carmen, 1);
+    await pagarYAprobar(julio, 1);
+    const todos = await recibosDeLaDirectiva(marta, "");
+    expect(todos.recibos.map((r) => r.numero)).toEqual(["000002", "000001"]);
+    expect(todos.hayMas).toBe(false);
+    expect((await recibosDeLaDirectiva(pedro, "")).recibos).toHaveLength(2);
+    expect((await recibosDeLaDirectiva(marta, "carmen")).recibos.map((r) => r.titular)).toEqual([
+      "Carmen Huamán",
+    ]);
+    expect((await recibosDeLaDirectiva(marta, "lote 7")).recibos).toHaveLength(1);
+    expect((await recibosDeLaDirectiva(marta, "2")).recibos.map((r) => r.numero)).toContain("000002");
+    expect((await recibosDeLaDirectiva(marta, "nadie")).recibos).toEqual([]);
+  });
+
+  it("@HU-COB-12 [DIR-13] un vecino no puede listar los recibos de todos", async () => {
+    await expect(recibosDeLaDirectiva(carmen, "")).rejects.toBeInstanceOf(ErrorNoAutorizado);
+  });
 });
 
 describe("@HU-COB-12 CA1 El recibo nace con el pago aprobado", () => {

@@ -20,6 +20,25 @@ export const crearRecibo = (
   },
 ) => tx.recibo.create({ data: datos });
 
+/** Los recibos emitidos, el más nuevo primero. El texto busca por número, titular o vivienda. */
+export const buscarRecibos = (texto: string, limite: number) => {
+  const q = texto.trim();
+  const numero = /^\d{1,9}$/.test(q) ? Number(q) : null;
+  return prisma.recibo.findMany({
+    where: q
+      ? {
+          OR: [
+            ...(numero === null ? [] : [{ numero }]),
+            { titular: { contains: q, mode: "insensitive" as const } },
+            { vivienda: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : {},
+    orderBy: { numero: "desc" },
+    take: limite,
+  });
+};
+
 export const reciboDelPago = (pagoId: string) => prisma.recibo.findUnique({ where: { pagoId } });
 
 /** Un recibo con el pago que lo originó, para saber a quién avisar. */

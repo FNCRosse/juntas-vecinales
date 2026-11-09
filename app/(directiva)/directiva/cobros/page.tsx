@@ -252,9 +252,12 @@ export default async function Cobros({ searchParams }: { searchParams: Promise<{
         </h2>
         <ListaVerMas
           etiqueta="Otras tareas de cobro"
-          normal={3}
+          normal={4}
           senior={1}
           elementos={[
+            <Link key="recibos" href="/directiva/cobros/recibos" className={ENLACE}>
+              Todos los recibos
+            </Link>,
             <Link key="recaudacion" href="/directiva/cobros/recaudacion" className={ENLACE}>
               Recaudación del mes
             </Link>,
