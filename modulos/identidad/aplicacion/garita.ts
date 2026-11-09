@@ -21,6 +21,7 @@ import {
   MOTIVOS_EMERGENCIA,
   type MotivoEmergencia,
   SEMAFORO,
+  coincideConBusqueda,
 } from "@/modulos/identidad/dominio/garita";
 import { direccion } from "@/modulos/identidad/dominio/predio";
 import { estaEnLaLista, HORAS_DE_PERMISO, normalizarPlaca } from "@/modulos/identidad/dominio/visita";
@@ -592,7 +593,7 @@ export type FilaBitacora = ReturnType<typeof aFila>;
  * La bitácora de hoy (VIG-BIT-01): cada entrada con su salida si la hubo, quién sigue dentro y las
  * alertas de permanencia (CA2). Se consulta desde las 0:00 de Lima y lo que siga dentro de días antes.
  */
-export async function bitacora(sesion: SesionDto, ahora = new Date()) {
+export async function bitacora(sesion: SesionDto, ahora = new Date(), buscar = "") {
   exigirGarita(sesion);
   const hoy = inicioDelDiaEnLima(ahora);
   const desdeAyer = new Date(hoy.getTime() - 24 * 3_600_000);
@@ -605,9 +606,10 @@ export async function bitacora(sesion: SesionDto, ahora = new Date()) {
   );
   const entradas = registros.filter((r) => r.tipo === "ENTRADA");
   const deAyer = dentro.filter((r) => r.fecha < hoy);
+  const coincide = (fila: ReturnType<typeof aFila>) => coincideConBusqueda(fila, buscar);
   return {
-    filas: [...entradas, ...deAyer].map((r) => aFila(r, ahora, salidas.get(r.id))),
-    dentro: dentro.map((r) => aFila(r, ahora)),
+    filas: [...entradas, ...deAyer].map((r) => aFila(r, ahora, salidas.get(r.id))).filter(coincide),
+    dentro: dentro.map((r) => aFila(r, ahora)).filter(coincide),
   };
 }
 

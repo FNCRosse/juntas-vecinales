@@ -183,3 +183,24 @@ describe("@HU-GAR-07 @HU-GAR-08 Visitas en la garita y bitácora", () => {
       .and("contain.text", "Registro protegido: no se edita ni se borra");
   });
 });
+
+describe("@HU-GAR-08 [VIG-15] [VIG-20] Observaciones del checklist en la garita", () => {
+  it("@HU-GAR-08 [VIG-15] la bitácora tiene buscador por vecino, placa o lote", () => {
+    cy.clearCookies();
+    cy.request("POST", "/api/auth/clave", { dni: "40000004", clave: "clave-de-prueba" });
+    cy.visit("/garita/bitacora");
+    cy.contains("label", "Buscar por vecino, placa o lote").should("exist");
+    cy.get("#campo-q").type("nadie-con-este-nombre{enter}");
+    cy.url().should("include", "q=nadie-con-este-nombre");
+    cy.contains("No encontramos entradas con eso").should("exist");
+    cy.revisarAccesibilidad("bitacora-busqueda-normal");
+  });
+
+  it("@HU-GAR-08 [VIG-20] cerrar sesión está siempre en la cabecera de la garita", () => {
+    cy.clearCookies();
+    cy.request("POST", "/api/auth/clave", { dni: "40000004", clave: "clave-de-prueba" });
+    cy.visit("/garita/bitacora");
+    cy.get("header").contains("button", "Cerrar sesión").click();
+    cy.url().should("include", "/entrar/equipo");
+  });
+});

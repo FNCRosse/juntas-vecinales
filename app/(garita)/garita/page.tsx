@@ -1,7 +1,6 @@
 import { Car, ChevronRight, ListChecks, NotebookPen, Search, UserRound } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BotonCerrarSesion } from "@/app/_sesion/BotonCerrarSesion";
 import { exigirActor } from "@/app/_sesion/sesion";
 import { fechaLarga } from "@/compartido/fechas";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
@@ -120,8 +119,6 @@ export default async function InicioGarita() {
           </MensajeEstado>
         ))}
       </Tarjeta>
-
-      <BotonCerrarSesion destino="/entrar/equipo" />
     </div>
   );
 }

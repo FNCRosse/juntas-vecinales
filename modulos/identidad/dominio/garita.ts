@@ -51,5 +51,26 @@ export const MODOS_ACCESO = {
   NO_ENTRO: "No entró",
 } as const;
 
+const sinTildes = (texto: string) =>
+  texto
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+
+/** Buscador de la bitácora (VIG-15): todas las palabras escritas deben aparecer en el nombre, la placa, la vivienda o el detalle. */
+export function coincideConBusqueda(
+  fila: { quien: string; placa: string | null; vivienda: string; descripcion: string },
+  texto: string,
+) {
+  const palabras = sinTildes(texto).split(/\s+/).filter(Boolean);
+  if (!palabras.length) return true;
+  const pajar = sinTildes(`${fila.quien} ${fila.vivienda} ${fila.descripcion}`);
+  const placa = (fila.placa ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  return palabras.every((p) => {
+    const sinSimbolos = p.replace(/[^a-z0-9]/g, "");
+    return pajar.includes(p) || (sinSimbolos !== "" && placa.includes(sinSimbolos));
+  });
+}
+
 /** "DNI terminado en 21": basta para reconocer a alguien sin mostrar el número completo. */
 export const dniTerminadoEn = (dni: string | null) => (dni ? `DNI terminado en ${dni.slice(-2)}` : null);
