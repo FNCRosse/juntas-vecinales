@@ -17,6 +17,7 @@ import {
 } from "@/modulos/aportes/dominio/recibo";
 import { bloquearCasa } from "@/modulos/aportes/infraestructura/repositorioPagos";
 import {
+  buscarRecibos,
   crearPedido,
   pedidoAbierto,
   pedidoPorId,
@@ -90,6 +91,18 @@ export async function verReciboDeLaDirectiva(sesion: SesionDto, id: string) {
   const recibo = await reciboPorId(id);
   if (!recibo) throw new ErrorNoEncontrado();
   return { ...aReciboDto(recibo), puedeEnviar: sesion.roles.includes("DIRECTIVA") };
+}
+
+const RECIBOS_POR_PAGINA = 30;
+
+/** Todos los recibos emitidos, para volver a verlos e imprimirlos cuando haga falta (DIR-13). Los ven la directiva y los mediadores. */
+export async function recibosDeLaDirectiva(sesion: SesionDto, texto: string) {
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
+  const filas = await buscarRecibos(texto, RECIBOS_POR_PAGINA + 1);
+  return {
+    recibos: filas.slice(0, RECIBOS_POR_PAGINA).map(aReciboDto),
+    hayMas: filas.length > RECIBOS_POR_PAGINA,
+  };
 }
 
 /**
