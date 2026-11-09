@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ClipboardCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, ClipboardCheck, FileCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { exigirActor } from "@/app/_sesion/sesion";
@@ -127,9 +127,11 @@ export default async function PaseDeLista() {
         href="/directiva/asambleas/poderes"
         className="flex min-h-tactil items-center gap-3 rounded-tarjeta border border-borde-sutil bg-fondo-superficie p-4 text-texto-principal no-underline shadow-tarjeta hover:border-borde-fuerte senior:p-6"
       >
+        <FileCheck aria-hidden className="size-icono shrink-0 text-accion-primaria" />
         <span className="flex min-w-0 flex-1 flex-col">
-          <strong>Poderes (delegaciones de voto)</strong>
+          <strong>Validar poderes (delegaciones de voto)</strong>
           <span className="text-texto-secundario">
+            Solo el día de la asamblea.{" "}
             {lista.poderes.length === 0
               ? "No hay poderes registrados"
               : porValidar === 0
