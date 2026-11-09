@@ -599,7 +599,7 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.contains("Presentes: 1 · Poderes validados: 0").should("exist");
 
     // El poder de Marta se valida en su pantalla y suma su casa al quórum definitivo.
-    cy.contains("a", "Poderes (delegaciones de voto)").click();
+    cy.contains("a", "Validar poderes (delegaciones de voto)").click();
     cy.get("h1").should("have.text", "Poderes (delegaciones de voto)");
     cy.contains("Rosa Huamán representa a Marta").should("exist");
     cy.revisarAccesibilidad("poderes-360");

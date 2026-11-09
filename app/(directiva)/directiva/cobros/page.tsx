@@ -250,12 +250,22 @@ export default async function Cobros({ searchParams }: { searchParams: Promise<{
         <h2 id="titulo-otras" className="text-titulo-2">
           Otras tareas de cobro
         </h2>
-        <Link href="/directiva/cobros/guardados" className={ENLACE}>
-          Cobros en efectivo guardados
-        </Link>
-        <Link href="/directiva/cobros/tarifa" className={ENLACE}>
-          Tarifa de la cuota semanal
-        </Link>
+        <ListaVerMas
+          etiqueta="Otras tareas de cobro"
+          normal={3}
+          senior={1}
+          elementos={[
+            <Link key="recaudacion" href="/directiva/cobros/recaudacion" className={ENLACE}>
+              Recaudación del mes
+            </Link>,
+            <Link key="guardados" href="/directiva/cobros/guardados" className={ENLACE}>
+              Cobros en efectivo guardados
+            </Link>,
+            <Link key="tarifa" href="/directiva/cobros/tarifa" className={ENLACE}>
+              Tarifa de la cuota semanal
+            </Link>,
+          ]}
+        />
       </section>
     </div>
   );
