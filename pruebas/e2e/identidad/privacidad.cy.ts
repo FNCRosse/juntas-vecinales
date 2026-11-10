@@ -16,6 +16,8 @@ describe("@HU-GAR-12 @HU-GAR-13 @HU-GAR-16 @HU-GAR-17 Privacidad de la vecina y 
   it("@HU-GAR-12 CA1 CA2 baja la copia de sus datos en PDF y queda registrado", () => {
     entrarComo("40000002");
     cy.visit("/mas");
+    // En vista grande Más muestra tres filas y «Ver más» (VEC-51).
+    cy.verTodos();
     cy.contains("a", "Mi perfil y privacidad").click();
     cy.get("h1").should("have.text", "Mi perfil y privacidad");
     cy.contains("dd", "Terminado en 02").should("exist");

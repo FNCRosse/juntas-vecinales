@@ -121,6 +121,8 @@ describe("@HU-COB-14 Cuentas del barrio y caja de vigilancia", { defaultCommandT
       cy.setCookie("sesion", valor);
     });
     cy.visit("/mas");
+    // En vista grande Más muestra tres filas y «Ver más» (VEC-51).
+    cy.verTodos();
     cy.contains("a", "Transparencia").click();
     cy.get("h1").should("have.text", "Cuentas del barrio");
     cy.contains("Son totales del barrio: no se ve lo que paga ninguna casa.").should("exist");
