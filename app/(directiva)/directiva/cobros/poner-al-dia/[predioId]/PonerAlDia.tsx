@@ -10,7 +10,7 @@ import { Campo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
 import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
-import { soles } from "@/compartido/dinero";
+import { aCentimos, soles } from "@/compartido/dinero";
 import type { CasaPorPonerAlDia, DeudaLiquidada } from "@/modulos/aportes/aplicacion/liquidaciones";
 
 type Medio = "EFECTIVO" | "YAPE_O_PLIN" | "TRANSFERENCIA";
@@ -22,11 +22,15 @@ const MEDIOS: { valor: Medio; etiqueta: string }[] = [
 ];
 
 // DIR-COB-16 y DIR-COB-17: poner al día a una casa que debe varias semanas, en dos pasos. Es dinero y devuelve la apertura de
-// la reja, así que lleva su confirmación (R-12). El pago cubre toda la deuda: no hay un monto que escribir.
+// la reja, así que lleva su confirmación (R-12). El pago cubre toda la deuda. En efectivo se anota cuánto entregó, para el
+// vuelto; por Yape, Plin o transferencia se puede adjuntar la foto del pago (DIR-19).
 export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
   const [paso, setPaso] = useState<"datos" | "confirmar" | "hecho">("datos");
   const [medio, setMedio] = useState<Medio>("EFECTIVO");
   const [numeroOperacion, setNumeroOperacion] = useState("");
+  const [montoRecibido, setMontoRecibido] = useState("");
+  const [foto, setFoto] = useState<{ id: string; nombre: string } | null>(null);
+  const [subiendo, setSubiendo] = useState(false);
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [enviando, setEnviando] = useState(false);
   const [falla, setFalla] = useState<string | null>(null);
@@ -45,6 +49,50 @@ export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
   }, [paso]);
 
   const etiquetaDelMedio = MEDIOS.find((m) => m.valor === medio)?.etiqueta ?? "";
+  const enEfectivo = medio === "EFECTIVO";
+  const recibido = aCentimos(montoRecibido);
+  const vuelto = recibido !== null && recibido >= casa.debe ? recibido - casa.debe : null;
+
+  async function subir(archivo: File) {
+    setSubiendo(true);
+    setErrores({ ...errores, archivoId: "" });
+    const pedido = await enviarJson<{
+      id: string;
+      url: string;
+      metodo: string;
+      cabeceras: Record<string, string>;
+    }>("/api/archivos", "POST", { uso: "comprobante_pago", tipo: archivo.type, tamano: archivo.size });
+    const subida =
+      pedido.ok &&
+      (await fetch(pedido.datos.url, {
+        method: pedido.datos.metodo,
+        headers: pedido.datos.cabeceras,
+        body: archivo,
+      })
+        .then((r) => r.ok)
+        .catch(() => false));
+    setSubiendo(false);
+    if (!pedido.ok || !subida) {
+      setFoto(null);
+      return setErrores({
+        ...errores,
+        archivoId: "No pudimos subir la foto. Use una imagen de hasta 5 MB y revise su internet.",
+      });
+    }
+    setFoto({ id: pedido.datos.id, nombre: archivo.name });
+  }
+
+  /** En efectivo, lo que entregó tiene que cubrir toda la deuda; por eso se revisa antes de confirmar. */
+  function revisar() {
+    const nuevos: Record<string, string> = {};
+    if (enEfectivo && recibido === null) {
+      nuevos.montoRecibido = "Escriba cuánto le entregó en efectivo, por ejemplo 50 o 50.50.";
+    } else if (enEfectivo && recibido! < casa.debe) {
+      nuevos.montoRecibido = `Le entregó menos de lo que debe (${soles(casa.debe)}). El pago tiene que cubrir toda la deuda.`;
+    }
+    setErrores(nuevos);
+    if (!Object.keys(nuevos).length) setPaso("confirmar");
+  }
 
   async function registrar() {
     idOperacion.current ??= crypto.randomUUID();
@@ -53,7 +101,8 @@ export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
     const r = await enviarJson<DeudaLiquidada>("/api/aportes/liquidaciones", "POST", {
       predioId: casa.predioId,
       medio,
-      numeroOperacion,
+      numeroOperacion: enEfectivo ? "" : numeroOperacion,
+      ...(enEfectivo ? { montoRecibido } : foto && { archivoId: foto.id }),
       idOperacion: idOperacion.current,
     });
     setEnviando(false);
@@ -108,8 +157,17 @@ export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
           ["Semanas", casa.detalle.replace(/^(\d+) semanas?, /, "$1, ")],
           [
             "Medio",
-            etiquetaDelMedio + (numeroOperacion.trim() ? ` · operación ${numeroOperacion.trim()}` : ""),
+            etiquetaDelMedio +
+              (!enEfectivo && numeroOperacion.trim() ? ` · operación ${numeroOperacion.trim()}` : ""),
           ],
+          ...(enEfectivo && recibido !== null
+            ? ([
+                ["Le entregó", soles(recibido)],
+                ["Vuelto", soles(recibido - casa.debe)],
+              ] as [string, string][])
+            : foto
+              ? ([["Foto del pago", "Adjunta"]] as [string, string][])
+              : []),
         ]}
         efecto={
           casa.rejaSuspendida
@@ -132,8 +190,7 @@ export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
-        setErrores({});
-        setPaso("confirmar");
+        revisar();
       }}
       className="flex flex-col gap-6"
     >
@@ -163,17 +220,57 @@ export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
         alElegir={setMedio}
         error={errores.medio}
       />
-      <Campo
-        name="numeroOperacion"
-        etiqueta="Número de operación (opcional)"
-        ayuda="Solo si pagó con Yape, Plin o transferencia."
-        autoComplete="off"
-        maxLength={30}
-        value={numeroOperacion}
-        error={errores.numeroOperacion}
-        onChange={(e) => setNumeroOperacion(e.target.value)}
-      />
-      <Boton type="submit" icono={ArrowRight} anchoCompleto>
+      {enEfectivo ? (
+        <div className="flex flex-col gap-2">
+          <Campo
+            name="montoRecibido"
+            etiqueta="¿Cuánto le entregó?"
+            ayuda={`Debe ${soles(casa.debe)}. Escriba lo que le dieron en la mano, para calcular el vuelto.`}
+            inputMode="decimal"
+            autoComplete="off"
+            value={montoRecibido}
+            error={errores.montoRecibido}
+            onChange={(e) => setMontoRecibido(e.target.value)}
+          />
+          {vuelto !== null && (
+            <p aria-live="polite" className="text-titulo-3">
+              {vuelto ? `Vuelto: ${soles(vuelto)}` : "Monto exacto: no hay vuelto."}
+            </p>
+          )}
+        </div>
+      ) : (
+        <>
+          <Campo
+            name="numeroOperacion"
+            etiqueta="Número de operación (opcional)"
+            ayuda="Está en la captura del Yape, del Plin o de la transferencia."
+            autoComplete="off"
+            maxLength={30}
+            value={numeroOperacion}
+            error={errores.numeroOperacion}
+            onChange={(e) => setNumeroOperacion(e.target.value)}
+          />
+          <Campo
+            name="archivoId"
+            type="file"
+            etiqueta="Foto del pago (opcional)"
+            ayuda={
+              subiendo
+                ? "Subiendo la foto…"
+                : foto
+                  ? `Lista: ${foto.nombre}`
+                  : "La captura del Yape, del Plin o de la transferencia. Una imagen de hasta 5 MB."
+            }
+            accept="image/jpeg,image/png"
+            error={errores.archivoId}
+            onChange={(e) => {
+              const archivo = e.target.files?.[0];
+              if (archivo) void subir(archivo);
+            }}
+          />
+        </>
+      )}
+      <Boton type="submit" icono={ArrowRight} anchoCompleto disabled={subiendo}>
         Revisar el pago
       </Boton>
     </form>

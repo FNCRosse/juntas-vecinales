@@ -48,6 +48,17 @@ export async function telefonosParaLlamar(sesion: SesionDto, usuarioIds: string[
   );
 }
 
+/** El miembro de la directiva de turno (el primer mediador activo; si no hay, la directiva), para la garita (VIG-18). */
+export async function contactoDeTurno() {
+  const [deTurno] = await mediadoresDeTurno();
+  return (
+    deTurno && {
+      nombre: deTurno.nombre,
+      telefono: deTurno.telefono?.replace(/^51(\d{3})(\d{3})(\d{3})$/, "$1 $2 $3") ?? null,
+    }
+  );
+}
+
 /** El contacto de la administración, para el "Pedir ayuda" del equipo. */
 export async function contactoDeAdministracion() {
   const admin = await prisma.usuario.findFirst({

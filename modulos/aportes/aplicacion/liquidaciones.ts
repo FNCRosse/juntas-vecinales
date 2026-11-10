@@ -1,4 +1,5 @@
 // @HU-COB-07
+import { archivosSubidosPor } from "@/compartido/archivos/registro";
 import { prisma } from "@/compartido/bd/cliente";
 import { Prisma } from "@/compartido/bd/generado/client";
 import { soles } from "@/compartido/dinero";
@@ -6,6 +7,7 @@ import { ErrorNoEncontrado, ErrorReglaNegocio, ErrorValidacion } from "@/compart
 import { fechaYHora } from "@/compartido/fechas";
 import { encolarAvisos } from "@/compartido/notificaciones/encolar";
 import { aplicarPagoAprobado } from "@/modulos/aportes/aplicacion/abono";
+import { USO_COMPROBANTE_PAGO } from "@/modulos/aportes/aplicacion/pagos";
 import { aReciboDto } from "@/modulos/aportes/aplicacion/recibos";
 import { prepararLiquidacion, repartirCobro } from "@/modulos/aportes/dominio/cobro";
 import { MEDIOS, textoDeSemanas } from "@/modulos/aportes/dominio/pago";
@@ -89,7 +91,16 @@ export async function verCasaPorPonerAlDia(sesion: SesionDto, predioId: string) 
  */
 export async function liquidarDeuda(
   sesion: SesionDto,
-  datos: { predioId: string; medio: string; numeroOperacion?: string; idOperacion: string },
+  datos: {
+    predioId: string;
+    medio: string;
+    numeroOperacion?: string;
+    idOperacion: string;
+    /** En efectivo, cuánto entregó la casa, en céntimos (DIR-19). */
+    montoRecibido?: number;
+    /** Por Yape, Plin o transferencia, la foto del pago que subió la directiva (DIR-19, opcional). */
+    archivoId?: string;
+  },
   ahora = new Date(),
 ) {
   exigirRol(sesion, "DIRECTIVA");
@@ -98,8 +109,16 @@ export async function liquidarDeuda(
   const { errores, liquidacion } = prepararLiquidacion({
     medio: datos.medio,
     numeroOperacion: datos.numeroOperacion ?? "",
+    montoRecibido: datos.montoRecibido,
   });
-  if (!liquidacion) throw new ErrorValidacion(undefined, errores);
+  const archivoId = liquidacion?.medio !== "EFECTIVO" ? datos.archivoId || null : null;
+  if (
+    archivoId &&
+    !(await archivosSubidosPor(sesion.usuarioId, USO_COMPROBANTE_PAGO, [archivoId])).has(archivoId)
+  ) {
+    errores.archivoId = "No encontramos esa foto. Vuelva a elegirla.";
+  }
+  if (!liquidacion || errores.archivoId) throw new ErrorValidacion(undefined, errores);
   const miCasa = await predioDelVecino(sesion.usuarioId);
   if (datos.predioId === miCasa?.id) {
     throw new ErrorReglaNegocio("Es la deuda de su casa: la registra otro miembro de la directiva.");
@@ -107,11 +126,12 @@ export async function liquidarDeuda(
   const casa = (await casasDe([datos.predioId])).get(datos.predioId);
   if (!casa) throw new ErrorNoEncontrado();
   const vigilantes = casa.estadoGarita === "ROJO" ? await vigilantesParaAvisar() : [];
-  const medioTexto = liquidacion.numeroOperacion
-    ? `${MEDIOS[liquidacion.medio]} (operación ${liquidacion.numeroOperacion})`
-    : liquidacion.medio === "EFECTIVO"
-      ? "Efectivo"
-      : MEDIOS[liquidacion.medio];
+  const textoDelMedio = (monto: number) =>
+    liquidacion.numeroOperacion
+      ? `${MEDIOS[liquidacion.medio]} (operación ${liquidacion.numeroOperacion})`
+      : liquidacion.montoRecibido
+        ? `Efectivo (recibió ${soles(liquidacion.montoRecibido)}, ${liquidacion.montoRecibido === monto ? "sin vuelto" : `vuelto ${soles(liquidacion.montoRecibido - monto)}`})`
+        : MEDIOS[liquidacion.medio];
 
   try {
     const hecho = await prisma.$transaction(async (tx) => {
@@ -132,6 +152,11 @@ export async function liquidarDeuda(
         );
       }
       const monto = cuotas.reduce((suma, c) => suma + c.saldoPendiente, 0);
+      if (liquidacion.montoRecibido !== null && liquidacion.montoRecibido < monto) {
+        throw new ErrorValidacion(undefined, {
+          montoRecibido: `Le entregó menos de lo que debe (${soles(monto)}). El pago tiene que cubrir toda la deuda.`,
+        });
+      }
       const { partes } = repartirCobro(
         monto,
         cuotas.map((c) => ({ id: c.id, saldo: c.saldoPendiente })),
@@ -144,6 +169,7 @@ export async function liquidarDeuda(
         creadoEn: ahora,
         partes,
         medio: liquidacion.medio,
+        archivoId,
       });
       const semanas = textoDeSemanas(cuotas.map((c) => c.periodo));
       const { recibo } = await aplicarPagoAprobado(tx, {
@@ -158,7 +184,7 @@ export async function liquidarDeuda(
         avisarA: casa.residentes,
         accion: "liquidar_deuda",
         enviarRecibo: true,
-        medioTexto,
+        medioTexto: textoDelMedio(monto),
         avisoExtra: casa.estadoGarita === "ROJO" ? "La reja vuelve a abrirse sola." : undefined,
       });
       if (vigilantes.length) {

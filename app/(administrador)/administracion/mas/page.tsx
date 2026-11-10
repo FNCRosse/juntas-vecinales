@@ -2,12 +2,12 @@ import { ScrollText, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import { CambiarDePerfil } from "@/app/_sesion/CambiarDePerfil";
 import { exigirActor } from "@/app/_sesion/sesion";
-import { BotonCerrarSesion } from "@/app/_sesion/BotonCerrarSesion";
 import { FilaEnlace } from "@/componentes/a11y/Tarjeta";
 
 export const metadata: Metadata = { title: "Más opciones" };
 
-// Más opciones (prototipo XMA01): lo que no cabe en la barra del teléfono (Privacidad y Auditoría) y "Cerrar sesión" aparte.
+// Más opciones (prototipo XMA01): lo que no cabe en la barra del teléfono (Privacidad y Auditoría). "Cerrar sesión" está en
+// la cabecera de todas las pantallas (ADM-23).
 export default async function MasOpciones() {
   const sesion = await exigirActor(["ADMINISTRADOR"], "/entrar/equipo");
   return (
@@ -23,7 +23,6 @@ export default async function MasOpciones() {
       </div>
       <div className="mt-12 flex flex-col gap-3">
         <CambiarDePerfil sesion={sesion} actual="administracion" estilo="tarjeta" />
-        <BotonCerrarSesion destino="/entrar/equipo" />
       </div>
     </div>
   );

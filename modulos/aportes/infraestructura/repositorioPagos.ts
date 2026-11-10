@@ -178,6 +178,8 @@ export const crearPagoPresencial = (
     partes: { cuotaId: string; monto: number }[];
     /** Efectivo salvo cuando la casa liquida su deuda por Yape, Plin o transferencia (HU-COB-07). */
     medio?: MedioDePago;
+    /** La foto del pago que adjuntó la directiva (DIR-19): queda aprobada junto con el pago. */
+    archivoId?: string | null;
   },
 ) =>
   tx.pago.create({
@@ -190,6 +192,11 @@ export const crearPagoPresencial = (
       estado: "APROBADO",
       creadoEn: datos.creadoEn,
       cuotas: { create: datos.partes },
+      ...(datos.archivoId && {
+        comprobantes: {
+          create: { archivoId: datos.archivoId, estado: "APROBADO" as const, creadoEn: datos.creadoEn },
+        },
+      }),
     },
     include: conDetalle,
   });
