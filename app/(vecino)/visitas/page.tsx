@@ -7,6 +7,7 @@ import { EncabezadoPagina } from "@/componentes/a11y/EncabezadoPagina";
 import { Insignia } from "@/componentes/a11y/Insignia";
 import { ListaVerMas } from "@/componentes/a11y/ListaVerMas";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
+import { visitaEnLaPuerta } from "@/modulos/identidad/aplicacion/garita";
 import { misVisitas } from "@/modulos/identidad/aplicacion/visitas";
 
 export const metadata: Metadata = { title: "Mis visitas" };
@@ -16,10 +17,13 @@ const TARJETA =
 const SUAVE = "rounded-tarjeta bg-fondo-suave p-4 senior:p-6";
 
 // VEC-GAR-01 Mis visitas (HU-GAR-04, HU-GAR-05): cada visita programada en su tarjeta, con "Anular" apartado
-// del resto, y las que llegaron hace poco.
+// del resto, y las que llegaron hace poco. Arriba, la visita no anunciada que espera su respuesta en la garita (VEC-34).
 export default async function MisVisitas({ searchParams }: { searchParams: Promise<{ anulada?: string }> }) {
   const sesion = await exigirActor(["VECINO", "VECINO_ADULTO_MAYOR"], "/entrar");
-  const { programadas, llegaron, puedeRegistrar } = await misVisitas(sesion);
+  const [{ programadas, llegaron, puedeRegistrar }, enLaPuerta] = await Promise.all([
+    misVisitas(sesion),
+    visitaEnLaPuerta(sesion),
+  ]);
   const { anulada } = await searchParams;
   return (
     <div className="flex flex-col gap-6">
@@ -37,6 +41,18 @@ export default async function MisVisitas({ searchParams }: { searchParams: Promi
           </BotonEnlace>
         }
       />
+      {enLaPuerta && (
+        <MensajeEstado
+          tipo="info"
+          icono={DoorOpen}
+          titulo={`${enLaPuerta.nombre} está en la garita y pregunta por usted`}
+        >
+          <p>No estaba anunciado. {enLaPuerta.vigilante}, el vigilante, espera su respuesta.</p>
+          <BotonEnlace href={`/visitas/${enLaPuerta.id}/responder`} variante="secundario" anchoCompleto>
+            Responder
+          </BotonEnlace>
+        </MensajeEstado>
+      )}
       {anulada && (
         <MensajeEstado tipo="exito" titulo={`Anulamos la visita de ${anulada}`}>
           <p>
