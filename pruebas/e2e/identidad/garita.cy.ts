@@ -202,10 +202,23 @@ describe("@HU-GAR-08 [VIG-15] [VIG-20] Observaciones del checklist en la garita"
     cy.revisarAccesibilidad("bitacora-busqueda-normal");
   });
 
-  it("@HU-GAR-08 [VIG-20] cerrar sesión está siempre en la cabecera de la garita", () => {
+  it("@HU-GAR-08 [VIG-20] cerrar sesión va en la misma fila que «Vista grande» y «Pedir ayuda»", () => {
     cy.clearCookies();
     cy.request("POST", "/api/auth/clave", { dni: "40000004", clave: "clave-de-prueba" });
+    cy.viewport(1024, 800);
     cy.visit("/garita/bitacora");
+    cy.contains("header button", "Vista grande")
+      .parent()
+      .within(() => {
+        cy.contains("a", "Pedir ayuda").should("be.visible");
+        cy.contains("button", "Cerrar sesión").should("be.visible");
+      });
+    cy.contains("header button", "Vista grande").then(($vista) => {
+      cy.contains("header button", "Cerrar sesión").should(($salir) => {
+        expect($salir[0].getBoundingClientRect().top).to.be.closeTo($vista[0].getBoundingClientRect().top, 2);
+      });
+    });
+    cy.revisarAccesibilidad("garita-cabecera-tablet");
     cy.get("header").contains("button", "Cerrar sesión").click();
     cy.url().should("include", "/entrar/equipo");
   });

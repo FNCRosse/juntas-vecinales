@@ -30,10 +30,13 @@ export function MarcoActor({
   modoSenior,
   conteos,
   selector,
+  cerrarSesion,
   children,
 }: {
   /** Selector de vista del encabezado (ver Encabezado). */
   selector?: ReactNode;
+  /** Botón de salir, en la fila de «Vista grande» y «Pedir ayuda» (ver Encabezado). */
+  cerrarSesion?: ReactNode;
   /** Sin actor: pantallas de acceso, sin sesión, sin navegación ni "Pedir ayuda". */
   actor?: Actor;
   modoSenior: boolean;
@@ -43,7 +46,12 @@ export function MarcoActor({
 }) {
   return (
     <>
-      <Encabezado modoSenior={modoSenior} rutaAyuda={actor && RUTA_AYUDA[actor]} selector={selector} />
+      <Encabezado
+        modoSenior={modoSenior}
+        rutaAyuda={actor && RUTA_AYUDA[actor]}
+        selector={selector}
+        cerrarSesion={cerrarSesion}
+      />
       <div className="lg:flex">
         {actor && <BarraNavegacion actor={actor} conteos={conteos} />}
         <main

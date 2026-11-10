@@ -13,13 +13,9 @@ export default async function Layout({ children }: { children: ReactNode }) {
     <MarcoActor
       actor="administrador"
       modoSenior={await modoSeniorAlRenderizar()}
-      selector={
-        // "Cerrar sesión" siempre a la vista en la cabecera, también en el escritorio (ADM-23).
-        <div className="flex flex-wrap items-center gap-separacion">
-          <CambiarDePerfil sesion={sesion} actual="administracion" estilo="boton" />
-          <BotonCerrarSesion destino="/entrar/equipo" />
-        </div>
-      }
+      selector={<CambiarDePerfil sesion={sesion} actual="administracion" estilo="boton" />}
+      // «Cerrar sesión» en la misma fila que «Vista grande» y «Pedir ayuda» (VIG-20, ADM-23).
+      cerrarSesion={<BotonCerrarSesion destino="/entrar/equipo" enBarra />}
     >
       <RenovarSesion />
       {children}
