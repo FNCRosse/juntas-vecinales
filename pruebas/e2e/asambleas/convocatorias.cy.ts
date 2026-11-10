@@ -59,6 +59,11 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     cy.get("h1").should("have.text", "Afiche para pegar en el barrio");
     cy.contains("Asamblea ordinaria").should("exist");
     cy.contains(MOTIVO).should("exist");
+    // [DIR-34] la vista previa a color, como el PDF: fecha, hora, lugar y el motivo destacado.
+    cy.get('section[aria-label="Afiche de la asamblea"]')
+      .should("contain.text", "¡Su participación cuenta!")
+      .and("contain.text", "Motivo de la reunión")
+      .and("contain.text", "Lugar");
     cy.contains("a", "Descargar en PDF")
       .should("have.attr", "href")
       .and("match", /\/api\/asambleas\/.+\/afiche/);
