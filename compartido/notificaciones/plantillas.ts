@@ -58,9 +58,9 @@ export function plantillaPedidoAyuda(quien: string, pantalla: string, modo: stri
 }
 
 /**
- * La reja no se abre sola (HU-GAR-06 CA3). Texto en Meta: "Hola, {{1}}. Hoy a las {{2}} entró a
- * {{3}} abriendo la reja a mano: por ahora no se abre sola para su casa. Cuando se ponga al día con
- * su cuota, vuelve a abrirse sola."
+ * El vigilante no le abrirá la reja (HU-GAR-06 CA3, VEC-28). Texto en Meta: "Hola, {{1}}. Hoy a las {{2}}
+ * entró a {{3}} abriendo la reja usted mismo: por ahora el vigilante no le abrirá la reja. Cuando se
+ * ponga al día con su cuota, el vigilante volverá a abrírsela."
  */
 export function plantillaRejaManual(nombre: string, hora: string, vivienda: string) {
   return { plantilla: "reja_manual", parametros: [nombre, hora, vivienda] };

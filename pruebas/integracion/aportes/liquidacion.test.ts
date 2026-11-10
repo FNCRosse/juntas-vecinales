@@ -190,13 +190,13 @@ describe("@HU-COB-07 CA1 CA2 CA3 Poner al día", () => {
       where: { destinatarioId: julio.usuarioId, titulo: "Su pago fue aprobado" },
     });
     expect(aviso.texto).toBe(
-      `Recibimos su pago de S/ ${(r.monto / 100).toFixed(2)}. Ya está al día. Gracias. Su recibo N.° 000001 ya está en Mis pagos y recibos. La reja vuelve a abrirse sola.`,
+      `Recibimos su pago de S/ ${(r.monto / 100).toFixed(2)}. Ya está al día. Gracias. Su recibo N.° 000001 ya está en Mis pagos y recibos. El vigilante vuelve a abrirle la reja.`,
     );
     const garita = await prisma.avisoEnCola.findMany({ where: { titulo: "Una casa se puso al día" } });
     expect(garita).toHaveLength(1);
     expect(garita[0]).toMatchObject({
       tipo: "GARITA",
-      texto: "Mz. A, lote 3 pagó toda su deuda: la reja vuelve a abrirse sola.",
+      texto: "Mz. A, lote 3 pagó toda su deuda: el vigilante vuelve a abrirle la reja.",
     });
     expect(r.garita).toEqual(["Luis Paredes"]);
     expect(r.cuando).toBe("27 de setiembre de 2026 a las 10:52 a. m.");

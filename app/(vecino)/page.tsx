@@ -237,8 +237,8 @@ export default async function Inicio() {
         <p className="text-texto-secundario">{fechaLarga(new Date())}</p>
       </div>
       {cuota?.rejaSuspendida && (
-        <MensajeEstado tipo="aviso" titulo="Por ahora la reja no se abre sola para su casa">
-          <p>Puede entrar abriéndola a mano. Apenas se ponga al día, vuelve a abrirse sola.</p>
+        <MensajeEstado tipo="aviso" titulo="Por ahora el vigilante no le abrirá la reja">
+          <p>Tendrá que abrirla usted mismo. Apenas se ponga al día, el vigilante vuelve a abrírsela.</p>
           <Link href="/cuota/reja" className={ENLACE}>
             Ver qué pasa y cómo ponerme al día
           </Link>

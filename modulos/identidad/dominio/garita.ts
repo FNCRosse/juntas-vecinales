@@ -8,7 +8,7 @@ export type Semaforo = "VERDE" | "ROJO";
 
 export const SEMAFORO: Record<Semaforo, string> = {
   VERDE: "Vecino al día: puede abrir la reja",
-  ROJO: "La reja no se abre sola",
+  ROJO: "Vecino con atraso: no abrirle la reja",
 };
 
 /** Qué escribió el vigilante: un DNI (8 números), una placa (letras y números) o un nombre. */

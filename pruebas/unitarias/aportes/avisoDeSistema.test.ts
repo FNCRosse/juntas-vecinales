@@ -12,10 +12,10 @@ describe("@HU-COB-05 @HU-COB-06 Lo que se le avisa a la directiva", () => {
 
   it("@HU-COB-06 CA3 las casas que llegaron a 8 semanas, en singular y en plural", () => {
     expect(textoDeSuspensiones(12)).toBe(
-      "12 casas llegaron a 8 semanas sin pago. La reja ya no se les abre sola y se les avisó.",
+      "12 casas llegaron a 8 semanas sin pago. El vigilante ya no les abre la reja y se les avisó.",
     );
     expect(textoDeSuspensiones(1)).toBe(
-      "1 casa llegó a 8 semanas sin pago. La reja ya no se le abre sola y se le avisó.",
+      "1 casa llegó a 8 semanas sin pago. El vigilante ya no le abre la reja y se le avisó.",
     );
   });
 });

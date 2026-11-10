@@ -254,7 +254,7 @@ describe("@HU-COB-05 @HU-COB-06 Alertas del sistema para la directiva (DIR-INI-0
       expect(otros).toEqual([]);
       expect(aviso).toMatchObject({
         tipo: "PAGOS",
-        texto: "1 casa llegó a 8 semanas sin pago. La reja ya no se le abre sola y se le avisó.",
+        texto: "1 casa llegó a 8 semanas sin pago. El vigilante ya no le abre la reja y se le avisó.",
       });
     }
     expect((await suspenderCasasConAtrasoCritico(AHORA)).suspendidas).toBe(0);

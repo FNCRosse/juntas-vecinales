@@ -146,8 +146,8 @@ export async function suspenderCasasConAtrasoCritico(ahora = new Date()) {
         casa.residentes.map((destinatarioId) => ({
           destinatarioId,
           tipo: "SEGURIDAD" as const,
-          titulo: "Por ahora la reja no se abre sola",
-          texto: `Su casa lleva ${semanas} semanas pendientes de pago (hoy debe ${soles(debe)}). Por eso el vigilante ya no abre la reja automáticamente: usted puede entrar abriéndola a mano, como siempre, y por ahora no puede registrar visitas nuevas. Para volver a la normalidad, pague lo pendiente por la app o en efectivo; apenas la directiva lo valide, la reja vuelve a abrirse sola. Si no puede pagarlo todo junto, converse con la directiva.`,
+          titulo: "Por ahora el vigilante no le abrirá la reja",
+          texto: `Su casa lleva ${semanas} semanas pendientes de pago (hoy debe ${soles(debe)}). Por eso el vigilante ya no le abrirá la reja a su vehículo: tendrá que abrirla usted mismo, y por ahora no puede registrar visitas nuevas. Para volver a la normalidad, pague lo pendiente por la app o en efectivo; apenas la directiva lo valide, el vigilante vuelve a abrirle la reja. Si no puede pagarlo todo junto, converse con la directiva.`,
         })),
         tx,
       );
@@ -157,12 +157,12 @@ export async function suspenderCasasConAtrasoCritico(ahora = new Date()) {
           accion: "clasificar_morosidad",
           entidad: "Predio",
           entidadId: predioId,
-          antes: { garita: "La reja se abre sola" },
+          antes: { garita: "El vigilante abre la reja" },
           despues: {
             estado: "Atraso crítico",
             semanas,
             debe: soles(debe),
-            garita: "La reja no se abre sola",
+            garita: "El vigilante no abre la reja",
           },
         },
         tx,
@@ -181,7 +181,7 @@ export async function suspenderCasasConAtrasoCritico(ahora = new Date()) {
 }
 
 /**
- * «Por ahora la reja no se abre sola» (VEC-COB-12): lo que pasa con la reja de su casa, cuánto debe y desde cuándo, y cómo
+ * «Por ahora el vigilante no le abrirá la reja» (VEC-COB-12): lo que pasa con la reja de su casa, cuánto debe y desde cuándo, y cómo
  * volver a la normalidad. Solo ve su casa (AC-7). `null` si no figura como residente de una casa.
  */
 export async function miReja(sesion: SesionDto) {

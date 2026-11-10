@@ -94,8 +94,8 @@ export default async function PanelAdministracion() {
           </p>
           {atrasados > 0 && (
             <p className="flex items-start gap-2 text-pequeno text-texto-secundario">
-              <TriangleAlert aria-hidden className="size-icono-pequeno shrink-0" />A los atrasados la reja no
-              se abre sola.
+              <TriangleAlert aria-hidden className="size-icono-pequeno shrink-0" />A los atrasados el
+              vigilante no les abre la reja.
             </p>
           )}
         </Tarjeta>

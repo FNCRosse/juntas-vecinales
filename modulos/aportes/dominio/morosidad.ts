@@ -50,5 +50,5 @@ export const textoDeRecordatorios = (n: number) =>
 /** Lo que se le avisa a la directiva cuando casas llegan a 8 semanas sin pago y la reja deja de abrirse sola (HU-COB-06). */
 export const textoDeSuspensiones = (n: number) =>
   n === 1
-    ? "1 casa llegó a 8 semanas sin pago. La reja ya no se le abre sola y se le avisó."
-    : `${n} casas llegaron a 8 semanas sin pago. La reja ya no se les abre sola y se les avisó.`;
+    ? "1 casa llegó a 8 semanas sin pago. El vigilante ya no le abre la reja y se le avisó."
+    : `${n} casas llegaron a 8 semanas sin pago. El vigilante ya no les abre la reja y se les avisó.`;
