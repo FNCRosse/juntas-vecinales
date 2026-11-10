@@ -27,7 +27,7 @@ function TarjetaContacto({
         <p className="text-texto-secundario">{detalle}</p>
         <strong>{contacto.nombre}</strong>
         {numero ? (
-          <>
+          <div className="flex flex-col gap-separacion">
             <a
               href={`tel:+51${numero}`}
               className="inline-flex min-h-tactil items-center gap-2 font-bold text-texto-enlace"
@@ -44,7 +44,7 @@ function TarjetaContacto({
               <MessageCircle aria-hidden className="size-icono" />
               Escribirle por WhatsApp
             </a>
-          </>
+          </div>
         ) : (
           <p>No tiene un teléfono registrado.</p>
         )}
