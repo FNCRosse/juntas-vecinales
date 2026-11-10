@@ -34,11 +34,14 @@ export function Encabezado({
   modoSenior,
   rutaAyuda,
   selector,
+  cerrarSesion,
 }: {
   modoSenior: boolean;
   rutaAyuda?: string;
   /** Selector de vista (Mi casa / Directiva…): siempre a la vista para saber en qué rol está y cambiarlo. */
   selector?: ReactNode;
+  /** «Cerrar sesión» de la garita y la administración: en la misma fila que «Vista grande» y «Pedir ayuda» (VIG-20). */
+  cerrarSesion?: ReactNode;
 }) {
   return (
     <header className="border-b border-borde-sutil bg-fondo-superficie">
@@ -55,6 +58,7 @@ export function Encabezado({
         >
           <InterruptorLetraGrande activoAlInicio={modoSenior} />
           {rutaAyuda && <EnlaceAyuda ruta={rutaAyuda} />}
+          {cerrarSesion && <div className="col-span-full grid md:contents">{cerrarSesion}</div>}
         </div>
       </div>
       {selector && (
