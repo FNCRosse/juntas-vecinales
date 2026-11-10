@@ -1,10 +1,10 @@
 "use client";
 // @HU-COB-11
 
-import { ArrowRight, ChevronLeft, Phone, Receipt, Wallet } from "lucide-react";
+import { ArrowRight, ChevronLeft, Phone } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
+import { Boton } from "@/componentes/a11y/Boton";
 import { Campo } from "@/componentes/a11y/Campo";
 import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 import { PasoConfirmacion } from "@/componentes/a11y/PasoConfirmacion";
@@ -12,8 +12,8 @@ import { ResumenErrores } from "@/componentes/a11y/ResumenErrores";
 import { SelectorEnHoja } from "@/componentes/a11y/SelectorEnHoja";
 import { aCentimos, soles } from "@/compartido/dinero";
 import type { PedidoParaCobrar } from "@/modulos/aportes/aplicacion/cobros";
-import { CobrosGuardados } from "../../CobrosGuardados";
 import { type CobroGuardado, guardarCobro, leerCobro, sincronizarCobros } from "../../colaLocal";
+import { ResultadoDelCobro } from "../../ResultadoDelCobro";
 import { useConSenal } from "../../useConSenal";
 
 type CuantoRecibio = "PEDIDO" | "OTRO";
@@ -87,65 +87,8 @@ export function CobrarEnCasa({ pedido }: { pedido: PedidoParaCobrar }) {
     setPaso("hecho");
   }
 
-  if (paso === "hecho") {
-    return (
-      <div className="flex flex-col gap-6">
-        {resultado?.estado === "sincronizado" && (
-          <>
-            <MensajeEstado tipo="exito" titulo="Cobro registrado">
-              <p>
-                {resultado.alDia
-                  ? `${pedido.nombre} queda al día.`
-                  : `${pedido.nombre} todavía debe ${soles(resultado.debeAhora ?? 0)}.`}{" "}
-                Emitimos el recibo N.° {resultado.reciboNumero} y se lo enviamos a su app
-                {resultado.reciboEnPapel ? ". Queda uno en papel por entregar" : ""}.
-              </p>
-            </MensajeEstado>
-            {resultado.excedente ? (
-              <MensajeEstado tipo="aviso" titulo={`Sobraron ${soles(resultado.excedente)}`}>
-                <p>
-                  La casa ya no debía tanto como pensaba. Consulte con la tesorera qué hacer con la
-                  diferencia.
-                </p>
-              </MensajeEstado>
-            ) : null}
-            <div className="flex flex-col gap-opuestas">
-              {resultado.reciboId && (
-                <BotonEnlace href={`/directiva/cobros/recibos/${resultado.reciboId}`} icono={Receipt}>
-                  Ver el recibo
-                </BotonEnlace>
-              )}
-              <BotonEnlace href="/directiva/cobros" variante="secundario" icono={Wallet}>
-                Volver a Cobros
-              </BotonEnlace>
-            </div>
-          </>
-        )}
-        {resultado?.estado === "con_problema" && (
-          <>
-            <MensajeEstado tipo="error" titulo="No se pudo registrar el cobro">
-              <p>{resultado.mensaje}</p>
-            </MensajeEstado>
-            <p>El cobro quedó guardado en su teléfono: véalo en «Cobros en efectivo guardados».</p>
-            <BotonEnlace href="/directiva/cobros/guardados" icono={Wallet}>
-              Cobros en efectivo guardados
-            </BotonEnlace>
-          </>
-        )}
-        {resultado?.estado !== "sincronizado" && resultado?.estado !== "con_problema" && (
-          <>
-            <h1 ref={titulo} tabIndex={-1} className="text-titulo-1">
-              Cobros en efectivo guardados
-            </h1>
-            <CobrosGuardados recienGuardado />
-            <BotonEnlace href="/directiva/cobros" variante="secundario" icono={Wallet}>
-              Volver a cobros
-            </BotonEnlace>
-          </>
-        )}
-      </div>
-    );
-  }
+  if (paso === "hecho")
+    return <ResultadoDelCobro nombre={pedido.nombre} resultado={resultado} titulo={titulo} />;
 
   if (paso === "confirmar") {
     return (
