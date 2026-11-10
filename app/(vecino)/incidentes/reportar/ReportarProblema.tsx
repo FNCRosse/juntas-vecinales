@@ -399,11 +399,14 @@ export function ReportarProblema({
               }}
               className="mt-1 size-icono shrink-0 accent-accion-primaria"
             />
-            <span>
-              <strong>Acepto la política de privacidad</strong> y confirmo que lo que cuento es cierto.
+            <span className="flex flex-col gap-3">
+              <span>
+                <strong>Acepto la política de privacidad</strong> y confirmo que lo que cuento es cierto.
+              </span>
+              {/* Dentro de la etiqueta, como antes, para no sumar un objetivo (R-11); pulsarlo no marca la casilla. */}
+              <LeerPolitica />
             </span>
           </label>
-          <LeerPolitica />
           {errores.consentimiento && (
             <MensajeDeCampo id="consentimiento-error">{errores.consentimiento}</MensajeDeCampo>
           )}
