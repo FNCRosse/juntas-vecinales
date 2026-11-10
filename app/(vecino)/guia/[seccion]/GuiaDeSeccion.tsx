@@ -49,6 +49,15 @@ export function GuiaDeSeccion({ guia, pasoInicial }: { guia: GuiaDto; pasoInicia
         </h1>
       </div>
       <p>{actual.texto}</p>
+      {/* VAM-08: la pantalla de verdad, con un círculo y una flecha en lo que va a tocar (pruebas/e2e/capturas/guias.captura.ts). */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- imagen fija y liviana: sin el optimizador ni su cuota */}
+      <img
+        src={`/guias/${guia.seccion.toLowerCase()}-${paso + 1}.png`}
+        alt={`Captura de la pantalla ${guia.nombre}: un círculo rojo y una flecha marcan «${actual.accion}».`}
+        width={390}
+        height={720}
+        className="mx-auto h-auto w-full max-w-72 rounded-tarjeta border border-borde-sutil shadow-tarjeta"
+      />
       <div className="flex flex-col gap-2 rounded-control border-(length:--borde-ancho-control) border-accion-primaria bg-fondo-suave p-4 senior:p-6">
         <span className="inline-flex items-center gap-2 text-pequeno font-bold">
           <Hand aria-hidden className="size-icono-pequeno" />
@@ -76,7 +85,7 @@ export function GuiaDeSeccion({ guia, pasoInicial }: { guia: GuiaDto; pasoInicia
           onClick={() => void salir("omitir")}
           className="inline-flex min-h-tactil items-center justify-center font-bold text-texto-enlace underline underline-offset-4 cursor-pointer"
         >
-          Saltar la guía (no se volverá a mostrar)
+          Saltar la guía
         </button>
       </div>
       <p className="text-texto-secundario">Puede volver a verla en Más, en «Ayuda y accesibilidad».</p>

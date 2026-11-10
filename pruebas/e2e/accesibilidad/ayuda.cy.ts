@@ -62,6 +62,15 @@ describe("@HU-ACC-04 Pedir ayuda humana desde cualquier pantalla", () => {
     cy.get("h1").should("have.text", "Pedir ayuda");
     cy.contains("a", "Llamar a Ana Flores").should("have.attr", "href", "tel:+51900000001");
     cy.contains("900 000 001").should("not.exist");
+    // [VIG-18] [DIR-52] la garita también tiene a la directiva de turno, y a cada uno se le llama o se le escribe.
+    cy.get('section[aria-label="Directiva de turno"]')
+      .should("contain.text", "Para una emergencia")
+      .find('a[href^="tel:+51"]')
+      .should("contain.text", "Llamar a");
+    cy.get('section[aria-label="Directiva de turno"]').find('a[href^="https://wa.me/51"]').should("exist");
+    cy.get('section[aria-label="Administración"]')
+      .find('a[href="https://wa.me/51900000001"]')
+      .should("contain.text", "Escribirle por WhatsApp");
     cy.revisarAccesibilidad("ayuda-equipo-senior-360");
   });
 });

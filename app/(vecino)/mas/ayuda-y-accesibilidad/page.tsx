@@ -51,8 +51,8 @@ export default async function AyudaYAccesibilidad() {
       <Tarjeta titulo="Guías de uso">
         <ul className="flex flex-col">
           <FilaGuia
-            nombre="Primeros pasos"
-            estado="Cómo ver la aplicación y cómo tenerla en su pantalla"
+            nombre="Guía rápida y tener la app en su pantalla"
+            estado="Cómo ver la aplicación y cómo agregar su ícono al teléfono"
             href="/guia"
           />
           {guias.map((g) => (

@@ -6,5 +6,5 @@ export const metadata: Metadata = { title: "Pedir ayuda" };
 
 export default async function Ayuda() {
   await exigirActor(["VIGILANTE"], "/entrar/equipo");
-  return <AyudaEquipo />;
+  return <AyudaEquipo conDirectivaDeTurno />;
 }

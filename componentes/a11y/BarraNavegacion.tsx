@@ -81,7 +81,8 @@ export const OPCIONES_POR_ACTOR: Record<Actor, Opcion[]> = {
     { etiqueta: "Equipo", href: "/administracion/equipo", Icono: Users },
     { etiqueta: "Privacidad", href: "/administracion/privacidad", Icono: ShieldCheck, clase: DESDE_TABLET },
     { etiqueta: "Auditoría", href: "/administracion/auditoria", Icono: ScrollText, clase: DESDE_TABLET },
-    { etiqueta: "Más", href: "/administracion/mas", Icono: Ellipsis },
+    // En la tablet y el escritorio la barra ya tiene Privacidad y Auditoría: "Más" solo hace falta en el teléfono (ADM-23).
+    { etiqueta: "Más", href: "/administracion/mas", Icono: Ellipsis, clase: "md:hidden" },
   ],
   garita: [
     { etiqueta: "Inicio", href: "/garita", Icono: DoorOpen },
