@@ -13,12 +13,9 @@ export default async function Layout({ children }: { children: ReactNode }) {
     <MarcoActor
       actor="garita"
       modoSenior={await modoSeniorAlRenderizar()}
-      selector={
-        <div className="flex flex-wrap items-center gap-separacion">
-          <CambiarDePerfil sesion={sesion} actual="garita" estilo="boton" />
-          <BotonCerrarSesion destino="/entrar/equipo" />
-        </div>
-      }
+      selector={<CambiarDePerfil sesion={sesion} actual="garita" estilo="boton" />}
+      // «Cerrar sesión» en la misma fila que «Vista grande» y «Pedir ayuda» (VIG-20, ADM-23).
+      cerrarSesion={<BotonCerrarSesion destino="/entrar/equipo" enBarra />}
     >
       <RenovarSesion />
       {children}

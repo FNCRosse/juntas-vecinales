@@ -26,9 +26,19 @@ describe("@HU-ACC-09 Navegación: lo que faltaba y lo que sobraba", () => {
     cy.visit("/administracion");
     cy.get('nav[aria-label="Principal"]').contains("a", "Privacidad").should("be.visible");
     cy.get('nav[aria-label="Principal"]').contains("a", "Más").should("not.be.visible");
-    cy.contains("header button", "Cerrar sesión").should("be.visible");
+    cy.contains("header button", "Vista grande")
+      .parent()
+      .contains("button", "Cerrar sesión")
+      .should("be.visible");
     cy.revisarAccesibilidad("panel-administracion-escritorio");
     cy.viewport(360, 800);
     cy.get('nav[aria-label="Principal"]').contains("a", "Más").should("be.visible");
+  });
+
+  it("@HU-GAR-03 [FAVICON] el sitio tiene ícono en la pestaña del navegador", () => {
+    cy.visit("/entrar");
+    cy.get('head link[rel="icon"]')
+      .should("have.attr", "href")
+      .then((href) => cy.request(String(href)).its("status").should("eq", 200));
   });
 });
