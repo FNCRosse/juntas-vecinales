@@ -168,7 +168,11 @@ describe("@HU-COB-06 Una sola vez", () => {
     await suspenderCasasConAtrasoCritico(A_LAS_OCHO_SEMANAS);
     const casa = await predioDe("08123478");
     expect(await rejaDe(casa)).toBe("ROJO");
-    await liquidarDeuda(marta, { predioId: casa, medio: "EFECTIVO", idOperacion: randomUUID() }, LIQUIDA);
+    await liquidarDeuda(
+      marta,
+      { predioId: casa, medio: "EFECTIVO", montoRecibido: 1_000_000, idOperacion: randomUUID() },
+      LIQUIDA,
+    );
     expect(await rejaDe(casa)).toBe("VERDE");
     expect(await suspenderCasasConAtrasoCritico(LIQUIDA)).toMatchObject({ suspendidas: expect.any(Number) });
     expect(await rejaDe(casa)).toBe("VERDE");
