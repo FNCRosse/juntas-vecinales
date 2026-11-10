@@ -8,12 +8,12 @@ import {
   Check,
   CircleCheck,
   EyeOff,
-  FileText,
   Info,
   LocateFixed,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
+import { LeerPolitica } from "@/app/_privacidad/LeerPolitica";
 import { useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
 import { AreaTexto } from "@/componentes/a11y/AreaTexto";
@@ -399,23 +399,11 @@ export function ReportarProblema({
               }}
               className="mt-1 size-icono shrink-0 accent-accion-primaria"
             />
-            <span className="flex flex-col gap-3">
-              <span>
-                <strong>Acepto la política de privacidad</strong> y confirmo que lo que cuento es cierto.
-              </span>
-              {/* Se abre en otra pestaña: se puede leer sin perder lo escrito en el formulario. */}
-              <a
-                href="/privacidad"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-tactil items-center gap-2 self-start font-bold text-texto-enlace underline underline-offset-4"
-              >
-                <FileText aria-hidden className="size-icono shrink-0" />
-                Leer la política de privacidad
-                <span className="sr-only"> (se abre en otra pestaña)</span>
-              </a>
+            <span>
+              <strong>Acepto la política de privacidad</strong> y confirmo que lo que cuento es cierto.
             </span>
           </label>
+          <LeerPolitica />
           {errores.consentimiento && (
             <MensajeDeCampo id="consentimiento-error">{errores.consentimiento}</MensajeDeCampo>
           )}

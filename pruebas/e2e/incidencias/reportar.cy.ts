@@ -6,7 +6,7 @@ export {};
 const R2_SIMULADO = "https://r2-simulado.invalid/evidencia";
 
 describe("@HU-QUE-01 @HU-QUE-04 Registrar una queja y emitir su ticket", () => {
-  it("@HU-QUE-01 CA1 CA2 CA3 @HU-QUE-04 CA1 CA2 CA3 una vecina reporta en teléfono y modo Senior; la directiva lo ve por evaluar", () => {
+  it("@HU-QUE-01 CA1 CA2 CA3 @HU-QUE-04 CA1 CA2 CA3 [VEC-07] una vecina reporta en teléfono y modo Senior; la directiva lo ve por evaluar", () => {
     cy.entrarComoVecinaNueva("Nora Ruiz Pinto").then(({ dni }) => {
       cy.task<string>("archivoDePrueba", { dni, uso: "evidencia_queja" }).then((archivoId) => {
         cy.intercept("POST", "/api/archivos", {
@@ -55,6 +55,16 @@ describe("@HU-QUE-01 @HU-QUE-04 Registrar una queja y emitir su ticket", () => {
     });
     cy.wait("@subir");
     cy.contains("li", "foto-ruido.jpg").should("exist");
+    // VEC-07: la política se lee encima del formulario; «Volver al reporte» regresa sin perder lo escrito.
+    cy.contains("button", "Leer la política de privacidad").click();
+    cy.get("[role=dialog]").should("contain.text", "Qué datos guardamos");
+    cy.revisarAccesibilidad("reportar-politica-senior-360");
+    cy.get("[role=dialog]").contains("button", "Volver al reporte").click();
+    cy.get("[role=dialog]").should("not.exist");
+    cy.get("#campo-descripcion").should(
+      "have.value",
+      "Música muy fuerte todas las noches después de las 11 p. m.",
+    );
     cy.contains("label", "Acepto la política de privacidad").click();
     cy.contains("button", "Revisar mi reporte").click();
 
