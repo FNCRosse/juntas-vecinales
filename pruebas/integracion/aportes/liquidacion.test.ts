@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { POST as liquidarHttp } from "@/app/api/aportes/liquidaciones/route";
 import { prisma } from "@/compartido/bd/cliente";
 import { sembrar } from "@/compartido/bd/semillas";
+import { soles } from "@/compartido/dinero";
 import { ErrorNoAutorizado, ErrorNoEncontrado, ErrorValidacion } from "@/compartido/errores";
 import { calcularDeuda } from "@/modulos/aportes/aplicacion/deuda";
 import {
@@ -59,14 +60,38 @@ const deudaDe = async (predioId = predioJulio) =>
   )._sum.saldoPendiente ?? 0;
 
 const liquidar = (
-  extra: Partial<{ predioId: string; medio: string; numeroOperacion: string; idOperacion: string }> = {},
+  extra: Partial<{
+    predioId: string;
+    medio: string;
+    numeroOperacion: string;
+    idOperacion: string;
+    montoRecibido: number;
+    archivoId: string;
+  }> = {},
   sesion = marta,
 ) =>
   liquidarDeuda(
     sesion,
-    { predioId: predioJulio, medio: "EFECTIVO", idOperacion: randomUUID(), ...extra },
+    {
+      predioId: predioJulio,
+      medio: "EFECTIVO",
+      montoRecibido: 1_000_000,
+      idOperacion: randomUUID(),
+      ...extra,
+    },
     LIQUIDA,
   );
+
+const fotoDe = (sesion: SesionDto) =>
+  prisma.archivo.create({
+    data: {
+      clave: `comprobantes/${randomUUID()}.jpg`,
+      tipo: "image/jpeg",
+      tamano: 1000,
+      uso: "comprobante_pago",
+      subidoPor: sesion.usuarioId,
+    },
+  });
 
 beforeEach(async () => {
   await prisma.$executeRaw`TRUNCATE identidad_usuarios, identidad_predios, nucleo_cola_avisos, nucleo_archivos, aportes_pedidos_cobro_en_casa, aportes_pedidos_recibo_papel, aportes_recibos, aportes_comprobantes, aportes_pago_cuotas, aportes_pagos, aportes_cuota_conceptos, aportes_cuotas, aportes_conceptos_tarifa, aportes_tarifas RESTART IDENTITY CASCADE`;
@@ -143,7 +168,7 @@ describe("@HU-COB-07 CA1 CA2 CA3 Poner al día", () => {
       recibo: {
         numero: "000001",
         titular: "Julio Mendoza",
-        medio: "Efectivo",
+        medio: expect.stringMatching(/^Efectivo \(recibió S\/ /),
         monto: antes,
         concepto: "Cuota de vigilancia: 9 semanas, del 27 de julio al 27 de setiembre (deuda acumulada)",
         registradoPor: "Marta Rojas",
@@ -187,6 +212,38 @@ describe("@HU-COB-07 CA1 CA2 CA3 Poner al día", () => {
     expect((await prisma.pago.findFirstOrThrow()).medio).toBe("YAPE_O_PLIN");
     const transferencia = await liquidar({ predioId: await predioDe("08123478"), medio: "TRANSFERENCIA" });
     expect(transferencia.recibo!.medio).toBe("Transferencia bancaria");
+  });
+
+  it("@HU-COB-07 CA1 [DIR-19] en efectivo se anota cuánto entregó y el recibo dice el vuelto", async () => {
+    const debe = await deudaDe();
+    const r = await liquidar({ montoRecibido: debe + 500 });
+    expect(r.recibo!.medio).toBe(`Efectivo (recibió ${soles(debe + 500)}, vuelto S/ 5.00)`);
+    const sinMonto = await liquidar({ predioId: await predioDe("08123478"), montoRecibido: 0 }).catch(
+      (e) => e,
+    );
+    expect(sinMonto).toMatchObject({ campos: { montoRecibido: expect.stringMatching(/cuánto le entregó/) } });
+  });
+
+  it("@HU-COB-07 CA1 [DIR-19] en efectivo, sin monto o con menos de lo que debe, no se registra nada", async () => {
+    const debe = await deudaDe();
+    await expect(liquidar({ montoRecibido: undefined })).rejects.toMatchObject({
+      campos: { montoRecibido: expect.stringMatching(/cuánto le entregó/) },
+    });
+    await expect(liquidar({ montoRecibido: debe - 1 })).rejects.toMatchObject({
+      campos: { montoRecibido: expect.stringContaining(soles(debe)) },
+    });
+    expect(await deudaDe()).toBe(debe);
+  });
+
+  it("@HU-COB-07 CA1 [DIR-19] por Yape, Plin o transferencia se adjunta la foto del pago y queda con el pago", async () => {
+    const foto = await fotoDe(marta);
+    await liquidar({ medio: "YAPE_O_PLIN", montoRecibido: undefined, archivoId: foto.id });
+    const pago = await prisma.pago.findFirstOrThrow({ include: { comprobantes: true } });
+    expect(pago.comprobantes).toMatchObject([{ archivoId: foto.id, estado: "APROBADO" }]);
+    const ajena = await fotoDe(julio);
+    await expect(
+      liquidar({ predioId: await predioDe("08123478"), medio: "TRANSFERENCIA", archivoId: ajena.id }),
+    ).rejects.toMatchObject({ campos: { archivoId: expect.any(String) } });
   });
 
   it("@HU-COB-07 si la reja no estaba suspendida, no se avisa a la garita ni se habla de la reja", async () => {
@@ -291,7 +348,12 @@ describe("@HU-COB-07 Endpoint", () => {
     );
 
   it("@HU-COB-07 POST /api/aportes/liquidaciones registra (201), repetirlo responde 200; sin permiso 403, sin sesión 401", async () => {
-    const cuerpo = { predioId: predioJulio, medio: "EFECTIVO", idOperacion: randomUUID() };
+    const cuerpo = {
+      predioId: predioJulio,
+      medio: "EFECTIVO",
+      montoRecibido: "1,000.00",
+      idOperacion: randomUUID(),
+    };
     const primera = await llamar(tokenMarta, cuerpo);
     expect(primera.status).toBe(201);
     expect(await primera.json()).toMatchObject({ aplicado: true, nombre: "Julio Mendoza" });
