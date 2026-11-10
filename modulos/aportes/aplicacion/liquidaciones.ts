@@ -29,7 +29,7 @@ const ROLES_DIRECTIVA = ["DIRECTIVA", "DIRECTIVO_MEDIADOR"] as const;
 const minuscula = (texto: string) => texto.charAt(0).toLowerCase() + texto.slice(1);
 
 /** Una casa como la ve la directiva al ponerla al día: lo que debe, desde cuándo y si la reja se le abre sola. */
-async function aCasa(predioId: string, esSuya: boolean, puedeRegistrar: boolean) {
+async function aCasa(predioId: string, esSuya: boolean) {
   const [casas, cuotas, ultima] = await Promise.all([
     casasDe([predioId]),
     cuotasPorPagarDe(predioId),
@@ -50,7 +50,7 @@ async function aCasa(predioId: string, esSuya: boolean, puedeRegistrar: boolean)
       ? `${soles(ultima.montoCalculado)} (${ultima.conceptos.map((l) => `${minuscula(l.nombre)} ${soles(l.subtotal)}`).join(" + ")})`
       : null,
     esSuya,
-    puedeRegistrar: puedeRegistrar && !esSuya && debe > 0,
+    puedeRegistrar: !esSuya && debe > 0,
   };
 }
 
@@ -58,7 +58,7 @@ export type CasaPorPonerAlDia = Awaited<ReturnType<typeof aCasa>>;
 
 /**
  * «Poner al día a un vecino» (DIR-COB-15): busca por nombre o DNI y muestra cada casa con lo que debe, desde cuándo y si
- * la reja se le abre sola. Registrar el pago es solo de la directiva y nunca en su propia casa. El DNI no sale entero.
+ * la reja se le abre sola. Registrar el pago es de la directiva y del directivo mediador (MED-13), nunca en su propia casa. El DNI no sale entero.
  */
 export async function buscarCasasPorPonerAlDia(sesion: SesionDto, texto: string) {
   exigirRol(sesion, ...ROLES_DIRECTIVA);
@@ -67,7 +67,7 @@ export async function buscarCasasPorPonerAlDia(sesion: SesionDto, texto: string)
   const predios = [...new Map(encontrados.map((e) => [e.predioId, e])).values()].slice(0, 8);
   const casas = await Promise.all(
     predios.map(async (p) => ({
-      ...(await aCasa(p.predioId, p.predioId === miCasa?.id, sesion.roles.includes("DIRECTIVA"))),
+      ...(await aCasa(p.predioId, p.predioId === miCasa?.id)),
       nombre: p.nombre,
       dniTerminadoEn: p.dniTerminadoEn,
     })),
@@ -79,14 +79,14 @@ export async function buscarCasasPorPonerAlDia(sesion: SesionDto, texto: string)
 export async function verCasaPorPonerAlDia(sesion: SesionDto, predioId: string) {
   exigirRol(sesion, ...ROLES_DIRECTIVA);
   const miCasa = await predioDelVecino(sesion.usuarioId);
-  return aCasa(predioId, predioId === miCasa?.id, sesion.roles.includes("DIRECTIVA"));
+  return aCasa(predioId, predioId === miCasa?.id);
 }
 
 /**
  * Registra el pago de toda la deuda acumulada de una casa (HU-COB-07 CA1 a CA3): lo paga en efectivo, por Yape, Plin o
  * transferencia, y la casa pasa a «Al día». En la misma transacción se aplica el abono a todas sus cuotas, se restituye
  * la garita (la reja vuelve a abrirse sola), se emite el recibo y se avisa a la casa y, si la reja estaba suspendida, a
- * la garita; todo en la auditoría (AC-6). Solo la directiva y nunca en su propia casa. Repetir el mismo `idOperacion`
+ * la garita; todo en la auditoría (AC-6). La directiva o el directivo mediador (MED-13), nunca en su propia casa. Repetir el mismo `idOperacion`
  * devuelve lo ya registrado sin abonar ni avisar otra vez (AC-5). Si la casa tiene un pago en revisión, primero se resuelve.
  */
 export async function liquidarDeuda(
@@ -103,7 +103,7 @@ export async function liquidarDeuda(
   },
   ahora = new Date(),
 ) {
-  exigirRol(sesion, "DIRECTIVA");
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
   const previo = await pagoPorIdOperacion(datos.idOperacion);
   if (previo) return repetida(sesion, previo.id, previo.autorId, previo.predioId, previo.monto);
   const { errores, liquidacion } = prepararLiquidacion({
