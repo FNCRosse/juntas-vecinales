@@ -1,7 +1,7 @@
 "use client";
 // @HU-ASA-01
 
-import { ArrowRight, CalendarDays, ChevronLeft, Printer } from "lucide-react";
+import { ArrowRight, CalendarDays, ChevronLeft, Clock, MapPin, Printer } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { enviarJson } from "@/app/_formularios/enviar";
@@ -205,22 +205,39 @@ function Afiche({
       <h1 ref={referencia} tabIndex={-1} className="text-titulo-1">
         Afiche para pegar en el barrio
       </h1>
+      {/* DIR-34: la vista previa se parece al PDF a color que se imprime (compartido/archivos/afiche.ts). */}
       <section
         aria-label="Afiche de la asamblea"
-        className="flex flex-col gap-2 rounded-tarjeta border border-borde-fuerte bg-fondo-superficie p-6 text-center"
+        className="flex flex-col overflow-hidden rounded-tarjeta border border-borde-fuerte bg-fondo-pagina shadow-tarjeta"
       >
-        <p className="font-bold">Junta Vecinal de Villa de Fátima</p>
-        <p className="text-titulo-2">{asamblea.titulo}</p>
-        <p className="font-bold">
-          {dia.charAt(0).toUpperCase()}
-          {dia.slice(1)}
-        </p>
-        <p>
-          {hora} · {asamblea.lugar}
-        </p>
-        <p className="pt-2 font-bold">Motivo</p>
-        <p>{asamblea.motivo}</p>
-        <p className="pt-2 text-texto-secundario">
+        <div className="flex flex-col gap-1 bg-accion-primaria p-6 text-texto-invertido">
+          <p className="text-pequeno font-bold tracking-wide">Junta Vecinal de Villa de Fátima</p>
+          <p className="text-titulo-1">{asamblea.titulo}</p>
+          <p className="font-bold">¡Su participación cuenta!</p>
+        </div>
+        <div className="flex flex-col gap-separacion p-4">
+          {[
+            { etiqueta: "Fecha", valor: dia.charAt(0).toUpperCase() + dia.slice(1), Icono: CalendarDays },
+            { etiqueta: "Hora", valor: hora, Icono: Clock },
+            { etiqueta: "Lugar", valor: asamblea.lugar, Icono: MapPin },
+          ].map(({ etiqueta, valor, Icono }) => (
+            <div
+              key={etiqueta}
+              className="flex items-center gap-3 rounded-control border border-borde-sutil bg-fondo-superficie p-3"
+            >
+              <span className="flex min-w-24 items-center gap-2 rounded-control bg-fondo-info px-2 py-1 font-bold text-texto-info">
+                <Icono aria-hidden className="size-icono shrink-0" />
+                {etiqueta}
+              </span>
+              <span className="font-bold">{valor}</span>
+            </div>
+          ))}
+          <div className="flex flex-col gap-1 rounded-control border-l-(length:--borde-ancho-control) border-borde-aviso bg-fondo-aviso p-4">
+            <p className="font-bold text-texto-aviso">Motivo de la reunión</p>
+            <p>{asamblea.motivo}</p>
+          </div>
+        </div>
+        <p className="bg-accion-primaria p-4 text-center font-bold text-texto-invertido">
           Confirme su asistencia en la app o con un mediador de la directiva.
         </p>
       </section>
