@@ -3,7 +3,7 @@ export {};
 // Reporte asistido por el mediador (DIR-QUE-08, DIR-QUE-09, DIR-QUE-10).
 
 describe("@HU-QUE-03 Queja asistida por el mediador", () => {
-  it("@HU-QUE-03 CA1 CA2 CA3 el mediador busca a la vecina, registra con anonimato y obtiene la constancia, en modo Senior", () => {
+  it("@HU-QUE-03 CA1 CA2 CA3 [VEC-07] el mediador busca a la vecina, registra con anonimato y obtiene la constancia, en modo Senior", () => {
     cy.task("rolDePrueba", { dni: "40000003", rol: "DIRECTIVO_MEDIADOR" });
     cy.clearCookies();
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
@@ -26,10 +26,13 @@ describe("@HU-QUE-03 Queja asistida por el mediador", () => {
     cy.get("[role=dialog]").contains("button", "Mz. D").click();
     cy.get("#campo-descripcion").type("Dejan bolsas de basura en la esquina desde hace una semana.");
     cy.get('[role="switch"]').click();
-    // MED-03: la política se puede leer desde esta pantalla, en otra pestaña.
-    cy.contains("a", "Leer la política de privacidad")
-      .should("have.attr", "href", "/privacidad")
-      .and("have.attr", "target", "_blank");
+    // MED-03 y VEC-07: la política se lee encima del formulario y se vuelve a él sin perder lo escrito.
+    cy.contains("button", "Leer la política de privacidad").click();
+    cy.get("[role=dialog]").contains("button", "Volver al reporte").click();
+    cy.get("#campo-descripcion").should(
+      "have.value",
+      "Dejan bolsas de basura en la esquina desde hace una semana.",
+    );
     cy.contains("label", "El vecino aceptó la política de privacidad").click();
     cy.revisarAccesibilidad("asistido-completo-senior-360");
     cy.contains("button", "Revisar el reporte").click();
