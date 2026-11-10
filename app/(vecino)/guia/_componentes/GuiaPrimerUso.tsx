@@ -1,7 +1,18 @@
 "use client";
 // @HU-GAR-03
 
-import { ArrowRight, CircleHelp, Pause, Smartphone, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  CircleHelp,
+  EllipsisVertical,
+  MapPin,
+  Pause,
+  Share,
+  Smartphone,
+  SquarePlus,
+  Wallet,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Boton, BotonEnlace } from "@/componentes/a11y/Boton";
@@ -10,7 +21,8 @@ import { MensajeEstado } from "@/componentes/a11y/MensajeEstado";
 
 // Cuatro pasos como máximo, uno a la vez; se puede pausar o saltar (prototipo VEC-ACC-08). El primero
 // pregunta cómo prefiere ver la aplicación, con la vista grande marcada de antemano (HU-ACC-01 CA4); el
-// último ofrece el acceso directo: con el aviso del navegador si existe; si no, cómo hacerlo a mano.
+// último ofrece el acceso directo: con el aviso del navegador si existe; si no, cómo hacerlo a mano, con el dibujo de cada
+// botón del teléfono. Al terminar ofrece las guías de cada sección (VAM-10). Se vuelve a ver desde Ayuda y accesibilidad.
 
 type AvisoInstalar = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
@@ -54,6 +66,23 @@ const VISTAS: { valor: Vista; titulo: string; texto: string; muestra: string }[]
 
 // El paso 0 es la elección de vista; los demás son los de PASOS.
 const TOTAL_PASOS = PASOS.length + 1;
+
+/** Las guías de cada sección, para seguir aprendiendo al terminar (VAM-10). */
+const GUIAS_DE_SECCION = [
+  { href: "/guia/cuota?desde=inicio", nombre: "Mi cuota", Icono: Wallet },
+  { href: "/guia/asambleas?desde=inicio", nombre: "Asambleas", Icono: CalendarDays },
+  { href: "/guia/incidentes?desde=inicio", nombre: "Incidentes", Icono: MapPin },
+];
+
+/** Un botón del teléfono dibujado dentro del texto: el ícono en un recuadro, para que se reconozca. */
+function TeclaDelTelefono({ Icono, nombre }: { Icono: typeof Share; nombre: string }) {
+  return (
+    <span className="mx-1 inline-flex items-center gap-1 rounded-control border-(length:--borde-ancho-control) border-borde-fuerte bg-fondo-superficie px-2 align-middle font-bold">
+      <Icono aria-hidden className="size-icono" />
+      {nombre}
+    </span>
+  );
+}
 
 export function GuiaPrimerUso() {
   const [paso, setPaso] = useState(0);
@@ -182,11 +211,31 @@ export function GuiaPrimerUso() {
         ) : (
           <div className="flex flex-col gap-3 rounded-control bg-fondo-suave p-4 senior:p-6">
             <p className="font-bold">Cómo agregarla</p>
-            <p>En Android: toque el menú de los tres puntos y elija «Agregar a la pantalla principal».</p>
-            <p>En iPhone: toque el botón Compartir y elija «Agregar a inicio».</p>
+            <p>
+              <strong>En Android:</strong> arriba a la derecha, toque
+              <TeclaDelTelefono Icono={EllipsisVertical} nombre="los tres puntos" />y elija «Agregar a la
+              pantalla principal».
+            </p>
+            <p>
+              <strong>En iPhone:</strong> abajo, toque
+              <TeclaDelTelefono Icono={Share} nombre="Compartir" />y elija
+              <TeclaDelTelefono Icono={SquarePlus} nombre="Agregar a inicio" />.
+            </p>
           </div>
         ))}
 
+      {ultimo && (
+        <section aria-labelledby="guias-de-seccion" className="flex flex-col gap-separacion">
+          <h2 id="guias-de-seccion" className="text-titulo-3">
+            Vea cómo funciona cada sección
+          </h2>
+          {GUIAS_DE_SECCION.map(({ href, nombre, Icono }) => (
+            <BotonEnlace key={href} href={href} variante="secundario" icono={Icono} anchoCompleto>
+              Guía de {nombre}
+            </BotonEnlace>
+          ))}
+        </section>
+      )}
       <div className="flex flex-col gap-separacion">
         {ultimo ? (
           <BotonEnlace href="/" icono={ArrowRight} anchoCompleto>
@@ -206,13 +255,18 @@ export function GuiaPrimerUso() {
             Pausar y seguir después
           </Link>
         )}
-        <Link
-          href="/"
-          className="inline-flex min-h-tactil items-center justify-center font-bold text-texto-enlace"
-        >
-          Saltar la guía (no se volverá a mostrar)
-        </Link>
+        {!ultimo && (
+          <Link
+            href="/"
+            className="inline-flex min-h-tactil items-center justify-center font-bold text-texto-enlace"
+          >
+            Saltar la guía
+          </Link>
+        )}
       </div>
+      <p className="text-texto-secundario">
+        Puede volver a verla cuando quiera en Más, en «Ayuda y accesibilidad».
+      </p>
     </div>
   );
 }

@@ -27,7 +27,7 @@ export const RECORRIDOS = {
       {
         titulo: "Vea lo que pasa en el barrio",
         texto: "Elija Lista, Mapa o Resumen. Todo se muestra por manzana, sin la casa de nadie.",
-        accion: "Mapa",
+        accion: "Ver los incidentes: Lista, Mapa o Resumen",
       },
     ],
   },

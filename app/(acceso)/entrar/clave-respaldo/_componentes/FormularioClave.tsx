@@ -61,7 +61,7 @@ export function FormularioClave({ dni }: { dni: string }) {
           Crear mi clave
         </Boton>
         <Link
-          href="/"
+          href="/guia"
           className="inline-flex min-h-tactil items-center justify-center font-bold text-texto-enlace"
         >
           Ahora no, seguir sin clave

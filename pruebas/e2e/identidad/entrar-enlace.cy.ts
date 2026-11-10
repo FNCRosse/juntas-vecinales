@@ -91,6 +91,11 @@ describe("@HU-GAR-02 Entrar con el enlace de acceso", () => {
       cy.contains("button", "Siguiente").click();
       cy.get("h1").should("have.text", "Tenga la app en su pantalla");
       cy.contains("p", "Agregar a inicio").should("exist");
+      // [VAM-10] cada botón del teléfono se dibuja, y al terminar se ofrecen las guías de cada sección.
+      cy.contains("p", "En Android").should("contain.text", "los tres puntos");
+      cy.contains("a", "Guía de Mi cuota").should("have.attr", "href", "/guia/cuota?desde=inicio");
+      cy.contains("a", "Guía de Incidentes").should("exist");
+      cy.contains("Saltar la guía").should("not.exist");
       cy.revisarAccesibilidad("guia-paso4-senior");
       cy.contains("a", "Terminar y empezar").click();
 

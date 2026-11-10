@@ -17,10 +17,13 @@ export const MENSAJE_FALTA_ACEPTAR =
 
 /**
  * Aceptación expresa de la política de privacidad (HU-GAR-02 CA2, Ley 29733): queda la fecha en la
- * cuenta y en la auditoría. Después, el paso opcional de la clave si todavía no tiene una.
+ * cuenta y en la auditoría. Después, el paso opcional de la clave si todavía no tiene una; si ya la tiene y es su
+ * primer ingreso, la guía rápida (HU-GAR-03 CA1, VAM-10), que antes solo veía quien creaba la clave en ese momento.
  */
 export async function aceptarPolitica(sesion: SesionDto, ahora = new Date()) {
   const usuario = await buscarUsuario(sesion.usuarioId);
+  const primerIngreso = !usuario?.politicaVersion;
+  const esVecino = sesion.roles.some((r) => r === "VECINO" || r === "VECINO_ADULTO_MAYOR");
   if (faltaAceptarPolitica(usuario?.politicaVersion ?? null)) {
     await prisma.$transaction(async (tx) => {
       await marcarPoliticaAceptada(tx, sesion.usuarioId, VERSION_POLITICA, ahora);
@@ -37,7 +40,8 @@ export async function aceptarPolitica(sesion: SesionDto, ahora = new Date()) {
       );
     });
   }
-  return { destino: usuario?.credencial ? "/" : "/entrar/clave-respaldo" };
+  if (!usuario?.credencial) return { destino: "/entrar/clave-respaldo" };
+  return { destino: primerIngreso && esVecino ? "/guia" : "/" };
 }
 
 /** El paso de la clave no pide el DNI: ya lo tenemos (WCAG 3.3.7). */

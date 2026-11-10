@@ -15,6 +15,14 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     cy.contains("p", "Guía de Incidentes · paso 1 de 4 · es opcional").should("exist");
     cy.get("h1").should("have.text", "Avise de un problema del barrio");
     cy.contains("strong", "Reportar un problema").should("exist");
+    // [VAM-08] la captura de la pantalla con el botón marcado se ve, con su texto alternativo.
+    cy.get('img[src="/guias/incidentes-1.png"]')
+      .should("be.visible")
+      .and("have.attr", "alt")
+      .and("contain", "«Reportar un problema»");
+    cy.get('img[src="/guias/incidentes-1.png"]').should(($img) =>
+      expect(($img[0] as HTMLImageElement).naturalWidth, "la imagen cargó").to.be.greaterThan(0),
+    );
     cy.revisarAccesibilidad("guia-incidentes-paso1-senior-360");
     cy.esperarHidratacion("Siguiente").click();
     cy.get("h1").should("have.text", "Puede enviarlo sin su nombre");
@@ -35,7 +43,7 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     cy.revisarAccesibilidad("ayuda-guias-senior-360");
     cy.contains("a", "Ver la guía de Incidentes").click();
     cy.contains("p", "paso 1 de 4").should("exist");
-    cy.esperarHidratacion("Saltar la guía (no se volverá a mostrar)");
+    cy.esperarHidratacion("Saltar la guía");
     cy.guardarModo("normal");
   });
 
@@ -97,7 +105,7 @@ describe("@HU-ACC-10 Tutorial guiado por sección", () => {
     cy.esperarHidratacion("Siguiente").click();
     cy.get("h1").should("have.text", "Pague con una foto");
     cy.contains("strong", "Pagar mi cuota").should("exist");
-    cy.contains("button", "Saltar la guía (no se volverá a mostrar)").click();
+    cy.contains("button", "Saltar la guía").click();
     cy.location("pathname").should("eq", "/cuota");
     cy.get('[role="note"]').should("not.exist");
     cy.visit("/mas/ayuda-y-accesibilidad");
