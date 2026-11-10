@@ -16,7 +16,9 @@ import {
   iniciarSesionConClave,
   MENSAJE_EN_PAUSA,
 } from "@/modulos/identidad/aplicacion/iniciarSesionConClave";
+import { aceptarPolitica } from "@/modulos/identidad/aplicacion/primerIngreso";
 import { reenviarEnlace } from "@/modulos/identidad/aplicacion/reenviarEnlace";
+import { obtenerSesion } from "@/modulos/identidad/aplicacion/sesion";
 
 jest.mock("next/server", () => ({ after: jest.fn() }));
 
@@ -124,6 +126,15 @@ describe("@HU-GAR-24 Entrar con la clave de respaldo", () => {
     await pedirEnlace(CARMEN, "CLAVE", ORIGEN, T0);
     await restablecerClave(await tokenDe("/clave/nueva"), clave, undefined, minutos(1));
   }
+
+  it("@HU-GAR-03 CA1 [VAM-10] quien ya tiene clave y acepta la política por primera vez va a la guía rápida", async () => {
+    await conClave();
+    const { token } = await iniciarSesionConClave({ dni: CARMEN, clave: "mi-clave-1" });
+    const sesion = (await obtenerSesion(token))!;
+    expect(await aceptarPolitica(sesion)).toEqual({ destino: "/guia" });
+    // La segunda vez ya no es su primer ingreso: va al inicio.
+    expect(await aceptarPolitica(sesion)).toEqual({ destino: "/" });
+  });
 
   it("@HU-GAR-24 CA2 valida la clave vinculada al DNI antes de dar acceso", async () => {
     await conClave();
