@@ -6,7 +6,9 @@ import { enviarJson } from "@/app/_formularios/enviar";
 
 export type CobroGuardado = {
   idOperacionLocal: string;
-  pedidoId: string;
+  /** Del pedido de cobro en casa o, sin pedido (DIR-19), de la casa. */
+  pedidoId?: string;
+  predioId?: string;
   nombre: string;
   vivienda: string;
   /** Céntimos. */
@@ -90,6 +92,7 @@ async function enviarPendientes() {
     const r = await enviarJson<RespuestaDelCobro>("/api/aportes/pagos/presencial", "POST", {
       idOperacionLocal: cobro.idOperacionLocal,
       pedidoId: cobro.pedidoId,
+      predioId: cobro.predioId,
       monto: cobro.monto,
       reciboEnPapel: cobro.reciboEnPapel,
       registradoEn: cobro.registradoEn,

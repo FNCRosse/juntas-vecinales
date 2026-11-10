@@ -28,9 +28,17 @@ export default async function PonerAlDia({ searchParams }: { searchParams: Promi
       </Link>
       <div className="flex flex-col gap-2">
         <h1 className="text-titulo-1">Poner al día a un vecino</h1>
-        <p>
-          Para registrar el pago de toda la deuda de una casa y que el vigilante vuelva a abrirle la reja.
-        </p>
+        {/* DIR-19: dos caminos distintos, el pago de toda la deuda o cobrar algunas semanas en efectivo. */}
+        <ul className="flex list-disc flex-col gap-1 pl-6">
+          <li>
+            <strong>Registrar el pago total</strong>: paga toda la deuda de la casa, queda al día y el
+            vigilante vuelve a abrirle la reja.
+          </li>
+          <li>
+            <strong>Cobrar en efectivo</strong>: le cobra las semanas que pueda pagar, aunque no haya pedido
+            el cobro en casa.
+          </li>
+        </ul>
       </div>
       <form method="get" role="search" className="flex flex-col gap-4">
         <Campo
@@ -92,9 +100,17 @@ export default async function PonerAlDia({ searchParams }: { searchParams: Promi
                 <p className="font-bold">Es su casa: la pone al día otro miembro de la directiva.</p>
               )}
               {c.puedeRegistrar && (
-                <BotonEnlace href={`/directiva/cobros/poner-al-dia/${c.predioId}`}>
-                  Registrar el pago total
-                </BotonEnlace>
+                <div className="flex flex-col gap-opuestas">
+                  <BotonEnlace href={`/directiva/cobros/poner-al-dia/${c.predioId}`}>
+                    Registrar el pago total
+                  </BotonEnlace>
+                  <BotonEnlace
+                    href={`/directiva/cobros/poner-al-dia/${c.predioId}/cobrar`}
+                    variante="secundario"
+                  >
+                    Cobrar en efectivo
+                  </BotonEnlace>
+                </div>
               )}
             </article>
           ))}

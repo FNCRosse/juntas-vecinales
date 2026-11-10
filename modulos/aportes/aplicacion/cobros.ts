@@ -33,6 +33,7 @@ import {
   crearPagoPresencial,
   cuotasImpagasDe,
   pagoPorIdOperacion,
+  semanasYaEnPago,
 } from "@/modulos/aportes/infraestructura/repositorioPagos";
 import { crearPedido, reciboDelPago } from "@/modulos/aportes/infraestructura/repositorioRecibos";
 import { directivaParaAvisar, nombresDe, telefonoDe } from "@/modulos/identidad/aplicacion/barrio";
@@ -233,6 +234,36 @@ export async function verPedidoDeCobro(sesion: SesionDto, id: string) {
 
 export type PedidoParaCobrar = Awaited<ReturnType<typeof verPedidoDeCobro>>;
 
+/**
+ * «Cobrar en efectivo» desde la ficha del vecino (DIR-19): lo que puede pagar la casa por semanas, las mismas opciones
+ * que ve el vecino en «Pagar mi cuota», aunque no haya pedido el cobro en casa. La directiva y el directivo mediador
+ * (MED-13), nunca en su propia casa.
+ */
+export async function verCasaParaCobrar(sesion: SesionDto, predioId: string) {
+  exigirRol(sesion, ...ROLES_DIRECTIVA);
+  const casa = (await casasDe([predioId])).get(predioId);
+  if (!casa) throw new ErrorNoEncontrado();
+  const [miCasa, cuotas] = await Promise.all([predioDelVecino(sesion.usuarioId), cuotasPagables(predioId)]);
+  const opciones = opcionesDePago(cuotas).map(({ semanas, monto, titulo, detalle }) => ({
+    semanas,
+    monto,
+    titulo,
+    detalle,
+  }));
+  const esSuya = predioId === miCasa?.id;
+  return {
+    predioId,
+    nombre: casa.nombre,
+    vivienda: casa.vivienda,
+    debe: opciones[0]?.monto ?? 0,
+    opciones,
+    esSuya,
+    puedeCobrar: !esSuya && opciones.length > 0,
+  };
+}
+
+export type CasaParaCobrar = Awaited<ReturnType<typeof verCasaParaCobrar>>;
+
 /** Lo que dice el recibo de un cobro en efectivo: las semanas que cubrió y, si quedó una a medias, que fue un abono. */
 function conceptoDelCobro(periodos: Date[], parcial: boolean) {
   if (!periodos.length) return "Cuota de vigilancia: sin semanas pendientes";
@@ -273,51 +304,74 @@ async function resultadoDelCobro(
  * tiene señal, a veces horas después: la hora que vale es la del cobro. Repetir el mismo `idOperacionLocal` devuelve lo
  * ya registrado sin abonar ni avisar otra vez (AC-5). Lo que sobra si la casa ya no debía tanto no se pierde: queda
  * dicho como excedente. Solo la directiva y nunca en su propia casa; todo en una transacción con su auditoría (AC-6).
+ *
+ * Sin pedido (DIR-19): con `predioId` en vez de `pedidoId`, la directiva o el directivo mediador (MED-13) cobra en
+ * efectivo aunque la casa no lo haya pedido; el aviso va a sus residentes y no hay recibo en papel por entregar
+ * (se imprime desde la lista de recibos). Si la casa tiene un pago en revisión, primero se resuelve ese pago.
  */
 export async function registrarCobroEnEfectivo(
   sesion: SesionDto,
   datos: {
     idOperacionLocal: string;
-    pedidoId: string;
+    pedidoId?: string;
+    predioId?: string;
     monto: number;
     reciboEnPapel: boolean;
     registradoEn?: string;
   },
   ahora = new Date(),
 ) {
-  exigirRol(sesion, "DIRECTIVA");
+  if (datos.pedidoId) exigirRol(sesion, "DIRECTIVA");
+  else exigirRol(sesion, ...ROLES_DIRECTIVA);
   const previo = await pagoPorIdOperacion(datos.idOperacionLocal);
   if (previo) return repetido(sesion, previo);
   const errorDeMonto = validarMontoCobrado(datos.monto);
   if (errorDeMonto) throw new ErrorValidacion(undefined, { monto: errorDeMonto });
-  const pedido = await pedidoDeCobroPorId(datos.pedidoId);
-  if (!pedido) throw new ErrorNoEncontrado();
+  const pedido = datos.pedidoId ? await pedidoDeCobroPorId(datos.pedidoId) : null;
+  if (datos.pedidoId && !pedido) throw new ErrorNoEncontrado();
+  const predioId = pedido?.predioId ?? datos.predioId;
+  if (!predioId) throw new ErrorValidacion(undefined, { predioId: "Falta la casa o el pedido de cobro." });
+  const casa = (await casasDe([predioId])).get(predioId);
+  if (!casa) throw new ErrorNoEncontrado();
   const miCasa = await predioDelVecino(sesion.usuarioId);
-  if (pedido.predioId === miCasa?.id) {
+  if (predioId === miCasa?.id) {
     throw new ErrorReglaNegocio("Es el cobro de su casa: lo registra otro miembro de la directiva.");
   }
-  if (pedido.estado !== "PENDIENTE")
+  if (pedido && pedido.estado !== "PENDIENTE")
     throw new ErrorReglaNegocio("Ese pedido de cobro ya se registró o se canceló.");
   const fecha = fechaDelCobro(datos.registradoEn, ahora);
-  const [casas, nombres] = await Promise.all([casasDe([pedido.predioId]), nombresDe([pedido.solicitanteId])]);
+  const titular = pedido
+    ? ((await nombresDe([pedido.solicitanteId])).get(pedido.solicitanteId) ?? "")
+    : casa.nombre;
 
   try {
     const hecho = await prisma.$transaction(async (tx) => {
-      await bloquearCasa(tx, pedido.predioId);
-      const cuotas = await cuotasImpagasDe(tx, pedido.predioId);
+      await bloquearCasa(tx, predioId);
+      const cuotas = await cuotasImpagasDe(tx, predioId);
+      if (
+        !pedido &&
+        (await semanasYaEnPago(
+          tx,
+          cuotas.map((c) => c.id),
+        ))
+      ) {
+        throw new ErrorReglaNegocio(
+          "Esa casa tiene un pago en revisión. Resuélvalo antes de registrar este cobro.",
+        );
+      }
       const { partes, excedente } = repartirCobro(
         datos.monto,
         cuotas.map((c) => ({ id: c.id, saldo: c.saldoPendiente })),
       );
       const pago = await crearPagoPresencial(tx, {
         idOperacion: datos.idOperacionLocal,
-        predioId: pedido.predioId,
+        predioId,
         autorId: sesion.usuarioId,
         monto: datos.monto,
         creadoEn: fecha,
         partes,
       });
-      if (!(await reclamarCobro(tx, pedido.id, pago.id, fecha))) {
+      if (pedido && !(await reclamarCobro(tx, pedido.id, pago.id, fecha))) {
         throw new ErrorReglaNegocio("Ese pedido de cobro ya se registró o se canceló.");
       }
       const saldos = new Map(cuotas.map((c) => [c.id, c.saldoPendiente]));
@@ -326,8 +380,8 @@ export async function registrarCobroEnEfectivo(
       const { debe, recibo } = await aplicarPagoAprobado(tx, {
         pago,
         partes,
-        titular: nombres.get(pedido.solicitanteId) ?? "",
-        vivienda: casas.get(pedido.predioId)?.vivienda ?? "",
+        titular,
+        vivienda: casa.vivienda,
         concepto: conceptoDelCobro(
           cubiertas.map((c) => c.periodo),
           parcial,
@@ -335,12 +389,13 @@ export async function registrarCobroEnEfectivo(
         registradoPor: { id: sesion.usuarioId, nombre: sesion.nombreCompleto },
         fecha,
         ahora,
-        avisarA: [pedido.solicitanteId],
+        avisarA: pedido ? [pedido.solicitanteId] : casa.residentes,
         accion: "registrar_cobro_en_efectivo",
         enviarRecibo: true,
         excedente,
+        medioTexto: pedido ? undefined : "En efectivo, cobrado por la directiva",
       });
-      if (datos.reciboEnPapel) {
+      if (datos.reciboEnPapel && pedido) {
         await crearPedido(tx, {
           idOperacion: `${datos.idOperacionLocal}:papel`,
           reciboId: recibo.id,
@@ -354,8 +409,8 @@ export async function registrarCobroEnEfectivo(
     });
     return {
       ...(await resultadoDelCobro(hecho.pago, true, { excedente: hecho.excedente, debe: hecho.debe })),
-      reciboEnPapel: datos.reciboEnPapel,
-      nombre: nombres.get(pedido.solicitanteId) ?? "",
+      reciboEnPapel: datos.reciboEnPapel && !!pedido,
+      nombre: titular,
     };
   } catch (error) {
     // Otro envío del mismo cobro llegó a la vez: ya está registrado, no se repite (UNIQUE idOperacion).
@@ -380,11 +435,15 @@ async function repetido(sesion: SesionDto, pago: PagoConDetalle) {
     prisma.pedidoReciboPapel.count({ where: { idOperacion: `${pago.idOperacion}:papel` } }),
     prisma.pedidoCobroEnCasa.findUnique({ where: { pagoId: pago.id } }),
   ]);
-  const nombres = await nombresDe(pedido ? [pedido.solicitanteId] : []);
+  const [nombres, casas] = await Promise.all([
+    nombresDe(pedido ? [pedido.solicitanteId] : []),
+    pedido ? new Map() : casasDe([pago.predioId]),
+  ]);
   return {
     ...(await resultadoDelCobro(pago, false, { excedente: pago.monto - aplicado, debe })),
     reciboEnPapel: pedidoDePapel > 0,
-    nombre: (pedido && nombres.get(pedido.solicitanteId)) ?? "",
+    // Sin pedido (DIR-19), el nombre es el de la casa.
+    nombre: (pedido ? nombres.get(pedido.solicitanteId) : casas.get(pago.predioId)?.nombre) ?? "",
   };
 }
 

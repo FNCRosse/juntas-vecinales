@@ -15,6 +15,7 @@ import {
   cobrosEnCasaPorAtender,
   pedirCobroEnCasa,
   registrarCobroEnEfectivo,
+  verCasaParaCobrar,
   verPedidoDeCobro,
 } from "@/modulos/aportes/aplicacion/cobros";
 import { calcularDeuda, miCuota } from "@/modulos/aportes/aplicacion/deuda";
@@ -480,5 +481,111 @@ describe("@HU-COB-11 Endpoints", () => {
     const cancelada = await llamar(cancelarHttp, ruta, tokenMarta, undefined, "PATCH", id);
     expect(cancelada.status).toBe(200);
     expect(await cancelada.json()).toMatchObject({ aplicado: true });
+  });
+});
+
+describe("@HU-COB-11 [DIR-19] Cobrar en efectivo sin pedido de cobro en casa", () => {
+  const cobrarEnLaCasa = (
+    predioId: string,
+    extra: Partial<{ idOperacionLocal: string; monto: number }> = {},
+    sesion = marta,
+  ) =>
+    registrarCobroEnEfectivo(
+      sesion,
+      {
+        idOperacionLocal: randomUUID(),
+        predioId,
+        monto: 500,
+        reciboEnPapel: false,
+        registradoEn: COBRO,
+        ...extra,
+      },
+      SINCRONIZA,
+    );
+
+  it("@HU-COB-11 [DIR-19] la ficha ofrece cobrar por semanas, como «Pagar mi cuota», aunque la casa no lo pidió", async () => {
+    const casa = await garitaDe("08123478");
+    const ficha = await verCasaParaCobrar(marta, casa.id);
+    expect(ficha).toMatchObject({
+      nombre: "Carmen Huamán",
+      vivienda: "Mz. C, lote 7",
+      debe: 1500,
+      puedeCobrar: true,
+    });
+    expect(ficha.opciones.map((o) => [o.semanas, o.monto, o.titulo])).toEqual([
+      [3, 1500, "Todo lo pendiente"],
+      [2, 1000, "2 semanas"],
+      [1, 500, "1 semana"],
+    ]);
+    expect((await verCasaParaCobrar(pedro, casa.id)).puedeCobrar).toBe(true);
+    expect((await verCasaParaCobrar(marta, (await garitaDe("40000002")).id)).puedeCobrar).toBe(false);
+    await expect(verCasaParaCobrar(carmen, casa.id)).rejects.toBeInstanceOf(ErrorNoAutorizado);
+  });
+
+  it("@HU-COB-11 [DIR-19] la directiva cobra una semana: paga la más antigua, emite el recibo y le avisa a la casa", async () => {
+    const casa = await garitaDe("08123478");
+    const r = await cobrarEnLaCasa(casa.id);
+    expect(r).toMatchObject({
+      aplicado: true,
+      nombre: "Carmen Huamán",
+      monto: 500,
+      debeAhora: 1000,
+      alDia: false,
+      recibo: {
+        titular: "Carmen Huamán",
+        concepto: "Cuota de vigilancia: 1 semana, del 7 al 13 de setiembre",
+        medio: "En efectivo, cobrado por la directiva",
+        registradoPor: "Marta Rojas",
+      },
+    });
+    expect(await prisma.pedidoCobroEnCasa.count()).toBe(0);
+    expect(
+      await prisma.avisoEnCola.count({
+        where: { destinatarioId: carmen.usuarioId, titulo: "Su pago fue aprobado" },
+      }),
+    ).toBe(1);
+  });
+
+  it("@HU-COB-11 [DIR-19] [MED-13] el directivo mediador también cobra sin pedido; repetir el envío no cobra dos veces", async () => {
+    const casa = await garitaDe("08123478");
+    const idOperacionLocal = randomUUID();
+    expect((await cobrarEnLaCasa(casa.id, { idOperacionLocal }, pedro)).aplicado).toBe(true);
+    expect((await cobrarEnLaCasa(casa.id, { idOperacionLocal }, pedro)).aplicado).toBe(false);
+    expect(await prisma.pago.count()).toBe(1);
+  });
+
+  it("@HU-COB-11 [DIR-19] ni en su propia casa, ni con un pago en revisión, ni el vecino", async () => {
+    await expect(cobrarEnLaCasa((await garitaDe("40000002")).id)).rejects.toThrow(/lo registra otro miembro/);
+    const casa = await garitaDe("08123478");
+    await expect(cobrarEnLaCasa(casa.id, {}, carmen)).rejects.toBeInstanceOf(ErrorNoAutorizado);
+    const cuota = await prisma.cuota.findFirstOrThrow({ where: { predioId: casa.id } });
+    await prisma.pago.create({
+      data: {
+        idOperacion: randomUUID(),
+        predioId: casa.id,
+        autorId: carmen.usuarioId,
+        medio: "YAPE_O_PLIN",
+        monto: 500,
+        cuotas: { create: { cuotaId: cuota.id, monto: 500 } },
+      },
+    });
+    await expect(cobrarEnLaCasa(casa.id)).rejects.toThrow(/pago en revisión/);
+    await expect(cobrarEnLaCasa(randomUUID())).rejects.toBeInstanceOf(ErrorNoEncontrado);
+  });
+
+  it("@HU-COB-11 [DIR-19] POST /api/aportes/pagos/presencial acepta la casa en vez del pedido; sin ninguno, 400", async () => {
+    const casa = await garitaDe("08123478");
+    const enviar = (cuerpo: unknown) =>
+      cobrarHttp(
+        new Request("http://localhost/api/aportes/pagos/presencial", {
+          method: "POST",
+          headers: { "content-type": "application/json", cookie: `sesion=${tokenMarta}` },
+          body: JSON.stringify(cuerpo),
+        }),
+        undefined,
+      );
+    const base = { idOperacionLocal: randomUUID(), monto: 500, reciboEnPapel: false };
+    expect((await enviar({ ...base, predioId: casa.id })).status).toBe(201);
+    expect((await enviar({ ...base, idOperacionLocal: randomUUID() })).status).toBe(400);
   });
 });
