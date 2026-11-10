@@ -185,7 +185,7 @@ export async function liquidarDeuda(
         accion: "liquidar_deuda",
         enviarRecibo: true,
         medioTexto: textoDelMedio(monto),
-        avisoExtra: casa.estadoGarita === "ROJO" ? "La reja vuelve a abrirse sola." : undefined,
+        avisoExtra: casa.estadoGarita === "ROJO" ? "El vigilante vuelve a abrirle la reja." : undefined,
       });
       if (vigilantes.length) {
         await encolarAvisos(
@@ -193,7 +193,7 @@ export async function liquidarDeuda(
             destinatarioId,
             tipo: "GARITA" as const,
             titulo: "Una casa se puso al día",
-            texto: `${casa.vivienda} pagó toda su deuda: la reja vuelve a abrirse sola.`,
+            texto: `${casa.vivienda} pagó toda su deuda: el vigilante vuelve a abrirle la reja.`,
           })),
           tx,
         );

@@ -39,7 +39,7 @@ export async function aplicarPagoAprobado(
     excedente?: number;
     /** Cómo se dice el medio en el recibo, si no es el de siempre (por ejemplo, con el número de operación). */
     medioTexto?: string;
-    /** Algo más que decirle a quien pagó, al final del aviso («La reja vuelve a abrirse sola»). */
+    /** Algo más que decirle a quien pagó, al final del aviso («El vigilante vuelve a abrirle la reja»). */
     avisoExtra?: string;
   },
 ) {

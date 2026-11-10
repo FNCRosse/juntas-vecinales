@@ -125,7 +125,7 @@ export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
       <div className="flex flex-col gap-6">
         <MensajeEstado tipo="exito" titulo={`${resultado.nombre} está al día`}>
           <p>
-            {resultado.reabreLaReja ? `La reja vuelve a abrirse sola para ${resultado.vivienda}. ` : ""}
+            {resultado.reabreLaReja ? `El vigilante vuelve a abrirle la reja a ${resultado.vivienda}. ` : ""}
             Avisamos a {avisados.join(" y a ")}, el {resultado.cuando}.
           </p>
         </MensajeEstado>
@@ -171,7 +171,7 @@ export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
         ]}
         efecto={
           casa.rejaSuspendida
-            ? "Su estado pasará a Al día y la reja volverá a abrirse sola para su casa. Le avisaremos a él y a la garita."
+            ? "Su estado pasará a Al día y el vigilante volverá a abrirle la reja. Le avisaremos a él y a la garita."
             : "Su estado pasará a Al día y le avisaremos."
         }
         textoConfirmar="Sí, registrar y poner al día"
@@ -209,7 +209,10 @@ export function PonerAlDia({ casa }: { casa: CasaPorPonerAlDia }) {
         <p className="text-titulo-2">{soles(casa.debe)}</p>
         <p>{casa.detalle}</p>
         {casa.rejaSuspendida && (
-          <p>Para devolverle la apertura automática, el pago tiene que cubrir todas las semanas vencidas.</p>
+          <p>
+            Para que el vigilante vuelva a abrirle la reja, el pago tiene que cubrir todas las semanas
+            vencidas.
+          </p>
         )}
       </div>
       <SelectorEnHoja<Medio>

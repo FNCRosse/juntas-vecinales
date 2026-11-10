@@ -29,7 +29,7 @@ export default async function PonerAlDia({ searchParams }: { searchParams: Promi
       <div className="flex flex-col gap-2">
         <h1 className="text-titulo-1">Poner al día a un vecino</h1>
         <p>
-          Para registrar el pago de toda la deuda de una casa y devolverle la apertura automática de la reja.
+          Para registrar el pago de toda la deuda de una casa y que el vigilante vuelva a abrirle la reja.
         </p>
       </div>
       <form method="get" role="search" className="flex flex-col gap-4">
@@ -69,7 +69,7 @@ export default async function PonerAlDia({ searchParams }: { searchParams: Promi
                   </span>
                   {c.rejaSuspendida && (
                     <div className="flex flex-col gap-1 rounded-control border border-borde-aviso bg-fondo-aviso p-3">
-                      <strong>La reja no se abre sola para esta casa</strong>
+                      <strong>El vigilante no le abre la reja a esta casa</strong>
                       <span>
                         Pasó las 8 semanas sin pago. Se restablece apenas se registre el pago total.
                       </span>
