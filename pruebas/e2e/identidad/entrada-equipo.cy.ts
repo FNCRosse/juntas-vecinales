@@ -63,7 +63,8 @@ describe("@HU-GAR-21 Entrada del equipo", () => {
       .should("match", /^(Buenos días|Buenas tardes|Buenas noches), Ana$/);
     cy.revisarAccesibilidad("panel-administracion-normal");
 
-    cy.visit("/administracion/mas");
+    // [ADM-23] "Cerrar sesión" está en la cabecera, sin pasar por Más.
+    cy.contains("header button", "Cerrar sesión").should("be.visible");
     cy.esperarHidratacion("Cerrar sesión").click();
     cy.location("pathname").should("eq", "/entrar/equipo");
     cy.visit("/administracion");

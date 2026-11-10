@@ -156,6 +156,12 @@ describe("@HU-GAR-07 @HU-GAR-08 Visitas en la garita y bitácora", () => {
         "Luis Paredes, el vigilante, espera su respuesta.",
       );
       cy.contains("a", "Responder").should("have.attr", "href", `/visitas/${id}/responder`);
+      // [VEC-34] también aparece arriba en Mis visitas.
+      cy.visit("/visitas");
+      cy.contains('[role="status"]', `${NO_ANUNCIADA} está en la garita y pregunta por usted`)
+        .contains("a", "Responder")
+        .should("have.attr", "href", `/visitas/${id}/responder`);
+      cy.revisarAccesibilidad("mis-visitas-con-visita-en-la-garita-normal");
       cy.visit(`/visitas/${id}/responder`);
       cy.get("h1").should("have.text", `¿Deja pasar a ${NO_ANUNCIADA}?`);
       cy.contains("section", "Viene a revisar el cable").should(
