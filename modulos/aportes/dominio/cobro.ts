@@ -45,17 +45,30 @@ export const MEDIOS_DE_LIQUIDACION = ["EFECTIVO", "YAPE_O_PLIN", "TRANSFERENCIA"
 export type MedioDeLiquidacion = (typeof MEDIOS_DE_LIQUIDACION)[number];
 export const MAXIMO_NUMERO_OPERACION = 30;
 
-/** Revisa cómo pagó y, si lo tiene, el número de operación (opcional; solo para quien pagó por Yape, Plin o transferencia). */
-export function prepararLiquidacion(datos: { medio: string; numeroOperacion: string }) {
+export const MENSAJE_MONTO_RECIBIDO = "Escriba cuánto le entregó en efectivo, para calcular el vuelto.";
+
+/**
+ * Revisa cómo pagó; en efectivo, cuánto le entregó (DIR-19, para el vuelto); y, si lo tiene, el número de operación
+ * (opcional; solo para quien pagó por Yape, Plin o transferencia).
+ */
+export function prepararLiquidacion(datos: {
+  medio: string;
+  numeroOperacion: string;
+  montoRecibido?: number;
+}) {
   const errores: Record<string, string> = {};
   const medio = MEDIOS_DE_LIQUIDACION.find((m) => m === datos.medio);
   const numeroOperacion = datos.numeroOperacion.trim();
   if (!medio) errores.medio = "Elija cómo pagó.";
+  const montoRecibido = medio === "EFECTIVO" ? (datos.montoRecibido ?? 0) : null;
+  if (montoRecibido !== null && !(Number.isInteger(montoRecibido) && montoRecibido > 0)) {
+    errores.montoRecibido = MENSAJE_MONTO_RECIBIDO;
+  }
   if (numeroOperacion.length > MAXIMO_NUMERO_OPERACION) {
     errores.numeroOperacion = `El número de operación puede tener hasta ${MAXIMO_NUMERO_OPERACION} letras o cifras.`;
   }
   if (Object.keys(errores).length || !medio) return { errores, liquidacion: null };
-  return { errores, liquidacion: { medio, numeroOperacion: numeroOperacion || null } };
+  return { errores, liquidacion: { medio, numeroOperacion: numeroOperacion || null, montoRecibido } };
 }
 
 /** El monto que recibió la directiva: céntimos enteros y más de cero. */

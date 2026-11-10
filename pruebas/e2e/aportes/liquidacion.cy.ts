@@ -17,6 +17,8 @@ const SEMANAS = [
   "2026-09-14",
   "2026-09-21",
 ];
+// El CI no habla con R2: la subida de la foto se simula y el archivo «subido» se crea en la BD de pruebas.
+const R2_SIMULADO = "https://r2-simulado.invalid/comprobante-liquidacion";
 const OBJETIVOS = "a:visible, button:visible, input:visible:not([type=hidden]), textarea:visible";
 
 /** Crea una vecina con nueve semanas por pagar y la reja suspendida; guarda su sesión y su DNI. */
@@ -81,10 +83,27 @@ describe("@HU-COB-07 Poner al día a un vecino", { defaultCommandTimeout: 15000 
     cy.contains("button", "En efectivo").click();
     cy.contains("button", "Yape o Plin").click();
     cy.get("#campo-numeroOperacion").type("004512");
+    // [DIR-19] por Yape, Plin o transferencia se adjunta la foto del pago.
+    cy.task<string>("archivoDePrueba", { dni: "40000002", uso: "comprobante_pago" }).then((archivoId) => {
+      cy.intercept("POST", "/api/archivos", {
+        statusCode: 201,
+        body: { id: archivoId, url: R2_SIMULADO, metodo: "PUT", cabeceras: { "content-type": "image/jpeg" } },
+      });
+      cy.intercept("PUT", R2_SIMULADO, { statusCode: 200 }).as("subir");
+    });
+    cy.get("[data-zona-archivo]").should("exist");
+    cy.get("#campo-archivoId").selectFile({
+      contents: Cypress.Buffer.from("foto"),
+      fileName: "yape.jpg",
+      mimeType: "image/jpeg",
+    });
+    cy.wait("@subir");
+    cy.contains("Lista: yape.jpg").should("exist");
     cy.contains("button", "Revisar el pago").click();
 
     // DIR-COB-17: paso 2.
     cy.get("h1").should("have.text", `¿Desea poner al día a ${nombre}?`);
+    cy.contains("dd", "Adjunta").should("exist");
     cy.contains("dd", "S/ 22.50").should("exist");
     cy.contains("dd", "9, del 27 de julio al 27 de setiembre").should("exist");
     cy.contains("dd", "Yape o Plin · operación 004512").should("exist");
@@ -123,6 +142,33 @@ describe("@HU-COB-07 Poner al día a un vecino", { defaultCommandTimeout: 15000 
     cy.contains("article", /Recibo N\.° \d{6}/)
       .should("contain.text", "Aprobado")
       .and("contain.text", "S/ 22.50");
+  });
+
+  it("@HU-COB-07 CA1 [DIR-19] en efectivo se anota cuánto entregó: si no alcanza no avanza, y el recibo dice el vuelto", () => {
+    const nombre = `Vecina Efectivo ${sufijo}`;
+    vecinaConAtrasoCritico(nombre);
+    entrarComoDirectiva();
+    cy.viewport(360, 800);
+    buscar(nombre);
+    cy.contains("article", nombre)
+      .contains("a", "Registrar el pago total")
+      .invoke("attr", "href")
+      .then((href) => cy.visit(href as string));
+    cy.esperarHidratacion("Revisar el pago");
+    cy.contains("button", "Revisar el pago").click();
+    cy.get("#campo-montoRecibido-error").should("contain.text", "Escriba cuánto le entregó");
+    cy.get("#campo-montoRecibido").type("20");
+    cy.contains("button", "Revisar el pago").click();
+    cy.get("#campo-montoRecibido-error").should("contain.text", "menos de lo que debe (S/ 22.50)");
+    cy.get("#campo-montoRecibido").clear().type("30");
+    cy.contains("p", "Vuelto: S/ 7.50").should("exist");
+    cy.revisarAccesibilidad("poner-al-dia-efectivo-360");
+    cy.contains("button", "Revisar el pago").click();
+    cy.contains("dd", "S/ 30.00").should("exist");
+    cy.contains("dd", "S/ 7.50").should("exist");
+    cy.contains("button", "Sí, registrar y poner al día").click();
+    cy.contains("a", /Ver el recibo N\.° \d{6}/).click();
+    cy.contains("dd", "Efectivo (recibió S/ 30.00, vuelto S/ 7.50)").should("exist");
   });
 
   it("@HU-COB-07 el mediador ve la ficha sin poder registrar, y en modo Senior el pago tiene pocos objetivos por pantalla", () => {

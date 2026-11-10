@@ -1,5 +1,6 @@
 import {
   fechaDelCobro,
+  MENSAJE_MONTO_RECIBIDO,
   prepararLiquidacion,
   numeroDePedidoDeCobro,
   prepararPedidoDeCobro,
@@ -81,16 +82,26 @@ describe("@HU-COB-07 CA1 cómo pagó la deuda acumulada", () => {
     expect(prepararLiquidacion({ medio: "", numeroOperacion: "" }).errores).toEqual({
       medio: "Elija cómo pagó.",
     });
-    expect(prepararLiquidacion({ medio: "EFECTIVO", numeroOperacion: " " })).toEqual({
+    expect(prepararLiquidacion({ medio: "EFECTIVO", numeroOperacion: " ", montoRecibido: 5000 })).toEqual({
       errores: {},
-      liquidacion: { medio: "EFECTIVO", numeroOperacion: null },
+      liquidacion: { medio: "EFECTIVO", numeroOperacion: null, montoRecibido: 5000 },
     });
     expect(prepararLiquidacion({ medio: "YAPE_O_PLIN", numeroOperacion: " 0045123 " }).liquidacion).toEqual({
       medio: "YAPE_O_PLIN",
       numeroOperacion: "0045123",
+      montoRecibido: null,
     });
     expect(
       prepararLiquidacion({ medio: "TRANSFERENCIA", numeroOperacion: "9".repeat(31) }).errores,
     ).toHaveProperty("numeroOperacion");
+  });
+
+  it("@HU-COB-07 CA1 [DIR-19] en efectivo hay que escribir cuánto entregó, en céntimos y más de cero", () => {
+    for (const montoRecibido of [undefined, 0, -100, 12.5]) {
+      expect(prepararLiquidacion({ medio: "EFECTIVO", numeroOperacion: "", montoRecibido }).errores).toEqual({
+        montoRecibido: MENSAJE_MONTO_RECIBIDO,
+      });
+    }
+    expect(prepararLiquidacion({ medio: "YAPE_O_PLIN", numeroOperacion: "" }).errores).toEqual({});
   });
 });
