@@ -171,7 +171,7 @@ describe("@HU-COB-07 Poner al día a un vecino", { defaultCommandTimeout: 15000 
     cy.contains("dd", "Efectivo (recibió S/ 30.00, vuelto S/ 7.50)").should("exist");
   });
 
-  it("@HU-COB-07 el mediador ve la ficha sin poder registrar, y en modo Senior el pago tiene pocos objetivos por pantalla", () => {
+  it("@HU-COB-07 [MED-13] el mediador también puede registrar el pago, y en modo Senior el pago tiene pocos objetivos por pantalla", () => {
     const nombre = `Vecina Senior ${sufijo}`;
     vecinaConAtrasoCritico(nombre);
     cy.clearCookies();
@@ -180,15 +180,7 @@ describe("@HU-COB-07 Poner al día a un vecino", { defaultCommandTimeout: 15000 
     cy.request("POST", "/api/auth/clave", { dni: "40000003", clave: "clave-de-prueba" });
     cy.viewport(360, 800);
     buscar(nombre);
-    cy.contains("article", nombre).contains("a", "Registrar el pago total").should("not.exist");
-    cy.request({
-      method: "POST",
-      url: "/api/aportes/liquidaciones",
-      body: { predioId: crypto.randomUUID(), medio: "EFECTIVO", idOperacion: crypto.randomUUID() },
-      failOnStatusCode: false,
-    })
-      .its("status")
-      .should("eq", 403);
+    cy.contains("article", nombre).contains("a", "Registrar el pago total").should("exist");
 
     entrarComoDirectiva();
     cy.guardarModo("senior");

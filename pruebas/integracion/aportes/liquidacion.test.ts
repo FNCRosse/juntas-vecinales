@@ -130,8 +130,8 @@ describe("@HU-COB-07 CA1 Buscar a quien se va a poner al día", () => {
     expect((await buscarCasasPorPonerAlDia(marta, "J")).casas).toEqual([]);
   });
 
-  it("@HU-COB-07 CA1 el mediador ve la ficha sin poder registrar; la casa propia no se registra; el vecino no entra", async () => {
-    expect((await buscarCasasPorPonerAlDia(pedro, "Julio")).casas[0].puedeRegistrar).toBe(false);
+  it("@HU-COB-07 CA1 [MED-13] el mediador también puede registrar; la casa propia no se registra; el vecino no entra", async () => {
+    expect((await buscarCasasPorPonerAlDia(pedro, "Julio")).casas[0].puedeRegistrar).toBe(true);
     expect((await buscarCasasPorPonerAlDia(marta, "Marta Rojas")).casas[0]).toMatchObject({
       esSuya: true,
       puedeRegistrar: false,
@@ -287,7 +287,8 @@ describe("@HU-COB-07 Reglas", () => {
     expect(await prisma.recibo.count()).toBe(1);
     expect(await prisma.avisoEnCola.count({ where: { titulo: "Su pago fue aprobado" } })).toBe(1);
     expect(await prisma.avisoEnCola.count({ where: { titulo: "Una casa se puso al día" } })).toBe(1);
-    await expect(liquidar({ idOperacion }, pedro)).rejects.toBeInstanceOf(ErrorNoAutorizado);
+    // Otra persona del equipo no ve ni reusa un pago ajeno con ese identificador (AC-7).
+    await expect(liquidar({ idOperacion }, pedro)).rejects.toBeInstanceOf(ErrorNoEncontrado);
   });
 
   it("@HU-COB-07 AC-5 dos envíos a la vez del mismo pago dejan uno solo", async () => {
@@ -298,11 +299,17 @@ describe("@HU-COB-07 Reglas", () => {
     expect(await deudaDe()).toBe(0);
   });
 
-  it("@HU-COB-07 solo la directiva registra: ni el mediador ni el vecino", async () => {
-    await expect(liquidar({}, pedro)).rejects.toBeInstanceOf(ErrorNoAutorizado);
+  it("@HU-COB-07 el vecino no registra pagos", async () => {
     await expect(liquidar({}, julio)).rejects.toBeInstanceOf(ErrorNoAutorizado);
     expect(await prisma.pago.count()).toBe(0);
     expect(await deudaDe()).toBeGreaterThan(0);
+  });
+
+  it("@HU-COB-07 CA1 [MED-13] el directivo mediador pone al día a un vecino y el recibo dice quién lo registró", async () => {
+    const r = await liquidar({}, pedro);
+    expect(r).toMatchObject({ aplicado: true, nombre: "Julio Mendoza" });
+    expect(r.recibo!.registradoPor).toBe("Pedro Chávez");
+    expect(await deudaDe()).toBe(0);
   });
 
   it("@HU-COB-07 hay que elegir cómo pagó, la casa tiene que existir y deber algo", async () => {
