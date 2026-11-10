@@ -42,7 +42,10 @@ const rejaDe = async (predioId: string) =>
   (await prisma.predio.findUniqueOrThrow({ where: { id: predioId } })).estadoGarita;
 const avisosDeSuspension = (destinatarioId?: string) =>
   prisma.avisoEnCola.findMany({
-    where: { titulo: "Por ahora la reja no se abre sola", ...(destinatarioId ? { destinatarioId } : {}) },
+    where: {
+      titulo: "Por ahora el vigilante no le abrirá la reja",
+      ...(destinatarioId ? { destinatarioId } : {}),
+    },
   });
 const casasConDeuda = async () =>
   (await prisma.cuota.groupBy({ by: ["predioId"], where: { estado: { not: "PAGADA" } } })).length;
@@ -106,7 +109,7 @@ describe("@HU-COB-06 CA3 Aviso formal", () => {
     // Seguridad: no se puede desactivar.
     expect(aviso.tipo).toBe("SEGURIDAD");
     expect(aviso.texto).toBe(
-      "Su casa lleva 9 semanas pendientes de pago (hoy debe S/ 45.00). Por eso el vigilante ya no abre la reja automáticamente: usted puede entrar abriéndola a mano, como siempre, y por ahora no puede registrar visitas nuevas. Para volver a la normalidad, pague lo pendiente por la app o en efectivo; apenas la directiva lo valide, la reja vuelve a abrirse sola. Si no puede pagarlo todo junto, converse con la directiva.",
+      "Su casa lleva 9 semanas pendientes de pago (hoy debe S/ 45.00). Por eso el vigilante ya no le abrirá la reja a su vehículo: tendrá que abrirla usted mismo, y por ahora no puede registrar visitas nuevas. Para volver a la normalidad, pague lo pendiente por la app o en efectivo; apenas la directiva lo valide, el vigilante vuelve a abrirle la reja. Si no puede pagarlo todo junto, converse con la directiva.",
     );
     expect(aviso.texto).not.toMatch(/moros|deudor|castig|multa|sanci/i);
   });
@@ -120,7 +123,7 @@ describe("@HU-COB-06 CA3 Aviso formal", () => {
     expect(auditoria).toMatchObject({
       actorId: null,
       entidad: "Predio",
-      despues: { estado: "Atraso crítico", semanas: 9, garita: "La reja no se abre sola" },
+      despues: { estado: "Atraso crítico", semanas: 9, garita: "El vigilante no abre la reja" },
     });
   });
 

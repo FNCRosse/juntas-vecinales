@@ -7,7 +7,7 @@ import { BotonEnlace } from "@/componentes/a11y/Boton";
 import { soles } from "@/compartido/dinero";
 import { miReja } from "@/modulos/aportes/aplicacion/morosidad";
 
-export const metadata: Metadata = { title: "La reja no se abre sola" };
+export const metadata: Metadata = { title: "El vigilante no le abrirá la reja" };
 
 // VEC-COB-12 (HU-COB-06 CA2 y CA3): lo que pasa con la reja a las 8 semanas pendientes, sin culpa y sin la palabra «moroso»,
 // y cómo volver a la normalidad. Solo ve su casa. Si la reja se abre sola, no hay nada que explicar.
@@ -27,7 +27,7 @@ export default async function Reja() {
         <ChevronLeft aria-hidden className="size-icono" />
         Volver al inicio
       </Link>
-      <h1 className="text-titulo-1">Por ahora la reja no se abre sola</h1>
+      <h1 className="text-titulo-1">Por ahora el vigilante no le abrirá la reja</h1>
       <section aria-label="Lo que tiene pendiente" className="flex flex-col gap-1">
         <p className="text-titulo-2">Tiene {reja.semanas} semanas pendientes</p>
         <p className="text-titulo-2">{soles(reja.debe)}</p>
@@ -38,9 +38,8 @@ export default async function Reja() {
           Qué significa
         </h2>
         <p>
-          La asamblea acordó que, desde las {reja.umbral} semanas pendientes, el vigilante no abre la reja
-          automáticamente. Usted puede entrar abriéndola a mano, como siempre. Por ahora tampoco puede
-          registrar visitas nuevas.
+          La asamblea acordó que, desde las {reja.umbral} semanas pendientes, el vigilante no le abre la reja
+          a su vehículo: tendrá que abrirla usted mismo. Por ahora tampoco puede registrar visitas nuevas.
         </p>
       </section>
       <section aria-labelledby="titulo-normalidad" className="flex flex-col gap-2">
@@ -48,8 +47,8 @@ export default async function Reja() {
           Cómo volver a la normalidad
         </h2>
         <p>
-          Pague lo pendiente por la app o en efectivo con la directiva. Apenas la directiva lo valide, la reja
-          vuelve a abrirse sola y le avisamos.
+          Pague lo pendiente por la app o en efectivo con la directiva. Apenas la directiva lo valide, el
+          vigilante vuelve a abrirle la reja y le avisamos.
         </p>
         <p>¿No puede pagarlo todo junto? Converse con la directiva: pueden ayudarla a ponerse al día.</p>
       </section>

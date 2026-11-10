@@ -135,7 +135,7 @@ describe("@HU-GAR-06 Consultar placas o DNI con el semáforo", () => {
     expect(await avisosDe(julio.usuarioId)).toEqual([
       expect.objectContaining({
         tipo: "SEGURIDAD",
-        titulo: "Por ahora la reja no se abre sola",
+        titulo: "Por ahora el vigilante no le abrirá la reja",
         plantilla: "reja_manual",
         parametros: ["Julio", "10:00 a. m.", "Mz. A, lote 3"],
       }),

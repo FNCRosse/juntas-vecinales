@@ -33,7 +33,7 @@ describe("@HU-GAR-19 El inicio con lo de cobros", { defaultCommandTimeout: 15000
     // La reja suspendida se ve sin entrar a Mi cuota.
     cy.get<string>("@dni").then((dni) => cy.task("suspenderReja", { dni }));
     cy.reload();
-    cy.contains("[role=status]", "Por ahora la reja no se abre sola").should("exist");
+    cy.contains("[role=status]", "Por ahora el vigilante no le abrirá la reja").should("exist");
 
     // Al pagar todo, el bloque cambia.
     cy.get<string>("@dni").then((dni) =>

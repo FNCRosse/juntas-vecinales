@@ -65,7 +65,7 @@ describe("@HU-COB-07 Poner al día a un vecino", { defaultCommandTimeout: 15000 
       .and("contain.text", "Debe S/ 22.50")
       .and("contain.text", "9 semanas, del 27 de julio al 27 de setiembre")
       .and("contain.text", "9 semanas pendientes")
-      .and("contain.text", "La reja no se abre sola para esta casa")
+      .and("contain.text", "El vigilante no le abre la reja a esta casa")
       .and("contain.text", "Cuota semanal S/ 2.50 (casa S/ 2.50)");
     cy.revisarAccesibilidad("poner-al-dia-ficha-360");
 
@@ -77,7 +77,7 @@ describe("@HU-COB-07 Poner al día a un vecino", { defaultCommandTimeout: 15000 
     cy.contains("p", "Paso 1 de 2").should("exist");
     cy.get("h1").should("have.text", `Registrar el pago total de ${nombre}`);
     cy.contains("p", "S/ 22.50").should("exist");
-    cy.contains("Para devolverle la apertura automática").should("exist");
+    cy.contains("Para que el vigilante vuelva a abrirle la reja").should("exist");
     cy.revisarAccesibilidad("poner-al-dia-paso1-360");
     cy.esperarHidratacion("Revisar el pago");
     cy.contains("button", "En efectivo").click();
@@ -107,12 +107,12 @@ describe("@HU-COB-07 Poner al día a un vecino", { defaultCommandTimeout: 15000 
     cy.contains("dd", "S/ 22.50").should("exist");
     cy.contains("dd", "9, del 27 de julio al 27 de setiembre").should("exist");
     cy.contains("dd", "Yape o Plin · operación 004512").should("exist");
-    cy.contains("la reja volverá a abrirse sola para su casa").should("exist");
+    cy.contains("el vigilante volverá a abrirle la reja").should("exist");
     cy.revisarAccesibilidad("poner-al-dia-confirmar-360");
     cy.contains("button", "Sí, registrar y poner al día").click();
 
     cy.contains('[role="status"]', `${nombre} está al día`)
-      .should("contain.text", "La reja vuelve a abrirse sola")
+      .should("contain.text", "El vigilante vuelve a abrirle la reja")
       .and("contain.text", "Luis Paredes, de la garita");
     cy.revisarAccesibilidad("poner-al-dia-hecho-360");
     cy.contains("a", /Ver el recibo N\.° \d{6}/).click();

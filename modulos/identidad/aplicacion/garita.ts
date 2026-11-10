@@ -173,8 +173,8 @@ export async function anotarEntradaVecino(
           {
             destinatarioId: usuario.id,
             tipo: "SEGURIDAD",
-            titulo: "Por ahora la reja no se abre sola",
-            texto: `Hoy a las ${horaCorta(ahora)} se entró a su casa abriendo la reja a mano. Cuando se ponga al día con su cuota, vuelve a abrirse sola.`,
+            titulo: "Por ahora el vigilante no le abrirá la reja",
+            texto: `Hoy a las ${horaCorta(ahora)} se entró a su casa abriendo la reja a mano. Cuando se ponga al día con su cuota, el vigilante volverá a abrírsela.`,
             whatsapp: usuario.telefonoWhatsApp
               ? {
                   telefono: usuario.telefonoWhatsApp,
