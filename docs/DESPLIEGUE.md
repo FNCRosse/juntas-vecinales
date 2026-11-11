@@ -1,6 +1,6 @@
 # Despliegue
 
-El despliegue existe desde la fase 0: cada PR tiene su preview y cada merge a `main` va a producción. Desviaciones respecto del Anexo H y su motivo: [ARQUITECTURA.md §7](ARQUITECTURA.md#7-desviaciones-respecto-del-anexo-h).
+El despliegue existe desde la fase 0: cada merge a `main` va a producción. Las previews por PR están apagadas desde el 10 de noviembre de 2026 (`vercel.json`, `git.deploymentEnabled` con `"*/**": false`, es decir, toda rama con barra): fallaban desde el 9 de noviembre con «Resource provisioning failed» al crear su rama de Neon, y el CI de GitHub Actions ya prueba cada PR contra su propio Postgres. Lo que sigue sobre previews describe cómo funcionaban. Desviaciones respecto del Anexo H y su motivo: [ARQUITECTURA.md §7](ARQUITECTURA.md#7-desviaciones-respecto-del-anexo-h).
 
 ## 1. Arquitectura de despliegue
 
@@ -70,7 +70,7 @@ Para recrearla sin los conectores, en el panel de cada servicio.
 
 | Ajuste | Valor |
 | --- | --- |
-| Repositorio | `FNCRosse/juntas-vecinales`, rama de producción `main`; cada PR crea una preview |
+| Repositorio | `FNCRosse/juntas-vecinales`, rama de producción `main`; previews apagadas por `vercel.json` desde el 10-nov-2026 |
 | Framework | Next.js |
 | Comando de build | `prisma migrate deploy && next build` (el `postinstall` ya corrió `prisma generate`) |
 | Instalación y salida | Las de Next por defecto (`npm install`, `.next`) |
