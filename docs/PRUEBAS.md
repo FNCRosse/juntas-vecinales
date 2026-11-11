@@ -31,7 +31,7 @@ describe('@HU-GAR-01 Empadronar residente', () => {
 
 | Indicador | Umbral | Dónde se mide | ¿Bloquea? |
 | --- | --- | --- | --- |
-| Cobertura de líneas de Jest (unitarias + integración juntas) | ≥ 80 % global | `coverageThreshold.global.lines = 80` en `jest.config.ts`; se mide sobre `modulos/**`, `compartido/**`, `worker/**` y `app/api/**` | Sí, desde la fase 0 |
+| Cobertura de líneas de Jest (unitarias + integración juntas) | ≥ 80 % global | `coverageThreshold.global.lines = 80` en `jest.config.ts`; se mide sobre `modulos/**`, `compartido/**`, `worker/**` y `app/api/**`, sin el cliente generado ni las semillas de datos ficticios (`compartido/bd/semillas.ts` y `semillasDemo.ts`) | Sí, desde la fase 0 |
 | HU con al menos un e2e de Cypress | 100 % de las HU cerradas | `npm run matriz` | Sí |
 | Violaciones axe WCAG 2.2 AA en los e2e | 0 | `cy.checkA11y` en cada estado de cada e2e | Sí |
 

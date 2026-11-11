@@ -11,6 +11,9 @@ const collectCoverageFrom = [
   "worker/**/*.ts",
   "app/api/**/*.ts",
   "!compartido/bd/generado/**",
+  // Datos ficticios para el CI y la demo (docs/DATOS.md §5), no lógica de la aplicación.
+  "!compartido/bd/semillas.ts",
+  "!compartido/bd/semillasDemo.ts",
 ];
 
 export default async function configuracion(): Promise<Config> {
