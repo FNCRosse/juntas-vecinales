@@ -10,5 +10,5 @@
     "rootDir": "../..",
     "outDir": "../../dist/guiones"
   },
-  "files": ["semillas.ts", "semillasDemo.ts", "administradorInicial.ts"]
+  "files": ["semillas.ts", "semillasDemo.ts", "administradorInicial.ts", "prepararExperimento.ts"]
 }

@@ -47,6 +47,8 @@ Se escriben como SQL dentro de la migración que crea la tabla:
 
 La cuenta inicial del administrador en producción (el prototipo asume que ya existe, Anexo M §6) la crea la autora con `npm run administrador:crear` y sus datos en `ADMIN_INICIAL_NOMBRE`, `ADMIN_INICIAL_DNI` y `ADMIN_INICIAL_CLAVE` (y la `DATABASE_URL` de producción). Se niega si ya existe un administrador.
 
+**Preparación del experimento R3.2.** `npm run experimento:preparar` da una clave a los 18 vecinos de demostración que nunca entraron (DNI `41000001` a `41000016`, `41000101` y `41000102`), uno por participante, y cierra las convocatorias que quedaron con texto de prueba. Lo corre la autora con la `DATABASE_URL` de producción y `EXPERIMENTO_CLAVE` (el largo mínimo de una clave de vecino) en su terminal; sin `--aplicar` solo muestra lo que haría. No toca ninguna otra cuenta.
+
 Personajes del prototipo (todos ficticios; DNI, teléfonos y placas inventados):
 
 | Persona | Rol | Predio | Uso en las pruebas |
