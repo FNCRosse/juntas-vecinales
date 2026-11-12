@@ -21,7 +21,8 @@
     "matriz": "node guiones/matriz-hu.mjs",
     "semillas": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/semillas.js",
     "semillas:demo": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/semillasDemo.js",
-    "administrador:crear": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/administradorInicial.js"
+    "administrador:crear": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/administradorInicial.js",
+    "experimento:preparar": "tsc -p compartido/bd/tsconfig.guiones.json && node dist/guiones/compartido/bd/prepararExperimento.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",
