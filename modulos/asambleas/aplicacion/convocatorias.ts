@@ -153,10 +153,15 @@ export async function verAsambleas(sesion: SesionDto): Promise<AsambleaDto[]> {
 /** Una asamblea sigue "en curso" hasta 12 horas después de su hora: el día de la reunión no desaparece de la lista. */
 const HORAS_EN_CURSO = 12;
 
-/** La próxima asamblea (o la que está en curso), o null si no hay (bloque del inicio, DIR-INI-01 / VEC-ACC-09). */
+/**
+ * La próxima asamblea (o la que está en curso), o null si no hay (bloque del inicio, DIR-INI-01 / VEC-ACC-09).
+ * Una asamblea cerrada ya no se espera: se salta y se muestra la siguiente.
+ */
 export async function proximaAsamblea(sesion: SesionDto, ahora = new Date()): Promise<AsambleaDto | null> {
   const desde = ahora.getTime() - HORAS_EN_CURSO * 3_600_000;
-  const futuras = (await verAsambleas(sesion)).filter((a) => new Date(a.fechaHora).getTime() >= desde);
+  const futuras = (await verAsambleas(sesion)).filter(
+    (a) => a.estado !== "CERRADA" && new Date(a.fechaHora).getTime() >= desde,
+  );
   return futuras[0] ?? null;
 }
 

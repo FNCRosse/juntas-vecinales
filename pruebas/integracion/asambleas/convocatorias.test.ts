@@ -164,4 +164,18 @@ describe("@HU-ASA-01 Convocatoria con versión imprimible", () => {
     const proxima = await proximaAsamblea(directiva);
     expect(proxima?.id).toBe(asamblea.id);
   });
+
+  it("@HU-ASA-01 una asamblea cerrada no es la próxima: se pasa a la siguiente", async () => {
+    const cerrada = await (await publicar({ ...CONVOCATORIA, idOperacion: randomUUID() })).json();
+    const siguiente = await (
+      await publicar({
+        ...CONVOCATORIA,
+        fecha: enDias(40).toISOString().slice(0, 10),
+        idOperacion: randomUUID(),
+      })
+    ).json();
+    await prisma.convocatoria.update({ where: { id: cerrada.id }, data: { estado: "CERRADA" } });
+    const proxima = await proximaAsamblea(directiva);
+    expect(proxima?.id).toBe(siguiente.id);
+  });
 });
